@@ -1,0 +1,1575 @@
+<title>Orbit Ship-Gate</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Newsreader:opsz,wght@6..72,300;6..72,400;6..72,500&display=swap">
+
+<style>
+/* ═══════════════════════════════════════════════════════════════════════════
+   ORBIT — Ship-Gate
+   Palette derived from Anthropic's warm brand system (cream ground, clay
+   accent, warm ink). Chart series validated in both themes:
+     light  #C4623C / #2B6CA3   CVD ΔE 16.9 · normal 25.5 · contrast 3.86 / 5.28
+     dark   #D07B5C / #4A93D4   CVD ΔE 17.5 · normal 23.2 · contrast 4.82 / 4.63
+   The bright clay #D97757 is an ACCENT only — it is never a fill behind white
+   text (3.1:1). Coral fills that carry white text use --clay-deep (5.1:1).
+   ═══════════════════════════════════════════════════════════════════════════ */
+:root {
+  color-scheme: light;
+
+  --ground:      #FAF9F5;
+  --surface:     #FFFFFF;
+  --surface-2:   #F2F0E9;
+  --surface-3:   #EAE7DC;
+  --ink-block:   #1A1917;
+
+  --ink:         #141413;
+  --ink-2:       #575349;
+  --ink-3:       #8A887D;
+  --ink-inv:     #FAF9F5;
+
+  --rule:        #E5E1D6;
+  --rule-2:      #D3CEBE;
+
+  --clay:        #D97757;
+  --clay-deep:   #B0532F;
+  --clay-soft:   #F7E8E0;
+
+  --s1:          #C4623C;
+  --s2:          #2B6CA3;
+
+  --ship:        #2F7D51;  --ship-soft:    #E2F0E7;
+  --hold:        #A32E2A;  --hold-soft:    #F7E3E1;
+  --collect:     #9A6B10;  --collect-soft: #F6EBD5;
+  --void:        #6C6A64;  --void-soft:    #EDEBE4;
+
+  --sh-1: 0 1px 2px rgba(20,20,19,.04), 0 6px 16px -10px rgba(20,20,19,.12);
+  --sh-2: 0 2px 4px rgba(20,20,19,.04), 0 18px 44px -22px rgba(20,20,19,.22);
+
+  --page: 1240px;
+  --read: 66ch;
+
+  --f-display: "Newsreader", Georgia, "Times New Roman", serif;
+  --f-ui: "Archivo", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  --t-1: clamp(.78rem, .76rem + .1vw, .84rem);
+  --t0:  clamp(.95rem, .92rem + .14vw, 1.03rem);
+  --t1:  clamp(1.14rem, 1.06rem + .34vw, 1.34rem);
+  --t2:  clamp(1.5rem, 1.3rem + .84vw, 2.1rem);
+  --t3:  clamp(2rem, 1.6rem + 1.7vw, 3.1rem);
+  --t4:  clamp(2.7rem, 1.9rem + 3.4vw, 4.9rem);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --ground:    #1A1917;
+    --surface:   #232220;
+    --surface-2: #2C2B28;
+    --surface-3: #35332F;
+    --ink-block: #0F0E0D;
+
+    --ink:       #F5F3ED;
+    --ink-2:     #BFBCB2;
+    --ink-3:     #8A887D;
+    --ink-inv:   #141413;
+
+    --rule:      #37352F;
+    --rule-2:    #4A473F;
+
+    --clay:      #DE8B6D;
+    --clay-deep: #C4623C;
+    --clay-soft: #3A241B;
+
+    --s1:        #D07B5C;
+    --s2:        #4A93D4;
+
+    --ship:      #5FAE7E;  --ship-soft:    #1B2E22;
+    --hold:      #E0716B;  --hold-soft:    #38201E;
+    --collect:   #D2A03C;  --collect-soft: #33280F;
+    --void:      #9E9C93;  --void-soft:    #2B2A26;
+
+    --sh-1: 0 1px 2px rgba(0,0,0,.4), 0 6px 18px -10px rgba(0,0,0,.6);
+    --sh-2: 0 2px 6px rgba(0,0,0,.45), 0 22px 50px -24px rgba(0,0,0,.8);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --ground:    #1A1917;
+  --surface:   #232220;
+  --surface-2: #2C2B28;
+  --surface-3: #35332F;
+  --ink-block: #0F0E0D;
+
+  --ink:       #F5F3ED;
+  --ink-2:     #BFBCB2;
+  --ink-3:     #8A887D;
+  --ink-inv:   #141413;
+
+  --rule:      #37352F;
+  --rule-2:    #4A473F;
+
+  --clay:      #DE8B6D;
+  --clay-deep: #C4623C;
+  --clay-soft: #3A241B;
+
+  --s1:        #D07B5C;
+  --s2:        #4A93D4;
+
+  --ship:      #5FAE7E;  --ship-soft:    #1B2E22;
+  --hold:      #E0716B;  --hold-soft:    #38201E;
+  --collect:   #D2A03C;  --collect-soft: #33280F;
+  --void:      #9E9C93;  --void-soft:    #2B2A26;
+
+  --sh-1: 0 1px 2px rgba(0,0,0,.4), 0 6px 18px -10px rgba(0,0,0,.6);
+  --sh-2: 0 2px 6px rgba(0,0,0,.45), 0 22px 50px -24px rgba(0,0,0,.8);
+}
+
+*,*::before,*::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *,*::before,*::after { animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important; }
+}
+body {
+  margin: 0; background: var(--ground); color: var(--ink);
+  font-family: var(--f-ui); font-size: var(--t0); line-height: 1.6;
+  -webkit-font-smoothing: antialiased; overflow-x: hidden;
+}
+:focus-visible { outline: 2px solid var(--clay-deep); outline-offset: 3px; border-radius: 3px; }
+h1,h2,h3,h4 { margin: 0; font-weight: 400; text-wrap: balance; }
+p { margin: 0; }
+a { color: inherit; text-decoration: none; }
+button { font: inherit; }
+
+.wrap { width: min(100% - 2.5rem, var(--page)); margin-inline: auto; }
+@media (max-width: 620px) { .wrap { width: calc(100% - 1.6rem); } }
+
+.mono { font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
+.serif { font-family: var(--f-display); }
+
+.eyebrow {
+  font-family: var(--f-mono); font-size: .68rem; font-weight: 500;
+  letter-spacing: .18em; text-transform: uppercase; color: var(--ink-3);
+}
+.h-display {
+  font-family: var(--f-display); font-weight: 400;
+  letter-spacing: -.024em; line-height: 1.04;
+}
+.lede {
+  font-size: clamp(1.04rem, .98rem + .4vw, 1.24rem);
+  line-height: 1.62; color: var(--ink-2); max-width: 52ch;
+}
+
+/* ── reveal on scroll ─────────────────────────────────────────────────── */
+.rv { opacity: 0; transform: translateY(18px); transition: opacity .7s cubic-bezier(.2,.8,.3,1), transform .7s cubic-bezier(.2,.8,.3,1); }
+.rv.in { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) { .rv { opacity: 1; transform: none; } }
+
+/* ── nav ──────────────────────────────────────────────────────────────── */
+.nav {
+  position: sticky; top: 0; z-index: 60;
+  background: var(--ground);
+  border-bottom: 1px solid transparent;
+  transition: border-color .3s ease, background .3s ease;
+}
+.nav.stuck { border-bottom-color: var(--rule); background: color-mix(in srgb, var(--ground) 88%, transparent); backdrop-filter: blur(14px); }
+.nav .wrap { display: flex; align-items: center; gap: 1.75rem; height: 66px; }
+.logo { display: flex; align-items: center; gap: .58rem; }
+.logo-mark { width: 29px; height: 29px; flex: none; display: block; }
+.logo-mark .ring { fill: none; stroke: var(--ink-3); stroke-width: 1.7; opacity: .9; }
+.logo-mark .core { fill: var(--clay); }
+/* The node rides the tilted ring itself via offset-path, so the orbit reads as
+   an orbit rather than a dot on an unrelated circle. Hidden where offset-path
+   is unsupported — the ring and core still carry the mark. */
+.logo-mark .node { fill: var(--ink); opacity: 0; }
+@supports (offset-path: path("M0,0")) {
+  .logo-mark .node {
+    opacity: 1;
+    offset-path: path("M 4,24 a 20,8.6 0 1,0 40,0 a 20,8.6 0 1,0 -40,0");
+    offset-rotate: 0deg;
+    animation: orbit 9s linear infinite;
+  }
+}
+@keyframes orbit { to { offset-distance: 100%; } }
+.logo-word { font-weight: 700; font-size: 1.02rem; letter-spacing: -.03em; }
+.logo-word b { font-weight: 700; }
+.logo-word span { font-weight: 500; color: var(--ink-3); }
+
+.nav-links { display: flex; align-items: center; gap: 1.55rem; margin-left: .5rem; }
+.nav-links a { font-size: .87rem; font-weight: 500; color: var(--ink-2); }
+.nav-links a:hover { color: var(--ink); }
+.nav-right { margin-left: auto; display: flex; align-items: center; gap: .7rem; }
+@media (max-width: 900px) { .nav-links { display: none; } }
+@media (max-width: 520px) { .nav-right .hide-s { display: none; } }
+
+.tt { display: grid; place-items: center; width: 34px; height: 34px; padding: 0;
+  border: 1px solid var(--rule-2); border-radius: 50%; background: transparent;
+  color: var(--ink-2); cursor: pointer; }
+.tt:hover { color: var(--ink); border-color: var(--ink-3); }
+.tt svg { width: 15px; height: 15px; }
+
+/* ── buttons ──────────────────────────────────────────────────────────── */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: .45rem;
+  font-size: .88rem; font-weight: 600; letter-spacing: -.005em;
+  padding: .62rem 1.15rem; border-radius: 7px; cursor: pointer;
+  border: 1px solid transparent; white-space: nowrap;
+  transition: transform .14s ease, background .16s ease, border-color .16s ease, color .16s ease;
+}
+.btn:active { transform: translateY(1px); }
+.btn-primary { background: var(--ink); color: var(--ink-inv); border-color: var(--ink); }
+.btn-primary:hover { background: var(--ink-2); border-color: var(--ink-2); }
+.btn-clay { background: var(--clay-deep); color: #FFFFFF; border-color: var(--clay-deep); }
+.btn-clay:hover { filter: brightness(1.08); }
+.btn-ghost { background: transparent; color: var(--ink); border-color: var(--rule-2); }
+.btn-ghost:hover { border-color: var(--ink-3); background: var(--surface-2); }
+.btn-sm { padding: .46rem .85rem; font-size: .82rem; border-radius: 6px; }
+.btn-lg { padding: .78rem 1.5rem; font-size: .94rem; border-radius: 8px; }
+.btn svg { width: 14px; height: 14px; flex: none; }
+
+/* ── hero ─────────────────────────────────────────────────────────────── */
+.hero { padding: clamp(3.5rem, 8vw, 7rem) 0 clamp(2.5rem, 5vw, 4rem); position: relative; overflow: hidden; }
+.hero::before {
+  content: ""; position: absolute; inset: -30% 45% 40% -20%;
+  background: radial-gradient(60% 60% at 50% 50%, color-mix(in srgb, var(--clay) 16%, transparent), transparent 70%);
+  pointer-events: none; filter: blur(30px);
+}
+.hero .wrap { position: relative; }
+.hero-grid { display: grid; gap: clamp(2.5rem, 5vw, 4.5rem); grid-template-columns: 1fr; align-items: center; }
+@media (min-width: 1040px) { .hero-grid { grid-template-columns: minmax(0,1.04fr) minmax(0,1fr); } }
+.hero h1 { font-size: var(--t4); margin: 1.2rem 0 1.5rem; }
+.hero h1 em { font-style: italic; color: var(--clay-deep); }
+.hero-cta { display: flex; flex-wrap: wrap; gap: .7rem; margin-top: 2rem; }
+.hero-note { margin-top: 1.1rem; font-family: var(--f-mono); font-size: .72rem; color: var(--ink-3); }
+
+/* trust strip */
+.trust { border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); background: var(--surface-2); }
+.trust .wrap { display: grid; gap: 1px; grid-template-columns: repeat(2, 1fr); }
+@media (min-width: 780px) { .trust .wrap { grid-template-columns: repeat(4, 1fr); } }
+.trust-cell { padding: 1.5rem .4rem; }
+.trust-cell .v { font-family: var(--f-mono); font-size: clamp(1.5rem,1.2rem+1vw,2rem); font-weight: 600; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+.trust-cell .k { margin-top: .3rem; font-size: .76rem; color: var(--ink-2); line-height: 1.4; }
+
+/* ── console / panels ─────────────────────────────────────────────────── */
+.panel { background: var(--surface); border: 1px solid var(--rule); border-radius: 12px; box-shadow: var(--sh-2); overflow: hidden; }
+.panel-bar {
+  display: flex; align-items: center; gap: .5rem;
+  padding: .6rem .85rem; border-bottom: 1px solid var(--rule); background: var(--surface-2);
+}
+.dots { display: flex; gap: 5px; margin-right: .35rem; }
+.dots i { width: 9px; height: 9px; border-radius: 50%; background: var(--rule-2); display: block; }
+.panel-bar .path { font-family: var(--f-mono); font-size: .7rem; color: var(--ink-3); }
+.panel-bar .right { margin-left: auto; font-family: var(--f-mono); font-size: .66rem; color: var(--ink-3); }
+.panel-in { padding: 1.15rem; }
+
+/* verdict card */
+.verdict-card { display: grid; gap: 1rem; }
+.vc-head { display: flex; align-items: center; gap: .7rem; flex-wrap: wrap; }
+.vbadge {
+  display: inline-flex; align-items: center; gap: .42rem;
+  font-family: var(--f-mono); font-size: .74rem; font-weight: 600;
+  letter-spacing: .1em; text-transform: uppercase;
+  padding: .34rem .6rem; border-radius: 5px; border: 1px solid transparent;
+}
+.vbadge svg { width: 12px; height: 12px; flex: none; }
+.v-ship    { background: var(--ship-soft);    color: var(--ship);    border-color: color-mix(in srgb, var(--ship) 30%, transparent); }
+.v-hold    { background: var(--hold-soft);    color: var(--hold);    border-color: color-mix(in srgb, var(--hold) 30%, transparent); }
+.v-collect { background: var(--collect-soft); color: var(--collect); border-color: color-mix(in srgb, var(--collect) 32%, transparent); }
+.v-void    { background: var(--void-soft);    color: var(--void);    border-color: color-mix(in srgb, var(--void) 30%, transparent); }
+.vc-head .sub { font-family: var(--f-mono); font-size: .7rem; color: var(--ink-3); }
+
+.kv { display: grid; gap: 0; border: 1px solid var(--rule); border-radius: 8px; overflow: hidden; }
+.kv-row { display: grid; grid-template-columns: 1fr auto; gap: 1rem; padding: .5rem .75rem; border-bottom: 1px solid var(--rule); align-items: baseline; }
+.kv-row:last-child { border-bottom: none; }
+.kv-row .k { font-size: .78rem; color: var(--ink-2); }
+.kv-row .v { font-family: var(--f-mono); font-size: .8rem; font-weight: 500; font-variant-numeric: tabular-nums; }
+.kv-row.em { background: var(--surface-2); }
+.kv-row.em .v { font-weight: 600; }
+
+.reasons { display: grid; gap: .4rem; }
+.reason { display: grid; grid-template-columns: 14px 1fr; gap: .55rem; font-size: .78rem; color: var(--ink-2); line-height: 1.5; align-items: start; }
+.reason svg { width: 13px; height: 13px; margin-top: .22rem; color: var(--ink-3); flex: none; }
+
+/* ── sections ─────────────────────────────────────────────────────────── */
+.sec { padding: clamp(4rem, 8vw, 7rem) 0; }
+.sec.alt { background: var(--surface-2); border-block: 1px solid var(--rule); }
+.sec-head { max-width: 62ch; margin-bottom: clamp(2rem, 4vw, 3.2rem); }
+.sec-head h2 { font-family: var(--f-display); font-size: var(--t3); letter-spacing: -.028em; line-height: 1.06; margin: .9rem 0 1rem; }
+.sec-head p { color: var(--ink-2); font-size: var(--t1); line-height: 1.55; }
+
+/* the eight-runs strip */
+.runs { display: grid; grid-template-columns: repeat(8, 1fr); gap: 6px; }
+@media (max-width: 700px) { .runs { grid-template-columns: repeat(4, 1fr); } }
+.run {
+  background: var(--surface); border: 1px solid var(--rule); border-radius: 8px;
+  padding: .85rem .6rem; text-align: center;
+}
+.run .sr { font-family: var(--f-mono); font-size: 1.02rem; font-weight: 600; letter-spacing: -.02em; }
+.run .sd { font-family: var(--f-mono); font-size: .6rem; color: var(--ink-3); margin-top: .2rem; letter-spacing: .04em; }
+.run.hi { border-color: var(--clay); background: var(--clay-soft); }
+
+/* tabs */
+.tabs { display: flex; gap: .3rem; flex-wrap: wrap; margin-bottom: 1.4rem; padding: .3rem; background: var(--surface-2); border: 1px solid var(--rule); border-radius: 10px; width: fit-content; max-width: 100%; }
+.sec.alt .tabs { background: var(--surface); }
+.tab {
+  display: inline-flex; align-items: center; gap: .45rem;
+  padding: .52rem .95rem; border-radius: 7px; border: 1px solid transparent;
+  background: transparent; color: var(--ink-2); cursor: pointer;
+  font-size: .85rem; font-weight: 600; letter-spacing: -.005em;
+}
+.tab:hover { color: var(--ink); }
+.tab[aria-selected="true"] { background: var(--surface); color: var(--ink); border-color: var(--rule); box-shadow: var(--sh-1); }
+.sec.alt .tab[aria-selected="true"] { background: var(--surface-2); }
+.tab .n { font-family: var(--f-mono); font-size: .68rem; color: var(--ink-3); }
+.tabpanel[hidden] { display: none; }
+.tabpanel { animation: fade .45s ease; }
+@keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+.split { display: grid; gap: clamp(1.6rem, 3vw, 2.6rem); grid-template-columns: 1fr; align-items: start; }
+@media (min-width: 980px) { .split { grid-template-columns: minmax(0,.82fr) minmax(0,1fr); } }
+.split h3 { font-family: var(--f-display); font-size: var(--t2); letter-spacing: -.024em; line-height: 1.12; margin-bottom: .8rem; }
+.split p { color: var(--ink-2); font-size: .96rem; line-height: 1.62; }
+.bullets { display: grid; gap: .7rem; margin-top: 1.3rem; }
+.bullet { display: grid; grid-template-columns: 16px 1fr; gap: .65rem; font-size: .88rem; color: var(--ink-2); line-height: 1.5; align-items: start; }
+.bullet svg { width: 15px; height: 15px; color: var(--clay-deep); margin-top: .16rem; flex: none; }
+
+/* calculator */
+.calc { display: grid; gap: 1.4rem; grid-template-columns: 1fr; }
+@media (min-width: 940px) { .calc { grid-template-columns: minmax(0,.86fr) minmax(0,1fr); } }
+.field { display: grid; gap: .35rem; margin-bottom: .9rem; }
+.field label { font-size: .78rem; font-weight: 600; color: var(--ink-2); }
+.field .hint { font-family: var(--f-mono); font-size: .66rem; color: var(--ink-3); }
+.field input, .field select {
+  font-family: var(--f-mono); font-size: .86rem; font-variant-numeric: tabular-nums;
+  padding: .55rem .7rem; border-radius: 7px; width: 100%;
+  border: 1px solid var(--rule-2); background: var(--surface); color: var(--ink);
+}
+.field input:focus, .field select:focus { border-color: var(--clay-deep); }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: .8rem; }
+.check { display: flex; align-items: flex-start; gap: .55rem; font-size: .8rem; color: var(--ink-2); line-height: 1.45; margin-bottom: .9rem; }
+.check input { margin-top: .2rem; accent-color: var(--clay-deep); }
+
+.meter { height: 7px; border-radius: 4px; background: var(--surface-3); overflow: hidden; margin-top: .5rem; }
+.meter i { display: block; height: 100%; background: var(--s1); border-radius: 4px; transition: width .6s cubic-bezier(.2,.8,.3,1); }
+
+/* atlas preview */
+.tablewrap { overflow-x: auto; border: 1px solid var(--rule); border-radius: 10px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; min-width: 700px; font-family: var(--f-mono); font-size: .76rem; }
+th { text-align: left; font-size: .62rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); padding: .72rem .8rem; border-bottom: 1px solid var(--rule-2); background: var(--surface-2); white-space: nowrap; }
+td { padding: .66rem .8rem; border-bottom: 1px solid var(--rule); font-variant-numeric: tabular-nums; }
+tr:last-child td { border-bottom: none; }
+td.cell { font-family: var(--f-ui); font-weight: 600; font-size: .82rem; white-space: nowrap; }
+td.cell small { display: block; font-family: var(--f-mono); font-size: .62rem; font-weight: 400; color: var(--ink-3); margin-top: .1rem; }
+.locked { position: relative; }
+.locked td { color: var(--ink-3); }
+.lockbar {
+  display: flex; align-items: center; justify-content: center; gap: .6rem;
+  padding: .95rem; border-top: 1px solid var(--rule); background: var(--surface-2);
+  font-size: .82rem; color: var(--ink-2); flex-wrap: wrap; text-align: center;
+}
+.lockbar svg { width: 14px; height: 14px; color: var(--ink-3); }
+
+/* pricing */
+.tiers { display: grid; gap: 1rem; grid-template-columns: 1fr; }
+@media (min-width: 900px) { .tiers { grid-template-columns: repeat(3, 1fr); } }
+.tier { background: var(--surface); border: 1px solid var(--rule); border-radius: 14px; padding: 1.6rem; display: flex; flex-direction: column; gap: 1rem; }
+.tier.feature { border-color: var(--clay); box-shadow: var(--sh-2); position: relative; }
+.tier.feature::after {
+  content: "Design partner"; position: absolute; top: -1px; right: 1.4rem;
+  transform: translateY(-50%); background: var(--clay-deep); color: #FFFFFF;
+  font-family: var(--f-mono); font-size: .6rem; font-weight: 500;
+  letter-spacing: .12em; text-transform: uppercase; padding: .25rem .55rem; border-radius: 4px;
+}
+.tier h3 { font-size: 1.05rem; font-weight: 700; letter-spacing: -.02em; }
+.tier .price { font-family: var(--f-display); font-size: 2.4rem; letter-spacing: -.03em; line-height: 1; }
+.tier .price small { font-family: var(--f-ui); font-size: .78rem; color: var(--ink-3); letter-spacing: 0; font-weight: 500; }
+.tier .desc { font-size: .84rem; color: var(--ink-2); line-height: 1.5; }
+.tier ul { list-style: none; margin: 0; padding: 0; display: grid; gap: .55rem; }
+.tier li { display: grid; grid-template-columns: 15px 1fr; gap: .55rem; font-size: .84rem; color: var(--ink-2); line-height: 1.45; align-items: start; }
+.tier li svg { width: 14px; height: 14px; margin-top: .16rem; color: var(--ship); flex: none; }
+.tier li.off { color: var(--ink-3); }
+.tier li.off svg { color: var(--ink-3); }
+.tier .btn { width: 100%; margin-top: auto; }
+
+/* code */
+pre { margin: 0; overflow-x: auto; background: var(--ink-block); color: #E8E6DF; border-radius: 10px; padding: 1.1rem 1.2rem; font-family: var(--f-mono); font-size: .76rem; line-height: 1.7; }
+pre .c { color: #8A887D; }
+pre .g { color: #7FBF9A; }
+pre .o { color: #E0A882; }
+
+.quote { border-left: 2px solid var(--clay); padding: .2rem 0 .2rem 1.2rem; font-family: var(--f-display); font-size: var(--t1); line-height: 1.5; color: var(--ink); }
+
+/* footer */
+.foot { background: var(--ink-block); color: #C9C6BD; padding: 3.5rem 0 2.5rem; }
+.foot a { color: #C9C6BD; }
+.foot a:hover { color: #FFFFFF; }
+.foot-grid { display: grid; gap: 2rem; grid-template-columns: 1fr; }
+@media (min-width: 800px) { .foot-grid { grid-template-columns: 1.6fr repeat(3, 1fr); } }
+.foot h4 { font-family: var(--f-mono); font-size: .64rem; letter-spacing: .14em; text-transform: uppercase; color: #8A887D; margin-bottom: .85rem; }
+.foot ul { list-style: none; margin: 0; padding: 0; display: grid; gap: .5rem; font-size: .84rem; }
+.foot .logo-word { color: #FAF9F5; }
+.foot .logo-mark .node { fill: #FAF9F5; }
+.foot .fine { margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid #37352F; font-size: .74rem; color: #8A887D; display: flex; gap: 1.2rem; flex-wrap: wrap; align-items: center; }
+
+/* ── auth modal ───────────────────────────────────────────────────────── */
+.scrim {
+  position: fixed; inset: 0; z-index: 100; display: grid; place-items: center;
+  background: color-mix(in srgb, var(--ink-block) 62%, transparent);
+  backdrop-filter: blur(4px); padding: 1.2rem;
+  opacity: 0; pointer-events: none; transition: opacity .22s ease;
+}
+.scrim.on { opacity: 1; pointer-events: auto; }
+.modal {
+  width: min(100%, 420px); background: var(--surface); border: 1px solid var(--rule);
+  border-radius: 16px; box-shadow: var(--sh-2); padding: 1.8rem;
+  transform: translateY(12px) scale(.985); transition: transform .28s cubic-bezier(.2,.8,.3,1);
+  max-height: 92vh; overflow-y: auto;
+}
+.scrim.on .modal { transform: none; }
+.modal h3 { font-family: var(--f-display); font-size: 1.7rem; letter-spacing: -.028em; }
+.modal .sub { font-size: .86rem; color: var(--ink-2); margin-top: .4rem; line-height: 1.5; }
+.sso { display: grid; gap: .5rem; margin: 1.3rem 0; }
+.sso .btn { width: 100%; justify-content: center; }
+.or { display: flex; align-items: center; gap: .8rem; margin: 1.1rem 0; font-family: var(--f-mono); font-size: .64rem; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); }
+.or::before, .or::after { content: ""; flex: 1; height: 1px; background: var(--rule); }
+.modal .x { position: absolute; }
+.modal-foot { margin-top: 1.2rem; font-size: .8rem; color: var(--ink-2); text-align: center; }
+.modal-foot button { background: none; border: none; color: var(--clay-deep); font-weight: 600; cursor: pointer; padding: 0; font-size: inherit; }
+.note {
+  margin-top: 1.1rem; padding: .7rem .8rem; border-radius: 8px;
+  background: var(--collect-soft); color: var(--collect);
+  font-family: var(--f-mono); font-size: .68rem; line-height: 1.55;
+}
+
+/* signed-in state */
+.avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--clay-deep); color: #FFFFFF; display: grid; place-items: center; font-size: .78rem; font-weight: 700; }
+[data-auth="in"] .when-out { display: none !important; }
+[data-auth="out"] .when-in { display: none !important; }
+</style>
+
+<!-- Set the signed-out state before first paint so the nav never flashes both
+     states. The real session is resolved by applyAuth() at the end of the body. -->
+<script>document.documentElement.setAttribute("data-auth","out");</script>
+
+<!-- ═════════════════════ NAV ═════════════════════ -->
+<header class="nav" id="nav">
+  <div class="wrap">
+    <a class="logo" href="#top" aria-label="Orbit home">
+      <svg class="logo-mark" viewBox="0 0 48 48" aria-hidden="true">
+        <g transform="rotate(-26 24 24)">
+          <ellipse class="ring" cx="24" cy="24" rx="20" ry="8.6"></ellipse>
+          <circle class="node" cx="0" cy="0" r="3.2"></circle>
+        </g>
+        <circle class="core" cx="24" cy="24" r="6.6"></circle>
+      </svg>
+      <span class="logo-word"><b>Orbit</b></span>
+    </a>
+    <nav class="nav-links">
+      <a href="#problem">Why</a>
+      <a href="#product">Product</a>
+      <a href="#calculator">Noise floor</a>
+      <a href="#atlas">Atlas</a>
+      <a href="#pricing">Pricing</a>
+    </nav>
+    <div class="nav-right">
+      <button class="tt" id="tt" type="button" aria-label="Switch colour theme">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="4.2"></circle>
+          <path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.4 5.4l1.6 1.6M17 17l1.6 1.6M18.6 5.4L17 7M7 17l-1.6 1.6"></path>
+        </svg>
+      </button>
+      <button class="btn btn-ghost btn-sm when-out hide-s" data-auth-open="signin" type="button">Sign in</button>
+      <button class="btn btn-primary btn-sm when-out" data-auth-open="signup" type="button">Get started</button>
+      <a class="btn btn-ghost btn-sm when-in" href="#workspace">Workspace</a>
+      <div class="avatar when-in" id="avatar" title="Signed in">—</div>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- ═════════════════════ HERO ═════════════════════ -->
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <p class="eyebrow">Ship-decision infrastructure for robot policies</p>
+        <h1 class="h-display">Know whether your policy <em>actually</em> got better.</h1>
+        <p class="lede">
+          Retrain the same model on the same data with a new seed and the benchmark
+          moves up to 18.8 points. Orbit measures that noise floor for your stack,
+          then prices every ship decision against it — so a real improvement is
+          provable and a lucky seed never reaches your fleet.
+        </p>
+        <div class="hero-cta">
+          <button class="btn btn-primary btn-lg" data-auth-open="signup" type="button">
+            Start free
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M12 5l7 7-7 7"></path></svg>
+          </button>
+          <a class="btn btn-ghost btn-lg" href="#calculator">Price a decision</a>
+        </div>
+        <p class="hero-note">No card. The atlas and the noise-floor check are free, forever.</p>
+      </div>
+
+      <div class="panel" id="heroPanel">
+        <div class="panel-bar">
+          <span class="dots"><i></i><i></i><i></i></span>
+          <span class="path">orbit gate — ci/promote #4127</span>
+          <span class="right" id="heroClock">running…</span>
+        </div>
+        <div class="panel-in">
+          <div class="verdict-card">
+            <div class="vc-head">
+              <span class="vbadge v-void" id="heroBadge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle></svg>
+                <span id="heroVerdict">evaluating</span>
+              </span>
+              <span class="sub" id="heroSub">candidate v4.2 vs incumbent v4.1</span>
+            </div>
+            <div class="kv" id="heroKV"></div>
+            <div class="reasons" id="heroReasons"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═════════════════════ TRUST ═════════════════════ -->
+  <section class="trust">
+    <div class="wrap">
+      <div class="trust-cell"><div class="v" data-count="382">0</div><div class="k">controlled training runs behind the atlas</div></div>
+      <div class="trust-cell"><div class="v" data-count="16">0</div><div class="k">measured noise-floor cells, published free</div></div>
+      <div class="trust-cell"><div class="v" data-count="4">0</div><div class="k">policy classes — ACT, DP, SmolVLA, π₀.₅</div></div>
+      <div class="trust-cell"><div class="v" data-count="18.8" data-suffix=" pp">0</div><div class="k">widest spread measured between identical-data retrains</div></div>
+    </div>
+  </section>
+
+  <!-- ═════════════════════ PROBLEM ═════════════════════ -->
+  <section class="sec" id="problem">
+    <div class="wrap">
+      <div class="sec-head rv">
+        <p class="eyebrow">The problem</p>
+        <h2 class="h-display">Eight identical models. Eight different scores.</h2>
+        <p>
+          These are eight ACT policies trained on byte-identical data — same dataset,
+          same recipe, same 100k steps — differing only in training seed, and evaluated
+          on the same 500 episodes at the same eval seed.
+        </p>
+      </div>
+
+      <div class="runs rv" id="runStrip"></div>
+
+      <div class="split rv" style="margin-top:2.6rem">
+        <div>
+          <h3 class="h-display">Your dashboard shows the average. You deploy the tasks.</h3>
+          <p>
+            A suite average shrinks noise by roughly √(number of tasks), so the headline
+            number looks stable while every individual task keeps its full swing. We
+            measured both quantities on the same retrains, in two policy classes.
+          </p>
+          <div class="bullets">
+            <div class="bullet">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 8v5M12 17h.01"></path><circle cx="12" cy="12" r="9"></circle></svg>
+              <span><b>Per-task retrain σ is 2.6–3.2× the suite σ</b> measured beside it — 11.00 pp against 4.23 for π₀.₅, 6.69 against 2.11 for SmolVLA (both per-task readings on libero_object).</span>
+            </div>
+            <div class="bullet">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 8v5M12 17h.01"></path><circle cx="12" cy="12" r="9"></circle></svg>
+              <span><b>Damage is task-idiosyncratic</b> — cross-task correlation 0.011, so regressions cancel in the mean instead of showing up in it.</span>
+            </div>
+            <div class="bullet">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 8v5M12 17h.01"></path><circle cx="12" cy="12" r="9"></circle></svg>
+              <span><b>Checkpoint sweeps buy about nothing.</b> Across 36 promotion decisions in two classes, sweeps reported +1.7 to +2.3 pp and delivered ≈0 held-out.</span>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-bar">
+            <span class="dots"><i></i><i></i><i></i></span>
+            <span class="path">suite average vs. per-task — same retrains</span>
+          </div>
+          <div class="panel-in">
+            <svg id="ptChart" style="width:100%;display:block" role="img"
+                 aria-label="Suite-average retrain sigma against per-task retrain sigma for two policy classes at k=88 on LIBERO. Pi-0.5: suite 4.23, per-task 11.00 pp (libero_object). SmolVLA: suite 2.11, per-task 6.69 pp (libero_object)."></svg>
+            <div style="display:flex;gap:1.1rem;flex-wrap:wrap;margin-top:.7rem">
+              <span class="mono" style="font-size:.68rem;color:var(--ink-2);display:inline-flex;align-items:center;gap:.4rem"><i style="width:11px;height:11px;border-radius:2px;background:var(--s2);display:block"></i>suite average σ</span>
+              <span class="mono" style="font-size:.68rem;color:var(--ink-2);display:inline-flex;align-items:center;gap:.4rem"><i style="width:11px;height:11px;border-radius:2px;background:var(--s1);display:block"></i>per-task σ (floor-subtracted)</span>
+            </div>
+            <p class="mono" style="font-size:.64rem;color:var(--ink-3);margin-top:.6rem;line-height:1.55">
+              Both readings carried: 11.00 pp against raw 11.82; 6.69 against raw 7.33 (libero_object).
+              Bars show 95% intervals. LIBERO (libero_object), k=88, J=8, 10 tasks.
+              σ_pertask is suite-dependent: the same class and protocol measured 3.29 pp
+              (raw 4.52, CI [1.18, 5.41]) on libero_spatial — every per-task σ names its
+              suite (PERTASK-4, T4-2 DIVERGENT).
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═════════════════════ PRODUCT ═════════════════════ -->
+  <section class="sec alt" id="product">
+    <div class="wrap">
+      <div class="sec-head rv">
+        <p class="eyebrow">The product</p>
+        <h2 class="h-display">One engine. Three places it decides.</h2>
+        <p>
+          Orbit sits on top of the eval harness you already run. It does not replace
+          your tracking — it turns what you already log into a decision you can defend.
+        </p>
+      </div>
+
+      <div class="tabs rv" role="tablist" aria-label="Product surfaces">
+        <button class="tab" role="tab" aria-selected="true" data-tab="gate"><span class="n">01</span> Promotion gate</button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="accept"><span class="n">02</span> Acceptance gate</button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="cert"><span class="n">03</span> Certificate ledger</button>
+      </div>
+
+      <div class="tabpanel" role="tabpanel" data-panel="gate">
+        <div class="split">
+          <div>
+            <h3 class="h-display">A status check that can say no.</h3>
+            <p>
+              Wire the gate between your eval harness and your OTA tooling. Before a
+              retrained checkpoint ships, it designs the cheapest decisive experiment,
+              then rules — with quantified error rates, winner's-curse correction and
+              per-task regression flags.
+            </p>
+            <div class="bullets">
+              <div class="bullet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"></path></svg><span>Exits 0/1/2/3/4 — <span class="mono">SHIP</span>, <span class="mono">HOLD</span>, <span class="mono">INVALID</span>, <span class="mono">COLLECT-MORE</span>, <span class="mono">UNRESOLVABLE</span>. Drops straight into CI.</span></div>
+              <div class="bullet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"></path></svg><span>Prices the retrain lottery, so lottery-sized swings are labelled instead of paging you at 2am.</span></div>
+              <div class="bullet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"></path></svg><span>Refuses rather than guesses: an eval it cannot legitimately price returns <span class="mono">INVALID</span> with the reason attached.</span></div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-bar"><span class="dots"><i></i><i></i><i></i></span><span class="path">.github/workflows/promote.yml</span></div>
+            <div class="panel-in" style="padding:0">
+<pre><span class="c"># the CI primitive — no pipeline changes, no instrumentation</span>
+- run: orbit gate \
+    --incumbent  runs/v4.1 \
+    --candidate  runs/v4.2 \
+    --regime     smolvla-ft-k88-multitask
+
+<span class="c">  ┌─────────────────────────────────────────────┐</span>
+<span class="c">  │</span> verdict   <span class="o">COLLECT-MORE</span>                    <span class="c">│</span>
+<span class="c">  │</span> delta     +2.4 pp  (naive +3.1, curse −0.7) <span class="c">│</span>
+<span class="c">  │</span> noise     σ_run 2.11 pp · df 7 · n 2000    <span class="c">│</span>
+<span class="c">  │</span> needed    5 retrains/arm to resolve at 80%  <span class="c">│</span>
+<span class="c">  │</span> record    <span class="g">ledger.jsonl</span> · sha256 3f9c1e…    <span class="c">│</span>
+<span class="c">  └─────────────────────────────────────────────┘</span>
+<span class="c">exit 3</span></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tabpanel" role="tabpanel" data-panel="accept" hidden>
+        <div class="split">
+          <div>
+            <h3 class="h-display">A milestone clause that settles itself.</h3>
+            <p>
+              Encode the deployer's contractual criteria — success rate, interventions
+              per 100 task-hours, MTBF — as pre-registered, machine-checkable statistical
+              clauses over fleet telemetry, tested with anytime-valid sequential
+              statistics so the pilot ends the moment the evidence suffices.
+            </p>
+            <div class="bullets">
+              <div class="bullet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"></path></svg><span>α stays honest at every peek — validated on 106 drifting-null retrain-level streams with zero false certifications. On that corpus no stream reached a decision, so the result is calibration, not power.</span></div>
+              <div class="bullet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"></path></svg><span>Separately, at the <em>episode</em> level (a different instrument), 19 of 48 checkpoint-progression streams reached a decision at a mean of 61 episodes against a 200-episode fixed design — 69% of rollouts saved on those streams.</span></div>
+              <div class="bullet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"></path></svg><span>The dashboard is a countdown on a payment, not a chart nobody opens.</span></div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-bar"><span class="dots"><i></i><i></i><i></i></span><span class="path">acceptance — pilot / gate 2</span><span class="right">mock</span></div>
+            <div class="panel-in">
+              <div class="kv">
+                <div class="kv-row em"><span class="k">Clause</span><span class="v">interventions ≤ 2.5 / 100 task-h</span></div>
+                <div class="kv-row"><span class="k">Observed</span><span class="v">2.1 <span style="color:var(--ink-3)">[1.7, 2.6]</span></span></div>
+                <div class="kv-row"><span class="k">Task-hours banked</span><span class="v">1,840</span></div>
+                <div class="kv-row"><span class="k">Anytime-valid p</span><span class="v">0.071</span></div>
+                <div class="kv-row em"><span class="k">Clause passes in</span><span class="v" style="color:var(--collect)">≈ 11 days</span></div>
+              </div>
+              <div class="meter" aria-hidden="true"><i style="width:64%"></i></div>
+              <p class="mono" style="font-size:.66rem;color:var(--ink-3);margin-top:.7rem;line-height:1.55">
+                Illustrative clause on synthetic telemetry. This panel is a product mock, not a
+                customer result: interventions, task-hours and MTBF are units no ORBIT
+                measurement covers. The two sequential bullets above are measured, and
+                describe two different instruments — see the wording there.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tabpanel" role="tabpanel" data-panel="cert" hidden>
+        <div class="split">
+          <div>
+            <h3 class="h-display">Evidence, not opinion.</h3>
+            <p>
+              Every decision the gate makes lands on an append-only, tamper-evident
+              ledger: full config, statistics, verbatim caveats, hashed over canonical
+              JSON. This is the artifact you hand a customer, an insurer or an auditor —
+              and the reason procurement stops being a conversation about vibes.
+            </p>
+            <div class="bullets">
+              <div class="bullet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"></path></svg><span>Byte-reproducible records — 7,244 verified, 0 bad, in 0.3 s.</span></div>
+              <div class="bullet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"></path></svg><span>On tampering it names the specific lie: the gate config hash is checked before the record hash.</span></div>
+              <div class="bullet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"></path></svg><span>Built for what is coming — the EU Machinery Regulation applies January 2027 and carries learning-system provisions.</span></div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-bar"><span class="dots"><i></i><i></i><i></i></span><span class="path">orbit verify ledger.jsonl</span></div>
+            <div class="panel-in" style="padding:0">
+<pre>$ orbit verify ledger.jsonl
+  records <span class="g">7244</span>   ok <span class="g">7244</span>   bad <span class="g">0</span>          <span class="c">→ exit 0</span>
+
+<span class="c"># tamper with one alpha and re-run:</span>
+$ orbit verify ledger.jsonl
+  <span class="o">record 3f9c1e… FAILED</span>
+  <span class="o">gate_config_sha256 mismatch — your α was rewritten</span>
+                                       <span class="c">→ exit 2</span></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═════════════════════ CALCULATOR ═════════════════════ -->
+  <section class="sec" id="calculator">
+    <div class="wrap">
+      <div class="sec-head rv">
+        <p class="eyebrow">Free · no account</p>
+        <h2 class="h-display">Price your last ship decision.</h2>
+        <p>
+          Put in the two numbers you already have. We price them against the measured
+          noise floor for that cell and tell you what the comparison can and cannot
+          support.
+        </p>
+      </div>
+
+      <div class="panel rv">
+        <div class="panel-bar"><span class="dots"><i></i><i></i><i></i></span><span class="path">noise-floor check</span><span class="right">fixed-sample preview</span></div>
+        <div class="panel-in">
+          <div class="calc">
+            <form id="calcForm" novalidate>
+              <div class="field">
+                <label for="f-cell">Your cell</label>
+                <select id="f-cell"></select>
+                <span class="hint" id="cellHint"></span>
+              </div>
+              <div class="row2">
+                <div class="field">
+                  <label for="f-base">Incumbent SR (%)</label>
+                  <input id="f-base" type="number" inputmode="decimal" step="0.1" min="0" max="100" value="52.5">
+                </div>
+                <div class="field">
+                  <label for="f-cand">Candidate SR (%)</label>
+                  <input id="f-cand" type="number" inputmode="decimal" step="0.1" min="0" max="100" value="56.0">
+                </div>
+              </div>
+              <div class="field">
+                <label for="f-n">Eval episodes per arm</label>
+                <input id="f-n" type="number" inputmode="numeric" step="50" min="10" max="20000" value="200">
+              </div>
+              <label class="check">
+                <input id="f-retrain" type="checkbox" checked>
+                <span>The candidate was <b>retrained</b> (new training seed), not just re-evaluated. This is what makes the retrain lottery apply.</span>
+              </label>
+              <label class="check">
+                <input id="f-swept" type="checkbox">
+                <span>The candidate was <b>picked as the best of a sweep</b>. Applies this cell's measured winner's-curse correction.</span>
+              </label>
+            </form>
+
+            <div>
+              <div class="verdict-card">
+                <div class="vc-head">
+                  <span class="vbadge v-void" id="calcBadge">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle></svg>
+                    <span id="calcVerdict">—</span>
+                  </span>
+                  <span class="sub" id="calcSub"></span>
+                </div>
+                <div class="kv" id="calcKV"></div>
+                <div class="reasons" id="calcReasons"></div>
+              </div>
+              <p class="mono" style="font-size:.64rem;color:var(--ink-3);margin-top:.9rem;line-height:1.6">
+                Preview of the fixed-sample engine. The full engine adds per-task
+                regression tests with multiplicity control, sequential (anytime-valid)
+                stopping, regime-scope pre-checks and a signed decision record. Noise
+                priors are only valid inside the cell they were measured in — outside it
+                the gate runs a disclosed conservative fallback and says so on the record.
+                Where a cell's own sampling floor is a large share of its σ, adding your
+                eval term on top of it makes this preview conservative — it will not call
+                a SHIP that the full engine would refuse.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═════════════════════ ATLAS ═════════════════════ -->
+  <section class="sec alt" id="atlas">
+    <div class="wrap">
+      <div class="sec-head rv">
+        <p class="eyebrow">Free forever · the public good</p>
+        <h2 class="h-display">The Variance Atlas</h2>
+        <p>
+          Not a leaderboard of models — a table of what a result has to beat before it
+          means anything. Sixteen measured cells, every one pre-registered, published
+          openly because the field cannot improve on numbers nobody can interpret.
+        </p>
+      </div>
+
+      <div class="tablewrap rv">
+        <table>
+          <thead>
+            <tr><th>Cell</th><th>k</th><th>σ<sub>run</sub> (pp)</th><th>95% CI</th><th>df</th><th>Scope</th></tr>
+          </thead>
+          <tbody id="atlasBody"></tbody>
+        </table>
+        <div class="lockbar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="4" y="10.5" width="16" height="10" rx="2"></rect><path d="M8 10.5V7a4 4 0 018 0v3.5"></path></svg>
+          <span><b>Your</b> cell is not in this table — and it cannot be borrowed from one that is.</span>
+          <button class="btn btn-clay btn-sm" data-auth-open="signup" type="button">Measure my cell</button>
+        </div>
+      </div>
+
+      <p class="mono rv" style="font-size:.68rem;color:var(--ink-3);margin-top:1rem;line-height:1.6;max-width:80ch">
+        Every σ here was measured on PushT, LIBERO and ALOHA with ACT, DiffusionPolicy,
+        SmolVLA and π₀.₅ policies. Transfer to another environment, policy or harness is
+        a pre-registered hypothesis, not a result — which is exactly why the paid product
+        starts by measuring yours.
+        pusht-dp-rebuilt: σ_run 1.292, df=4 — floor-dominated (169% of binomial floor at
+        SR 17.05, n=500) — a measurement, never a prior; do not price from this row.
+        <a href="atlas.html" style="color:var(--clay-deep);font-weight:600">Open the full atlas →</a>
+      </p>
+    </div>
+  </section>
+
+  <!-- ═════════════════════ WORKSPACE (gated) ═════════════════════ -->
+  <section class="sec" id="workspace">
+    <div class="wrap">
+      <div class="sec-head rv">
+        <p class="eyebrow">The paid product</p>
+        <h2 class="h-display">Your cell, measured. Then every decision priced.</h2>
+        <p>
+          Because noise floors do not transfer, onboarding is a measurement: we run a
+          retrain battery against your stack and hand you your own row in the atlas.
+          From then on the gate prices every ship decision you make.
+        </p>
+      </div>
+
+      <div class="split rv">
+        <div>
+          <div class="bullets" style="margin-top:0">
+            <div class="bullet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"></path></svg><span><b>Week 1 — capture.</b> One read-only command over your existing training output. LeRobot already writes per-episode eval logs by default; nothing to instrument.</span></div>
+            <div class="bullet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"></path></svg><span><b>Weeks 2–4 — your σ.</b> A retrain battery on your data and your budget produces your cell, with confidence intervals and scope stamps.</span></div>
+            <div class="bullet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"></path></svg><span><b>Quarter 1 — shadow mode.</b> The gate runs beside your decisions without changing them. At the end you get the divergence report: every call where it disagreed, with the evidence attached.</span></div>
+            <div class="bullet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"></path></svg><span><b>Then — the gate decides.</b> In CI, on the ledger, with a certificate you can hand to a customer.</span></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-bar">
+            <span class="dots"><i></i><i></i><i></i></span>
+            <span class="path">workspace — acme robotics</span>
+            <span class="right when-in">signed in</span>
+            <span class="right when-out">locked</span>
+          </div>
+          <div class="panel-in">
+            <div class="when-out" style="text-align:center;padding:1.6rem .5rem">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" style="width:32px;height:32px;color:var(--ink-3)" aria-hidden="true"><rect x="4" y="10.5" width="16" height="10" rx="2"></rect><path d="M8 10.5V7a4 4 0 018 0v3.5"></path></svg>
+              <h3 style="font-family:var(--f-display);font-size:1.3rem;letter-spacing:-.02em;margin:.8rem 0 .5rem">Sign in to open your workspace</h3>
+              <p style="font-size:.86rem;color:var(--ink-2);max-width:38ch;margin:0 auto 1.2rem;line-height:1.55">
+                Your measured cell, decision history and signed ledger live here.
+              </p>
+              <button class="btn btn-primary" data-auth-open="signin" type="button">Sign in</button>
+            </div>
+            <div class="when-in">
+              <div class="kv">
+                <div class="kv-row em"><span class="k">Your cell</span><span class="v">acme-ur5e-act-k120</span></div>
+                <div class="kv-row"><span class="k">σ<sub>run</sub> (measured)</span><span class="v">4.62 pp · df 7</span></div>
+                <div class="kv-row"><span class="k">Decisions priced</span><span class="v">148</span></div>
+                <div class="kv-row"><span class="k">Ships reversed in shadow</span><span class="v" style="color:var(--hold)">11</span></div>
+                <div class="kv-row em"><span class="k">Ledger</span><span class="v" style="color:var(--ship)">2,904 records · verified</span></div>
+              </div>
+              <p class="mono" style="font-size:.66rem;color:var(--ink-3);margin-top:.8rem;line-height:1.55">
+                Demo workspace with placeholder figures — connect a real project to populate it.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═════════════════════ PRICING ═════════════════════ -->
+  <section class="sec alt" id="pricing">
+    <div class="wrap">
+      <div class="sec-head rv">
+        <p class="eyebrow">Pricing</p>
+        <h2 class="h-display">The measurement is the product.</h2>
+        <p>Free tier is genuinely free and genuinely useful. Paid starts when you need your own noise floor.</p>
+      </div>
+
+      <!-- PRICES ARE PLACEHOLDERS — set these before the site goes public. -->
+      <div class="tiers rv">
+        <div class="tier">
+          <h3>Atlas</h3>
+          <div class="price">$0</div>
+          <p class="desc">The public noise floors and the decision preview. No account needed for the calculator.</p>
+          <ul>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"></path></svg>All 16 published cells, with CIs and scope stamps</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"></path></svg>Noise-floor calculator</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"></path></svg>Open-source CLI, conservative fallback pricing</li>
+            <li class="off"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"></path></svg>Your own measured σ</li>
+            <li class="off"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"></path></svg>Signed ledger</li>
+          </ul>
+          <button class="btn btn-ghost" data-auth-open="signup" type="button">Start free</button>
+        </div>
+
+        <div class="tier feature">
+          <h3>Team</h3>
+          <div class="price">$2,400<small> / mo</small></div>
+          <p class="desc">Your cell measured, the gate in CI, a quarter of shadow mode before it ever blocks a merge.</p>
+          <ul>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"></path></svg>Onboarding retrain battery — your row in the atlas</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"></path></svg>Promotion gate as a CI status check</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"></path></svg>Per-task regression flags with multiplicity control</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"></path></svg>Shadow-mode divergence report</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"></path></svg>Signed decision ledger</li>
+          </ul>
+          <button class="btn btn-clay" data-auth-open="signup" type="button">Talk to us</button>
+        </div>
+
+        <div class="tier">
+          <h3>Fleet</h3>
+          <div class="price">Custom</div>
+          <p class="desc">Acceptance clauses, certificates and the audit surface — for teams whose customers ask for proof.</p>
+          <ul>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"></path></svg>Everything in Team</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"></path></svg>Acceptance gates on fleet telemetry</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"></path></svg>Certificates for customers, insurers and auditors</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"></path></svg>Self-hosted deployment</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"></path></svg>Named statistician on the account</li>
+          </ul>
+          <button class="btn btn-ghost" data-auth-open="signup" type="button">Contact sales</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═════════════════════ EVIDENCE ═════════════════════ -->
+  <section class="sec">
+    <div class="wrap">
+      <div class="split rv">
+        <div>
+          <p class="eyebrow">Why trust it</p>
+          <h3 class="h-display" style="margin-top:.9rem">We publish the predictions we got wrong.</h3>
+          <p style="margin-top:1rem">
+            Every result behind this product was pre-registered — decision bands frozen
+            and hashed before a single episode was scored. When a prediction failed, it
+            stayed on the record and its stated consequence was refused. When a pre-check
+            failed, the pre-committed demotion applied and the weaker claim shipped.
+          </p>
+          <p style="margin-top:1rem">
+            That discipline is not decoration. A product whose job is to tell you your
+            win was noise cannot itself be in the business of favourable rounding.
+          </p>
+          <div class="hero-cta">
+            <a class="btn btn-ghost" href="atlas.html">Read the atlas</a>
+          </div>
+        </div>
+        <div>
+          <div class="quote" style="margin-bottom:1.6rem">
+            “We red-teamed our own gate against 334 controlled runs forming 193
+            no-change pairs. The obvious per-task rule fired on 96.4% of no-change
+            retrains — so we priced the lottery into it before anyone outside ran it.”
+          </div>
+          <div class="kv">
+            <div class="kv-row"><span class="k">Null per-task flag rate, after repair</span><span class="v">0.043 ≈ α</span></div>
+            <div class="kv-row"><span class="k">False-ship rate, suite level</span><span class="v">16.1% → 4.9%</span></div>
+            <div class="kv-row"><span class="k">Drifting-null streams falsely certified</span><span class="v">0 / 106</span></div>
+            <div class="kv-row"><span class="k">Ledger records verified</span><span class="v">7,244 · 0 bad</span></div>
+            <div class="kv-row em"><span class="k">Results pre-registered before scoring</span><span class="v">every one</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═════════════════════ CTA ═════════════════════ -->
+  <section class="sec alt" style="text-align:center">
+    <div class="wrap">
+      <div class="rv" style="max-width:56ch;margin-inline:auto">
+        <h2 class="h-display" style="font-size:var(--t3);letter-spacing:-.028em;line-height:1.06">
+          Find out what your benchmark number is actually worth.
+        </h2>
+        <p style="color:var(--ink-2);font-size:var(--t1);margin-top:1rem;line-height:1.55">
+          Start with the free check. If the answer is uncomfortable, that is the product working.
+        </p>
+        <div class="hero-cta" style="justify-content:center">
+          <button class="btn btn-primary btn-lg" data-auth-open="signup" type="button">Start free</button>
+          <a class="btn btn-ghost btn-lg" href="#calculator">Price a decision</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <div class="logo" style="margin-bottom:.9rem">
+          <svg class="logo-mark" viewBox="0 0 48 48" aria-hidden="true">
+            <ellipse class="ring" cx="24" cy="24" rx="21" ry="9.5" transform="rotate(-28 24 24)"></ellipse>
+            <circle class="core" cx="24" cy="24" r="7"></circle>
+            <g class="logo-orbit"><circle class="node" cx="44" cy="14.5" r="3.1"></circle></g>
+          </svg>
+          <span class="logo-word"><b>Orbit</b></span>
+        </div>
+        <p style="font-size:.84rem;line-height:1.6;max-width:34ch;color:#8A887D">
+          Ship-decision infrastructure for learned robot policies. Measured noise floors,
+          priced decisions, signed evidence.
+        </p>
+      </div>
+      <div>
+        <h4>Product</h4>
+        <ul>
+          <li><a href="#product">Promotion gate</a></li>
+          <li><a href="#product">Acceptance gate</a></li>
+          <li><a href="#product">Certificate ledger</a></li>
+          <li><a href="#pricing">Pricing</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Free</h4>
+        <ul>
+          <li><a href="atlas.html">Variance Atlas</a></li>
+          <li><a href="noisefloor.html">The Noise Floor</a></li>
+          <li><a href="#calculator">Noise-floor check</a></li>
+          <li><a href="#problem">The finding</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Company</h4>
+        <ul>
+          <li><a href="#problem">Research</a></li>
+          <li><a href="#pricing">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="fine">
+      <span>© 2026 Orbit</span>
+      <span>Noise priors are valid only inside the cell they were measured in.</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ═════════════════════ AUTH MODAL ═════════════════════ -->
+<div class="scrim" id="scrim" role="dialog" aria-modal="true" aria-labelledby="authTitle" hidden>
+  <div class="modal">
+    <h3 id="authTitle" class="h-display">Create your account</h3>
+    <p class="sub" id="authSub">Free tier, no card. Your first noise-floor check takes about a minute.</p>
+
+    <div class="sso">
+      <button class="btn btn-ghost" data-sso="Google" type="button">
+        <svg viewBox="0 0 24 24" aria-hidden="true" style="width:15px;height:15px"><path fill="currentColor" d="M21.6 12.2c0-.7-.06-1.4-.18-2H12v3.8h5.4a4.6 4.6 0 01-2 3v2.5h3.2c1.9-1.7 3-4.3 3-7.3z" opacity=".9"></path><path fill="currentColor" d="M12 22c2.7 0 5-.9 6.6-2.4l-3.2-2.5c-.9.6-2 1-3.4 1-2.6 0-4.8-1.8-5.6-4.1H3.1v2.6A10 10 0 0012 22z" opacity=".7"></path><path fill="currentColor" d="M6.4 14c-.2-.6-.3-1.3-.3-2s.1-1.4.3-2V7.4H3.1a10 10 0 000 9.2z" opacity=".5"></path><path fill="currentColor" d="M12 5.9c1.5 0 2.8.5 3.8 1.5l2.8-2.8A10 10 0 003.1 7.4L6.4 10c.8-2.3 3-4.1 5.6-4.1z" opacity=".8"></path></svg>
+        Continue with Google
+      </button>
+      <button class="btn btn-ghost" data-sso="GitHub" type="button">
+        <svg viewBox="0 0 24 24" aria-hidden="true" style="width:15px;height:15px"><path fill="currentColor" d="M12 2a10 10 0 00-3.2 19.5c.5.1.7-.2.7-.5v-1.7c-2.8.6-3.4-1.4-3.4-1.4-.5-1.2-1.1-1.5-1.1-1.5-.9-.6.1-.6.1-.6 1 .1 1.6 1 1.6 1 .9 1.5 2.3 1.1 2.9.8.1-.7.4-1.1.6-1.4-2.2-.2-4.6-1.1-4.6-5 0-1.1.4-2 1-2.7-.1-.3-.4-1.3.1-2.6 0 0 .8-.3 2.7 1a9.4 9.4 0 015 0c1.9-1.3 2.7-1 2.7-1 .5 1.3.2 2.3.1 2.6.6.7 1 1.6 1 2.7 0 3.9-2.4 4.8-4.6 5 .4.3.7.9.7 1.9v2.8c0 .3.2.6.7.5A10 10 0 0012 2z"></path></svg>
+        Continue with GitHub
+      </button>
+    </div>
+
+    <div class="or">or</div>
+
+    <form id="authForm" novalidate>
+      <div class="field">
+        <label for="a-email">Work email</label>
+        <input id="a-email" type="email" autocomplete="email" placeholder="you@company.com" required>
+      </div>
+      <div class="field" id="orgField">
+        <label for="a-org">Organisation</label>
+        <input id="a-org" type="text" autocomplete="organization" placeholder="Acme Robotics">
+      </div>
+      <button class="btn btn-primary" type="submit" style="width:100%" id="authSubmit">Create account</button>
+    </form>
+
+    <p class="modal-foot" id="authSwap"></p>
+
+    <!-- ══ Remove this note once a real auth provider is wired in. ══ -->
+    <p class="note">
+      Demo mode — no credentials leave this page and nothing is stored on a server.
+      Wire an auth provider before launch; a static page cannot verify identity.
+    </p>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var root = document.documentElement;
+  var reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function $(s, c) { return (c || document).querySelector(s); }
+  function $$(s, c) { return Array.prototype.slice.call((c || document).querySelectorAll(s)); }
+  function cssv(n) { return getComputedStyle(document.body).getPropertyValue(n).trim(); }
+
+  /* ── theme ─────────────────────────────────────────────────────────── */
+  $("#tt").addEventListener("click", function () {
+    var ex = root.getAttribute("data-theme");
+    var dark = ex ? ex === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+    root.setAttribute("data-theme", dark ? "light" : "dark");
+    drawPT();
+  });
+
+  /* ── nav shadow ────────────────────────────────────────────────────── */
+  var nav = $("#nav");
+  addEventListener("scroll", function () { nav.classList.toggle("stuck", scrollY > 8); }, { passive: true });
+
+  /* ── scroll reveal ─────────────────────────────────────────────────── */
+  if ("IntersectionObserver" in window && !reduce) {
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } });
+    }, { rootMargin: "0px 0px -8% 0px", threshold: .08 });
+    $$(".rv").forEach(function (n) { io.observe(n); });
+  } else { $$(".rv").forEach(function (n) { n.classList.add("in"); }); }
+
+  /* ═══ DATA — measured, from orbit_eval.atlas ════════════════════════
+     sigma_run in percentage points. `curse` is the measured naive
+     winner's-curse for that cell. Cells without a measured curse fall back
+     to a disclosed conservative value, exactly as the engine does.        */
+  var CELLS = [
+    { k:"smolvla-ft-k88-multitask", n:"SmolVLA fine-tune · LIBERO · k=88", sigma:2.11, df:7, ci:[null,null], curse:2.31, pertask:6.69, note:"σ_run 2.11 pp at df=7, n=2000/model. Per-task σ 6.69 (libero_object; raw 7.33). Truncated schedule (20k steps / 30k decay). ANNEAL-1 (2026-08-21) measured the completion effect as null — the lottery survives convergence (6.94 vs 7.28, both lower bounds, φ=0.588)." },
+    { k:"pi05-ft-k88-multitask",    n:"π₀.₅ fine-tune · LIBERO · k=88",    sigma:4.05, df:7, ci:[2.68,8.24], curse:0.94, pertask:11.00, note:"σ_run 4.05 pp at n=200; 4.23 re-measured at n=1000. Per-task σ 11.00 (libero_object; raw 11.82). Truncated schedule (20k steps / 30k decay); completion effect untested." },
+    { k:"aloha-transfer-cube-act",  n:"ACT · ALOHA transfer_cube · k=50",  sigma:6.515, df:7, ci:[4.31,13.26], curse:null, sr:[69.6,88.4], note:"J=8 byte-identical-data retrains. SRs 69.6–88.4; only 8% of variance is eval sampling." },
+    { k:"aloha-insertion-act",      n:"ACT · ALOHA insertion · k=50",      sigma:2.261, df:7, ci:[1.50,4.60], curse:null, sr:[9.0,15.4], lowsr:true, note:"LOW-SR cell: the binomial floor is 41% of the variance. Much of this σ is sampling, not lottery." },
+    { k:"pusht-act-h8",             n:"ACT · PushT · eval horizon 8",      sigma:4.849, df:7, ci:[3.21,9.87], curse:null, sr:[9.2,21.4], note:"Eight checkpoints re-evaluated at n_action_steps=8. Eval-horizon scoped." },
+    { k:"libero-dp-k22",            n:"DiffusionPolicy · LIBERO · k=22",   sigma:11.43, df:8, ci:[null,null], curse:null, note:"Phase 2, 8 noise pairs. Small-k cell." },
+    { k:"other",                    n:"My stack is not listed",            sigma:null, df:null, ci:[null,null], curse:null, note:"No measured prior exists for your cell. The gate runs a disclosed conservative fallback — and this is exactly what onboarding measures." }
+  ];
+
+  var ATLAS_ROWS = [
+    { c:"DiffusionPolicy · LIBERO", k:"libero-dp-k22", kk:22, s:"11.43", ci:"—", df:8, tag:"measured" },
+    { c:"π₀.₅ fine-tune · LIBERO",  k:"pi05-ft", kk:22, s:"9.74", ci:"[6.81, 17.10]", df:10, tag:"overturned prior · truncated schedule (20k steps / 30k decay); completion effect untested" },
+    { c:"ACT · ALOHA transfer_cube", k:"aloha-transfer-cube-act", kk:50, s:"6.51", ci:"[4.31, 13.26]", df:7, tag:"unpaired" },
+    { c:"ACT · PushT (horizon 8)",  k:"pusht-act-h8", kk:206, s:"4.85", ci:"[3.21, 9.87]", df:7, tag:"eval-horizon" },
+    { c:"π₀.₅ fine-tune · LIBERO",  k:"pi05-ft-k88-multitask", kk:88, s:"4.05", ci:"[2.68, 8.24]", df:7, tag:"flagship · truncated schedule (20k steps / 30k decay); completion effect untested" },
+    { c:"ACT · ALOHA insertion",    k:"aloha-insertion-act", kk:50, s:"2.26", ci:"[1.50, 4.60]", df:7, tag:"low-SR" },
+    { c:"SmolVLA fine-tune · LIBERO", k:"smolvla-ft-k88-multitask", kk:88, s:"2.11", ci:"—", df:7, tag:"wedge-transfers · truncated schedule (20k steps / 30k decay)" },
+    { c:"DiffusionPolicy · PushT (rebuilt)", k:"pusht-dp-rebuilt", kk:103, s:"1.29", ci:"—", df:4, tag:"floor-dominated" }
+  ];
+
+  var ALOHA = [
+    { seed:0, sr:76.2 }, { seed:1, sr:83.6 }, { seed:2, sr:69.6 }, { seed:3, sr:69.6 },
+    { seed:4, sr:81.4 }, { seed:5, sr:88.4 }, { seed:6, sr:77.4 }, { seed:7, sr:76.8 }
+  ];
+
+  var Z975 = 1.959964, Z80 = 0.841621;
+  var RESOLVE_FLOOR = 2.0;   /* pp — below this, episodes cannot resolve */
+
+  /* A retrain budget is only actionable up to a point. Past ~200 retrains per
+     arm the honest answer is that the effect is not resolvable by retraining
+     at any budget a team will actually spend — say that instead of a number. */
+  function needText(need) {
+    if (!need) return "—";
+    if (need > 200) return "> 200 — not resolvable";
+    return need + " per arm";
+  }
+
+  /* ── the eight-run strip ───────────────────────────────────────────── */
+  var strip = $("#runStrip");
+  if (strip) {
+    var mn = Math.min.apply(null, ALOHA.map(function (d) { return d.sr; }));
+    var mx = Math.max.apply(null, ALOHA.map(function (d) { return d.sr; }));
+    ALOHA.forEach(function (d) {
+      var el = document.createElement("div");
+      el.className = "run" + (d.sr === mn || d.sr === mx ? " hi" : "");
+      el.innerHTML = '<div class="sr">' + d.sr.toFixed(1) + '%</div><div class="sd">SEED ' + d.seed + '</div>';
+      strip.appendChild(el);
+    });
+    var cap = document.createElement("div");
+    cap.className = "mono";
+    cap.style.cssText = "grid-column:1/-1;font-size:.7rem;color:var(--ink-3);margin-top:.9rem;line-height:1.6";
+    cap.innerHTML = "Spread <b style='color:var(--clay-deep)'>18.8 pp</b> · σ_run 6.515 pp (95% CI [4.31, 13.26], df 7) · " +
+                    "only 8% of that variance is evaluation sampling — the rest is the training run. " +
+                    "A leaderboard would rank these eight as eight different models.";
+    strip.appendChild(cap);
+  }
+
+  /* ── count-up ──────────────────────────────────────────────────────── */
+  $$("[data-count]").forEach(function (n) {
+    var target = parseFloat(n.dataset.count), suffix = n.dataset.suffix || "";
+    var dp = (String(n.dataset.count).split(".")[1] || "").length;
+    var fmt = function (x) { return dp ? x.toFixed(dp) : Math.round(x).toLocaleString(); };
+    if (reduce) { n.textContent = fmt(target) + suffix; return; }
+    var done = false;
+    var ob = new IntersectionObserver(function (es) {
+      es.forEach(function (e) {
+        if (!e.isIntersecting || done) return;
+        done = true;
+        var t0 = performance.now(), dur = 1100;
+        (function step(t) {
+          var p = Math.min(1, (t - t0) / dur);
+          var e2 = 1 - Math.pow(1 - p, 3);
+          n.textContent = fmt(target * e2) + suffix;
+          if (p < 1) requestAnimationFrame(step);
+        })(t0);
+      });
+    }, { threshold: .4 });
+    ob.observe(n);
+  });
+
+  /* ── verdict rendering ─────────────────────────────────────────────── */
+  var ICONS = {
+    SHIP:    '<path d="M20 6L9 17l-5-5"></path>',
+    HOLD:    '<path d="M12 8v5M12 17h.01"></path><circle cx="12" cy="12" r="9"></circle>',
+    "COLLECT-MORE": '<circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path>',
+    UNRESOLVABLE: '<circle cx="12" cy="12" r="9"></circle><path d="M9 9l6 6M15 9l-6 6"></path>',
+    INVALID: '<circle cx="12" cy="12" r="9"></circle><path d="M9 9l6 6M15 9l-6 6"></path>'
+  };
+  var CLS = { SHIP:"v-ship", HOLD:"v-hold", "COLLECT-MORE":"v-collect", UNRESOLVABLE:"v-void", INVALID:"v-void" };
+
+  function paintVerdict(badgeEl, labelEl, verdict) {
+    badgeEl.className = "vbadge " + (CLS[verdict] || "v-void");
+    badgeEl.innerHTML =
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+      (ICONS[verdict] || ICONS.INVALID) + '</svg><span>' + verdict + '</span>';
+  }
+  function kvRows(el, rows) {
+    el.innerHTML = rows.map(function (r) {
+      return '<div class="kv-row' + (r.em ? ' em' : '') + '"><span class="k">' + r.k +
+             '</span><span class="v"' + (r.color ? ' style="color:' + r.color + '"' : '') + '>' + r.v + '</span></div>';
+    }).join("");
+  }
+  function reasonRows(el, list) {
+    el.innerHTML = list.map(function (t) {
+      return '<div class="reason"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v4.5M12 16h.01"></path></svg><span>' + t + '</span></div>';
+    }).join("");
+  }
+
+  /* ── the engine (fixed-sample preview) ─────────────────────────────── */
+  function binomSE(pPct, n) {
+    var p = Math.min(Math.max(pPct / 100, 0.5 / n), 1 - 0.5 / n);
+    return 100 * Math.sqrt(p * (1 - p) / n);
+  }
+  function decide(cell, base, cand, n, retrained, swept) {
+    var sigma = cell.sigma;
+    var conservative = false;
+    if (sigma === null) { sigma = 11.43; conservative = true; }   /* widest measured cell */
+
+    var seB = binomSE(base, n), seC = binomSE(cand, n);
+    var evalVar = seB * seB + seC * seC;
+    var trainVar = retrained ? 2 * sigma * sigma : 0;
+    var se = Math.sqrt(evalVar + trainVar);
+
+    var delta = cand - base;
+    var curse = 0;
+    if (swept) curse = (cell.curse !== null && cell.curse !== undefined) ? cell.curse : 4.0;
+    var eff = delta - curse;
+
+    var z = se > 0 ? eff / se : 0;
+    var lo = eff - Z975 * se, hi = eff + Z975 * se;
+
+    var verdict, reasons = [];
+    if (retrained && Math.abs(eff) < RESOLVE_FLOOR && Math.abs(z) < Z975) {
+      verdict = "UNRESOLVABLE";
+      reasons.push("The effect is smaller than this comparison can resolve (" + RESOLVE_FLOOR.toFixed(1) + " pp floor). More episodes will not change this verdict — the noise is in training, not in the eval draw.");
+    } else if (z >= Z975) {
+      verdict = "SHIP";
+      reasons.push("The candidate clears the retrain noise floor for this cell at α = 0.05, two-sided.");
+    } else if (eff <= -5 || z <= -Z975) {
+      verdict = "HOLD";
+      reasons.push("The candidate is worse by more than the lottery comfortably explains. Do not promote on this evidence.");
+    } else {
+      verdict = "COLLECT-MORE";
+      reasons.push("The observed gap is inside the range identical-data retrains produce on their own. This is not yet evidence of an improvement.");
+    }
+
+    var need = null;
+    if (retrained && Math.abs(eff) > 0.05) {
+      need = Math.ceil(2 * Math.pow(Z975 + Z80, 2) * sigma * sigma / (eff * eff));
+    }
+
+    if (retrained) {
+      reasons.push("Pairing cannot rescue this comparison: σ_run lives in training, so common random numbers across eval episodes cancel eval-draw noise only.");
+    } else {
+      reasons.push("Fixed-checkpoint comparison — eval noise cancels to the harness floor under common random numbers, so this is the cheap question and episodes do help.");
+    }
+    if (swept) reasons.push("Winner's-curse correction of " + curse.toFixed(2) + " pp applied" + ((cell.curse === null || cell.curse === undefined) ? " (disclosed conservative default — no curse measured in this cell)." : " from this cell's measured value."));
+    if (conservative) reasons.push("No σ has been measured for your cell, so this used the widest measured prior (11.43 pp) as a disclosed conservative fallback. Your real floor could be far tighter — measuring it is the onboarding.");
+    if (cell.lowsr) reasons.push("LOW-SR scope: in this cell the binomial floor is a large share of the variance, so much of σ is sampling rather than retrain lottery.");
+    if (cell.pertask) reasons.push("Suite-level only. Per-task σ in this cell is " + cell.pertask.toFixed(2) + " pp (libero_object) — an individual task can move far more than this verdict covers.");
+
+    return { verdict: verdict, delta: delta, eff: eff, curse: curse, se: se, z: z, lo: lo, hi: hi,
+             need: need, sigma: sigma, conservative: conservative, reasons: reasons };
+  }
+
+  /* ── hero: staged verdict reveal ───────────────────────────────────── */
+  (function hero() {
+    var badge = $("#heroBadge"), label = $("#heroVerdict"), kv = $("#heroKV"),
+        rs = $("#heroReasons"), clock = $("#heroClock");
+    if (!badge || !kv) return;
+
+    var cell = CELLS[0];
+    var r = decide(cell, 52.5, 57.5, 200, true, true);
+
+    function paint() {
+      paintVerdict(badge, label, r.verdict);
+      clock.textContent = "0.4 s";
+      kvRows(kv, [
+        { k: "Reported gain", v: "+" + r.delta.toFixed(1) + " pp" },
+        { k: "Winner's-curse correction", v: "−" + r.curse.toFixed(2) + " pp" },
+        { k: "Effective gain", v: (r.eff >= 0 ? "+" : "") + r.eff.toFixed(2) + " pp", em: true },
+        { k: "Retrain noise floor (σ_run)", v: r.sigma.toFixed(2) + " pp · df 7" },
+        { k: "95% interval", v: "[" + r.lo.toFixed(1) + ", " + r.hi.toFixed(1) + "]" },
+        { k: "Retrains/arm to resolve", v: needText(r.need), em: true, color: "var(--collect)" }
+      ]);
+      reasonRows(rs, [
+        "The gap is inside the range identical-data retrains produce on their own.",
+        "Priced against σ_run measured in this exact cell — not borrowed from another."
+      ]);
+    }
+
+    if (reduce) { paint(); return; }
+    var steps = ["evaluating", "pairing episodes", "pricing the lottery"];
+    var i = 0;
+    var iv = setInterval(function () {
+      i++;
+      if (i < steps.length) { label.textContent = steps[i]; }
+      else { clearInterval(iv); paint(); }
+    }, 620);
+  })();
+
+  /* ── calculator ────────────────────────────────────────────────────── */
+  (function calc() {
+    var sel = $("#f-cell"), hint = $("#cellHint");
+    if (!sel) return;
+    CELLS.forEach(function (c, i) {
+      var o = document.createElement("option");
+      o.value = String(i); o.textContent = c.n + (c.sigma !== null ? "  —  σ " + c.sigma + " pp" : "");
+      sel.appendChild(o);
+    });
+
+    var badge = $("#calcBadge"), label = $("#calcVerdict"), kv = $("#calcKV"),
+        rs = $("#calcReasons"), sub = $("#calcSub");
+
+    function run() {
+      var cell = CELLS[parseInt(sel.value, 10) || 0];
+      var base = parseFloat($("#f-base").value);
+      var cand = parseFloat($("#f-cand").value);
+      var n = parseInt($("#f-n").value, 10);
+      hint.textContent = cell.note;
+
+      if (!isFinite(base) || !isFinite(cand) || !isFinite(n) || n < 10) {
+        paintVerdict(badge, label, "INVALID");
+        sub.textContent = "check the inputs";
+        kvRows(kv, []);
+        reasonRows(rs, ["Enter two success rates between 0 and 100 and at least 10 evaluation episodes per arm."]);
+        return;
+      }
+
+      var retrained = $("#f-retrain").checked, swept = $("#f-swept").checked;
+      var r = decide(cell, base, cand, n, retrained, swept);
+      paintVerdict(badge, label, r.verdict);
+      sub.textContent = retrained ? "retrained candidate · n=" + n + "/arm" : "fixed checkpoint · n=" + n + "/arm";
+
+      var rows = [
+        { k: "Observed gap", v: (r.delta >= 0 ? "+" : "") + r.delta.toFixed(2) + " pp" }
+      ];
+      if (swept) rows.push({ k: "Winner's-curse correction", v: "−" + r.curse.toFixed(2) + " pp" });
+      rows.push({ k: "Effective gap", v: (r.eff >= 0 ? "+" : "") + r.eff.toFixed(2) + " pp", em: true });
+      rows.push({ k: retrained ? "Noise floor σ_run" + (r.conservative ? " (fallback)" : "") : "Eval-only comparison",
+                  v: retrained ? r.sigma.toFixed(2) + " pp" : "harness floor" });
+      rows.push({ k: "SE of the gap", v: r.se.toFixed(2) + " pp" });
+      rows.push({ k: "95% interval", v: "[" + r.lo.toFixed(2) + ", " + r.hi.toFixed(2) + "]" });
+      if (r.need && r.verdict !== "SHIP") {
+        rows.push({ k: "Retrains/arm to resolve this gap", v: needText(r.need), em: true,
+                    color: r.need > 12 ? "var(--hold)" : "var(--collect)" });
+      }
+      kvRows(kv, rows);
+      reasonRows(rs, r.reasons);
+    }
+
+    $$("#calcForm input, #calcForm select").forEach(function (i) {
+      i.addEventListener("input", run); i.addEventListener("change", run);
+    });
+    run();
+  })();
+
+  /* ── atlas preview table ───────────────────────────────────────────── */
+  (function atlas() {
+    var tb = $("#atlasBody");
+    if (!tb) return;
+    var TAGCOL = { "low-SR":"var(--hold)", "unpaired":"var(--hold)", "flagship":"var(--ship)",
+                   "wedge-transfers":"var(--ship)", "overturned prior":"var(--ship)",
+                   "floor-dominated":"var(--hold)",
+                   "eval-horizon":"var(--void)", "measured":"var(--void)" };
+    tb.innerHTML = ATLAS_ROWS.map(function (r) {
+      return '<tr><td class="cell">' + r.c + '<small>' + r.k + '</small></td>' +
+        '<td>' + r.kk + '</td><td style="font-size:.88rem;font-weight:600">' + r.s + '</td>' +
+        '<td>' + r.ci + '</td><td>' + r.df + '</td>' +
+        '<td><span style="color:' + (TAGCOL[r.tag] || TAGCOL[r.tag.split(" · ")[0]] || "var(--void)") + ';font-size:.66rem;letter-spacing:.06em;text-transform:uppercase">' + r.tag + '</span></td></tr>';
+    }).join("") +
+      '<tr class="locked"><td class="cell">Your stack<small>not measured</small></td>' +
+      '<td>—</td><td style="font-size:.88rem">?</td><td>—</td><td>—</td>' +
+      '<td><span style="color:var(--ink-3);font-size:.66rem;letter-spacing:.06em;text-transform:uppercase">unmeasured</span></td></tr>';
+  })();
+
+  /* ── per-task chart ────────────────────────────────────────────────── */
+  var PT = [
+    { n:"π₀.₅ fine-tune", suite:4.23, pertask:11.00, raw:11.82, ci:[6.86,15.13] },
+    { n:"SmolVLA fine-tune", suite:2.11, pertask:6.69, raw:7.33, ci:[5.60,7.77] }
+  ];
+  function drawPT() {
+    var svg = $("#ptChart");
+    if (!svg) return;
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+    var NS = "http://www.w3.org/2000/svg";
+    function e(n, a) { var x = document.createElementNS(NS, n); for (var k in a) if (a[k] != null) x.setAttribute(k, a[k]); return x; }
+
+    var W = 560, H = 280, L = 46, R = 18, T = 22, B = 56, MAX = 16;
+    svg.setAttribute("viewBox", "0 0 " + W + " " + H);
+    var y = function (v) { return H - B - v / MAX * (H - B - T); };
+    var c1 = cssv("--s1"), c2 = cssv("--s2"), rule = cssv("--rule"), ink3 = cssv("--ink-3"), ink = cssv("--ink");
+
+    for (var g = 0; g <= MAX; g += 4) {
+      svg.appendChild(e("line", { x1:L, y1:y(g), x2:W-R, y2:y(g), stroke:rule, "stroke-width":1 }));
+      var t = e("text", { x:L-9, y:y(g)+3.5, "text-anchor":"end", fill:ink3,
+        "font-size":9, "font-family":"IBM Plex Mono, monospace" });
+      t.textContent = g; svg.appendChild(t);
+    }
+
+    var gw = (W - L - R) / PT.length, bw = 58;
+    PT.forEach(function (d, i) {
+      var cx = L + gw * i + gw / 2;
+      [{ v:d.suite, c:c2, key:"suite" }, { v:d.pertask, c:c1, key:"pt" }].forEach(function (b, bi) {
+        var bx = cx + (bi === 0 ? -bw - 4 : 4);
+        var rect = e("rect", { x:bx, y:y(b.v), width:bw, height:(H-B)-y(b.v), fill:b.c, rx:3 });
+        if (!reduce) {
+          rect.style.transformOrigin = "0 " + (H - B) + "px";
+          rect.style.transform = "scaleY(0)";
+          rect.style.transition = "transform .7s cubic-bezier(.2,.85,.3,1) " + (i * 120 + bi * 90) + "ms";
+          requestAnimationFrame(function () { requestAnimationFrame(function () { rect.style.transform = "scaleY(1)"; }); });
+        }
+        svg.appendChild(rect);
+
+        var ly = y(b.v) - 8;
+        if (b.key === "pt") {
+          var mx = bx + bw / 2, cap = 9;
+          svg.appendChild(e("line", { x1:mx, y1:y(d.ci[0]), x2:mx, y2:y(d.ci[1]), stroke:ink, "stroke-width":1.4 }));
+          svg.appendChild(e("line", { x1:mx-cap, y1:y(d.ci[1]), x2:mx+cap, y2:y(d.ci[1]), stroke:ink, "stroke-width":1.4 }));
+          svg.appendChild(e("line", { x1:mx-cap, y1:y(d.ci[0]), x2:mx+cap, y2:y(d.ci[0]), stroke:ink, "stroke-width":1.4 }));
+          ly = y(d.ci[1]) - 8;
+        }
+        var vt = e("text", { x:bx + bw/2, y:ly, "text-anchor":"middle", fill:ink,
+          "font-size":11, "font-weight":600, "font-family":"IBM Plex Mono, monospace" });
+        vt.textContent = b.v.toFixed(2); svg.appendChild(vt);
+      });
+
+      var n1 = e("text", { x:cx, y:H-B+19, "text-anchor":"middle", fill:ink,
+        "font-size":11, "font-weight":600, "font-family":"Archivo, sans-serif" });
+      n1.textContent = d.n; svg.appendChild(n1);
+      var n2 = e("text", { x:cx, y:H-B+35, "text-anchor":"middle", fill:c1,
+        "font-size":9, "font-family":"IBM Plex Mono, monospace", "letter-spacing":".06em" });
+      n2.textContent = (d.pertask / d.suite).toFixed(1) + "× HIDDEN BY THE AVERAGE";
+      svg.appendChild(n2);
+    });
+  }
+  drawPT();
+  var rt; addEventListener("resize", function () { clearTimeout(rt); rt = setTimeout(drawPT, 180); });
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", drawPT);
+
+  /* ── tabs ──────────────────────────────────────────────────────────── */
+  $$(".tab").forEach(function (t) {
+    t.addEventListener("click", function () {
+      $$(".tab").forEach(function (o) { o.setAttribute("aria-selected", String(o === t)); });
+      $$(".tabpanel").forEach(function (p) { p.hidden = p.dataset.panel !== t.dataset.tab; });
+    });
+  });
+
+  /* ═══ AUTH ══════════════════════════════════════════════════════════
+     DEMO ADAPTER. A static page cannot verify identity and must never hold
+     a secret. Replace the three methods below with a real provider — Clerk,
+     Auth0, WorkOS, Supabase — and delete the .note element in the modal.
+     Everything else (UI, state classes, gating) stays as-is.              */
+  var Auth = {
+    KEY: "orbit.session",
+    current: function () {
+      try { return JSON.parse(localStorage.getItem(this.KEY) || "null"); } catch (e) { return null; }
+    },
+    signIn: function (email, org) {
+      var s = { email: email, org: org || "", at: "demo" };
+      try { localStorage.setItem(this.KEY, JSON.stringify(s)); } catch (e) {}
+      return s;
+    },
+    signOut: function () { try { localStorage.removeItem(this.KEY); } catch (e) {} }
+  };
+
+  function applyAuth() {
+    var s = Auth.current();
+    root.setAttribute("data-auth", s ? "in" : "out");
+    var av = $("#avatar");
+    if (av && s) {
+      av.textContent = (s.email || "?").trim().charAt(0).toUpperCase();
+      av.title = s.email + (s.org ? " · " + s.org : "");
+    }
+  }
+
+  var scrim = $("#scrim"), mode = "signup";
+  function openAuth(m) {
+    mode = m || "signup";
+    $("#authTitle").textContent = mode === "signin" ? "Welcome back" : "Create your account";
+    $("#authSub").textContent = mode === "signin"
+      ? "Open your workspace, your measured cell and your ledger."
+      : "Free tier, no card. Your first noise-floor check takes about a minute.";
+    $("#authSubmit").textContent = mode === "signin" ? "Sign in" : "Create account";
+    $("#orgField").style.display = mode === "signin" ? "none" : "";
+    $("#authSwap").innerHTML = mode === "signin"
+      ? 'New here? <button type="button" data-swap="signup">Create an account</button>'
+      : 'Already have an account? <button type="button" data-swap="signin">Sign in</button>';
+    scrim.hidden = false;
+    requestAnimationFrame(function () { scrim.classList.add("on"); });
+    setTimeout(function () { $("#a-email").focus(); }, 120);
+  }
+  function closeAuth() {
+    scrim.classList.remove("on");
+    setTimeout(function () { scrim.hidden = true; }, 240);
+  }
+
+  document.addEventListener("click", function (ev) {
+    var open = ev.target.closest("[data-auth-open]");
+    if (open) { ev.preventDefault(); openAuth(open.dataset.authOpen); return; }
+    var swap = ev.target.closest("[data-swap]");
+    if (swap) { openAuth(swap.dataset.swap); return; }
+    var sso = ev.target.closest("[data-sso]");
+    if (sso) {
+      Auth.signIn("demo@" + sso.dataset.sso.toLowerCase() + ".example", "Demo Org");
+      applyAuth(); closeAuth();
+      document.getElementById("workspace").scrollIntoView({ behavior: reduce ? "auto" : "smooth" });
+      return;
+    }
+    if (ev.target === scrim) closeAuth();
+  });
+  addEventListener("keydown", function (e) { if (e.key === "Escape" && !scrim.hidden) closeAuth(); });
+
+  $("#authForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var email = $("#a-email").value.trim();
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { $("#a-email").focus(); return; }
+    Auth.signIn(email, $("#a-org").value.trim());
+    applyAuth(); closeAuth();
+    document.getElementById("workspace").scrollIntoView({ behavior: reduce ? "auto" : "smooth" });
+  });
+
+  var av = $("#avatar");
+  if (av) av.addEventListener("click", function () { Auth.signOut(); applyAuth(); });
+
+  applyAuth();
+})();
+</script>

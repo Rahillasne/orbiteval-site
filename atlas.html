@@ -1,0 +1,1350 @@
+<title>The Variance Atlas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
+
+<style>
+/* ───────────────────────────────────────────────────────────────────────────
+   THE VARIANCE ATLAS — tokens
+   Light palette is complete on bare :root. Dark redefines TOKENS ONLY, under
+   both the media query (guarded so an explicit light stamp wins) and the
+   [data-theme="dark"] stamp (so the toggle wins the other way).
+   Series colors validated: light  #2A6BB0 / #B87211  (CVD ΔE 23.0, normal 27.4)
+                            dark   #4A93DC / #C0801F  (CVD ΔE 24.7, normal 26.2)
+   ─────────────────────────────────────────────────────────────────────────── */
+:root {
+  color-scheme: light;
+
+  --ground:        #E9EDF2;   /* cool, blue-biased drafting paper */
+  --surface:       #FFFFFF;
+  --surface-sunk:  #F3F6F9;
+  --surface-ink:   #1B222B;   /* inverted block on light */
+
+  --ink:           #141A21;
+  --ink-2:         #4E5D6C;
+  --ink-3:         #78889A;
+  --ink-on-dark:   #EEF2F7;
+
+  --rule:          #D3DBE4;
+  --rule-strong:   #B4C1CE;
+
+  --series-1:      #2A6BB0;   /* the measurement */
+  --series-1-soft: #DCE7F4;
+  --series-2:      #B87211;   /* the sampling floor */
+  --series-2-soft: #F5E9D6;
+
+  --critical:      #A33A4E;
+  --critical-soft: #F6E3E6;
+  --good:          #2E6B4F;
+  --good-soft:     #E0EEE7;
+
+  --shadow: 0 1px 2px rgba(20,26,33,.05), 0 8px 24px -12px rgba(20,26,33,.14);
+
+  --w-page: 1180px;
+  --w-read: 65ch;
+
+  --step--1: clamp(.76rem, .74rem + .1vw, .82rem);
+  --step-0:  clamp(1rem, .97rem + .14vw, 1.08rem);
+  --step-1:  clamp(1.18rem, 1.1rem + .35vw, 1.4rem);
+  --step-2:  clamp(1.5rem, 1.32rem + .8vw, 2.05rem);
+  --step-3:  clamp(2rem, 1.6rem + 1.8vw, 3.1rem);
+  --step-4:  clamp(2.6rem, 1.8rem + 3.6vw, 5rem);
+
+  --font-display: "Archivo", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-prose: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --ground:        #0E1319;
+    --surface:       #161C24;
+    --surface-sunk:  #11161D;
+    --surface-ink:   #202932;
+
+    --ink:           #E8EDF3;
+    --ink-2:         #A2B2C2;
+    --ink-3:         #72849A;
+    --ink-on-dark:   #E8EDF3;
+
+    --rule:          #262F3A;
+    --rule-strong:   #3A4756;
+
+    --series-1:      #4A93DC;
+    --series-1-soft: #1C3450;
+    --series-2:      #C0801F;
+    --series-2-soft: #3A2E14;
+
+    --critical:      #D9646E;
+    --critical-soft: #3A1F25;
+    --good:          #5FA982;
+    --good-soft:     #17301F;
+
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 10px 30px -14px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --ground:        #0E1319;
+  --surface:       #161C24;
+  --surface-sunk:  #11161D;
+  --surface-ink:   #202932;
+
+  --ink:           #E8EDF3;
+  --ink-2:         #A2B2C2;
+  --ink-3:         #72849A;
+  --ink-on-dark:   #E8EDF3;
+
+  --rule:          #262F3A;
+  --rule-strong:   #3A4756;
+
+  --series-1:      #4A93DC;
+  --series-1-soft: #1C3450;
+  --series-2:      #C0801F;
+  --series-2-soft: #3A2E14;
+
+  --critical:      #D9646E;
+  --critical-soft: #3A1F25;
+  --good:          #5FA982;
+  --good-soft:     #17301F;
+
+  --shadow: 0 1px 2px rgba(0,0,0,.4), 0 10px 30px -14px rgba(0,0,0,.7);
+}
+
+/* ── base ─────────────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; }
+}
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: var(--step-0);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+:focus-visible { outline: 2px solid var(--series-1); outline-offset: 3px; border-radius: 2px; }
+
+.wrap { width: min(100% - 2.5rem, var(--w-page)); margin-inline: auto; }
+@media (max-width: 600px) { .wrap { width: calc(100% - 1.75rem); } }
+
+h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 700; text-wrap: balance; margin: 0; letter-spacing: -.022em; line-height: 1.08; }
+p { margin: 0; }
+a { color: inherit; }
+
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.num  { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-feature-settings: "zero" 1; }
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: .68rem; font-weight: 500;
+  letter-spacing: .16em; text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.prose {
+  font-family: var(--font-prose);
+  font-size: clamp(1.06rem, 1rem + .28vw, 1.2rem);
+  line-height: 1.66;
+  color: var(--ink-2);
+  max-width: var(--w-read);
+  display: flex; flex-direction: column; gap: 1.1em;
+}
+.prose strong { color: var(--ink); font-weight: 600; }
+.prose em { font-style: italic; }
+
+/* ── status ribbon ────────────────────────────────────────────────────────── */
+/* REMOVE THIS <div class="ribbon"> BLOCK WHEN WS1 CLEARS AND THE PAGE GOES PUBLIC. */
+.ribbon {
+  background: var(--critical);
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: .72rem; letter-spacing: .05em;
+  padding: .55rem 1rem;
+  text-align: center;
+}
+.ribbon b { font-weight: 600; letter-spacing: .1em; text-transform: uppercase; }
+
+/* ── masthead ─────────────────────────────────────────────────────────────── */
+.masthead {
+  position: sticky; top: 0; z-index: 40;
+  background: var(--ground);
+  background: color-mix(in srgb, var(--ground) 86%, transparent);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--rule);
+}
+.masthead .wrap { display: flex; align-items: center; gap: 1.25rem; height: 58px; }
+.brand { display: flex; align-items: baseline; gap: .55rem; font-weight: 800; letter-spacing: -.03em; font-size: 1.02rem; }
+.brand .tick { color: var(--series-1); font-family: var(--font-mono); font-weight: 600; letter-spacing: 0; }
+.brand .sub { font-family: var(--font-mono); font-size: .68rem; font-weight: 400; color: var(--ink-3); letter-spacing: .1em; text-transform: uppercase; }
+.mast-nav { margin-left: auto; display: flex; align-items: center; gap: 1.4rem; }
+.mast-nav a {
+  font-size: .82rem; font-weight: 500; color: var(--ink-2); text-decoration: none;
+  padding: .3rem 0; border-bottom: 1.5px solid transparent;
+}
+.mast-nav a:hover { color: var(--ink); border-bottom-color: var(--series-1); }
+@media (max-width: 780px) { .mast-nav .opt { display: none; } }
+
+.themetog {
+  display: grid; place-items: center;
+  width: 32px; height: 32px; padding: 0;
+  border: 1px solid var(--rule-strong); border-radius: 50%;
+  background: var(--surface); color: var(--ink-2); cursor: pointer;
+}
+.themetog:hover { color: var(--ink); border-color: var(--ink-3); }
+.themetog svg { width: 15px; height: 15px; }
+
+/* ── hero ─────────────────────────────────────────────────────────────────── */
+.hero { padding: clamp(3rem, 7vw, 6rem) 0 clamp(2rem, 4vw, 3.5rem); }
+.hero-grid { display: grid; gap: clamp(2rem, 4vw, 3.5rem); grid-template-columns: 1fr; }
+@media (min-width: 1000px) { .hero-grid { grid-template-columns: minmax(0, 1.02fr) minmax(0, 1fr); align-items: center; } }
+
+.hero h1 {
+  font-size: var(--step-4); font-weight: 800; letter-spacing: -.042em; line-height: .94;
+  margin-bottom: 1.4rem;
+}
+.hero h1 .dim { color: var(--ink-3); }
+.hero h1 .hl { color: var(--series-1); }
+.hero-lede {
+  font-family: var(--font-prose); font-size: clamp(1.1rem, 1rem + .5vw, 1.32rem);
+  line-height: 1.6; color: var(--ink-2); max-width: 46ch;
+}
+.hero-meta { margin-top: 1.9rem; display: flex; flex-wrap: wrap; gap: 0 2rem; row-gap: 1rem; }
+.hero-meta dl { margin: 0; }
+.hero-meta dt { font-family: var(--font-mono); font-size: .62rem; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); }
+.hero-meta dd { margin: .2rem 0 0; font-family: var(--font-mono); font-size: 1.35rem; font-weight: 600; font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
+
+/* the instrument panel that carries the hero plot */
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  box-shadow: var(--shadow);
+}
+.panel-head {
+  display: flex; align-items: baseline; gap: .75rem; flex-wrap: wrap;
+  padding: .85rem 1.1rem; border-bottom: 1px solid var(--rule);
+  background: var(--surface-sunk);
+}
+.panel-head .t { font-size: .84rem; font-weight: 600; letter-spacing: -.01em; }
+.panel-head .s { font-family: var(--font-mono); font-size: .66rem; color: var(--ink-3); letter-spacing: .04em; margin-left: auto; }
+.panel-body { padding: 1.1rem; }
+
+/* ── stamps / pills ───────────────────────────────────────────────────────── */
+.stamp {
+  display: inline-flex; align-items: center; gap: .3rem;
+  font-family: var(--font-mono); font-size: .6rem; font-weight: 500;
+  letter-spacing: .08em; text-transform: uppercase;
+  padding: .18rem .42rem; border-radius: 2px; white-space: nowrap;
+  border: 1px solid transparent;
+}
+.stamp svg { width: 9px; height: 9px; flex: none; }
+.stamp.crit { background: var(--critical-soft); color: var(--critical); border-color: color-mix(in srgb, var(--critical) 28%, transparent); }
+.stamp.warn { background: var(--series-2-soft); color: var(--series-2); border-color: color-mix(in srgb, var(--series-2) 30%, transparent); }
+.stamp.ok   { background: var(--good-soft); color: var(--good); border-color: color-mix(in srgb, var(--good) 28%, transparent); }
+.stamp.neut { background: var(--surface-sunk); color: var(--ink-3); border-color: var(--rule); }
+
+/* ── section scaffolding: the specification rail ──────────────────────────── */
+.section { padding: clamp(3.5rem, 7vw, 6.5rem) 0; border-top: 1px solid var(--rule); }
+.section-grid { display: grid; gap: 2rem; grid-template-columns: 1fr; }
+@media (min-width: 940px) {
+  .section-grid { grid-template-columns: 176px minmax(0, 1fr); gap: 3rem; }
+}
+.rail { position: relative; }
+@media (min-width: 940px) { .rail { position: sticky; top: 84px; align-self: start; } }
+.rail-id { font-family: var(--font-mono); font-size: .68rem; font-weight: 600; letter-spacing: .1em; color: var(--series-1); }
+.rail-title { margin-top: .5rem; font-size: .92rem; font-weight: 700; letter-spacing: -.015em; }
+.rail-meta { margin-top: .9rem; padding-top: .8rem; border-top: 1px solid var(--rule); display: grid; gap: .45rem; }
+.rail-meta div { font-family: var(--font-mono); font-size: .63rem; line-height: 1.45; color: var(--ink-3); }
+.rail-meta b { display: block; font-weight: 500; color: var(--ink-2); letter-spacing: .02em; }
+
+.section h2 { font-size: var(--step-3); font-weight: 800; letter-spacing: -.038em; margin-bottom: 1.4rem; }
+.section h3 { font-size: var(--step-1); font-weight: 700; letter-spacing: -.025em; margin: 2.6rem 0 .9rem; }
+
+/* ── the leaderboard reveal ───────────────────────────────────────────────── */
+.lb { display: grid; gap: 2px; }
+.lb-row {
+  display: grid; grid-template-columns: 2.2rem 1fr auto; align-items: center; gap: .9rem;
+  padding: .62rem .85rem;
+  background: var(--surface-sunk);
+  border-left: 2px solid transparent;
+  transition: background .45s ease, border-color .45s ease;
+}
+.lb-row .rank { font-family: var(--font-mono); font-size: .74rem; font-weight: 600; color: var(--ink-3); }
+.lb-row .name { font-size: .9rem; font-weight: 600; letter-spacing: -.01em; }
+.lb-row .name .aka { display: block; font-family: var(--font-mono); font-size: .62rem; font-weight: 400; color: var(--ink-3); letter-spacing: .04em; margin-top: .12rem; opacity: 0; transition: opacity .4s ease; }
+.lb-row .sr { font-family: var(--font-mono); font-size: 1rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+.lb.revealed .lb-row { background: var(--series-1-soft); border-left-color: var(--series-1); }
+.lb.revealed .lb-row .name .aka { opacity: 1; }
+.lb.revealed .lb-row .rank { text-decoration: line-through; opacity: .45; }
+
+.btn {
+  display: inline-flex; align-items: center; gap: .5rem;
+  font-family: var(--font-display); font-size: .84rem; font-weight: 600; letter-spacing: -.005em;
+  padding: .6rem 1.05rem; border-radius: 2px; cursor: pointer;
+  background: var(--ink); color: var(--ground); border: 1px solid var(--ink);
+  transition: opacity .15s ease;
+}
+.btn:hover { opacity: .85; }
+.btn.ghost { background: transparent; color: var(--ink-2); border-color: var(--rule-strong); }
+.btn.ghost:hover { color: var(--ink); border-color: var(--ink-3); opacity: 1; }
+
+.verdict {
+  margin-top: 1.4rem; padding: 1.1rem 1.2rem;
+  background: var(--surface-ink); color: var(--ink-on-dark);
+  border-radius: 3px;
+  font-family: var(--font-prose); font-size: 1.02rem; line-height: 1.55;
+  opacity: 0; max-height: 0; overflow: hidden;
+  transition: opacity .5s ease .15s, max-height .5s ease, padding .5s ease, margin .5s ease;
+}
+.verdict.on { opacity: 1; max-height: 640px; }
+/* .verdict sits on --surface-ink, which is dark in BOTH themes — so its ink is
+   light in both and must NOT be theme-switched. */
+.verdict strong { color: #FFFFFF; font-weight: 600; }
+
+/* ── tables ───────────────────────────────────────────────────────────────── */
+.tablewrap { overflow-x: auto; border: 1px solid var(--rule); border-radius: 3px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; min-width: 940px; font-family: var(--font-mono); font-size: .74rem; }
+thead th {
+  background: var(--surface-sunk);
+  text-align: left; font-weight: 600; font-size: .6rem;
+  letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3);
+  padding: .7rem .7rem; border-bottom: 1px solid var(--rule-strong);
+  white-space: nowrap;
+}
+thead th.sortable { cursor: pointer; user-select: none; }
+thead th.sortable:hover { color: var(--ink); }
+thead th .arrow { opacity: .3; margin-left: .25rem; }
+thead th[aria-sort] .arrow { opacity: 1; color: var(--series-1); }
+tbody td { padding: .62rem .7rem; border-bottom: 1px solid var(--rule); vertical-align: top; font-variant-numeric: tabular-nums; }
+tbody tr:hover { background: var(--surface-sunk); }
+tbody tr:last-child td { border-bottom: none; }
+td.cell { font-family: var(--font-display); font-size: .8rem; font-weight: 600; letter-spacing: -.01em; white-space: nowrap; }
+td.cell .env { display: block; font-family: var(--font-mono); font-size: .62rem; font-weight: 400; color: var(--ink-3); letter-spacing: .03em; margin-top: .14rem; white-space: normal; }
+td.big { font-size: .92rem; font-weight: 600; }
+td .ci { color: var(--ink-3); font-size: .66rem; display: block; margin-top: .1rem; }
+td .stamps { display: flex; flex-wrap: wrap; gap: .25rem; }
+.dash { color: var(--ink-3); }
+
+.filters { display: flex; flex-wrap: wrap; gap: .4rem; margin-bottom: .9rem; align-items: center; }
+.chip {
+  font-family: var(--font-mono); font-size: .66rem; font-weight: 500; letter-spacing: .05em;
+  padding: .32rem .6rem; border-radius: 2px; cursor: pointer;
+  background: var(--surface); color: var(--ink-2); border: 1px solid var(--rule-strong);
+}
+.chip:hover { color: var(--ink); }
+.chip[aria-pressed="true"] { background: var(--series-1); border-color: var(--series-1); color: #fff; }
+.filters .lbl { font-family: var(--font-mono); font-size: .62rem; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); margin-right: .3rem; }
+
+/* ── charts ───────────────────────────────────────────────────────────────── */
+.chart { width: 100%; display: block; overflow: visible; }
+.chart text { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.ax-line { stroke: var(--rule-strong); stroke-width: 1; }
+.grid-line { stroke: var(--rule); stroke-width: 1; }
+.ax-label { fill: var(--ink-3); font-size: 9px; letter-spacing: .06em; }
+.mark-label { fill: var(--ink); font-size: 10px; font-weight: 600; }
+.row-label { fill: var(--ink-2); font-size: 10px; }
+
+.legend { display: flex; flex-wrap: wrap; gap: 1.1rem; margin-top: .9rem; }
+.legend span { display: inline-flex; align-items: center; gap: .4rem; font-family: var(--font-mono); font-size: .66rem; color: var(--ink-2); }
+.legend i { width: 11px; height: 11px; border-radius: 2px; flex: none; display: block; }
+
+.tip {
+  position: fixed; z-index: 90; pointer-events: none;
+  background: var(--surface-ink); color: var(--ink-on-dark);
+  border-radius: 3px; padding: .5rem .65rem;
+  font-family: var(--font-mono); font-size: .68rem; line-height: 1.5;
+  box-shadow: 0 6px 24px -8px rgba(0,0,0,.5);
+  opacity: 0; transition: opacity .12s ease; max-width: 280px;
+}
+.tip.on { opacity: 1; }
+/* same rule as .verdict — the tooltip ground is dark in both themes */
+.tip b { color: #FFFFFF; font-weight: 600; }
+
+/* ── callouts ─────────────────────────────────────────────────────────────── */
+.callout {
+  border-left: 2px solid var(--series-2);
+  background: var(--surface-sunk);
+  padding: 1rem 1.2rem;
+  border-radius: 0 3px 3px 0;
+  font-family: var(--font-mono); font-size: .78rem; line-height: 1.62; color: var(--ink-2);
+}
+.callout b { color: var(--ink); font-weight: 600; }
+.callout.crit { border-left-color: var(--critical); }
+
+.cards { display: grid; gap: 1px; background: var(--rule); border: 1px solid var(--rule); border-radius: 3px; overflow: hidden; }
+@media (min-width: 720px) { .cards.two { grid-template-columns: 1fr 1fr; } .cards.three { grid-template-columns: repeat(3, 1fr); } }
+.card { background: var(--surface); padding: 1.3rem; display: flex; flex-direction: column; gap: .5rem; }
+.card .k { font-family: var(--font-mono); font-size: .62rem; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); }
+.card .v { font-family: var(--font-mono); font-size: 1.85rem; font-weight: 600; letter-spacing: -.03em; font-variant-numeric: tabular-nums; line-height: 1; }
+.card .v small { font-size: .9rem; font-weight: 500; color: var(--ink-3); letter-spacing: 0; }
+.card .d { font-size: .82rem; color: var(--ink-2); line-height: 1.5; }
+
+.ledger { display: grid; gap: 0; border: 1px solid var(--rule); border-radius: 3px; background: var(--surface); overflow: hidden; }
+.ledger-row { display: grid; grid-template-columns: 1fr; gap: .35rem; padding: .95rem 1.1rem; border-bottom: 1px solid var(--rule); }
+@media (min-width: 720px) { .ledger-row { grid-template-columns: 210px minmax(0,1fr) auto; gap: 1.2rem; align-items: baseline; } }
+.ledger-row:last-child { border-bottom: none; }
+.ledger-row .claim { font-family: var(--font-mono); font-size: .72rem; font-weight: 500; letter-spacing: .03em; color: var(--ink); }
+.ledger-row .what { font-size: .86rem; color: var(--ink-2); line-height: 1.5; }
+
+pre {
+  margin: 0; overflow-x: auto;
+  background: var(--surface-ink); color: var(--ink-on-dark);
+  border-radius: 3px; padding: 1rem 1.1rem;
+  font-family: var(--font-mono); font-size: .74rem; line-height: 1.65;
+}
+pre .c { color: var(--ink-3); }
+pre .k2 { color: var(--series-2); }
+
+.foot { border-top: 1px solid var(--rule); padding: 3rem 0 4rem; background: var(--surface-sunk); }
+.foot .prose { font-size: .88rem; max-width: 78ch; color: var(--ink-3); }
+.foot .prose strong { color: var(--ink-2); }
+</style>
+
+<!-- ══ REMOVE WHEN WS1 (arXiv v1 + endorsement + OpenReview) CLEARS ══ -->
+<div class="ribbon">
+  <b>Pre-publication</b> &nbsp;·&nbsp; embargoed until arXiv v1 + endorsement clear. Not for external distribution.
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="brand">
+      <span class="tick">σ</span>
+      <span>ORBIT</span>
+      <span class="sub">Variance&nbsp;Atlas</span>
+    </div>
+    <nav class="mast-nav">
+      <a href="#reveal" class="opt">The problem</a>
+      <a href="#atlas">The atlas</a>
+      <a href="#blindspot" class="opt">Per-task</a>
+      <a href="#limits">Limits</a>
+      <button class="themetog" id="themetog" type="button" aria-label="Switch colour theme">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="4.2"></circle>
+          <path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.4 5.4l1.6 1.6M17 17l1.6 1.6M18.6 5.4L17 7M7 17l-1.6 1.6"></path>
+        </svg>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <!-- ═══ HERO ═══════════════════════════════════════════════════════════ -->
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <p class="eyebrow">Measured retrain noise · robot manipulation policies</p>
+        <h1 style="margin-top:1.1rem">
+          Same data.<br>Same code.<br><span class="hl">Eight answers.</span>
+        </h1>
+        <p class="hero-lede">
+          Eight ACT policies trained on byte-identical data, differing only in
+          training seed, scored <span class="num">69.6%</span> to
+          <span class="num">88.4%</span> on ALOHA transfer-cube.
+          Every benchmark number you have ever read is one draw from a distribution
+          nobody publishes. This is that distribution, measured.
+        </p>
+        <div class="hero-meta">
+          <dl><dt>Measured cells</dt><dd id="m-cells">16</dd></dl>
+          <dl><dt>σ range (pp)</dt><dd id="m-range">0.78 – 11.4</dd></dl>
+          <dl><dt>Policy classes</dt><dd>4</dd></dl>
+          <dl><dt>Environments</dt><dd>3</dd></dl>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <span class="t">ALOHA <span class="mono">sim_transfer_cube</span> · ACT</span>
+          <span class="s">J=8 · k=50 · n=500/run · seed 1000</span>
+        </div>
+        <div class="panel-body">
+          <svg class="chart" id="heroChart" viewBox="0 0 560 230" role="img"
+               aria-label="Eight identical-data retrains of ACT on ALOHA transfer-cube scoring between 69.6 and 88.4 percent success, against the single point estimate a benchmark would report."></svg>
+          <div class="legend">
+            <span><i style="background:var(--series-1)"></i>one retrain (identical data)</span>
+            <span><i style="background:var(--ink-3)"></i>mean — the number that gets published</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ 01 · THE REVEAL ════════════════════════════════════════════════ -->
+  <section class="section" id="reveal">
+    <div class="wrap section-grid">
+      <aside class="rail">
+        <div class="rail-id">01</div>
+        <div class="rail-title">Why we did not build a leaderboard</div>
+        <div class="rail-meta">
+          <div><b>Source</b> PERTASK-3 Leg B2</div>
+          <div><b>Scored</b> 2026-08-19</div>
+          <div><b>Prereg</b> sha256 22ff5c67…</div>
+          <div><b>Frozen</b> before launch</div>
+        </div>
+      </aside>
+
+      <div>
+        <h2>A ranking of eight identical models</h2>
+        <div class="prose" style="margin-bottom:2.2rem">
+          <p>
+            Here is a leaderboard. Eight entries, ranked by success rate on a
+            standard manipulation benchmark, evaluated identically — <strong>500 episodes
+            each, the same eval seed, the same simulator build</strong>. The spread from
+            first to last is <strong>18.8 percentage points</strong>, which in this field
+            is the difference between a paper and a rejection.
+          </p>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <span class="t">ALOHA sim_transfer_cube · success rate</span>
+            <span class="s">n=500 · eval seed 1000 · sync envs</span>
+          </div>
+          <div class="panel-body">
+            <div class="lb" id="lb"></div>
+            <div style="margin-top:1.1rem; display:flex; gap:.6rem; flex-wrap:wrap">
+              <button class="btn" id="revealBtn" type="button">Reveal what these entries are</button>
+            </div>
+            <div class="verdict" id="verdict">
+              <strong>They are the same model.</strong> One architecture, one dataset —
+              the full 50-episode <span class="mono">aloha_sim_transfer_cube_human</span> set,
+              byte-identical across all eight — one training recipe, 100k steps, pure
+              LeRobot defaults. The only thing that differs is the training seed, 0 through 7.
+              <br><br>
+              The ranking is real. It is also <strong>entirely noise</strong>. Rank 1 beats
+              rank 8 by 18.8 pp and there is nothing whatsoever to learn from it.
+            </div>
+          </div>
+        </div>
+
+        <div class="prose" style="margin-top:2.2rem">
+          <p>
+            A leaderboard is a ranking of point estimates. Point estimates on these
+            suites are draws from a distribution with a standard deviation we have now
+            measured at <strong>0.78 to 11.43 pp</strong> depending on the cell — and only
+            <strong>8%</strong> of the variance above came from evaluation sampling. The
+            other 92% is the training run itself.
+          </p>
+          <p>
+            So we built the other thing. Not a ranking — <em>a table of what a result
+            has to beat before it means anything.</em> Every row below is a measured
+            noise floor for one cell of the space: a policy class, an environment, a
+            data scale. It ranks nobody. It cannot be topped. It is simply the number
+            you need before your number is interpretable.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ 02 · THE ATLAS ═════════════════════════════════════════════════ -->
+  <section class="section" id="atlas">
+    <div class="wrap section-grid">
+      <aside class="rail">
+        <div class="rail-id">02</div>
+        <div class="rail-title">The atlas</div>
+        <div class="rail-meta">
+          <div><b>Programme</b> ORBIT 2026-06 → 08</div>
+          <div><b>Design</b> J independent retrains, byte-identical data, common eval seed</div>
+          <div><b>Estimator</b> σ from gaps / jackknife, χ² CI</div>
+          <div><b>Rule</b> both readings, always</div>
+        </div>
+      </aside>
+
+      <div>
+        <h2>What a success rate has to beat</h2>
+        <div class="prose" style="margin-bottom:2rem">
+          <p>
+            <strong>σ<sub>run</sub></strong> is the run-to-run standard deviation of a
+            <em>retrained</em> checkpoint on a fixed episode set: same data, same budget,
+            new training seed. It is the price of the question <em>“is method A better
+            than method B?”</em> — and no amount of evaluation cleverness reduces it,
+            because it lives in training, not in the eval draw.
+          </p>
+        </div>
+
+        <div class="filters" role="group" aria-label="Filter atlas rows by policy class">
+          <span class="lbl">Policy</span>
+          <button class="chip" data-f="all" aria-pressed="true" type="button">all</button>
+          <button class="chip" data-f="act" aria-pressed="false" type="button">ACT</button>
+          <button class="chip" data-f="diffusion" aria-pressed="false" type="button">DiffusionPolicy</button>
+          <button class="chip" data-f="smolvla-ft" aria-pressed="false" type="button">SmolVLA</button>
+          <button class="chip" data-f="pi05-ft" aria-pressed="false" type="button">π₀.₅</button>
+        </div>
+
+        <div class="tablewrap">
+          <table id="atlasTable">
+            <thead>
+              <tr>
+                <th class="sortable" data-k="label">Cell <span class="arrow">↕</span></th>
+                <th class="sortable" data-k="k">k <span class="arrow">↕</span></th>
+                <th class="sortable" data-k="sigma_run" aria-sort="descending">σ<sub>run</sub> (pp) <span class="arrow">↓</span></th>
+                <th>95% CI</th>
+                <th class="sortable" data-k="df">df <span class="arrow">↕</span></th>
+                <th>Sampling floor</th>
+                <th>SR band</th>
+                <th>σ<sub>per-task</sub></th>
+                <th>Scope</th>
+              </tr>
+            </thead>
+            <tbody id="atlasBody"></tbody>
+          </table>
+        </div>
+
+        <p class="mono" style="font-size:.66rem; color:var(--ink-3); margin-top:.7rem; line-height:1.6">
+          Hover any row for full provenance. “Sampling floor” is the binomial component
+          at the stated n — the part of σ that is eval draw rather than retrain lottery.
+          Both readings are carried on every row that has one; the floor-subtracted value
+          is never quoted without the raw.
+        </p>
+
+        <h3>Every measured cell, to scale</h3>
+        <div class="panel">
+          <div class="panel-head">
+            <span class="t">σ<sub>run</sub> by cell, with the sampling component split out</span>
+            <span class="s">percentage points of success rate</span>
+          </div>
+          <div class="panel-body">
+            <svg class="chart" id="sigmaChart" role="img"
+                 aria-label="Horizontal bar chart of measured run-to-run standard deviation for each atlas cell, from 0.78 to 11.43 percentage points, with the binomial sampling floor marked where it was measured. Values are given in the atlas table above."></svg>
+            <div class="legend">
+              <span><i style="background:var(--series-1)"></i>σ<sub>run</sub> measured</span>
+              <span><i style="background:var(--series-2)"></i>binomial sampling floor</span>
+            </div>
+            <p class="mono" style="font-size:.64rem; color:var(--ink-3); margin-top:.7rem; line-height:1.6">
+              σ components add in quadrature, not linearly — the ochre marks where the
+              sampling floor falls on this axis, it is not a subtracted share of the bar.
+              Hover any row for the floor-subtracted reading. Rows without ochre had no
+              floor reported at their stated n.
+            </p>
+          </div>
+        </div>
+
+        <div class="callout" style="margin-top:1.4rem">
+          <b>Read this chart carefully — it is not an architecture ranking.</b>
+          The two ALOHA rows share an architecture, a protocol, an eval budget and
+          k=50, and their σ in pp differs by 2.9×. In <i>relative</i> terms the ordering
+          reverses: 8.4% of mean success for transfer-cube against 18.9% for insertion.
+          The pp gap is where the success rate sits, not how stable the class is.
+          That is why every low-SR row here carries a scope stamp, and why the gate
+          refuses to price one of these cells with the other's σ.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ 03 · THE BLIND SPOT ════════════════════════════════════════════ -->
+  <section class="section" id="blindspot">
+    <div class="wrap section-grid">
+      <aside class="rail">
+        <div class="rail-id">03</div>
+        <div class="rail-title">The blind spot in the suite average</div>
+        <div class="rail-meta">
+          <div><b>Source</b> PERTASK-2, PERTASK-3 Leg A′</div>
+          <div><b>Scored</b> 2026-08-14 · 2026-08-18</div>
+          <div><b>Amendment A</b> sha256 8088ab5b…</div>
+          <div><b>Verdict</b> WEDGE-TRANSFERS</div>
+        </div>
+      </aside>
+
+      <div>
+        <h2>The average is the wrong number</h2>
+        <div class="prose" style="margin-bottom:2rem">
+          <p>
+            Multi-task suites report an average over tasks. Averaging shrinks noise by
+            roughly √(number of tasks) — so the suite number looks reassuringly stable
+            while <strong>each individual task keeps its full swing</strong>. And you do not
+            deploy an average. You deploy the tasks.
+          </p>
+          <p>
+            We measured both quantities in the same waves, on the same retrains, in two
+            policy classes. Per-task retrain σ is <strong>2.6× to 3.2×</strong> the suite
+            σ measured beside it.
+          </p>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <span class="t">Suite average vs. per-task, same retrains</span>
+            <span class="s">LIBERO (libero_object) · k=88 · J=8 · 10 tasks</span>
+          </div>
+          <div class="panel-body">
+            <svg class="chart" id="ptChart" role="img"
+                 aria-label="Grouped bar chart comparing suite-level and per-task retrain standard deviation for pi-0.5 and SmolVLA at k=88 on LIBERO. Pi-0.5: suite 4.23, per-task 11.00 (libero_object). SmolVLA: suite 2.11, per-task 6.69 (libero_object)."></svg>
+            <div class="legend">
+              <span><i style="background:var(--series-1)"></i>suite-average σ<sub>run</sub></span>
+              <span><i style="background:var(--series-2)"></i>per-task σ<sub>run</sub> (floor-subtracted)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="cards three" style="margin-top:1.6rem">
+          <div class="card">
+            <span class="k">π₀.₅ · worst task</span>
+            <span class="v">20.4<small> pp</small></span>
+            <span class="d">Standard deviation of a single task across eight retrains on identical data.</span>
+          </div>
+          <div class="card">
+            <span class="k">Cross-task correlation</span>
+            <span class="v">0.011</span>
+            <span class="d">Which tasks a retrain helps or wrecks is near-independent — so the damage never shows up in the mean. A global effect would sit near 0.46.</span>
+          </div>
+          <div class="card">
+            <span class="k">Checkpoint-sweep gain, held out</span>
+            <span class="v">≈0<small> pp</small></span>
+            <span class="d">Across 36 checkpoint promotions in two classes, sweeps reported +1.7 to +2.3 pp and bought approximately nothing held-out. Scoped to <b>checkpoint</b> promotion within a run — across-seed selection is a different estimand and is measured separately.</span>
+          </div>
+        </div>
+
+        <div class="callout" style="margin-top:1.6rem">
+          <b>Both readings, every time.</b>
+          π₀.₅ per-task σ is <b>11.00 pp</b>, 95% CI [6.86, 15.13], floor-subtracted —
+          the raw fixed-battery reading is <b>11.82 pp</b> and travels with it.
+          SmolVLA per-task σ is <b>6.69 pp</b> (libero_object), CI [5.60, 7.77], against raw <b>7.33 pp</b>.
+          Suite comparators: π₀.₅ <b>4.23 pp</b> at n=1000; SmolVLA <b>2.11 pp</b> at
+          n=2000, df=7.
+          σ_pertask is suite-dependent: the same class and protocol measured 3.29 pp
+          (raw 4.52, CI [1.18, 5.41]) on libero_spatial — every per-task σ names its
+          suite (PERTASK-4, T4-2 DIVERGENT).
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ 04 · LIMITS ════════════════════════════════════════════════════ -->
+  <section class="section" id="limits">
+    <div class="wrap section-grid">
+      <aside class="rail">
+        <div class="rail-id">04</div>
+        <div class="rail-title">What this licenses, and what it does not</div>
+        <div class="rail-meta">
+          <div><b>Discipline</b> pre-registered bands, frozen before scoring</div>
+          <div><b>On the record</b> falsified predictions kept</div>
+          <div><b>Rule</b> no claim outside its measured cell</div>
+        </div>
+      </aside>
+
+      <div>
+        <h2>The limits are the product</h2>
+        <div class="prose" style="margin-bottom:2rem">
+          <p>
+            An atlas that overclaims is worse than no atlas, because it licenses
+            confident decisions on unmeasured ground. Every row above is scoped, and
+            the scope is machine-enforced: the gate refuses to price an evaluation with
+            a σ measured in a different success-rate regime rather than silently
+            transferring it.
+          </p>
+        </div>
+
+        <div class="ledger">
+          <div class="ledger-row">
+            <span class="claim">Transfer across cells</span>
+            <span class="what">Every σ here was measured on PushT, LIBERO and ALOHA with DiffusionPolicy, ACT, SmolVLA and π₀.₅ policies. Transfer to other environments, policies or harnesses is a <b>pre-registered hypothesis, not a result</b>. Measure your own before trusting these.</span>
+            <span><span class="stamp warn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 8v5M12 17h.01"></path></svg>hypothesis</span></span>
+          </div>
+          <div class="ledger-row">
+            <span class="claim">Suite-level wedge at k=88</span>
+            <span class="what">At production data scale the <b>suite-average</b> excess over the eval floor was 0.61 pp against a 2 pp resolvability floor — <b>indeterminate</b>. The licensed finding is per-task, and only per-task.</span>
+            <span><span class="stamp neut">indeterminate</span></span>
+          </div>
+          <div class="ledger-row">
+            <span class="claim">Low success-rate rows</span>
+            <span class="what">In <span class="mono">pusht-act</span> (43% of variance), <span class="mono">aloha-insertion-act</span> (41%) the binomial floor dominates. These σ values are substantially <b>sampling, not retrain lottery</b>, and must never be read as “this class is stable”.</span>
+            <span><span class="stamp crit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 8v5M12 17h.01"></path></svg>low-SR</span></span>
+          </div>
+          <div class="ledger-row">
+            <span class="claim">ALOHA pairing</span>
+            <span class="what">The obs-hash alignment pre-check scored 0/6 on gym-aloha — EGL pixel render nondeterminism across processes, <b>not</b> a broken state mapping: a separate state-level probe found the seed→initial-qpos mapping byte-identical across fresh processes on both tasks, 10/10 seeds. The frozen demotion applied regardless, so both ALOHA rows are reported as <b>unpaired</b> common-seed-list measurements and no paired statistic is licensed against them. Exploratory split-half reads on these cells exist in the provenance record; they carry no pre-registration and are not quoted as results.</span>
+            <span><span class="stamp crit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 8v5M12 17h.01"></path></svg>unpaired</span></span>
+          </div>
+          <div class="ledger-row">
+            <span class="claim">Cross-stack comparison</span>
+            <span class="what">A <span class="mono">gym_pusht</span> rebuild shifted absolute success rate by <b>−18.2 pp</b>, measured, and <b>non-uniformly</b> (range −10.6 to −24.4). Never pool or compare success rates across a simulator rebuild.</span>
+            <span><span class="stamp crit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 8v5M12 17h.01"></path></svg>invalid</span></span>
+          </div>
+          <div class="ledger-row">
+            <span class="claim">The h=16 eval horizon</span>
+            <span class="what">The <span class="mono">n_action_steps=16</span> row's success <i>level</i> came from an argmax sweep on one checkpoint and is <b>optimistically biased</b> — never quote it as ACT's PushT score. The σ estimand is far less affected: the non-argmax h=8 level gives 4.849 against 4.839.</span>
+            <span><span class="stamp warn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 8v5M12 17h.01"></path></svg>selection</span></span>
+          </div>
+          <div class="ledger-row">
+            <span class="claim">A falsified prediction, kept</span>
+            <span class="what">PI05-CHAR's H1 predicted at least one of eight new seeds below 60.0 on the collapsing mask. The minimum was <b>60.5</b> — falsified by 0.5 pp, inside the corpus resolvability floor. The prediction stays on the record and its stated consequence was refused.</span>
+            <span><span class="stamp ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 13l4 4L19 7"></path></svg>on record</span></span>
+          </div>
+        </div>
+
+        <h3>How it was measured</h3>
+        <div class="prose">
+          <p>
+            Each cell is <strong>J independent retrains on byte-identical data</strong> —
+            same dataset hash, same budget, same configuration, training seed varied —
+            then evaluated at a fixed eval seed. On PushT and ALOHA the seed fixes the initial-state list; on LIBERO it does not — that harness walks its own init-state pointer, so LIBERO rows are common-seed-list, not common-episode-set. σ_run is unaffected either way: it needs the episode set per task to be comparable, not episode-by-episode identity. σ is estimated
+            from the retrain gaps with a χ² confidence interval, and the binomial
+            component at the stated <em>n</em> is subtracted to separate eval sampling
+            from the training lottery. Both readings are carried.
+          </p>
+          <p>
+            Decision bands were frozen and hashed <strong>before</strong> any episode was
+            scored, and the frozen order of scoring is never changed after the fact.
+            When a pre-check fails, the pre-committed demotion applies — which is why
+            two rows here are marked unpaired rather than quietly reported as paired.
+          </p>
+        </div>
+
+        <h3>Read the atlas from code</h3>
+        <pre><span class="c"># the same values this page renders, as shipped data</span>
+from orbit_eval.atlas import REGIMES, get_regime, HONESTY_NOTE
+
+cell = get_regime(<span class="k2">"aloha-transfer-cube-act"</span>)
+cell[<span class="k2">"sigma_run"</span>]    <span class="c"># 6.515  pp, df=7, chi2 CI [4.31, 13.26]</span>
+cell[<span class="k2">"sr_range"</span>]      <span class="c"># (69.6, 88.4) — the band this sigma prices</span>
+cell[<span class="k2">"provenance"</span>]    <span class="c"># prereg hash, protocol, every scope stamp, verbatim</span></pre>
+        <p class="mono" style="font-size:.68rem; color:var(--ink-3); margin-top:.8rem; line-height:1.6">
+          Rows declaring <span style="color:var(--ink-2)">sr_range</span> are enforced, not
+          advisory: the gate refuses to price an evaluation whose binomial floor differs
+          from every point of the band by more than 2×, in either direction.
+        </p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <div class="prose">
+      <p>
+        <strong>ORBIT Variance Atlas.</strong> Every value on this page was measured on the
+        ORBIT research programme between June and August 2026 under pre-registration,
+        and is reproduced here from the shipped <span class="mono">orbit_eval.atlas</span>
+        module rather than retyped. Success rates are percentage points throughout.
+      </p>
+      <p>
+        Scope of the per-task finding: two policy classes, LIBERO (libero_object), k=88.
+        σ_pertask is suite-dependent: the same class and protocol measured 3.29 pp
+        (raw 4.52, CI [1.18, 5.41]) on libero_spatial — every per-task σ names its
+        suite (PERTASK-4, T4-2 DIVERGENT). Scope of the
+        ACT rows: LeRobot defaults, the stated eval horizon, the stated success-rate band.
+        Transfer beyond a measured cell is a pre-registered hypothesis and is labelled as
+        one everywhere it appears.
+      </p>
+    </div>
+  </div>
+</footer>
+
+<div class="tip" id="tip" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ── theme toggle: writes the stamp the CSS listens for ──────────────── */
+  var root = document.documentElement, tog = document.getElementById("themetog");
+  tog.addEventListener("click", function () {
+    var explicit = root.getAttribute("data-theme");
+    var dark = explicit ? explicit === "dark"
+             : matchMedia("(prefers-color-scheme: dark)").matches;
+    root.setAttribute("data-theme", dark ? "light" : "dark");
+    redrawAll();
+  });
+
+  var reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ── DATA ─────────────────────────────────────────────────────────────
+     Transcribed from orbit-eval/orbit_eval/atlas.py (REGIMES) and the
+     PERTASK-3 / PERTASK-2 results docs. Derived fields (floor, floor-
+     subtracted, % of variance) are only present where the source documents
+     state them — nothing here is recomputed or inferred.
+     ─────────────────────────────────────────────────────────────────────*/
+  var ATLAS = [
+    { key:"libero-dp-k22", short:"LIBERO · DiffusionPolicy", env:"libero", policy:"diffusion",
+      label:"LIBERO / DiffusionPolicy k=22 (Phase 2)", k:22, sigma:11.43, df:8,
+      note:"Phase 2, 8 noise pairs. Small-k cell." },
+
+    { key:"pi05-ft", short:"LIBERO · π₀.₅ ft", env:"libero", policy:"pi05-ft",
+      label:"LIBERO / pi0.5 fine-tune k=22", k:22, sigma:9.74, df:10, ci:[6.81,17.10],
+      note:"Within-mask ANOVA over 16 runs, 6 masks. OVERTURNS the earlier df=2 value of 2.02 — the pretraining ladder is not monotone. Corroborated by PI05-CHAR: the collapsing mask alone gives 12.64 at df=9. Truncated schedule (20k steps / 30k decay); completion effect untested.",
+      stamps:[{c:"ok",t:"overturned prior"}] },
+
+    { key:"libero-dp-k31", short:"LIBERO · DiffusionPolicy", env:"libero", policy:"diffusion",
+      label:"LIBERO / DiffusionPolicy k=31 (Tier 1)", k:31, sigma:7.48, df:6,
+      note:"PHASE2B, 6 noise pairs." },
+
+    { key:"aloha-transfer-cube-act", short:"ALOHA transfer_cube · ACT", env:"aloha", policy:"act",
+      label:"ALOHA sim_transfer_cube / ACT from-scratch (lerobot defaults)", k:50,
+      sigma:6.515, df:7, ci:[4.31,13.26], floor:1.856, floorPct:8, sub:6.245, sr:[69.6,88.4],
+      note:"J=8 byte-identical-data retrains, seeds 0-7, 100k steps, pure LeRobot ACT defaults, n=500 common-seed-list eval at seed 1000, sync envs. Spread 18.8 pp on mean 77.9. The healthy-regime ACT measurement pusht-act could not provide.",
+      stamps:[{c:"crit",t:"unpaired"}] },
+
+    { key:"libero-dp-k44", short:"LIBERO · DiffusionPolicy", env:"libero", policy:"diffusion",
+      label:"LIBERO / DiffusionPolicy k=44 full (Tier 1)", k:44, sigma:6.24, df:7,
+      note:"PHASE2B, 8 seeds of the full 44-demo set." },
+
+    { key:"pi05-ft-k22-multitask", short:"LIBERO · π₀.₅ ft multi-task", env:"libero", policy:"pi05-ft",
+      label:"LIBERO / pi0.5 fine-tune k=22 multi-task", k:22, sigma:6.02, df:7, ci:[3.98,12.25],
+      pertask:12.01, pertaskCi:[8.70,15.31], pertaskRaw:15.33,
+      note:"PI05_SCALE W2. Per-task instability barely moves with k (12.01 → 11.00) while the suite average falls (6.02 → 4.05): suite reporting hides it. Truncated schedule (20k steps / 30k decay); completion effect untested." },
+
+    { key:"pusht-act-h8", short:"PushT · ACT, eval h=8", env:"pusht", policy:"act",
+      label:"PushT / ACT from-scratch, eval n_action_steps=8 (chunk 100)", k:206,
+      sigma:4.849, df:7, ci:[3.21,9.87], floor:1.654, floorPct:12, sub:4.559, sr:[9.2,21.4],
+      note:"The eight pusht-act checkpoints RE-EVALUATED, not retrained: same weights, same n=500 eval at seed 1000, only the open-loop action horizon changed from the ALOHA-inherited default of 100 to 8. h=8 was the pre-committed NON-argmax level, so its SR level carries no selection bias.",
+      stamps:[{c:"neut",t:"eval-horizon"}] },
+
+    { key:"pusht-act-h16", short:"PushT · ACT, eval h=16", env:"pusht", policy:"act",
+      label:"PushT / ACT from-scratch, eval n_action_steps=16 (chunk 100)", k:206,
+      sigma:4.839, df:7, ci:[3.20,9.85], floor:1.856, floorPct:15, sub:4.469, sr:[14.6,30.0],
+      note:"Same eight checkpoints at horizon 16. SELECTION DISCLOSURE: h=16 was the argmax of an out-of-band sweep on ONE checkpoint, so the SR level is optimistically biased and must never be quoted as ACT's PushT score. The sigma estimand is far less affected — the sweep carried no information about across-seed spread.",
+      stamps:[{c:"warn",t:"selection"},{c:"neut",t:"eval-horizon"}] },
+
+    { key:"pi05-ft-k88-multitask", short:"LIBERO · π₀.₅ ft, production k", env:"libero", policy:"pi05-ft",
+      label:"LIBERO / pi0.5 fine-tune k=88 multi-task (production k)", k:88,
+      sigma:4.05, df:7, ci:[2.68,8.24],
+      sigmaAlt:4.23, sigmaAltNote:"n=1000, floor 1.53",
+      pertask:11.00, pertaskCi:[6.86,15.13], pertaskRaw:11.82,
+      note:"sigma_run 4.05 at n=200; re-measured 4.23 at n=1000 — suite noise confirmed real, floor 1.53. Per-task sigma from PERTASK-2: 8 seeds x 10 tasks x 100 episodes, frozen bands → WEDGE-LIVES. Mechanism is task-idiosyncratic: cross-task correlation 0.011 against ~0.46 under a global effect. Worst task SD 20.4 pp. Truncated schedule (20k steps / 30k decay); completion effect untested.",
+      stamps:[{c:"ok",t:"flagship"}] },
+
+    { key:"smolvla-ft", short:"LIBERO · SmolVLA ft", env:"libero", policy:"smolvla-ft",
+      label:"LIBERO / SmolVLA fine-tune k=22 (Tier 2)", k:22, sigma:3.31, df:6, sigma0:0.00,
+      note:"PHASE2C, 6 noise pairs. The harness floor here is measured at exactly 0.00 — replicate evals at 20K steps are bit-deterministic, so everything above is training, not evaluation. Truncated schedule (20k steps / 30k decay)." },
+
+    { key:"smolvla-ft-k88-multitask", short:"LIBERO · SmolVLA ft, production k", env:"libero", policy:"smolvla-ft",
+      label:"LIBERO / SmolVLA fine-tune k=88 multi-task", k:88, sigma:2.11, df:7, sigma0:0.00,
+      sigmaAlt:3.35, sigmaAltNote:"df=2, direction only",
+      pertask:6.69, pertaskCi:[5.60,7.77], pertaskRaw:7.33, sr:[52.5,58.2],
+      note:"sigma_run 2.11 at df=7, n=2000/model on eight fresh finals (an earlier df=2 kcurve reading of 3.35 is direction-only and stays beside it). Per-task sigma from PERTASK-3 Leg A', Amendment A frozen before the training wave → T1 WEDGE-TRANSFERS: the per-task lottery is now measured in BOTH classes. Cross-task correlation -0.036; worst task SD 11.6 pp. Truncated schedule (20k steps / 30k decay). ANNEAL-1 (2026-08-21) measured the completion effect as null — the lottery survives convergence (6.94 vs 7.28, both lower bounds, φ=0.588).",
+      stamps:[{c:"ok",t:"wedge-transfers"}] },
+
+    { key:"smolvla-ft-pooled", short:"LIBERO · SmolVLA ft, pooled", env:"libero", policy:"smolvla-ft",
+      label:"LIBERO / SmolVLA fine-tune, pooled across suites", k:null, sigma:2.82, df:8, sigma0:0.00,
+      note:"Pooled over 9 budget-matched pairs. Per suite: goal 1.08, spatial 1.84, long10 2.94. Truncated schedule (20k steps / 30k decay)." },
+
+    { key:"aloha-insertion-act", short:"ALOHA insertion · ACT", env:"aloha", policy:"act",
+      label:"ALOHA sim_insertion / ACT from-scratch (lerobot defaults)", k:50,
+      sigma:2.261, df:7, ci:[1.50,4.60], floor:1.452, floorPct:41, sub:1.734, sr:[9.0,15.4],
+      note:"Same wave, same architecture, same protocol and same k as transfer_cube — and sigma in pp differs 2.9x purely from where the success rate sits. In RELATIVE terms the ordering reverses: 18.9% of mean here against 8.4% there.",
+      stamps:[{c:"crit",t:"low-SR"},{c:"crit",t:"unpaired"}] },
+
+    { key:"pusht-dp", short:"PushT · DiffusionPolicy (old stack)", env:"pusht", policy:"diffusion",
+      label:"PushT / DiffusionPolicy k=103 (old gym_pusht stack)", k:103, sigma:2.09, df:8, sigma0:1.91,
+      note:"Phase 1c, 8 seed-replicate pairs on the pre-rebuild stack. The harness floor 1.91 was measured on the REBUILT stack and carried over as an assumed-transferable variance.",
+      stamps:[{c:"crit",t:"pre-rebuild"}] },
+
+    { key:"pusht-dp-rebuilt", short:"PushT · DiffusionPolicy (rebuilt)", env:"pusht", policy:"diffusion",
+      label:"PushT / DiffusionPolicy k=103 (rebuilt gym_pusht stack)", k:103, sigma:1.292, df:4, sigma0:1.91,
+      note:"Re-measurement after the gym_pusht rebuild. Absolute success rates shifted -18.2 pp against the old stack, non-uniformly: never compare across the rebuild. sigma_run 1.292 at df=4 — floor-dominated (169% of binomial floor at SR 17.05, n=500) — a measurement, never a prior; do not price from this row.",
+      stamps:[{c:"crit",t:"cross-stack"},{c:"crit",t:"floor-dominated"}] },
+
+    { key:"pusht-act", short:"PushT · ACT, defaults", env:"pusht", policy:"act",
+      label:"PushT / ACT from-scratch (lerobot defaults) — LOW-SR regime", k:206,
+      sigma:0.784, df:7, ci:[0.52,1.60], floor:0.52, floorPct:43, sub:0.59, sr:[0.2,3.0],
+      note:"J=8 byte-identical-data retrains at pure LeRobot ACT defaults. Success rates 0.2-3.0 — the class is near-floor on PushT at defaults, and the binomial floor is about two-thirds of the raw sigma. Do NOT read this cell as 'ACT is low-noise'. A floor-dominated cell cannot validate its own pricing.",
+      stamps:[{c:"crit",t:"low-SR"}] }
+  ];
+
+  var ALOHA_SR = [
+    { seed:0, sr:76.2 }, { seed:1, sr:83.6 }, { seed:2, sr:69.6 }, { seed:3, sr:69.6 },
+    { seed:4, sr:81.4 }, { seed:5, sr:88.4 }, { seed:6, sr:77.4 }, { seed:7, sr:76.8 }
+  ];
+  var ALOHA_MEAN = 77.875;
+
+  /* ── hero meta from the data itself ─────────────────────────────────── */
+  var sigmas = ATLAS.map(function (r) { return r.sigma; });
+  var elCells = document.getElementById("m-cells");
+  var elRange = document.getElementById("m-range");
+  if (elCells) elCells.textContent = ATLAS.length;
+  if (elRange) elRange.textContent =
+    Math.min.apply(null, sigmas).toFixed(2) + " – " + Math.max.apply(null, sigmas).toFixed(2);
+
+  /* ── shared svg helpers ─────────────────────────────────────────────── */
+  var NS = "http://www.w3.org/2000/svg";
+  function el(n, a) {
+    var e = document.createElementNS(NS, n);
+    for (var k in a) if (a[k] !== null && a[k] !== undefined) e.setAttribute(k, a[k]);
+    return e;
+  }
+  function clear(n) { while (n.firstChild) n.removeChild(n.firstChild); }
+  function cssv(n) { return getComputedStyle(document.body).getPropertyValue(n).trim(); }
+
+  /* ── tooltip ────────────────────────────────────────────────────────── */
+  var tip = document.getElementById("tip");
+  function showTip(e, html) {
+    tip.innerHTML = html; tip.classList.add("on");
+    var r = tip.getBoundingClientRect();
+    var x = e.clientX + 14, y = e.clientY + 14;
+    if (x + r.width > innerWidth - 10) x = e.clientX - r.width - 14;
+    if (y + r.height > innerHeight - 10) y = e.clientY - r.height - 14;
+    tip.style.left = Math.max(8, x) + "px"; tip.style.top = Math.max(8, y) + "px";
+  }
+  function hideTip() { tip.classList.remove("on"); }
+  document.addEventListener("scroll", hideTip, { passive: true });
+
+  /* ── HERO: eight retrains against the published point estimate ──────── */
+  function drawHero() {
+    var svg = document.getElementById("heroChart");
+    if (!svg) return;
+    clear(svg);
+    var W = 560, H = 215, L = 20, R = 26, T = 62, B = 40;
+    var lo = 64, hi = 94;
+    var x = function (v) { return L + (v - lo) / (hi - lo) * (W - L - R); };
+    var baseY = H - B;
+
+    var c1 = cssv("--series-1"), ink3 = cssv("--ink-3"), rule = cssv("--rule");
+
+    /* spread band */
+    var minSR = 69.6, maxSR = 88.4;
+    var by = 24;   /* top y of the spread band and bracket — declared before first use */
+    svg.appendChild(el("rect", {
+      x: x(minSR), y: by, width: x(maxSR) - x(minSR), height: baseY - by,
+      fill: c1, opacity: .07
+    }));
+
+    /* axis */
+    svg.appendChild(el("line", { x1: L, y1: baseY, x2: W - R, y2: baseY, class: "ax-line" }));
+    [65, 70, 75, 80, 85, 90].forEach(function (t) {
+      svg.appendChild(el("line", { x1: x(t), y1: baseY, x2: x(t), y2: baseY + 4, class: "ax-line" }));
+      var lb = el("text", { x: x(t), y: baseY + 17, "text-anchor": "middle", class: "ax-label" });
+      lb.textContent = t + "%"; svg.appendChild(lb);
+    });
+    var axt = el("text", { x: (L + W - R) / 2, y: H - 4, "text-anchor": "middle", class: "ax-label" });
+    axt.textContent = "SUCCESS RATE — 500 EPISODES, IDENTICAL EVAL SEED";
+    svg.appendChild(axt);
+
+    /* mean marker — the number that gets published */
+    svg.appendChild(el("line", {
+      x1: x(ALOHA_MEAN), y1: T - 8, x2: x(ALOHA_MEAN), y2: baseY,
+      stroke: ink3, "stroke-width": 1.5, "stroke-dasharray": "3 3"
+    }));
+    var mt = el("text", { x: x(ALOHA_MEAN), y: T - 14, "text-anchor": "middle", class: "mark-label" });
+    mt.textContent = "77.9% reported";
+    svg.appendChild(mt);
+
+    /* stack dots that share an x */
+    var seen = {}, dots = [];
+    ALOHA_SR.slice().sort(function (a, b) { return a.sr - b.sr; }).forEach(function (d) {
+      var n = seen[d.sr] || 0; seen[d.sr] = n + 1;
+      dots.push({ seed: d.seed, sr: d.sr, tier: n });
+    });
+
+    dots.forEach(function (d, i) {
+      var cx = x(d.sr), cy = baseY - 16 - d.tier * 22;
+      var stem = el("line", { x1: cx, y1: baseY, x2: cx, y2: cy, stroke: c1, "stroke-width": 1, opacity: .3 });
+      var c = el("circle", { cx: cx, cy: cy, r: 6.5, fill: c1, stroke: cssv("--surface"), "stroke-width": 2 });
+      c.style.cursor = "crosshair";
+      if (!reduceMotion) {
+        c.style.opacity = "0";
+        c.style.transform = "translateY(-14px)";
+        c.style.transition = "opacity .4s ease " + (i * 90 + 200) + "ms, transform .55s cubic-bezier(.2,.9,.3,1) " + (i * 90 + 200) + "ms";
+        stem.style.opacity = "0";
+        stem.style.transition = "opacity .4s ease " + (i * 90 + 300) + "ms";
+        requestAnimationFrame(function () {
+          requestAnimationFrame(function () {
+            c.style.opacity = "1"; c.style.transform = "translateY(0)"; stem.style.opacity = ".3";
+          });
+        });
+      }
+      c.addEventListener("pointerenter", function (e) {
+        showTip(e, "<b>seed " + d.seed + " — " + d.sr.toFixed(1) + "%</b><br>identical data, identical eval<br>" +
+          (d.sr > ALOHA_MEAN ? "+" : "") + (d.sr - ALOHA_MEAN).toFixed(1) + " pp vs the reported mean");
+      });
+      c.addEventListener("pointermove", function (e) { showTip(e, tip.innerHTML); });
+      c.addEventListener("pointerleave", hideTip);
+      svg.appendChild(stem); svg.appendChild(c);
+    });
+
+    /* spread bracket */
+    svg.appendChild(el("path", {
+      d: "M" + x(minSR) + " " + (by + 6) + " V" + by + " H" + x(maxSR) + " V" + (by + 6),
+      fill: "none", stroke: rule, "stroke-width": 1
+    }));
+    var bt = el("text", { x: (x(minSR) + x(maxSR)) / 2, y: by - 6, "text-anchor": "middle", class: "ax-label" });
+    bt.textContent = "18.8 pp SPREAD · σ_run 6.515 pp";
+    svg.appendChild(bt);
+  }
+
+  /* ── the leaderboard reveal ─────────────────────────────────────────── */
+  var lb = document.getElementById("lb");
+  if (lb) ALOHA_SR.slice().sort(function (a, b) { return b.sr - a.sr; }).forEach(function (d, i) {
+    var row = document.createElement("div");
+    row.className = "lb-row";
+    row.innerHTML =
+      '<span class="rank">#' + (i + 1) + '</span>' +
+      '<span class="name">Entry ' + String.fromCharCode(65 + i) +
+      '<span class="aka">same model · training seed ' + d.seed + '</span></span>' +
+      '<span class="sr">' + d.sr.toFixed(1) + '%</span>';
+    lb.appendChild(row);
+  });
+  var rvb = document.getElementById("revealBtn");
+  if (rvb) rvb.addEventListener("click", function () {
+    var on = lb.classList.toggle("revealed");
+    document.getElementById("verdict").classList.toggle("on", on);
+    this.textContent = on ? "Hide the reveal" : "Reveal what these entries are";
+  });
+
+  /* ── the atlas table ────────────────────────────────────────────────── */
+  var sortKey = "sigma_run", sortDir = -1, filter = "all";
+  var tbody = document.getElementById("atlasBody");
+
+  function fmt(v, d) { return v === null || v === undefined ? null : v.toFixed(d === undefined ? 2 : d); }
+
+  function renderTable() {
+    if (!tbody) return;
+    clear(tbody);
+    var rows = ATLAS.filter(function (r) { return filter === "all" || r.policy === filter; });
+    rows.sort(function (a, b) {
+      var ka = sortKey === "sigma_run" ? a.sigma : a[sortKey];
+      var kb = sortKey === "sigma_run" ? b.sigma : b[sortKey];
+      if (ka === null || ka === undefined) return 1;
+      if (kb === null || kb === undefined) return -1;
+      if (typeof ka === "string") return sortDir * ka.localeCompare(kb);
+      return sortDir * (ka - kb);
+    });
+
+    rows.forEach(function (r) {
+      var tr = document.createElement("tr");
+
+      var stamps = (r.stamps || []).map(function (s) {
+        return '<span class="stamp ' + s.c + '">' + s.t + '</span>';
+      }).join("");
+
+      tr.innerHTML =
+        '<td class="cell">' + r.short + '<span class="env">' + r.key + '</span></td>' +
+        '<td>' + (r.k === null ? '<span class="dash">pooled</span>' : r.k) + '</td>' +
+        '<td class="big">' + fmt(r.sigma, r.sigma < 1 ? 3 : 2) +
+          (r.sigmaAlt ? '<span class="ci">also ' + fmt(r.sigmaAlt) + ' · ' + r.sigmaAltNote + '</span>' : '') + '</td>' +
+        '<td>' + (r.ci ? "[" + fmt(r.ci[0]) + ", " + fmt(r.ci[1]) + "]" : '<span class="dash">—</span>') + '</td>' +
+        '<td>' + (r.df === null || r.df === undefined ? '<span class="dash">—</span>' : r.df) + '</td>' +
+        '<td>' + (r.floor
+            ? fmt(r.floor) + (r.floorPct ? '<span class="ci">' + r.floorPct + '% of variance · net ' + fmt(r.sub) + '</span>' : "")
+            : (r.sigma0 !== undefined ? 'σ₀ ' + fmt(r.sigma0) : '<span class="dash">—</span>')) + '</td>' +
+        '<td>' + (r.sr ? fmt(r.sr[0], 1) + "–" + fmt(r.sr[1], 1) : '<span class="dash">—</span>') + '</td>' +
+        '<td>' + (r.pertask
+            ? '<b>' + fmt(r.pertask) + '</b><span class="ci">libero_object · raw ' + fmt(r.pertaskRaw) + ' · CI [' + fmt(r.pertaskCi[0]) + ', ' + fmt(r.pertaskCi[1]) + ']</span>'
+            : '<span class="dash">—</span>') + '</td>' +
+        '<td><div class="stamps">' + (stamps || '<span class="stamp neut">measured</span>') + '</div></td>';
+
+      var body = "<b>" + r.label + "</b><br><br>" + r.note;
+      tr.addEventListener("pointerenter", function (e) { showTip(e, body); });
+      tr.addEventListener("pointermove", function (e) { showTip(e, body); });
+      tr.addEventListener("pointerleave", hideTip);
+      tbody.appendChild(tr);
+    });
+  }
+
+  Array.prototype.forEach.call(document.querySelectorAll("thead th.sortable"), function (th) {
+    th.addEventListener("click", function () {
+      var k = th.dataset.k;
+      if (sortKey === k) sortDir *= -1; else { sortKey = k; sortDir = (k === "label") ? 1 : -1; }
+      Array.prototype.forEach.call(document.querySelectorAll("thead th"), function (o) {
+        o.removeAttribute("aria-sort");
+        var a = o.querySelector(".arrow"); if (a) a.textContent = "↕";
+      });
+      th.setAttribute("aria-sort", sortDir === 1 ? "ascending" : "descending");
+      th.querySelector(".arrow").textContent = sortDir === 1 ? "↑" : "↓";
+      renderTable();
+    });
+  });
+
+  Array.prototype.forEach.call(document.querySelectorAll(".chip"), function (c) {
+    c.addEventListener("click", function () {
+      filter = c.dataset.f;
+      Array.prototype.forEach.call(document.querySelectorAll(".chip"), function (o) {
+        o.setAttribute("aria-pressed", String(o === c));
+      });
+      renderTable(); drawSigma();
+    });
+  });
+
+  /* ── σ chart: every measured cell, floor split out ──────────────────── */
+  function drawSigma() {
+    var svg = document.getElementById("sigmaChart");
+    if (!svg) return;
+    clear(svg);
+    var rows = ATLAS.filter(function (r) { return filter === "all" || r.policy === filter; })
+                    .slice().sort(function (a, b) { return b.sigma - a.sigma; });
+
+    var LBW = 230, R = 62, T = 26, RH = 26, GAP = 5;
+    var W = 900, H = T + rows.length * (RH + GAP) + 34;
+    svg.setAttribute("viewBox", "0 0 " + W + " " + H);
+    svg.style.minHeight = H * 0.55 + "px";
+
+    var max = 12;
+    var x = function (v) { return LBW + v / max * (W - LBW - R); };
+    var c1 = cssv("--series-1"), c2 = cssv("--series-2"), rule = cssv("--rule");
+
+    for (var g = 0; g <= 12; g += 2) {
+      svg.appendChild(el("line", { x1: x(g), y1: T - 8, x2: x(g), y2: H - 26, class: "grid-line" }));
+      var gl = el("text", { x: x(g), y: H - 12, "text-anchor": "middle", class: "ax-label" });
+      gl.textContent = g; svg.appendChild(gl);
+    }
+    var xt = el("text", { x: LBW + (W - LBW - R) / 2, y: T - 14, "text-anchor": "middle", class: "ax-label" });
+    xt.textContent = "σ_run — PERCENTAGE POINTS OF SUCCESS RATE";
+    svg.appendChild(xt);
+
+    rows.forEach(function (r, i) {
+      var y = T + i * (RH + GAP);
+
+      var lab = el("text", { x: LBW - 12, y: y + RH / 2 + 3.5, "text-anchor": "end", class: "row-label" });
+      lab.textContent = r.short.length > 34 ? r.short.slice(0, 33) + "…" : r.short;
+      svg.appendChild(lab);
+
+      var g = el("g", {});
+      g.style.cursor = "crosshair";
+
+      /* CI whisker behind the bar */
+      if (r.ci) {
+        g.appendChild(el("line", {
+          x1: x(r.ci[0]), y1: y + RH / 2, x2: x(Math.min(r.ci[1], max)), y2: y + RH / 2,
+          stroke: rule, "stroke-width": 6, "stroke-linecap": "round"
+        }));
+      }
+
+      /* σ bar */
+      var w = Math.max(2, x(r.sigma) - LBW);
+      var bar = el("rect", { x: LBW, y: y + 5, width: w, height: RH - 10, fill: c1, rx: 2 });
+      if (!reduceMotion) {
+        bar.style.transformOrigin = LBW + "px 0";
+        bar.style.transform = "scaleX(0)";
+        bar.style.transition = "transform .6s cubic-bezier(.2,.85,.3,1) " + (i * 40) + "ms";
+        requestAnimationFrame(function () {
+          requestAnimationFrame(function () { bar.style.transform = "scaleX(1)"; });
+        });
+      }
+      g.appendChild(bar);
+
+      /* the sampling floor, where it was measured — 2px surface gap */
+      if (r.floor) {
+        var fw = Math.max(2, x(r.floor) - LBW - 2);
+        g.appendChild(el("rect", { x: LBW, y: y + 5, width: fw, height: RH - 10, fill: c2, rx: 2 }));
+        g.appendChild(el("rect", { x: LBW + fw, y: y + 5, width: 2, height: RH - 10, fill: cssv("--surface") }));
+      }
+
+      var v = el("text", { x: x(r.sigma) + 8, y: y + RH / 2 + 3.5, class: "mark-label" });
+      v.textContent = r.sigma.toFixed(r.sigma < 1 ? 3 : 2);
+      g.appendChild(v);
+
+      var t = "<b>" + r.short + " · σ_run " + r.sigma.toFixed(r.sigma < 1 ? 3 : 2) + " pp</b><br>" +
+        (r.ci ? "95% CI [" + r.ci[0].toFixed(2) + ", " + r.ci[1].toFixed(2) + "] · " : "") +
+        (r.df !== null && r.df !== undefined ? "df " + r.df : "df —") +
+        (r.sigmaAlt ? "<br>also read " + r.sigmaAlt.toFixed(2) + " pp (" + r.sigmaAltNote + ")" : "") +
+        (r.floor ? "<br>sampling floor " + r.floor.toFixed(3) + " pp" +
+          (r.floorPct ? " (" + r.floorPct + "% of variance)" : "") +
+          (r.sub ? "<br>net of floor " + r.sub.toFixed(3) + " pp" : "") : "") +
+        (r.sr ? "<br>measured over SR " + r.sr[0].toFixed(1) + "–" + r.sr[1].toFixed(1) + "%" : "");
+      g.addEventListener("pointerenter", function (e) { showTip(e, t); });
+      g.addEventListener("pointermove", function (e) { showTip(e, t); });
+      g.addEventListener("pointerleave", hideTip);
+
+      /* full-width hit target */
+      var hit = el("rect", { x: LBW, y: y, width: W - LBW - R, height: RH, fill: "transparent" });
+      g.insertBefore(hit, g.firstChild);
+      svg.appendChild(g);
+    });
+  }
+
+  /* ── per-task vs suite ──────────────────────────────────────────────── */
+  var PT = [
+    { name: "π₀.₅ fine-tune", cell: "LIBERO (libero_object) · k=88 · 10 tasks", suite: 4.23, suiteNote: "n=1000",
+      pertask: 11.00, raw: 11.82, ci: [6.86, 15.13] },
+    { name: "SmolVLA fine-tune", cell: "LIBERO (libero_object) · k=88 · 10 tasks", suite: 2.11, suiteNote: "n=2000, df=7",
+      pertask: 6.69, raw: 7.33, ci: [5.60, 7.77] }
+  ];
+
+  function drawPT() {
+    var svg = document.getElementById("ptChart");
+    if (!svg) return;
+    clear(svg);
+    var W = 760, H = 300, L = 54, R = 30, T = 30, B = 62;
+    svg.setAttribute("viewBox", "0 0 " + W + " " + H);
+    var max = 16;
+    var y = function (v) { return H - B - v / max * (H - B - T); };
+    var c1 = cssv("--series-1"), c2 = cssv("--series-2"), rule = cssv("--rule");
+
+    for (var g = 0; g <= 16; g += 4) {
+      svg.appendChild(el("line", { x1: L, y1: y(g), x2: W - R, y2: y(g), class: "grid-line" }));
+      var gl = el("text", { x: L - 10, y: y(g) + 3.5, "text-anchor": "end", class: "ax-label" });
+      gl.textContent = g; svg.appendChild(gl);
+    }
+    var ylab = el("text", { x: 14, y: (T + H - B) / 2, class: "ax-label",
+      transform: "rotate(-90 14 " + ((T + H - B) / 2) + ")", "text-anchor": "middle" });
+    ylab.textContent = "σ_run (pp)"; svg.appendChild(ylab);
+
+    var groupW = (W - L - R) / PT.length;
+    var bw = 74;
+
+    PT.forEach(function (d, i) {
+      var cx = L + groupW * i + groupW / 2;
+
+      [{ v: d.suite, c: c1, lbl: d.suite.toFixed(2), off: -bw / 2 - 5, key: "suite" },
+       { v: d.pertask, c: c2, lbl: d.pertask.toFixed(2), off: bw / 2 + 5 - bw, key: "pertask" }]
+      .forEach(function (b, bi) {
+        var bx = cx + (bi === 0 ? -bw - 3 : 3);
+        var g2 = el("g", {}); g2.style.cursor = "crosshair";
+
+        var h = (H - B) - y(b.v);
+        var rect = el("rect", { x: bx, y: y(b.v), width: bw, height: h, fill: b.c, rx: 2 });
+        if (!reduceMotion) {
+          rect.style.transformOrigin = "0 " + (H - B) + "px";
+          rect.style.transform = "scaleY(0)";
+          rect.style.transition = "transform .6s cubic-bezier(.2,.85,.3,1) " + (i * 120 + bi * 90) + "ms";
+          requestAnimationFrame(function () {
+            requestAnimationFrame(function () { rect.style.transform = "scaleY(1)"; });
+          });
+        }
+        g2.appendChild(rect);
+
+        /* capped 95% error bar, drawn OVER the bar so both bounds stay visible */
+        var labelY = y(b.v) - 9;
+        if (b.key === "pertask") {
+          var mx = bx + bw / 2, cap = 11, ink = cssv("--ink");
+          g2.appendChild(el("line", { x1: mx, y1: y(d.ci[0]), x2: mx, y2: y(d.ci[1]),
+            stroke: ink, "stroke-width": 1.5 }));
+          g2.appendChild(el("line", { x1: mx - cap, y1: y(d.ci[1]), x2: mx + cap, y2: y(d.ci[1]),
+            stroke: ink, "stroke-width": 1.5 }));
+          g2.appendChild(el("line", { x1: mx - cap, y1: y(d.ci[0]), x2: mx + cap, y2: y(d.ci[0]),
+            stroke: ink, "stroke-width": 1.5 }));
+          labelY = y(d.ci[1]) - 9;
+        }
+
+        var vl = el("text", { x: bx + bw / 2, y: labelY, "text-anchor": "middle", class: "mark-label" });
+        vl.textContent = b.lbl; g2.appendChild(vl);
+
+        var tt = b.key === "suite"
+          ? "<b>" + d.name + " — suite average</b><br>σ_run " + d.suite.toFixed(2) + " pp (" + d.suiteNote + ")<br>the number a dashboard shows"
+          : "<b>" + d.name + " — per task</b><br>σ_run " + d.pertask.toFixed(2) + " pp, floor-subtracted (libero_object)<br>raw fixed-battery reading " + d.raw.toFixed(2) + " pp<br>95% CI [" + d.ci[0].toFixed(2) + ", " + d.ci[1].toFixed(2) + "], df=7";
+        g2.addEventListener("pointerenter", function (e) { showTip(e, tt); });
+        g2.addEventListener("pointermove", function (e) { showTip(e, tt); });
+        g2.addEventListener("pointerleave", hideTip);
+        svg.appendChild(g2);
+      });
+
+      var n1 = el("text", { x: cx, y: H - B + 20, "text-anchor": "middle", class: "mark-label" });
+      n1.textContent = d.name; svg.appendChild(n1);
+      var n2 = el("text", { x: cx, y: H - B + 34, "text-anchor": "middle", class: "ax-label" });
+      n2.textContent = d.cell; svg.appendChild(n2);
+      var n3 = el("text", { x: cx, y: H - B + 50, "text-anchor": "middle", class: "ax-label" });
+      n3.textContent = (d.pertask / d.suite).toFixed(1) + "× HIDDEN BY THE AVERAGE";
+      n3.setAttribute("fill", cssv("--series-2"));
+      svg.appendChild(n3);
+    });
+  }
+
+  function redrawAll() { drawHero(); drawSigma(); drawPT(); }
+
+  renderTable();
+  redrawAll();
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", redrawAll);
+
+  var rt;
+  addEventListener("resize", function () { clearTimeout(rt); rt = setTimeout(redrawAll, 160); });
+})();
+</script>

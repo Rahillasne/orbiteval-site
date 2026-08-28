@@ -1,0 +1,806 @@
+<title>The Noise Floor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Newsreader:opsz,wght@6..72,300;6..72,400;6..72,500&display=swap">
+
+<style>
+/* ─────────────────────────────────────────────────────────────────────────
+   THE NOISE FLOOR — Orbit
+   Palette: Anthropic-derived warm system. Chart series validated both themes:
+     light #C4623C / #2B6CA3  (CVD ΔE 23.0 · normal 27.4 · contrast 3.86 / 5.28)
+     dark  #D07B5C / #4A93D4  (CVD ΔE 24.7 · normal 26.2 · contrast 4.82 / 4.63)
+   ───────────────────────────────────────────────────────────────────────── */
+:root{
+  color-scheme:light;
+  --ground:#FAF9F5; --surface:#FFFFFF; --surface-2:#F2F0E9; --surface-3:#EAE7DC; --ink-block:#1A1917;
+  --ink:#141413; --ink-2:#575349; --ink-3:#8A887D; --ink-inv:#FAF9F5;
+  --rule:#E5E1D6; --rule-2:#D3CEBE;
+  --clay:#D97757; --clay-deep:#B0532F; --clay-soft:#F7E8E0;
+  --s1:#C4623C; --s2:#2B6CA3;
+  --ok:#2F7D51; --ok-soft:#E2F0E7;
+  --no:#A32E2A; --no-soft:#F7E3E1;
+  --warn:#9A6B10; --warn-soft:#F6EBD5;
+  --void:#6C6A64; --void-soft:#EDEBE4;
+  --sh1:0 1px 2px rgba(20,20,19,.04),0 6px 16px -10px rgba(20,20,19,.12);
+  --sh2:0 2px 4px rgba(20,20,19,.04),0 18px 44px -22px rgba(20,20,19,.22);
+  --page:1180px;
+  --fd:"Newsreader",Georgia,serif; --fu:"Archivo",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif; --fm:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  color-scheme:dark;
+  --ground:#1A1917; --surface:#232220; --surface-2:#2C2B28; --surface-3:#35332F; --ink-block:#0F0E0D;
+  --ink:#F5F3ED; --ink-2:#BFBCB2; --ink-3:#8A887D; --ink-inv:#141413;
+  --rule:#37352F; --rule-2:#4A473F;
+  --clay:#DE8B6D; --clay-deep:#C4623C; --clay-soft:#3A241B;
+  --s1:#D07B5C; --s2:#4A93D4;
+  --ok:#5FA982; --ok-soft:#17301F;
+  --no:#E0716B; --no-soft:#38201E;
+  --warn:#D2A03C; --warn-soft:#33280F;
+  --void:#9E9C93; --void-soft:#2B2A26;
+  --sh1:0 1px 2px rgba(0,0,0,.4),0 6px 18px -10px rgba(0,0,0,.6);
+  --sh2:0 2px 6px rgba(0,0,0,.45),0 22px 50px -24px rgba(0,0,0,.8);
+}}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --ground:#1A1917; --surface:#232220; --surface-2:#2C2B28; --surface-3:#35332F; --ink-block:#0F0E0D;
+  --ink:#F5F3ED; --ink-2:#BFBCB2; --ink-3:#8A887D; --ink-inv:#141413;
+  --rule:#37352F; --rule-2:#4A473F;
+  --clay:#DE8B6D; --clay-deep:#C4623C; --clay-soft:#3A241B;
+  --s1:#D07B5C; --s2:#4A93D4;
+  --ok:#5FA982; --ok-soft:#17301F;
+  --no:#E0716B; --no-soft:#38201E;
+  --warn:#D2A03C; --warn-soft:#33280F;
+  --void:#9E9C93; --void-soft:#2B2A26;
+  --sh1:0 1px 2px rgba(0,0,0,.4),0 6px 18px -10px rgba(0,0,0,.6);
+  --sh2:0 2px 6px rgba(0,0,0,.45),0 22px 50px -24px rgba(0,0,0,.8);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;transition-duration:.001ms!important}}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--fu);font-size:1rem;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+:focus-visible{outline:2px solid var(--clay-deep);outline-offset:3px;border-radius:3px}
+h1,h2,h3{margin:0;font-weight:400;text-wrap:balance}
+p{margin:0} a{color:inherit} button{font:inherit}
+.wrap{width:min(100% - 2.5rem,var(--page));margin-inline:auto}
+@media(max-width:620px){.wrap{width:calc(100% - 1.5rem)}}
+.mono{font-family:var(--fm);font-variant-numeric:tabular-nums}
+.eyebrow{font-family:var(--fm);font-size:.66rem;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-3)}
+.serif{font-family:var(--fd)}
+
+/* ribbon — REMOVE AT LAUNCH (see LAUNCH CHECKLIST comment at end of body) */
+.ribbon{background:var(--no);color:#fff;font-family:var(--fm);font-size:.7rem;letter-spacing:.04em;padding:.55rem 1rem;text-align:center}
+.ribbon b{font-weight:600;letter-spacing:.1em;text-transform:uppercase}
+
+.nav{position:sticky;top:0;z-index:50;background:var(--ground);border-bottom:1px solid transparent;transition:border-color .3s}
+.nav.stuck{border-bottom-color:var(--rule);background:color-mix(in srgb,var(--ground) 88%,transparent);backdrop-filter:blur(14px)}
+.nav .wrap{display:flex;align-items:center;gap:1.5rem;height:62px}
+.logo{display:flex;align-items:center;gap:.55rem}
+.logo svg{width:27px;height:27px;flex:none}
+.logo .ring{fill:none;stroke:var(--ink-3);stroke-width:1.7;opacity:.9}
+.logo .core{fill:var(--clay)}
+.logo .node{fill:var(--ink);opacity:0}
+@supports(offset-path:path("M0,0")){.logo .node{opacity:1;offset-path:path("M 4,24 a 20,8.6 0 1,0 40,0 a 20,8.6 0 1,0 -40,0");offset-rotate:0deg;animation:orb 9s linear infinite}}
+@keyframes orb{to{offset-distance:100%}}
+.logo b{font-weight:700;font-size:1rem;letter-spacing:-.03em}
+.navlinks{display:flex;gap:1.4rem;margin-left:.5rem}
+.navlinks a{font-size:.85rem;font-weight:500;color:var(--ink-2);text-decoration:none}
+.navlinks a:hover{color:var(--ink)}
+.navr{margin-left:auto;display:flex;align-items:center;gap:.6rem}
+@media(max-width:880px){.navlinks{display:none}}
+.tt{display:grid;place-items:center;width:33px;height:33px;padding:0;border:1px solid var(--rule-2);border-radius:50%;background:transparent;color:var(--ink-2);cursor:pointer}
+.tt:hover{color:var(--ink)} .tt svg{width:15px;height:15px}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.45rem;font-size:.86rem;font-weight:600;padding:.6rem 1.1rem;border-radius:7px;cursor:pointer;border:1px solid transparent;text-decoration:none;white-space:nowrap}
+.btn-p{background:var(--ink);color:var(--ink-inv);border-color:var(--ink)}
+.btn-p:hover{background:var(--ink-2);border-color:var(--ink-2)}
+.btn-g{background:transparent;color:var(--ink);border-color:var(--rule-2)}
+.btn-g:hover{border-color:var(--ink-3);background:var(--surface-2)}
+.btn-s{padding:.44rem .8rem;font-size:.8rem}
+
+.hero{padding:clamp(3rem,6vw,5rem) 0 clamp(2rem,4vw,3rem)}
+.hero h1{font-family:var(--fd);font-size:clamp(2.4rem,1.7rem+3vw,4.2rem);letter-spacing:-.035em;line-height:1.04;margin:1rem 0 1.3rem}
+.hero h1 em{font-style:italic;color:var(--clay-deep)}
+.lede{font-family:var(--fd);font-size:clamp(1.06rem,1rem+.42vw,1.28rem);line-height:1.6;color:var(--ink-2);max-width:60ch}
+.herogrid{display:grid;gap:clamp(2rem,4vw,3.5rem);grid-template-columns:1fr;align-items:center}
+@media(min-width:1000px){.herogrid{grid-template-columns:minmax(0,1.05fr) minmax(0,1fr)}}
+
+.panel{background:var(--surface);border:1px solid var(--rule);border-radius:12px;box-shadow:var(--sh2);overflow:hidden}
+.pbar{display:flex;align-items:center;gap:.5rem;padding:.6rem .85rem;border-bottom:1px solid var(--rule);background:var(--surface-2)}
+.pbar .dots{display:flex;gap:5px;margin-right:.3rem}
+.pbar .dots i{width:9px;height:9px;border-radius:50%;background:var(--rule-2);display:block}
+.pbar .t{font-family:var(--fm);font-size:.7rem;color:var(--ink-3)}
+.pbar .r{margin-left:auto;font-family:var(--fm);font-size:.65rem;color:var(--ink-3)}
+.pin{padding:1.1rem}
+
+.runs{display:grid;grid-template-columns:repeat(8,1fr);gap:5px}
+@media(max-width:640px){.runs{grid-template-columns:repeat(4,1fr)}}
+.run{background:var(--surface-2);border:1px solid var(--rule);border-radius:7px;padding:.7rem .3rem;text-align:center}
+.run .v{font-family:var(--fm);font-size:.94rem;font-weight:600;letter-spacing:-.02em}
+.run .s{font-family:var(--fm);font-size:.56rem;color:var(--ink-3);margin-top:.15rem;letter-spacing:.04em}
+.run.hi{border-color:var(--clay);background:var(--clay-soft)}
+
+.sec{padding:clamp(3.5rem,7vw,6rem) 0}
+.sec.alt{background:var(--surface-2);border-block:1px solid var(--rule)}
+.sh{max-width:64ch;margin-bottom:clamp(1.8rem,3.5vw,2.8rem)}
+.sh h2{font-family:var(--fd);font-size:clamp(1.9rem,1.5rem+1.6vw,2.9rem);letter-spacing:-.03em;line-height:1.08;margin:.8rem 0 .9rem}
+.sh p{color:var(--ink-2);font-size:1.08rem;line-height:1.6}
+
+/* calculator */
+.calc{display:grid;gap:1.3rem;grid-template-columns:1fr}
+@media(min-width:960px){.calc{grid-template-columns:minmax(0,.8fr) minmax(0,1fr)}}
+.modes{display:flex;gap:.3rem;padding:.28rem;background:var(--surface-2);border:1px solid var(--rule);border-radius:9px;margin-bottom:1.1rem}
+.sec.alt .modes{background:var(--surface)}
+.mode{flex:1;padding:.6rem .7rem;border-radius:6px;border:1px solid transparent;background:transparent;color:var(--ink-2);cursor:pointer;font-size:.83rem;font-weight:600;line-height:1.3;text-align:center}
+.mode small{display:block;font-weight:400;font-size:.68rem;color:var(--ink-3);margin-top:.15rem}
+.mode[aria-pressed="true"]{background:var(--surface);color:var(--ink);border-color:var(--rule);box-shadow:var(--sh1)}
+.sec.alt .mode[aria-pressed="true"]{background:var(--surface-2)}
+.field{display:grid;gap:.3rem;margin-bottom:.8rem}
+.field label{font-size:.78rem;font-weight:600;color:var(--ink-2)}
+.field .h{font-family:var(--fm);font-size:.64rem;color:var(--ink-3);line-height:1.5}
+.field input,.field select{font-family:var(--fm);font-size:.85rem;font-variant-numeric:tabular-nums;padding:.52rem .65rem;border-radius:7px;width:100%;border:1px solid var(--rule-2);background:var(--surface);color:var(--ink)}
+.field input:focus,.field select:focus{border-color:var(--clay-deep)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
+
+.verdict{display:inline-flex;align-items:center;gap:.4rem;font-family:var(--fm);font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:.32rem .58rem;border-radius:5px;border:1px solid transparent}
+.verdict svg{width:12px;height:12px;flex:none}
+.v-ok{background:var(--ok-soft);color:var(--ok);border-color:color-mix(in srgb,var(--ok) 30%,transparent)}
+.v-no{background:var(--no-soft);color:var(--no);border-color:color-mix(in srgb,var(--no) 30%,transparent)}
+.v-warn{background:var(--warn-soft);color:var(--warn);border-color:color-mix(in srgb,var(--warn) 32%,transparent)}
+.v-void{background:var(--void-soft);color:var(--void);border-color:color-mix(in srgb,var(--void) 30%,transparent)}
+
+.kv{display:grid;border:1px solid var(--rule);border-radius:8px;overflow:hidden;margin-top:.9rem}
+.kv .r{display:grid;grid-template-columns:1fr auto;gap:.8rem;padding:.5rem .72rem;border-bottom:1px solid var(--rule);align-items:baseline}
+.kv .r:last-child{border-bottom:none}
+.kv .k{font-size:.77rem;color:var(--ink-2)}
+.kv .v{font-family:var(--fm);font-size:.8rem;font-weight:500;font-variant-numeric:tabular-nums;text-align:right}
+.kv .r.em{background:var(--surface-2)} .kv .r.em .v{font-weight:600}
+.notes{display:grid;gap:.4rem;margin-top:.85rem}
+.note{display:grid;grid-template-columns:14px 1fr;gap:.5rem;font-size:.77rem;color:var(--ink-2);line-height:1.5;align-items:start}
+.note svg{width:13px;height:13px;margin-top:.2rem;color:var(--ink-3);flex:none}
+.note.stop svg{color:var(--no)}
+
+.split2{display:grid;gap:6px;grid-template-columns:1fr}
+.bar{height:26px;border-radius:5px;display:flex;overflow:hidden;background:var(--surface-3)}
+.bar i{display:block;height:100%}
+.legend{display:flex;gap:1rem;flex-wrap:wrap;margin-top:.5rem}
+.legend span{display:inline-flex;align-items:center;gap:.35rem;font-family:var(--fm);font-size:.66rem;color:var(--ink-2)}
+.legend i{width:11px;height:11px;border-radius:2px;display:block}
+
+.fine{font-family:var(--fm);font-size:.65rem;color:var(--ink-3);line-height:1.6}
+
+.tw{overflow-x:auto;border:1px solid var(--rule);border-radius:10px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:840px;font-family:var(--fm);font-size:.73rem}
+th{text-align:left;font-size:.6rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);padding:.7rem .7rem;border-bottom:1px solid var(--rule-2);background:var(--surface-2);white-space:nowrap}
+td{padding:.6rem .7rem;border-bottom:1px solid var(--rule);font-variant-numeric:tabular-nums}
+tr:last-child td{border-bottom:none}
+td.c{font-family:var(--fu);font-weight:600;font-size:.79rem;white-space:nowrap}
+td.c small{display:block;font-family:var(--fm);font-size:.6rem;font-weight:400;color:var(--ink-3);margin-top:.1rem}
+.tag{font-size:.6rem;letter-spacing:.06em;text-transform:uppercase}
+
+.ledger{border:1px solid var(--rule);border-radius:10px;background:var(--surface);overflow:hidden}
+.ledger .r{display:grid;grid-template-columns:1fr;gap:.3rem;padding:.95rem 1.1rem;border-bottom:1px solid var(--rule)}
+@media(min-width:760px){.ledger .r{grid-template-columns:210px minmax(0,1fr) auto;gap:1.1rem;align-items:baseline}}
+.ledger .r:last-child{border-bottom:none}
+.ledger .n{font-family:var(--fm);font-size:.72rem;font-weight:500;color:var(--ink)}
+.ledger .d{font-size:.85rem;color:var(--ink-2);line-height:1.5}
+
+pre{margin:0;overflow-x:auto;background:var(--ink-block);color:#E8E6DF;border-radius:10px;padding:1rem 1.1rem;font-family:var(--fm);font-size:.73rem;line-height:1.65}
+pre .c{color:#8A887D} pre .o{color:#E0A882} pre .g{color:#7FBF9A}
+
+.foot{background:var(--ink-block);color:#C9C6BD;padding:3rem 0 2.2rem}
+.foot a{color:#C9C6BD} .foot p{font-size:.82rem;line-height:1.65;max-width:80ch;color:#8A887D}
+.foot .fine2{margin-top:1.6rem;padding-top:1.2rem;border-top:1px solid #37352F;font-size:.72rem;color:#8A887D}
+</style>
+
+<!-- ══ PRE-LAUNCH RIBBON — delete this div at launch. Deliberately NOT gated on
+     the arXiv date: flip it whenever WS1 clears, in its own commit. ══ -->
+<div class="ribbon"><b>Pre-publication</b> &nbsp;·&nbsp; embargoed until arXiv v1 + endorsement clear. Not for external distribution.</div>
+
+<header class="nav" id="nav"><div class="wrap">
+  <a class="logo" href="#top" aria-label="Orbit home">
+    <svg viewBox="0 0 48 48" aria-hidden="true">
+      <g transform="rotate(-26 24 24)"><ellipse class="ring" cx="24" cy="24" rx="20" ry="8.6"></ellipse><circle class="node" cx="0" cy="0" r="3.2"></circle></g>
+      <circle class="core" cx="24" cy="24" r="6.6"></circle>
+    </svg><b>Orbit</b>
+  </a>
+  <nav class="navlinks">
+    <a href="#check">The check</a><a href="#atlas">Atlas</a><a href="#refuse">What we refuse</a><a href="#method">Method</a>
+  </nav>
+  <div class="navr">
+    <button class="tt" id="tt" type="button" aria-label="Switch colour theme">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"></circle><path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.4 5.4l1.6 1.6M17 17l1.6 1.6M18.6 5.4L17 7M7 17l-1.6 1.6"></path></svg>
+    </button>
+    <a class="btn btn-p btn-s" href="#check">Run the check</a>
+  </div>
+</div></header>
+
+<main id="top">
+
+<!-- ═══ HERO ═══ -->
+<section class="hero"><div class="wrap herogrid">
+  <div>
+    <p class="eyebrow">Measured retrain noise · robot manipulation policies</p>
+    <h1>Your benchmark number has a noise floor. <em>Here it is.</em></h1>
+    <p class="lede">
+      In the cell where we measured it hardest, eight ACT policies trained on byte-identical
+      data — same dataset, same recipe, same 100k steps, differing only in training seed —
+      scored <span class="mono">69.6%</span> to <span class="mono">88.4%</span> on ALOHA
+      sim-transfer-cube. The binomial sampling floor accounts for
+      <b>8%</b> of that variance. The other 92% is the training run.
+    </p>
+    <div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1.8rem">
+      <a class="btn btn-p" href="#check">Price your own result
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M12 5l7 7-7 7"></path></svg></a>
+      <a class="btn btn-g" href="#atlas">See all 16 cells</a>
+    </div>
+    <p class="fine" style="margin-top:1rem">Free, no account, nothing uploaded. Runs entirely in your browser.</p>
+  </div>
+
+  <div class="panel">
+    <div class="pbar"><span class="dots"><i></i><i></i><i></i></span>
+      <span class="t">aloha_sim_transfer_cube · ACT · J=8 · n=500/run · eval seed 1000</span></div>
+    <div class="pin">
+      <div class="runs" id="runs"></div>
+      <p class="fine" style="margin-top:.85rem">
+        σ<sub>run</sub> <b>6.515 pp</b> (95% CI [4.31, 13.26], df 7), floor-subtracted <b>6.245 pp</b> —
+        both readings travel together. Spread <b style="color:var(--clay-deep)">18.8 pp</b> between models
+        that differ only by training seed. Byte-identical data, common eval seed, sync envs.
+      </p>
+    </div>
+  </div>
+</div></section>
+
+<!-- ═══ THE CHECK ═══ -->
+<section class="sec alt" id="check"><div class="wrap">
+  <div class="sh">
+    <p class="eyebrow">Free · no account · nothing leaves your browser</p>
+    <h2>What can your result actually support?</h2>
+    <p>
+      Two different questions hide behind one number, and they have wildly different prices.
+      Pick the one you are actually asking.
+    </p>
+  </div>
+
+  <div class="panel">
+    <div class="pbar"><span class="dots"><i></i><i></i><i></i></span><span class="t">noise-floor check</span>
+      <span class="r" id="stamp">—</span></div>
+    <div class="pin">
+      <div class="modes" role="group" aria-label="Which comparison are you making?">
+        <button class="mode" id="mA" aria-pressed="true" type="button">Same checkpoint, new episodes
+          <small>you re-ran an eval — episodes are the noise</small></button>
+        <button class="mode" id="mB" aria-pressed="false" type="button">Different training run
+          <small>you retrained — training is the noise</small></button>
+      </div>
+
+      <div class="calc">
+        <form id="form" novalidate>
+          <div class="field">
+            <label for="cell">Closest measured cell</label>
+            <select id="cell"></select>
+            <span class="h" id="cellh"></span>
+          </div>
+          <div class="row2">
+            <div class="field"><label for="a">Baseline SR (%)</label>
+              <input id="a" type="number" step="0.1" min="0" max="100" value="77.9"></div>
+            <div class="field"><label for="b">New SR (%)</label>
+              <input id="b" type="number" step="0.1" min="0" max="100" value="83.0"></div>
+          </div>
+          <div class="field"><label for="n">Episodes per arm</label>
+            <input id="n" type="number" step="10" min="2" max="200000" value="500"></div>
+          <div class="field" id="pairwrap">
+            <label for="paired">Episode pairing</label>
+            <select id="paired">
+              <option value="0">Different episode draws (unpaired)</option>
+              <option value="1">Same episode list, same seed (CRN-paired)</option>
+            </select>
+            <span class="h">Pairing cancels eval-draw noise only. It does nothing to training noise.</span>
+          </div>
+        </form>
+
+        <div>
+          <div style="display:flex;align-items:center;gap:.7rem;flex-wrap:wrap">
+            <span class="verdict v-void" id="vb"><span id="vt">—</span></span>
+            <span class="fine" id="vsub"></span>
+          </div>
+          <div class="kv" id="kv"></div>
+          <div id="splitwrap" style="margin-top:.9rem" hidden>
+            <div class="bar" id="bar"><i id="bE"></i><i id="bT"></i></div>
+            <div class="legend">
+              <span><i style="background:var(--s2)"></i><span id="lE">eval draw</span></span>
+              <span><i style="background:var(--s1)"></i><span id="lT">training run</span></span>
+            </div>
+          </div>
+          <div class="notes" id="notes"></div>
+        </div>
+      </div>
+
+      <p class="fine" style="margin-top:1.1rem;border-top:1px solid var(--rule);padding-top:.9rem">
+        Wilson score intervals; exact retrain arithmetic with the finite-episode term carried.
+        Priors are the cell you select — <b>not your cell</b>. Noise floors do not transfer between
+        success-rate regimes, and we do not forecast them: we tried on four held-out cells across two
+        model families and closed the line. Outside a measured cell this is a disclosed conservative
+        fallback, stamped as one.
+      </p>
+    </div>
+  </div>
+</div></section>
+
+<!-- ═══ ATLAS ═══ -->
+<section class="sec" id="atlas"><div class="wrap">
+  <div class="sh">
+    <p class="eyebrow">Free forever · reproduced from the shipped module</p>
+    <h2>Sixteen measured cells</h2>
+    <p>
+      Not a ranking. A table of what a result has to beat before it means anything. Every row was
+      measured under pre-registration, and every row carries the scope that limits it.
+    </p>
+  </div>
+  <div class="tw"><table>
+    <thead><tr><th>Cell</th><th>k</th><th>σ<sub>run</sub></th><th>95% CI</th><th>df</th>
+      <th>net of floor</th><th>n*</th><th>σ<sub>per-task</sub> (libero_object)</th><th>Scope</th></tr></thead>
+    <tbody id="tb"></tbody>
+  </table></div>
+  <p class="fine" style="margin-top:.8rem;max-width:86ch">
+    <b>n*</b> is the crossover: the episode count at which eval-draw variance equals training variance
+    in that cell. Past it, more rollouts buy you very little — the remaining noise is in training.
+    Blank where the cell has no published floor reading, because we will not infer one.
+    All sixteen cells were measured <b>in simulation</b> — PushT, LIBERO and ALOHA sim, LeRobot policies.
+    No cell was measured on physical hardware.
+  </p>
+  <div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1.2rem;align-items:center">
+    <button class="btn btn-g btn-s" id="dl" hidden>Download atlas (JSON)</button>
+    <button class="btn btn-g btn-s" id="dlc" hidden>Download atlas (CSV)</button>
+    <span class="fine">Canonical source is the shipped module —
+      <span class="mono">from orbit_eval.atlas import REGIMES</span>. Everything on this page is
+      reproduced from it rather than retyped.</span>
+  </div>
+</div></section>
+
+<!-- ═══ WHAT WE REFUSE ═══ -->
+<section class="sec alt" id="refuse"><div class="wrap">
+  <div class="sh">
+    <p class="eyebrow">The refusal record</p>
+    <h2>Four things we tested and will not sell you</h2>
+    <p>
+      A measurement company is worth exactly what its refusals are worth. Each of these was
+      pre-registered, scored in a frozen order, and killed by its own criterion.
+    </p>
+  </div>
+  <div class="ledger">
+    <div class="r">
+      <span class="n">Seed selection</span>
+      <span class="d">Picking the best of eight seeds on the suite average <b>did</b> lift the held-out
+        suite number — and silently damaged an average of <b>1.8 of 10 tasks by ≥5 points</b> (worst
+        −10.8) in 97.5% of draws. The pre-registered rule refused suite-average selection as a product
+        rule, whatever the gain. We do not sell it.</span>
+      <span><span class="verdict v-no">refused</span></span>
+    </div>
+    <div class="r">
+      <span class="n">Forecasting your σ</span>
+      <span class="d">We built a model to predict a cell's noise floor from its atlas row, then tested it
+        on <b>four held-out cells across two model families</b>. One calibrated. Every miss overestimated
+        the tail. The line is closed — we cannot forecast your noise floor and will not imply otherwise.</span>
+      <span><span class="verdict v-no">closed</span></span>
+    </div>
+    <div class="r">
+      <span class="n">Agent evaluation</span>
+      <span class="d">We ran two pre-registered studies on public coding-agent benchmarks. The composite
+        came back indeterminate, then the frontier models split against each other. The line is paused.
+        <b>No part of this engine has been validated on agent evaluations</b>, and we do not sell it for them.</span>
+      <span><span class="verdict v-warn">paused</span></span>
+    </div>
+    <div class="r">
+      <span class="n">Priors on your stack</span>
+      <span class="d">The gate refuses to price an evaluation with a σ measured in a different
+        success-rate regime — it returns <span class="mono">INVALID</span> with the reason attached
+        rather than transferring a number that does not apply. Rows declaring a success-rate band are
+        enforced, not advisory.</span>
+      <span><span class="verdict v-void">enforced</span></span>
+    </div>
+  </div>
+
+  <div class="sh" style="margin-top:3rem">
+    <h2 style="font-size:clamp(1.5rem,1.3rem+1vw,2.1rem)">And one we got wrong, on the record</h2>
+  </div>
+  <div class="panel"><div class="pin">
+    <p style="font-family:var(--fd);font-size:1.1rem;line-height:1.55;color:var(--ink)">
+      A pre-registered prediction said at least one of eight new seeds would land below 60.0 on a
+      collapsing task. The minimum was <b>60.5</b> — falsified by half a point, inside the corpus
+      resolvability floor. The prediction stayed on the record and its stated consequence was refused.
+    </p>
+    <p class="fine" style="margin-top:.9rem">
+      Every result behind this page was pre-registered: decision bands frozen and hashed before a single
+      episode was scored. When a pre-check failed, the pre-committed demotion applied and the weaker
+      claim shipped — which is why two rows in the atlas are marked unpaired rather than quietly
+      reported as paired.
+    </p>
+  </div></div>
+</div></section>
+
+<!-- ═══ METHOD ═══ -->
+<section class="sec" id="method"><div class="wrap">
+  <div class="sh">
+    <p class="eyebrow">Method</p>
+    <h2>How a cell gets measured</h2>
+    <p>
+      J independent retrains on byte-identical data — same dataset hash, same budget, same config,
+      training seed varied — then evaluated at a fixed eval seed. On PushT and ALOHA the seed fixes the initial-state list; on LIBERO it does not — that harness walks its own init-state pointer, so LIBERO rows are common-seed-list, not common-episode-set. σ_run is unaffected either way: it needs the episode set per task to be comparable, not episode-by-episode identity. σ is estimated
+      from the retrain gaps with a χ² interval, and the binomial component at the stated <i>n</i> is
+      subtracted to separate eval sampling from the training lottery. Both readings are carried.
+    </p>
+  </div>
+  <div style="display:grid;gap:1.4rem;grid-template-columns:1fr">
+    <div class="panel"><div class="pin" style="padding:0">
+<pre><span class="c"># the atlas ships as data — these are the values this page renders</span>
+from orbit_eval.atlas import get_regime, REGIMES, HONESTY_NOTE
+
+cell = get_regime(<span class="o">"aloha-transfer-cube-act"</span>)
+cell[<span class="o">"sigma_run"</span>]   <span class="c"># 6.515 pp · df 7 · chi2 CI [4.31, 13.26]</span>
+cell[<span class="o">"sr_range"</span>]    <span class="c"># (69.6, 88.4) — the band this sigma prices</span>
+cell[<span class="o">"provenance"</span>]  <span class="c"># prereg hash, protocol, every scope stamp, verbatim</span>
+
+<span class="c"># and the gate refuses rather than guesses</span>
+$ orbit gate --incumbent runs/v4.1 --candidate runs/v4.2 --regime aloha-transfer-cube-act
+  verdict <span class="g">COLLECT-MORE</span>   priced in RETRAINS, not episodes   <span class="c">exit 3</span></pre>
+    </div></div>
+
+    <div class="ledger">
+      <div class="r"><span class="n">Prior art we build on</span>
+        <span class="d">Anytime-valid sequential comparison of robot policies is published prior art —
+          Toyota Research Institute and Princeton (STEP, RSS 2025; N-SCORE). We did not invent it.
+          What we add is the retrain-lottery price, per-task multiplicity control, and a signed record.</span>
+        <span><span class="verdict v-void">attribution</span></span></div>
+      <div class="r"><span class="n">Calibration, measured</span>
+        <span class="d">The obvious per-task rule fired on <b>96.4%</b> of identical-data retrain pairs.
+          Pricing the retrain lottery into it brought the null flag rate to <b>0.043 ≈ α</b>. In our own
+          replay over <b>334 controlled runs forming 193 no-change pairs</b>, suite-level false ships fell
+          from 16.1% to 4.9% against a control rate of 4.03%.</span>
+        <span><span class="verdict v-ok">validated</span></span></div>
+      <div class="r"><span class="n">The record</span>
+        <span class="d">Every gate decision lands on an append-only, tamper-evident ledger — full config,
+          statistics, verbatim caveats, hashed over canonical JSON. <b>7,244 records verified, 0 bad</b>,
+          in 0.3 s. On tampering it names the specific lie.</span>
+        <span><span class="verdict v-ok">reproducible</span></span></div>
+    </div>
+  </div>
+
+  <div class="panel" style="margin-top:2rem"><div class="pin" style="display:grid;gap:.8rem">
+    <h3 style="font-family:var(--fd);font-size:1.4rem;letter-spacing:-.02em">Measuring your own cell</h3>
+    <p style="font-size:.94rem;color:var(--ink-2);line-height:1.6;max-width:70ch">
+      The protocol above is the whole method and it is free to run — you need J retrains on data you
+      already have and an eval you already run. Nothing about it requires us, and nothing about it
+      requires sending anyone your checkpoints, your data, or your GPU time.
+    </p>
+    <p style="font-size:.94rem;color:var(--ink-2);line-height:1.6;max-width:70ch">
+      What we do is the part you cannot do for yourself: read the results back independently, apply the
+      same frozen criteria we applied to our own waves, and issue a signed record of what your numbers
+      do and do not support — including when the answer is that they support nothing yet.
+    </p>
+    <p class="fine">One fixed-scope engagement. You keep custody of everything; we see results JSON.</p>
+  </div></div>
+</div></section>
+
+</main>
+
+<footer class="foot"><div class="wrap">
+  <div class="logo" style="margin-bottom:.9rem">
+    <svg viewBox="0 0 48 48" aria-hidden="true">
+      <g transform="rotate(-26 24 24)"><ellipse class="ring" cx="24" cy="24" rx="20" ry="8.6"></ellipse><circle class="node" cx="0" cy="0" r="3.2" style="fill:#FAF9F5"></circle></g>
+      <circle class="core" cx="24" cy="24" r="6.6"></circle>
+    </svg><b style="color:#FAF9F5">Orbit</b>
+  </div>
+  <p>
+    Every value on this page was measured on the ORBIT research programme between June and August 2026
+    under pre-registration, and is reproduced from the shipped <span class="mono">orbit_eval.atlas</span>
+    module rather than retyped. Success rates are percentage points throughout.
+  </p>
+  <p style="margin-top:.8rem">
+    Scope: all sixteen cells were measured in simulation, on PushT, LIBERO and ALOHA sim with ACT,
+    DiffusionPolicy, SmolVLA and π₀.₅ policies. No cell was measured on physical hardware. Transfer to
+    another environment, policy or harness is a pre-registered hypothesis, not a result. The per-task
+    finding is scoped to two policy classes, LIBERO (libero_object), k=88.
+    σ_pertask is suite-dependent: the same class and protocol measured 3.29 pp (raw 4.52,
+    CI [1.18, 5.41]) on libero_spatial — every per-task σ names its suite (PERTASK-4, T4-2 DIVERGENT).
+  </p>
+  <div class="fine2">© 2026 Orbit · Noise floors do not transfer between success-rate regimes, and this page will say so rather than pretend otherwise.</div>
+</div></footer>
+
+<!-- ══════════════════ LAUNCH CHECKLIST (delete with the ribbon) ══════════════════
+  1. Delete the .ribbon div at the top of <body>.
+  2. Confirm WS1 has cleared (arXiv v1 live + endorsement + OpenReview). This page is
+     NOT gated on the arXiv date — flip it in its own commit whenever WS1 clears.
+  3. Wire the engagement line in #method to a real mailto/contact.
+  4. Re-run the guard-rail check: no "382" outside programme phrasing; every σ_pertask
+     quote carries both readings; every low-SR cell carries its stamp.
+═══════════════════════════════════════════════════════════════════════════════ -->
+
+<script>
+(function(){
+"use strict";
+var root=document.documentElement;
+function $(s){return document.querySelector(s)}
+$("#tt").addEventListener("click",function(){
+  var ex=root.getAttribute("data-theme");
+  var dark=ex?ex==="dark":matchMedia("(prefers-color-scheme: dark)").matches;
+  root.setAttribute("data-theme",dark?"light":"dark");
+});
+var nav=$("#nav");
+addEventListener("scroll",function(){nav.classList.toggle("stuck",scrollY>8)},{passive:true});
+
+/* ── constants, frozen to the engine ───────────────────────────────────── */
+var Z975=1.959964, Z80=0.841621, ZS=Z975+Z80;        /* ZS^2 = 7.848879 */
+var Z95_1=1.644854;                                   /* one-sided flag */
+
+/* ── CELLS — sigma_run and sigma_pure. sigma_pure is present ONLY where the
+   programme published a floor reading; we do not infer one. p_ref/n0 are the
+   success rate and eval size the sigma was measured at.                     */
+var CELLS=[
+ {k:"aloha-transfer-cube-act",n:"ACT · ALOHA sim-transfer-cube · k=50",sig:6.515,pure:6.245,
+  floor:1.856,n0:500,p:0.7788,df:7,ci:[4.31,13.26],sr:[69.6,88.4],
+  note:"J=8 byte-identical-data retrains, n=500/run, common eval seed, sync envs. Floor is 8% of variance — the healthiest cell we have. PAIRING UNLICENSED: the obs-hash pre-check scored 0/6 on gym-aloha.",
+  unpaired:true},
+ {k:"pusht-act-h8",n:"ACT · PushT · eval horizon 8 · k=206",sig:4.849,pure:4.559,
+  floor:1.654,n0:500,p:0.1635,df:7,ci:[3.21,9.87],sr:[9.2,21.4],
+  note:"The eight PushT-ACT checkpoints RE-EVALUATED at n_action_steps=8, not retrained. h=8 was the pre-committed non-argmax level, so its SR level carries no selection bias."},
+ {k:"pusht-act-h16",n:"ACT · PushT · eval horizon 16 · k=206",sig:4.839,pure:4.469,
+  floor:1.856,n0:500,p:0.2210,df:7,ci:[3.20,9.85],sr:[14.6,30.0],
+  note:"SELECTION DISCLOSURE: h=16 was the argmax of a sweep on ONE checkpoint, so the SR level is optimistically biased and must never be quoted as ACT's PushT score. The sigma estimand is far less affected."},
+ {k:"pi05-ft-k88-multitask",n:"π₀.₅ fine-tune · LIBERO · k=88",sig:4.05,pure:3.944,
+  floor:1.53,n0:1000,p:0.6226,df:7,ci:[2.68,8.24],sr:null,pt:11.00,ptRaw:11.82,ptCi:[6.86,15.13],
+  note:"σ_run 4.05 at n=200 (shipped atlas value); 4.23 re-measured at n=1000, floor 1.53 — suite noise confirmed real. σ_pure and the floor belong to the n=1000 re-measurement. Per-task σ 11.00 pp floor-subtracted (libero_object; 95% CI [6.86, 15.13], df 7) against a raw fixed-battery reading of 11.82 — both readings travel together. Truncated schedule (20k steps / 30k decay); completion effect untested."},
+ {k:"aloha-insertion-act",n:"ACT · ALOHA sim-insertion · k=50",sig:2.261,pure:1.734,
+  floor:1.452,n0:500,p:0.1198,df:7,ci:[1.50,4.60],sr:[9.0,15.4],lowsr:true,unpaired:true,
+  note:"LOW-SR: the binomial floor is 41% of the variance, so much of this σ is sampling rather than retrain lottery. Do NOT read it as 'ACT is stable'. PAIRING UNLICENSED."},
+ {k:"smolvla-ft-k88-multitask",n:"SmolVLA fine-tune · LIBERO · k=88",sig:2.11,pure:1.793,
+  floor:1.113,n0:2000,p:0.5494,df:7,ci:null,sr:[52.5,58.2],pt:6.69,ptRaw:7.33,ptCi:[5.60,7.77],
+  note:"σ_run 2.11 pp at df 7, n=2000/model. Per-task σ 6.69 pp (libero_object; 95% CI [5.60, 7.77]) against a raw reading of 7.33 — both readings always. An earlier df=2 reading of 3.35 is direction-only and stays beside it. Truncated schedule (20k steps / 30k decay). ANNEAL-1 (2026-08-21) measured the completion effect as null — the lottery survives convergence (6.94 vs 7.28, both lower bounds, φ=0.588)."},
+ {k:"pusht-act",n:"ACT · PushT · LeRobot defaults · k=206",sig:0.784,pure:0.59,
+  floor:0.52,n0:500,p:0.0135,df:7,ci:[0.52,1.60],sr:[0.2,3.0],lowsr:true,
+  note:"LOW-SR: success rates 0.2–3.0%, binomial floor 0.52 pp is 43% of the variance — this σ describes the eval budget, not the training recipe. 0.784 never travels without its floor."},
+ {k:"__other",n:"My cell is not in this table",sig:null,pure:null,
+  note:"No measured prior exists for your cell. The gate runs a disclosed conservative fallback and stamps the record 'unmeasured cell'. Measuring yours is the only way to price it — we cannot forecast it, and we tested that."}
+];
+
+/* the 9 cells with no published floor reading — atlas table only, never priced */
+var ATLAS_EXTRA=[
+ {k:"libero-dp-k22",n:"DiffusionPolicy · LIBERO · k=22",sig:11.43,df:8,ci:null,tag:"small-k"},
+ {k:"pi05-ft",n:"π₀.₅ fine-tune · LIBERO · k=22",sig:9.74,df:10,ci:[6.81,17.10],tag:"overturned prior · truncated schedule (20k steps / 30k decay); completion effect untested"},
+ {k:"libero-dp-k31",n:"DiffusionPolicy · LIBERO · k=31",sig:7.48,df:6,ci:null,tag:"measured"},
+ {k:"libero-dp-k44",n:"DiffusionPolicy · LIBERO · k=44",sig:6.24,df:7,ci:null,tag:"measured"},
+ {k:"pi05-ft-k22-multitask",n:"π₀.₅ fine-tune · LIBERO · k=22 multi-task",sig:6.02,df:7,ci:[3.98,12.25],tag:"measured · truncated schedule (20k steps / 30k decay); completion effect untested",pt:12.01,ptRaw:15.33},
+ {k:"smolvla-ft",n:"SmolVLA fine-tune · LIBERO · k=22",sig:3.31,df:6,ci:null,tag:"σ₀ = 0.00 · truncated schedule (20k steps / 30k decay)"},
+ {k:"smolvla-ft-pooled",n:"SmolVLA fine-tune · pooled",sig:2.82,df:8,ci:null,tag:"pooled · truncated schedule (20k steps / 30k decay)"},
+ {k:"pusht-dp",n:"DiffusionPolicy · PushT · k=103 (old stack)",sig:2.09,df:8,ci:null,tag:"pre-rebuild"},
+ {k:"pusht-dp-rebuilt",n:"DiffusionPolicy · PushT · k=103 (rebuilt)",sig:1.292,df:4,ci:null,tag:"cross-stack · floor-dominated",
+  note:"σ_run 1.292, df=4 — floor-dominated (169% of binomial floor at SR 17.05, n=500) — a measurement, never a prior; do not price from this row"}
+];
+
+var ALOHA=[{s:0,v:76.2},{s:1,v:83.6},{s:2,v:69.6},{s:3,v:69.6},{s:4,v:81.4},{s:5,v:88.4},{s:6,v:77.4},{s:7,v:76.8}];
+
+/* ── math ──────────────────────────────────────────────────────────────── */
+function Phi(z){return .5*(1+erf(z/Math.SQRT2))}
+function erf(x){var s=x<0?-1:1;x=Math.abs(x);
+  var a1=.254829592,a2=-.284496736,a3=1.421413741,a4=-1.453152027,a5=1.061405429,p=.3275911;
+  var t=1/(1+p*x),y=1-((((a5*t+a4)*t+a3)*t+a2)*t+a1)*t*Math.exp(-x*x);return s*y}
+function wilson(x,n){var p=x/n,z=Z975,d=1+z*z/n;
+  var c=(p+z*z/(2*n))/d, h=z*Math.sqrt(p*(1-p)/n+z*z/(4*n*n))/d;
+  return [Math.max(0,c-h)*100,Math.min(1,c+h)*100]}
+function floorPP(p,n){return 100*Math.sqrt(Math.max(p*(1-p),1e-12)/n)}
+
+/* ── hero strip ────────────────────────────────────────────────────────── */
+(function(){var el=$("#runs");if(!el)return;
+ var mn=Math.min.apply(null,ALOHA.map(function(d){return d.v})),mx=Math.max.apply(null,ALOHA.map(function(d){return d.v}));
+ ALOHA.forEach(function(d){var x=document.createElement("div");
+  x.className="run"+(d.v===mn||d.v===mx?" hi":"");
+  x.innerHTML='<div class="v">'+d.v.toFixed(1)+'%</div><div class="s">SEED '+d.s+'</div>';el.appendChild(x)})})();
+
+/* ── atlas table ───────────────────────────────────────────────────────── */
+(function(){var tb=$("#tb");if(!tb)return;
+ var rows=CELLS.filter(function(c){return c.sig}).map(function(c){return{
+   k:c.k,n:c.n,sig:c.sig,ci:c.ci,df:c.df,pure:c.pure,p:c.p,pt:c.pt,ptRaw:c.ptRaw,
+   tag:c.lowsr?"low-SR":(c.unpaired?"unpaired":"measured")}})
+  .concat(ATLAS_EXTRA.map(function(c){return{k:c.k,n:c.n,sig:c.sig,ci:c.ci,df:c.df,
+   pure:null,p:null,pt:c.pt,ptRaw:c.ptRaw,tag:c.tag}}));
+ rows.sort(function(a,b){return b.sig-a.sig});
+ var COL={"low-SR":"var(--no)","unpaired":"var(--no)","cross-stack":"var(--no)","pre-rebuild":"var(--no)",
+   "overturned prior":"var(--ok)","measured":"var(--void)","small-k":"var(--void)","pooled":"var(--void)","σ₀ = 0.00":"var(--void)"};
+ tb.innerHTML=rows.map(function(r){
+   var kk=(r.n.match(/k=(\d+)/)||[])[1]||"—";
+   var ncross=(r.pure&&r.p)?Math.round(100*100*r.p*(1-r.p)/(r.pure*r.pure)):null;
+   return '<tr><td class="c">'+r.n.replace(/ · k=\d+/,"")+'<small>'+r.k+'</small></td>'+
+     '<td>'+kk+'</td><td style="font-weight:600;font-size:.86rem">'+r.sig.toFixed(r.sig<1?3:2)+'</td>'+
+     '<td>'+(r.ci?"["+r.ci[0].toFixed(2)+", "+r.ci[1].toFixed(2)+"]":'<span style="color:var(--ink-3)">—</span>')+'</td>'+
+     '<td>'+(r.df==null?'<span style="color:var(--ink-3)">—</span>':r.df)+'</td>'+
+     '<td>'+(r.pure?r.pure.toFixed(3):'<span style="color:var(--ink-3)">—</span>')+'</td>'+
+     '<td>'+(ncross?ncross:'<span style="color:var(--ink-3)">—</span>')+'</td>'+
+     '<td>'+(r.pt?'<b>'+r.pt.toFixed(2)+'</b> <span style="color:var(--ink-3)">/ '+r.ptRaw.toFixed(2)+'</span>':'<span style="color:var(--ink-3)">—</span>')+'</td>'+
+     '<td><span class="tag" style="color:'+(COL[r.tag]||COL[(r.tag||"").split(" · ")[0]]||"var(--void)")+'">'+r.tag+'</span></td></tr>'}).join("")})();
+
+/* ── downloads ──────────────────────────────────────────────────────────
+   Uses the viewer-mediated downloads capability. The viewer confirms every
+   save and may decline; there is no silent write. If the capability is not
+   served on this view we hide the buttons rather than offer a dead link.  */
+var ALL=CELLS.filter(function(c){return c.sig}).concat(ATLAS_EXTRA);
+function atlasJSON(){return JSON.stringify({
+  version:"2026-08",
+  scope:"All cells measured in simulation (PushT, LIBERO, ALOHA sim) with LeRobot policies. No cell was measured on physical hardware. Transfer beyond a measured cell is a pre-registered hypothesis, not a result.",
+  both_readings_rule:"A floor-subtracted sigma never travels without its raw reading.",
+  source:"orbit_eval.atlas — reproduced, not retyped.",
+  cells:ALL},null,1)}
+function atlasCSV(){
+  var h="cell,sigma_run_pp,ci_lo,ci_hi,df,sigma_pure_pp,sigma_pertask_pp,sigma_pertask_raw_pp,scope\n";
+  return h+ALL.map(function(c){return [c.k,c.sig,c.ci?c.ci[0]:"",c.ci?c.ci[1]:"",
+    c.df==null?"":c.df,c.pure||"",c.pt||"",c.ptRaw||"",
+    c.lowsr?"low-SR":(c.unpaired?"unpaired":(c.tag||"measured"))].join(",")}).join("\n")}
+
+(function(){
+  var bJ=$("#dl"), bC=$("#dlc"), dls=null;
+  if(!bJ||!bC) return;
+  bJ.hidden=true; bC.hidden=true;
+  if(!(window.claude&&typeof window.claude.use==="function")) return;
+  window.claude.use("downloads").then(function(d){
+    if(!d) return;                       /* not served here — stay hidden */
+    dls=d; bJ.hidden=false; bC.hidden=false;
+    function flash(btn,txt){var o=btn.textContent;btn.textContent=txt;
+      setTimeout(function(){btn.textContent=o},2200)}
+    function offer(btn,filename,data,fallback){
+      dls.save({filename:filename,data:data})
+        .then(function(){flash(btn,"Saved")})
+        .catch(function(e){
+          var c=e&&e.code;
+          if(c==="extension_not_enabled"&&fallback){return offer(btn,fallback,data,null)}
+          if(c==="declined"){return}                       /* never auto-retry */
+          if(c==="rate_limited"){flash(btn,"Try again in a moment");return}
+          if(c==="too_large"){flash(btn,"Too large");return}
+          flash(btn,"Unavailable")})}
+    bJ.addEventListener("click",function(){
+      offer(bJ,"orbit-atlas-2026-08.json",atlasJSON(),null)});
+    bC.addEventListener("click",function(){
+      offer(bC,"orbit-atlas-2026-08.csv",atlasCSV(),"orbit-atlas-2026-08.txt")});
+  }).catch(function(){});
+})();
+
+/* ── the check ─────────────────────────────────────────────────────────── */
+var mode="A";
+var sel=$("#cell");
+CELLS.forEach(function(c,i){var o=document.createElement("option");o.value=String(i);
+  o.textContent=c.n+(c.sig?"  —  σ "+c.sig+" pp":"");sel.appendChild(o)});
+sel.value="0";
+
+function setMode(m){mode=m;
+  $("#mA").setAttribute("aria-pressed",String(m==="A"));
+  $("#mB").setAttribute("aria-pressed",String(m==="B"));
+  $("#pairwrap").hidden=(m!=="A");
+  run()}
+$("#mA").addEventListener("click",function(){setMode("A")});
+$("#mB").addEventListener("click",function(){setMode("B")});
+
+function verdict(cls,txt,icon){
+  var b=$("#vb");b.className="verdict "+cls;
+  b.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+icon+'</svg><span>'+txt+'</span>'}
+var IC={ok:'<path d="M20 6L9 17l-5-5"></path>',
+        no:'<circle cx="12" cy="12" r="9"></circle><path d="M12 8v5M12 17h.01"></path>',
+        wait:'<circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path>',
+        stop:'<circle cx="12" cy="12" r="9"></circle><path d="M9 9l6 6M15 9l-6 6"></path>'};
+function kv(rows){$("#kv").innerHTML=rows.map(function(r){
+  return '<div class="r'+(r.em?" em":"")+'"><span class="k">'+r.k+'</span><span class="v"'+
+    (r.c?' style="color:'+r.c+'"':'')+'>'+r.v+'</span></div>'}).join("")}
+function notes(list){$("#notes").innerHTML=list.map(function(t){
+  var stop=t.charAt(0)==="!";if(stop)t=t.slice(1);
+  return '<div class="note'+(stop?" stop":"")+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v4.5M12 16h.01"></path></svg><span>'+t+'</span></div>'}).join("")}
+
+function run(){
+  var c=CELLS[parseInt(sel.value,10)||0];
+  var A=parseFloat($("#a").value), B=parseFloat($("#b").value), n=parseInt($("#n").value,10);
+  $("#cellh").textContent=c.note;
+  $("#stamp").textContent = mode==="A" ? "eval-level · Wilson" : "retrain-level";
+
+  if(!isFinite(A)||!isFinite(B)||!isFinite(n)||n<2||A<0||A>100||B<0||B>100){
+    verdict("v-void","check inputs",IC.stop);$("#vsub").textContent="";
+    kv([]);notes(["Enter two success rates between 0 and 100 and at least 2 episodes per arm."]);
+    $("#splitwrap").hidden=true;return}
+
+  var d=B-A, pA=A/100, pB=B/100, pbar=(pA+pB)/2;
+  var seA=floorPP(pA,n), seB=floorPP(pB,n);
+  var wA=wilson(Math.round(pA*n),n), wB=wilson(Math.round(pB*n),n);
+  var paired=$("#paired").value==="1";
+
+  if(mode==="A"){
+    /* ── same checkpoint / same recipe: eval-draw noise only ── */
+    var seD, method;
+    if(paired){ /* CRN: conservative p_d bound, we do not have the per-episode vector */
+      var pd=Math.min(.5,Math.max(Math.abs(d)/100, pA*(1-pB)+pB*(1-pA)));
+      seD=100*Math.sqrt(pd/n); method="paired (CRN), p_d bound "+pd.toFixed(3);
+    } else { seD=Math.sqrt(seA*seA+seB*seB); method="unpaired"; }
+    var z=seD>0?d/seD:0, lo=d-Z975*seD, hi=d+Z975*seD;
+    var need = paired
+      ? Math.ceil(Math.min(.5,pA*(1-pB)+pB*(1-pA))*Math.pow(ZS/(Math.abs(d)/100),2))
+      : Math.ceil(2*pbar*(1-pbar)*Math.pow(ZS/(Math.abs(d)/100),2));
+
+    if(Math.abs(z)>=Z975){verdict("v-ok","resolved",IC.ok)}
+    else{verdict("v-warn","not resolved",IC.wait)}
+    $("#vsub").textContent=method+" · n="+n+"/arm · this checkpoint only";
+    kv([
+      {k:"Observed difference",v:(d>=0?"+":"")+d.toFixed(2)+" pp"},
+      {k:"Baseline 95% CI (Wilson)",v:"["+wA[0].toFixed(1)+", "+wA[1].toFixed(1)+"]"},
+      {k:"New 95% CI (Wilson)",v:"["+wB[0].toFixed(1)+", "+wB[1].toFixed(1)+"]"},
+      {k:"SE of the difference",v:seD.toFixed(2)+" pp"},
+      {k:"95% interval on the difference",v:"["+lo.toFixed(2)+", "+hi.toFixed(2)+"]",em:true},
+      {k:"Episodes/arm to resolve this gap",v:(isFinite(need)&&need>0?need.toLocaleString():"—"),em:true,
+       c:need>n?"var(--warn)":"var(--ok)"}
+    ]);
+    var nn=["This prices the EVAL DRAW only. It answers whether this checkpoint scores differently on new episodes — not whether the recipe that produced it is better.",
+      "Episodes genuinely help here: the noise you are fighting shrinks as 1/√n."];
+    if(paired) nn.push("Pairing needs a verified episode-index→initial-state mapping. Licensed on gym_pusht (seed-driven initial states). NOT licensed on LIBERO at any batch size: the harness advances its own init-state pointer on every reset, including the extra autoreset a successful episode fires, so two runs desynchronise once their outcomes diverge — measured at 10.1% index agreement on our sequential battery. Sequential eval makes this worse, not better. NOT licensed on gym-aloha under the frozen obs-hash demotion, though its seed→state mapping is separately byte-deterministic.");
+    if(c.lowsr) nn.push("!This cell carries a LOW-SR stamp: the binomial floor is a large share of its variance, so its σ describes the eval budget more than the recipe.");
+    notes(nn);
+    $("#splitwrap").hidden=true;
+    return}
+
+  /* ── mode B: independently retrained arms ── */
+  if(!c.pure){
+    verdict("v-void","unpriced cell",IC.stop);
+    $("#vsub").textContent="no measured prior for this cell";
+    kv([{k:"Observed difference",v:(d>=0?"+":"")+d.toFixed(2)+" pp"},
+        {k:"Retrain prior",v:"none",em:true,c:"var(--no)"}]);
+    notes(["!We will not price a retrain-level comparison without a measured σ for your cell, and we will not forecast one — we tested a forecaster on four held-out cells across two model families and closed the line.",
+      "Selecting a nearby cell would be transferring a σ across success-rate regimes, which the gate refuses by design.",
+      "The only way to price this is to measure it: J independent retrains on byte-identical data, evaluated on a common episode set."]);
+    $("#splitwrap").hidden=true;return}
+
+  var evalVar=(seA*seA+seB*seB);              /* two-arm difference, eval component */
+  var trainVar=2*c.pure*c.pure;               /* two arms, m=1 retrain each */
+  var seTot=Math.sqrt(evalVar+trainVar);
+  var zr=d/seTot, loR=d-Z975*seTot, hiR=d+Z975*seTot;
+  var signConf=Phi(Math.abs(d)/(Math.SQRT2*c.pure));         /* m=1, sign correctness */
+  var resFloor=ZS*Math.SQRT2*c.pure;                          /* infinite episodes */
+  var perArmVar=c.pure*c.pure+100*100*pbar*(1-pbar)/n;
+  var m=Math.abs(d)>1e-9?Math.ceil(2*Math.pow(ZS,2)*perArmVar/(d*d)-1e-9):Infinity;
+  var ncross=Math.round(100*100*pbar*(1-pbar)/(c.pure*c.pure));
+  var fshare=evalVar/(evalVar+trainVar);
+  var recipeHalf=Z975*Math.sqrt(floorPP(pB,n)*floorPP(pB,n)+c.pure*c.pure);
+
+  if(Math.abs(d)<resFloor && Math.abs(zr)<Z975){verdict("v-no","below the floor",IC.stop)}
+  else if(Math.abs(zr)>=Z975){verdict("v-ok","resolved",IC.ok)}
+  else{verdict("v-warn","not resolved",IC.wait)}
+  $("#vsub").textContent="retrain-level · 1 retrain/arm · n="+n+"/arm";
+
+  var rows=[
+    {k:"Observed difference",v:(d>=0?"+":"")+d.toFixed(2)+" pp"},
+    {k:"Chance the sign is even right",v:(signConf*100).toFixed(1)+"%",em:true,
+     c:signConf<.75?"var(--no)":(signConf<.9?"var(--warn)":"var(--ok)")},
+    {k:"σ used (floor-subtracted)",v:c.pure.toFixed(3)+" pp  / raw "+c.sig.toFixed(3)},
+    {k:"SE of the difference",v:seTot.toFixed(2)+" pp"},
+    {k:"95% interval",v:"["+loR.toFixed(2)+", "+hiR.toFixed(2)+"]"},
+    {k:"Smallest gap resolvable at ∞ episodes",v:resFloor.toFixed(1)+" pp",em:true,c:"var(--no)"},
+    {k:"Crossover n* for this cell",v:ncross.toLocaleString()+" episodes"},
+    {k:"Retrains/arm to resolve this gap",v:(isFinite(m)&&m<=400?m+" per arm":"> 400 — not resolvable"),em:true,
+     c:(isFinite(m)&&m<=12)?"var(--warn)":"var(--no)"}
+  ];
+  kv(rows);
+
+  /* variance split bar */
+  $("#splitwrap").hidden=false;
+  $("#bE").style.width=(fshare*100).toFixed(1)+"%";
+  $("#bE").style.background="var(--s2)";
+  $("#bT").style.width=((1-fshare)*100).toFixed(1)+"%";
+  $("#bT").style.background="var(--s1)";
+  $("#lE").textContent="eval draw "+(fshare*100).toFixed(0)+"%";
+  $("#lT").textContent="training run "+((1-fshare)*100).toFixed(0)+"%";
+
+  var nn=[];
+  if(n<ncross) nn.push("At n="+n+" the eval draw is still "+(fshare*100).toFixed(0)+"% of your variance, so more episodes DO help — up to about "+ncross.toLocaleString()+", where the two components cross. Past that they buy very little.");
+  else nn.push("You are past this cell's crossover ("+ncross.toLocaleString()+" episodes): "+((1-fshare)*100).toFixed(0)+"% of your variance is now the training run. More episodes will not move it — more retrains will.");
+  if(Math.abs(d)<resFloor) nn.push("!Your gap is below "+resFloor.toFixed(1)+" pp, which is the smallest difference one retrain per arm can resolve at 80% power with unlimited episodes. No eval budget fixes this; only more retrains do.");
+  nn.push("A single retrain evaluated at n="+n+" pins the RECIPE's mean success rate only to ±"+recipeHalf.toFixed(1)+" pp — that is the interval a buyer needs, and it is the one almost no published result reports.");
+  nn.push("Pairing cannot rescue a retrain comparison at all: common random numbers cancel eval-draw noise, and σ_run lives in training.");
+  if(c.unpaired) nn.push("!This cell is PAIRING-UNLICENSED — the obs-hash alignment pre-check scored 0/6 on gym-aloha, so no paired statistic may be computed against it.");
+  if(c.lowsr) nn.push("!LOW-SR stamp: much of this cell's σ is sampling, not retrain lottery. Do not read it as evidence the class is stable.");
+  if(c.pt) nn.push("Suite-level only. Per-task σ in this cell is "+c.pt.toFixed(2)+" pp floor-subtracted (libero_object; raw "+c.ptRaw.toFixed(2)+"): an individual task can move far more than this verdict covers, and which tasks move is near-independent across tasks.");
+  notes(nn);
+}
+["#cell","#a","#b","#n","#paired"].forEach(function(s){
+  var e=$(s);e.addEventListener("input",run);e.addEventListener("change",run)});
+run();
+})();
+</script>
