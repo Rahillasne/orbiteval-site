@@ -1,0 +1,519 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>About — OrbitEval</title>
+<meta name="description" content="OrbitEval builds ship-decision infrastructure for learned robot policies: a promotion gate, acceptance clauses and a certificate ledger, all priced against measured retrain noise floors. Founded in 2026 by Rahil Lasne. Contact rahil@orbiteval.com.">
+<link rel="canonical" href="https://orbiteval.com/about">
+<meta property="og:site_name" content="OrbitEval">
+<meta property="og:type" content="website">
+<meta property="og:title" content="About OrbitEval">
+<meta property="og:description" content="OrbitEval builds ship-decision infrastructure for learned robot policies — software that measures the retrain noise floor of a robot-learning stack and prices every ship/no-ship decision against it.">
+<meta property="og:url" content="https://orbiteval.com/about">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cg transform='rotate(-26 24 24)'%3E%3Cellipse cx='24' cy='24' rx='20' ry='8.6' fill='none' stroke='%23575349' stroke-width='3'/%3E%3C/g%3E%3Ccircle cx='24' cy='24' r='7' fill='%23D97757'/%3E%3C/svg%3E">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"AboutPage","mainEntity":{"@type":"Organization","name":"OrbitEval","url":"https://orbiteval.com","email":"rahil@orbiteval.com","description":"OrbitEval builds ship-decision infrastructure for learned robot policies.","founder":{"@type":"Person","name":"Rahil Lasne"},"foundingDate":"2026","sameAs":["https://github.com/Rahillasne/orbiteval-site"]}}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Newsreader:opsz,wght@6..72,300;6..72,400;6..72,500&display=swap">
+
+<style>
+/* ═══════════════════════════════════════════════════════════════════════════
+   ORBITEVAL — About
+   Same design system as index.html: cream ground, clay accent, warm ink.
+   ═══════════════════════════════════════════════════════════════════════════ */
+:root {
+  color-scheme: light;
+
+  --ground:      #FAF9F5;
+  --surface:     #FFFFFF;
+  --surface-2:   #F2F0E9;
+  --surface-3:   #EAE7DC;
+  --ink-block:   #1A1917;
+
+  --ink:         #141413;
+  --ink-2:       #575349;
+  --ink-3:       #8A887D;
+  --ink-inv:     #FAF9F5;
+
+  --rule:        #E5E1D6;
+  --rule-2:      #D3CEBE;
+
+  --clay:        #D97757;
+  --clay-deep:   #B0532F;
+  --clay-soft:   #F7E8E0;
+
+  --sh-1: 0 1px 2px rgba(20,20,19,.04), 0 6px 16px -10px rgba(20,20,19,.12);
+  --sh-2: 0 2px 4px rgba(20,20,19,.04), 0 18px 44px -22px rgba(20,20,19,.22);
+
+  --page: 1240px;
+  --read: 66ch;
+
+  --f-display: "Newsreader", Georgia, "Times New Roman", serif;
+  --f-ui: "Archivo", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  --t-1: clamp(.78rem, .76rem + .1vw, .84rem);
+  --t0:  clamp(.95rem, .92rem + .14vw, 1.03rem);
+  --t1:  clamp(1.14rem, 1.06rem + .34vw, 1.34rem);
+  --t2:  clamp(1.5rem, 1.3rem + .84vw, 2.1rem);
+  --t3:  clamp(2rem, 1.6rem + 1.7vw, 3.1rem);
+  --t4:  clamp(2.7rem, 1.9rem + 3.4vw, 4.9rem);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --ground:    #1A1917;
+    --surface:   #232220;
+    --surface-2: #2C2B28;
+    --surface-3: #35332F;
+    --ink-block: #0F0E0D;
+
+    --ink:       #F5F3ED;
+    --ink-2:     #BFBCB2;
+    --ink-3:     #8A887D;
+    --ink-inv:   #141413;
+
+    --rule:      #37352F;
+    --rule-2:    #4A473F;
+
+    --clay:      #DE8B6D;
+    --clay-deep: #C4623C;
+    --clay-soft: #3A241B;
+
+    --sh-1: 0 1px 2px rgba(0,0,0,.4), 0 6px 18px -10px rgba(0,0,0,.6);
+    --sh-2: 0 2px 6px rgba(0,0,0,.45), 0 22px 50px -24px rgba(0,0,0,.8);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --ground:    #1A1917;
+  --surface:   #232220;
+  --surface-2: #2C2B28;
+  --surface-3: #35332F;
+  --ink-block: #0F0E0D;
+
+  --ink:       #F5F3ED;
+  --ink-2:     #BFBCB2;
+  --ink-3:     #8A887D;
+  --ink-inv:   #141413;
+
+  --rule:      #37352F;
+  --rule-2:    #4A473F;
+
+  --clay:      #DE8B6D;
+  --clay-deep: #C4623C;
+  --clay-soft: #3A241B;
+
+  --sh-1: 0 1px 2px rgba(0,0,0,.4), 0 6px 18px -10px rgba(0,0,0,.6);
+  --sh-2: 0 2px 6px rgba(0,0,0,.45), 0 22px 50px -24px rgba(0,0,0,.8);
+}
+
+*,*::before,*::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *,*::before,*::after { animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important; }
+}
+body {
+  margin: 0; background: var(--ground); color: var(--ink);
+  font-family: var(--f-ui); font-size: var(--t0); line-height: 1.6;
+  -webkit-font-smoothing: antialiased; overflow-x: hidden;
+}
+:focus-visible { outline: 2px solid var(--clay-deep); outline-offset: 3px; border-radius: 3px; }
+h1,h2,h3,h4 { margin: 0; font-weight: 400; text-wrap: balance; }
+p { margin: 0; }
+a { color: inherit; text-decoration: none; }
+button { font: inherit; }
+
+.wrap { width: min(100% - 2.5rem, var(--page)); margin-inline: auto; }
+@media (max-width: 620px) { .wrap { width: calc(100% - 1.6rem); } }
+
+.mono { font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
+
+.eyebrow {
+  font-family: var(--f-mono); font-size: .68rem; font-weight: 500;
+  letter-spacing: .18em; text-transform: uppercase; color: var(--ink-3);
+}
+.h-display {
+  font-family: var(--f-display); font-weight: 400;
+  letter-spacing: -.024em; line-height: 1.04;
+}
+.lede {
+  font-size: clamp(1.04rem, .98rem + .4vw, 1.24rem);
+  line-height: 1.62; color: var(--ink-2); max-width: 52ch;
+}
+
+/* ── nav ──────────────────────────────────────────────────────────────── */
+.nav {
+  position: sticky; top: 0; z-index: 60;
+  background: var(--ground);
+  border-bottom: 1px solid transparent;
+  transition: border-color .3s ease, background .3s ease;
+}
+.nav.stuck { border-bottom-color: var(--rule); background: color-mix(in srgb, var(--ground) 88%, transparent); backdrop-filter: blur(14px); }
+.nav .wrap { display: flex; align-items: center; gap: 1.75rem; height: 66px; }
+.logo { display: flex; align-items: center; gap: .58rem; }
+.logo-mark { width: 29px; height: 29px; flex: none; display: block; }
+.logo-mark .ring { fill: none; stroke: var(--ink-3); stroke-width: 1.7; opacity: .9; }
+.logo-mark .core { fill: var(--clay); }
+/* The node rides the tilted ring itself via offset-path, so the orbit reads as
+   an orbit rather than a dot on an unrelated circle. Hidden where offset-path
+   is unsupported — the ring and core still carry the mark. */
+.logo-mark .node { fill: var(--ink); opacity: 0; }
+@supports (offset-path: path("M0,0")) {
+  .logo-mark .node {
+    opacity: 1;
+    offset-path: path("M 4,24 a 20,8.6 0 1,0 40,0 a 20,8.6 0 1,0 -40,0");
+    offset-rotate: 0deg;
+    animation: orbit 9s linear infinite;
+  }
+}
+@keyframes orbit { to { offset-distance: 100%; } }
+.logo-word { font-weight: 700; font-size: 1.02rem; letter-spacing: -.03em; }
+.logo-word b { font-weight: 700; }
+.logo-word span { font-weight: 500; color: var(--ink-3); }
+
+.nav-links { display: flex; align-items: center; gap: 1.55rem; margin-left: .5rem; }
+.nav-links a { font-size: .87rem; font-weight: 500; color: var(--ink-2); }
+.nav-links a:hover { color: var(--ink); }
+.nav-links a[aria-current="page"] { color: var(--ink); }
+.nav-right { margin-left: auto; display: flex; align-items: center; gap: .7rem; }
+@media (max-width: 900px) { .nav-links { display: none; } }
+
+.tt { display: grid; place-items: center; width: 34px; height: 34px; padding: 0;
+  border: 1px solid var(--rule-2); border-radius: 50%; background: transparent;
+  color: var(--ink-2); cursor: pointer; }
+.tt:hover { color: var(--ink); border-color: var(--ink-3); }
+.tt svg { width: 15px; height: 15px; }
+
+/* ── buttons ──────────────────────────────────────────────────────────── */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: .45rem;
+  font-size: .88rem; font-weight: 600; letter-spacing: -.005em;
+  padding: .62rem 1.15rem; border-radius: 7px; cursor: pointer;
+  border: 1px solid transparent; white-space: nowrap;
+  transition: transform .14s ease, background .16s ease, border-color .16s ease, color .16s ease;
+}
+.btn:active { transform: translateY(1px); }
+.btn-primary { background: var(--ink); color: var(--ink-inv); border-color: var(--ink); }
+.btn-primary:hover { background: var(--ink-2); border-color: var(--ink-2); }
+.btn-ghost { background: transparent; color: var(--ink); border-color: var(--rule-2); }
+.btn-ghost:hover { border-color: var(--ink-3); background: var(--surface-2); }
+.btn-lg { padding: .78rem 1.5rem; font-size: .94rem; border-radius: 8px; }
+.btn svg { width: 14px; height: 14px; flex: none; }
+
+/* ── hero ─────────────────────────────────────────────────────────────── */
+.hero { padding: clamp(3.5rem, 8vw, 6.5rem) 0 clamp(2.5rem, 5vw, 4rem); position: relative; overflow: hidden; }
+.hero::before {
+  content: ""; position: absolute; inset: -30% 45% 40% -20%;
+  background: radial-gradient(60% 60% at 50% 50%, color-mix(in srgb, var(--clay) 16%, transparent), transparent 70%);
+  pointer-events: none; filter: blur(30px);
+}
+.hero .wrap { position: relative; }
+.hero h1 { font-size: var(--t4); margin: 1.2rem 0 1.5rem; }
+
+/* ── sections ─────────────────────────────────────────────────────────── */
+.sec { padding: clamp(4rem, 8vw, 7rem) 0; }
+.sec.alt { background: var(--surface-2); border-block: 1px solid var(--rule); }
+.sec-head { max-width: 62ch; margin-bottom: clamp(2rem, 4vw, 3.2rem); }
+.sec-head h2 { font-family: var(--f-display); font-size: var(--t3); letter-spacing: -.028em; line-height: 1.06; margin: .9rem 0 1rem; }
+.sec-head p { color: var(--ink-2); font-size: var(--t1); line-height: 1.55; }
+
+.split { display: grid; gap: clamp(1.6rem, 3vw, 2.6rem); grid-template-columns: 1fr; align-items: start; }
+@media (min-width: 980px) { .split { grid-template-columns: minmax(0,.82fr) minmax(0,1fr); } }
+.split h3 { font-family: var(--f-display); font-size: var(--t2); letter-spacing: -.024em; line-height: 1.12; margin-bottom: .8rem; }
+.split p { color: var(--ink-2); font-size: .96rem; line-height: 1.62; }
+.bullets { display: grid; gap: .7rem; margin-top: 1.3rem; }
+.bullet { display: grid; grid-template-columns: 16px 1fr; gap: .65rem; font-size: .88rem; color: var(--ink-2); line-height: 1.5; align-items: start; }
+.bullet svg { width: 15px; height: 15px; color: var(--clay-deep); margin-top: .16rem; flex: none; }
+
+/* what-we-build cards */
+.cards { display: grid; gap: 1rem; grid-template-columns: 1fr; }
+@media (min-width: 900px) { .cards { grid-template-columns: repeat(3, 1fr); } }
+.card {
+  background: var(--surface); border: 1px solid var(--rule); border-radius: 14px;
+  padding: 1.6rem; display: flex; flex-direction: column; gap: .7rem; box-shadow: var(--sh-1);
+}
+.sec.alt .card { background: var(--surface); }
+.card .n { font-family: var(--f-mono); font-size: .68rem; color: var(--ink-3); letter-spacing: .12em; }
+.card h3 { font-family: var(--f-display); font-size: 1.45rem; letter-spacing: -.022em; line-height: 1.15; }
+.card p { font-size: .88rem; color: var(--ink-2); line-height: 1.58; }
+.card .tag { margin-top: auto; padding-top: .6rem; font-family: var(--f-mono); font-size: .66rem; color: var(--ink-3); }
+
+/* contact card */
+.kv { display: grid; gap: 0; border: 1px solid var(--rule); border-radius: 8px; overflow: hidden; background: var(--surface); }
+.kv-row { display: grid; grid-template-columns: 1fr auto; gap: 1rem; padding: .62rem .8rem; border-bottom: 1px solid var(--rule); align-items: baseline; }
+.kv-row:last-child { border-bottom: none; }
+.kv-row .k { font-size: .78rem; color: var(--ink-2); }
+.kv-row .v { font-family: var(--f-mono); font-size: .8rem; font-weight: 500; }
+.kv-row .v a { color: var(--clay-deep); }
+.kv-row .v a:hover { text-decoration: underline; }
+
+/* footer */
+.foot { background: var(--ink-block); color: #C9C6BD; padding: 3.5rem 0 2.5rem; }
+.foot a { color: #C9C6BD; }
+.foot a:hover { color: #FFFFFF; }
+.foot-grid { display: grid; gap: 2rem; grid-template-columns: 1fr; }
+@media (min-width: 800px) { .foot-grid { grid-template-columns: 1.6fr repeat(3, 1fr); } }
+.foot h4 { font-family: var(--f-mono); font-size: .64rem; letter-spacing: .14em; text-transform: uppercase; color: #8A887D; margin-bottom: .85rem; }
+.foot ul { list-style: none; margin: 0; padding: 0; display: grid; gap: .5rem; font-size: .84rem; }
+.foot .logo-word { color: #FAF9F5; }
+.foot .logo-word span { color: #8A887D; }
+.foot .logo-mark .node { fill: #FAF9F5; }
+.foot .fine { margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid #37352F; font-size: .74rem; color: #8A887D; display: flex; gap: 1.2rem; flex-wrap: wrap; align-items: center; }
+</style>
+</head>
+<body>
+
+<!-- ═════════════════════ NAV ═════════════════════ -->
+<header class="nav" id="nav">
+  <div class="wrap">
+    <a class="logo" href="index.html" aria-label="OrbitEval home">
+      <svg class="logo-mark" viewBox="0 0 48 48" aria-hidden="true">
+        <g transform="rotate(-26 24 24)">
+          <ellipse class="ring" cx="24" cy="24" rx="20" ry="8.6"></ellipse>
+          <circle class="node" cx="0" cy="0" r="3.2"></circle>
+        </g>
+        <circle class="core" cx="24" cy="24" r="6.6"></circle>
+      </svg>
+      <span class="logo-word"><b>Orbit</b><span>Eval</span></span>
+    </a>
+    <nav class="nav-links">
+      <a href="index.html#problem">Why</a>
+      <a href="index.html#product">Product</a>
+      <a href="index.html#calculator">Noise floor</a>
+      <a href="atlas.html">Atlas</a>
+      <a href="index.html#pricing">Pricing</a>
+      <a href="about.html" aria-current="page">About</a>
+    </nav>
+    <div class="nav-right">
+      <button class="tt" id="tt" type="button" aria-label="Switch colour theme">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="4.2"></circle>
+          <path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.4 5.4l1.6 1.6M17 17l1.6 1.6M18.6 5.4L17 7M7 17l-1.6 1.6"></path>
+        </svg>
+      </button>
+      <a class="btn btn-ghost" href="mailto:rahil@orbiteval.com" style="padding:.46rem .85rem;font-size:.82rem;border-radius:6px">Contact</a>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- ═════════════════════ HERO ═════════════════════ -->
+  <section class="hero">
+    <div class="wrap">
+      <p class="eyebrow">The company</p>
+      <h1 class="h-display">About OrbitEval</h1>
+      <p class="lede">
+        OrbitEval builds ship-decision infrastructure for learned robot policies —
+        software that measures the retrain noise floor of a robot-learning stack and
+        prices every ship/no-ship decision against it, so a real improvement is
+        provable and a lucky training seed never reaches a fleet.
+      </p>
+    </div>
+  </section>
+
+  <!-- ═════════════════════ WHAT WE BUILD ═════════════════════ -->
+  <section class="sec alt" id="build">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">What we build</p>
+        <h2 class="h-display">One engine. Three surfaces.</h2>
+        <p>
+          OrbitEval sits on top of the eval harness a robotics team already runs
+          and turns what they already log into decisions they can defend.
+        </p>
+      </div>
+      <div class="cards">
+        <div class="card">
+          <span class="n">01</span>
+          <h3>Promotion gate</h3>
+          <p>
+            A CI status check that sits between the eval harness and deployment.
+            Before a retrained checkpoint ships, it rules
+            <span class="mono">SHIP</span> / <span class="mono">HOLD</span> /
+            <span class="mono">COLLECT-MORE</span> / <span class="mono">INVALID</span> /
+            <span class="mono">UNRESOLVABLE</span> with quantified error rates.
+          </p>
+          <span class="tag">commercial · drops into CI</span>
+        </div>
+        <div class="card">
+          <span class="n">02</span>
+          <h3>Acceptance clauses</h3>
+          <p>
+            Pre-registered, machine-checkable statistical clauses over fleet
+            telemetry, tested with anytime-valid sequential statistics — so a
+            pilot or milestone settles itself the moment the evidence suffices.
+          </p>
+          <span class="tag">commercial · contract-grade</span>
+        </div>
+        <div class="card">
+          <span class="n">03</span>
+          <h3>Certificate ledger</h3>
+          <p>
+            Append-only, tamper-evident decision records you can hand a customer,
+            an insurer or an auditor — every verdict lands with its full config
+            and statistics attached.
+          </p>
+          <span class="tag">commercial · signed evidence</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═════════════════════ THE MEASUREMENT ═════════════════════ -->
+  <section class="sec" id="measurement">
+    <div class="wrap">
+      <div class="split">
+        <div>
+          <p class="eyebrow">The measurement behind it</p>
+          <h3 class="h-display" style="margin-top:.9rem">Built on the Variance Atlas.</h3>
+          <p>
+            The product is priced against a measurement we made and published: the
+            Variance Atlas — 16 pre-registered noise-floor cells across four policy
+            classes (ACT, Diffusion Policy, SmolVLA, π₀.₅), measured from 382
+            controlled training runs. Every result behind the product was
+            pre-registered before scoring.
+          </p>
+        </div>
+        <div>
+          <div class="bullets" style="margin-top:.4rem">
+            <div class="bullet">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"></path></svg>
+              <span><b>The atlas is free and public</b> — every measured cell is published at <a href="atlas.html" style="color:var(--clay-deep);font-weight:600">the Variance Atlas</a>.</span>
+            </div>
+            <div class="bullet">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"></path></svg>
+              <span><b>The method is written up</b> — how the noise floor is measured, at <a href="noisefloor.html" style="color:var(--clay-deep);font-weight:600">The Noise Floor</a>.</span>
+            </div>
+            <div class="bullet">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"></path></svg>
+              <span><b>The free check runs on the landing page</b> — price a ship decision against a measured cell in the <a href="index.html#calculator" style="color:var(--clay-deep);font-weight:600">noise-floor check</a>, no account needed.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═════════════════════ COMPANY & CONTACT ═════════════════════ -->
+  <section class="sec alt" id="contact">
+    <div class="wrap">
+      <div class="split">
+        <div>
+          <p class="eyebrow">Company &amp; contact</p>
+          <h3 class="h-display" style="margin-top:.9rem">Who we are.</h3>
+          <p>
+            OrbitEval was founded in 2026 by Rahil Lasne. The Variance Atlas and
+            the noise-floor checker are free and public; the commercial product is
+            the promotion gate and the certification layer.
+          </p>
+          <p style="margin-top:.9rem">
+            The fastest way to reach us is email —
+            <a href="mailto:rahil@orbiteval.com" style="color:var(--clay-deep);font-weight:600">rahil@orbiteval.com</a>.
+          </p>
+        </div>
+        <div>
+          <div class="kv">
+            <div class="kv-row"><span class="k">Company</span><span class="v">OrbitEval</span></div>
+            <div class="kv-row"><span class="k">Founder</span><span class="v">Rahil Lasne</span></div>
+            <div class="kv-row"><span class="k">Founded</span><span class="v">2026</span></div>
+            <div class="kv-row"><span class="k">Email</span><span class="v"><a href="mailto:rahil@orbiteval.com">rahil@orbiteval.com</a></span></div>
+            <div class="kv-row"><span class="k">Web</span><span class="v"><a href="index.html">orbiteval.com</a></span></div>
+            <div class="kv-row"><span class="k">GitHub</span><span class="v"><a href="https://github.com/Rahillasne/orbiteval-site" rel="noopener">github.com/Rahillasne/orbiteval-site</a></span></div>
+          </div>
+          <p class="mono" style="font-size:.66rem;color:var(--ink-3);margin-top:.8rem;line-height:1.55">
+            Email · <a href="mailto:rahil@orbiteval.com" style="color:var(--clay-deep)">rahil@orbiteval.com</a>
+            &nbsp;·&nbsp; Web · orbiteval.com
+            &nbsp;·&nbsp; GitHub · <a href="https://github.com/Rahillasne/orbiteval-site" rel="noopener" style="color:var(--clay-deep)">Rahillasne/orbiteval-site</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- ═════════════════════ FOOTER ═════════════════════ -->
+<footer class="foot">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <div class="logo" style="margin-bottom:.9rem">
+          <svg class="logo-mark" viewBox="0 0 48 48" aria-hidden="true">
+            <ellipse class="ring" cx="24" cy="24" rx="21" ry="9.5" transform="rotate(-28 24 24)"></ellipse>
+            <circle class="core" cx="24" cy="24" r="7"></circle>
+            <g class="logo-orbit"><circle class="node" cx="44" cy="14.5" r="3.1"></circle></g>
+          </svg>
+          <span class="logo-word"><b>Orbit</b><span>Eval</span></span>
+        </div>
+        <p style="font-size:.84rem;line-height:1.6;max-width:34ch;color:#8A887D">
+          Ship-decision infrastructure for learned robot policies. Measured noise floors,
+          priced decisions, signed evidence.
+        </p>
+      </div>
+      <div>
+        <h4>Product</h4>
+        <ul>
+          <li><a href="index.html#product">Promotion gate</a></li>
+          <li><a href="index.html#product">Acceptance gate</a></li>
+          <li><a href="index.html#product">Certificate ledger</a></li>
+          <li><a href="index.html#pricing">Pricing</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Free</h4>
+        <ul>
+          <li><a href="atlas.html">Variance Atlas</a></li>
+          <li><a href="noisefloor.html">The Noise Floor</a></li>
+          <li><a href="index.html#calculator">Noise-floor check</a></li>
+          <li><a href="index.html#problem">The finding</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Company</h4>
+        <ul>
+          <li><a href="about.html">About</a></li>
+          <li><a href="mailto:rahil@orbiteval.com">rahil@orbiteval.com</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="fine">
+      <span>© 2026 OrbitEval</span>
+      <span>Ship-decision infrastructure for learned robot policies.</span>
+      <span><a href="mailto:rahil@orbiteval.com">rahil@orbiteval.com</a></span>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+  var root = document.documentElement;
+
+  /* theme boot — respect a previously chosen theme */
+  try {
+    var t = localStorage.getItem("orbit-theme");
+    if (t === "light" || t === "dark") root.setAttribute("data-theme", t);
+  } catch (e) {}
+
+  /* theme toggle */
+  document.getElementById("tt").addEventListener("click", function () {
+    var ex = root.getAttribute("data-theme");
+    var dark = ex ? ex === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+    var next = dark ? "light" : "dark";
+    root.setAttribute("data-theme", next);
+    try { localStorage.setItem("orbit-theme", next); } catch (e) {}
+  });
+
+  /* nav shadow */
+  var nav = document.getElementById("nav");
+  addEventListener("scroll", function () { nav.classList.toggle("stuck", scrollY > 8); }, { passive: true });
+})();
+</script>
+
+</body>
+</html>

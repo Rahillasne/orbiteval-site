@@ -1,7 +1,23 @@
-<title>The Variance Atlas</title>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Variance Atlas — OrbitEval</title>
+<meta name="description" content="OrbitEval builds ship-decision infrastructure for learned robot policies — the Variance Atlas is its table of measured retrain noise floors: what a success rate has to beat before it means anything.">
+<link rel="canonical" href="https://orbiteval.com/atlas">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cellipse cx='32' cy='32' rx='27' ry='12' fill='none' stroke='%23575349' stroke-width='4' transform='rotate(-24 32 32)'/%3E%3Ccircle cx='32' cy='32' r='9' fill='%23D97757'/%3E%3C/svg%3E">
+<meta property="og:site_name" content="OrbitEval">
+<meta property="og:title" content="The Variance Atlas — OrbitEval">
+<meta property="og:description" content="OrbitEval builds ship-decision infrastructure for learned robot policies — the Variance Atlas is its table of measured retrain noise floors: what a success rate has to beat before it means anything.">
+<meta property="og:url" content="https://orbiteval.com/atlas">
+<meta property="og:type" content="website">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Organization","name":"OrbitEval","url":"https://orbiteval.com","email":"rahil@orbiteval.com","description":"OrbitEval builds ship-decision infrastructure for learned robot policies: measured retrain noise floors, a statistical promotion gate for CI, and tamper-evident decision records.","founder":{"@type":"Person","name":"Rahil Lasne"},"foundingDate":"2026","sameAs":["https://github.com/Rahillasne/orbiteval-site"]}
+</script>
 
 <style>
 /* ───────────────────────────────────────────────────────────────────────────
@@ -159,18 +175,6 @@ a { color: inherit; }
 .prose strong { color: var(--ink); font-weight: 600; }
 .prose em { font-style: italic; }
 
-/* ── status ribbon ────────────────────────────────────────────────────────── */
-/* REMOVE THIS <div class="ribbon"> BLOCK WHEN WS1 CLEARS AND THE PAGE GOES PUBLIC. */
-.ribbon {
-  background: var(--critical);
-  color: #fff;
-  font-family: var(--font-mono);
-  font-size: .72rem; letter-spacing: .05em;
-  padding: .55rem 1rem;
-  text-align: center;
-}
-.ribbon b { font-weight: 600; letter-spacing: .1em; text-transform: uppercase; }
-
 /* ── masthead ─────────────────────────────────────────────────────────────── */
 .masthead {
   position: sticky; top: 0; z-index: 40;
@@ -183,6 +187,8 @@ a { color: inherit; }
 .brand { display: flex; align-items: baseline; gap: .55rem; font-weight: 800; letter-spacing: -.03em; font-size: 1.02rem; }
 .brand .tick { color: var(--series-1); font-family: var(--font-mono); font-weight: 600; letter-spacing: 0; }
 .brand .sub { font-family: var(--font-mono); font-size: .68rem; font-weight: 400; color: var(--ink-3); letter-spacing: .1em; text-transform: uppercase; }
+.logo-word b { font-weight: 800; }
+.logo-word span { font-weight: 500; color: var(--ink-3); }
 .mast-nav { margin-left: auto; display: flex; align-items: center; gap: 1.4rem; }
 .mast-nav a {
   font-size: .82rem; font-weight: 500; color: var(--ink-2); text-decoration: none;
@@ -405,25 +411,34 @@ pre .k2 { color: var(--series-2); }
 .foot { border-top: 1px solid var(--rule); padding: 3rem 0 4rem; background: var(--surface-sunk); }
 .foot .prose { font-size: .88rem; max-width: 78ch; color: var(--ink-3); }
 .foot .prose strong { color: var(--ink-2); }
+.foot .brand { margin-bottom: 1rem; }
+.foot .foot-line { font-size: .88rem; color: var(--ink-2); margin-bottom: 1.6rem; }
+.foot .foot-line a { color: var(--series-1); }
+.foot .foot-nav { display: flex; flex-wrap: wrap; gap: 1.4rem; margin-top: 2rem; }
+.foot .foot-nav a {
+  font-size: .82rem; font-weight: 500; color: var(--ink-2); text-decoration: none;
+  padding: .3rem 0; border-bottom: 1.5px solid transparent;
+}
+.foot .foot-nav a:hover { color: var(--ink); border-bottom-color: var(--series-1); }
+.foot .copyright { font-family: var(--font-mono); font-size: .68rem; color: var(--ink-3); margin-top: 1.1rem; }
 </style>
+</head>
+<body>
 
-<!-- ══ REMOVE WHEN WS1 (arXiv v1 + endorsement + OpenReview) CLEARS ══ -->
-<div class="ribbon">
-  <b>Pre-publication</b> &nbsp;·&nbsp; embargoed until arXiv v1 + endorsement clear. Not for external distribution.
-</div>
 
 <header class="masthead">
   <div class="wrap">
-    <div class="brand">
+    <a class="brand" href="index.html" style="text-decoration:none" aria-label="OrbitEval home">
       <span class="tick">σ</span>
-      <span>ORBIT</span>
+      <span class="logo-word"><b>Orbit</b><span>Eval</span></span>
       <span class="sub">Variance&nbsp;Atlas</span>
-    </div>
+    </a>
     <nav class="mast-nav">
       <a href="#reveal" class="opt">The problem</a>
       <a href="#atlas">The atlas</a>
       <a href="#blindspot" class="opt">Per-task</a>
       <a href="#limits">Limits</a>
+      <a href="about.html">About</a>
       <button class="themetog" id="themetog" type="button" aria-label="Switch colour theme">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
           <circle cx="12" cy="12" r="4.2"></circle>
@@ -820,9 +835,18 @@ cell[<span class="k2">"provenance"</span>]    <span class="c"># prereg hash, pro
 
 <footer class="foot">
   <div class="wrap">
+    <div class="brand">
+      <span class="tick">σ</span>
+      <span class="logo-word"><b>Orbit</b><span>Eval</span></span>
+      <span class="sub">Variance&nbsp;Atlas</span>
+    </div>
+    <p class="foot-line">
+      OrbitEval builds ship-decision infrastructure for learned robot policies.
+      &nbsp;·&nbsp; <a href="mailto:rahil@orbiteval.com">rahil@orbiteval.com</a>
+    </p>
     <div class="prose">
       <p>
-        <strong>ORBIT Variance Atlas.</strong> Every value on this page was measured on the
+        <strong>The OrbitEval Variance Atlas.</strong> Every value on this page was measured on the
         ORBIT research programme between June and August 2026 under pre-registration,
         and is reproduced here from the shipped <span class="mono">orbit_eval.atlas</span>
         module rather than retyped. Success rates are percentage points throughout.
@@ -837,6 +861,11 @@ cell[<span class="k2">"provenance"</span>]    <span class="c"># prereg hash, pro
         one everywhere it appears.
       </p>
     </div>
+    <nav class="foot-nav" aria-label="Footer">
+      <a href="about.html">About</a>
+      <a href="mailto:rahil@orbiteval.com">Contact</a>
+    </nav>
+    <p class="copyright">© 2026 OrbitEval</p>
   </div>
 </footer>
 
@@ -1348,3 +1377,5 @@ cell[<span class="k2">"provenance"</span>]    <span class="c"># prereg hash, pro
   addEventListener("resize", function () { clearTimeout(rt); rt = setTimeout(redrawAll, 160); });
 })();
 </script>
+</body>
+</html>
