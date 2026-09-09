@@ -63,96 +63,98 @@ h1,h2,h3{margin:0}
 .btn-flare:hover{box-shadow:3px 3px 0 var(--ink)}
 .btn-lg{padding:15px 28px;font-size:15.5px}
 
-/* ---------------- hero ---------------- */
-.hero{padding:76px 0 0}
+/* ---------------- hero: one screen, two columns ---------------- */
+.hero{
+  min-height:calc(100svh - 130px);
+  display:flex;align-items:center;
+  padding:clamp(24px,4vh,56px) 0;
+  border-bottom:1px solid var(--hair);
+}
+.hero-grid{
+  display:grid;grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);
+  gap:clamp(28px,4vw,64px);align-items:center;width:100%;
+}
 .cmdline{
-  font-family:var(--d);font-size:clamp(12px,.6rem + .5vw,15px);
-  color:var(--ink-2);display:flex;flex-wrap:wrap;gap:0 10px;align-items:baseline;
+  font-family:var(--d);font-size:clamp(11px,.62vw + .3vh + 8px,13.5px);
+  color:var(--ink-3);letter-spacing:-.01em;
 }
 .cmdline .p{color:var(--flare);font-weight:700}
-.cmdline .hash{color:var(--ink-3)}
 h1{
   font-family:var(--d);font-weight:800;
-  font-size:clamp(2.5rem,.9rem + 6.4vw,6.4rem);
-  letter-spacing:-.065em;line-height:.92;margin:22px 0 0;
-  text-transform:uppercase;
+  font-size:clamp(2.05rem,2.45vw + 2.5vh,4.3rem);
+  letter-spacing:-.06em;line-height:.94;margin:14px 0 0;text-transform:uppercase;
 }
 h1 em{font-style:normal;color:var(--flare)}
 .hero-sub{
-  margin-top:26px;max-width:44ch;font-size:clamp(1.05rem,1rem + .35vw,1.32rem);
-  color:var(--ink-2);line-height:1.42;font-weight:500;
+  margin-top:clamp(14px,2vh,22px);max-width:42ch;
+  font-size:clamp(1rem,.4vw + .62vh + .62rem,1.24rem);
+  color:var(--ink-2);line-height:1.45;font-weight:500;
 }
 .hero-sub b{color:var(--ink);font-weight:700}
-
-/* -------- the eight: full-bleed dark band -------- */
-.band{background:var(--slate);color:#EFEDE8;margin-top:54px;padding:44px 0 40px;overflow:hidden}
-.band-head{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:30px}
-.band-head .lbl{color:#8A8780}
-.eight{display:grid;grid-template-columns:repeat(8,1fr);gap:clamp(6px,1vw,16px);align-items:end}
-.col{position:relative;text-align:center}
-.col .seed{font-family:var(--d);font-size:10.5px;letter-spacing:.06em;color:#7C7972;margin-bottom:12px}
-.bar{
-  width:100%;background:linear-gradient(180deg,#E08A6B,#C15F3C);
-  height:0;transition:height .9s cubic-bezier(.16,.9,.3,1);
+.hero-cta{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:clamp(16px,2.6vh,28px)}
+.trust{
+  margin-top:clamp(16px,2.4vh,26px);display:flex;flex-wrap:wrap;gap:6px 18px;
+  font-family:var(--d);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);
 }
+.trust span{display:inline-flex;align-items:center;gap:7px}
+.trust span::before{content:"";width:5px;height:5px;background:var(--flare);border-radius:50%}
+
+/* -------- the eight -------- */
+.band{background:var(--slate);color:#EFEDE8;padding:clamp(20px,3vh,30px) clamp(20px,2.4vw,30px) clamp(16px,2.2vh,24px)}
+.band-head{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:clamp(14px,2.2vh,22px)}
+.band-head .lbl{color:#8A8780;font-size:10px;letter-spacing:.16em}
+.eight{display:grid;grid-template-columns:repeat(8,1fr);gap:clamp(4px,.55vw,10px);align-items:end}
+.col{position:relative;text-align:center}
+.col .seed{font-family:var(--d);font-size:9.5px;letter-spacing:.02em;color:#7C7972;margin-bottom:9px}
+.bar{width:100%;background:linear-gradient(180deg,#E08A6B,#C15F3C);height:0;transition:height .95s cubic-bezier(.16,.9,.3,1)}
 .col.is-min .bar,.col.is-max .bar{background:linear-gradient(180deg,#EFA184,#D97757)}
+.plane{height:clamp(100px,19vh,210px);display:flex;align-items:flex-end}
 .val{
   font-family:var(--d);font-weight:800;letter-spacing:-.05em;
-  font-size:clamp(1.05rem,.5rem + 1.75vw,2.35rem);margin-top:14px;line-height:1;
+  font-size:clamp(.88rem,.9vw + .4vh,1.62rem);margin-top:10px;line-height:1;
+  transition:color .5s ease .1s;color:#8E8A82;
 }
-.col.is-min .val,.col.is-max .val{color:var(--flare)}
-.plane{height:clamp(90px,14vw,180px);display:flex;align-items:flex-end}
-.mean{
-  position:relative;margin-top:26px;border-top:1px dashed #45423E;padding-top:12px;
-  display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;
-}
-.mean .l{font-family:var(--d);font-size:12px;color:#96938B}
-.mean .l b{color:#EFEDE8;font-weight:700}
-.mean .r{font-family:var(--d);font-size:12px;color:var(--flare);font-weight:700}
-
-/* the divergence: dim until they split, then the extremes take the accent */
-.val{transition:color .5s ease .1s}
-.col .val{color:#8E8A82}
 .eight.is-split .val{color:#EFEDE8}
 .eight.is-split .col.is-min .val,.eight.is-split .col.is-max .val{color:var(--flare)}
-.bar{transition:height .95s cubic-bezier(.16,.9,.3,1)}
-.eight.is-split .col.is-min .bar,.eight.is-split .col.is-max .bar{box-shadow:0 0 0 1px rgba(217,119,87,.55)}
-.mean{opacity:0;transform:translateY(6px);transition:opacity .7s ease 2.3s,transform .7s ease 2.3s}
-.eight.is-split ~ .mean{opacity:1;transform:none}
+.mean{
+  margin-top:clamp(12px,1.8vh,18px);border-top:1px dashed #45423E;padding-top:11px;
+  display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;
+  opacity:0;transform:translateY(6px);transition:opacity .7s ease 2.3s,transform .7s ease 2.3s;
+}
+.is-split ~ .mean{opacity:1;transform:none}
+.mean .l{font-family:var(--d);font-size:11.5px;color:#96938B}
+.mean .l b{color:#EFEDE8;font-weight:700}
+.mean .r{font-family:var(--d);font-size:11.5px;color:var(--flare);font-weight:700}
+
+.cmd{
+  display:inline-flex;align-items:center;gap:10px;font-family:var(--d);font-size:13px;
+  background:var(--white);border:1.5px solid var(--hair);color:var(--ink);
+  padding:12px 15px;cursor:pointer;transition:border-color .15s;
+}
+.cmd:hover{border-color:var(--flare)}
+.cmd .d{color:var(--flare);font-weight:700}
+.cmd .k{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
 
 /* hero entrance */
-@keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+@keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
 .cmdline{opacity:0;animation:rise .7s cubic-bezier(.2,.8,.3,1) .05s forwards}
 h1 .ln{display:block;opacity:0;animation:rise .8s cubic-bezier(.2,.8,.3,1) forwards}
-h1 .ln:nth-child(1){animation-delay:.16s}
-h1 .ln:nth-child(2){animation-delay:.27s}
-h1 .ln:nth-child(3){animation-delay:.38s}
-.hero-sub{opacity:0;animation:rise .8s cubic-bezier(.2,.8,.3,1) .5s forwards}
-.hero-cta{opacity:0;animation:rise .8s cubic-bezier(.2,.8,.3,1) .62s forwards}
+h1 .ln:nth-child(1){animation-delay:.14s}
+h1 .ln:nth-child(2){animation-delay:.24s}
+.hero-sub{opacity:0;animation:rise .8s cubic-bezier(.2,.8,.3,1) .36s forwards}
+.hero-cta{opacity:0;animation:rise .8s cubic-bezier(.2,.8,.3,1) .46s forwards}
+.trust{opacity:0;animation:rise .8s cubic-bezier(.2,.8,.3,1) .56s forwards}
+.band{opacity:0;animation:rise .9s cubic-bezier(.2,.8,.3,1) .3s forwards}
 
 /* scroll reveal */
 .rise{opacity:0;transform:translateY(20px);transition:opacity .7s cubic-bezier(.2,.8,.3,1),transform .7s cubic-bezier(.2,.8,.3,1)}
 .rise.in{opacity:1;transform:none}
-.rise:nth-child(2){transition-delay:.06s}
-.rows .row{transition-delay:calc(var(--i,0) * .08s)}
 
 @media (prefers-reduced-motion:reduce){
   .bar,.val,.mean{transition:none!important}
-  .cmdline,h1 .ln,.hero-sub,.hero-cta{animation:none!important;opacity:1!important}
-  .rise{opacity:1!important;transform:none!important}
-  .mean{opacity:1!important;transform:none!important}
+  .cmdline,h1 .ln,.hero-sub,.hero-cta,.trust,.band{animation:none!important;opacity:1!important}
+  .rise,.mean{opacity:1!important;transform:none!important}
 }
-
-/* -------- hero footer -------- */
-.hero-cta{display:flex;flex-wrap:wrap;gap:14px;align-items:center;padding:38px 0 0}
-.cmd{
-  display:inline-flex;align-items:center;gap:12px;font-family:var(--d);font-size:14px;
-  background:var(--white);border:1.5px solid var(--hair);color:var(--ink);
-  padding:13px 16px;cursor:pointer;transition:border-color .15s;
-}
-.cmd:hover{border-color:var(--flare)}
-.cmd .d{color:var(--flare);font-weight:700}
-.cmd .k{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3)}
 
 /* ---------------- sections ---------------- */
 .sec{padding:96px 0;border-top:1px solid var(--hair)}
@@ -242,6 +244,12 @@ h2{
 a:focus-visible,button:focus-visible{outline:3px solid var(--flare);outline-offset:3px}
 .cta a:focus-visible,.cta button:focus-visible{outline-color:#fff}
 
+@media (max-width:980px){
+  .hero{min-height:0;padding:52px 0 60px}
+  .hero-grid{grid-template-columns:1fr;gap:34px}
+  h1{font-size:clamp(2.1rem,6.4vw,3.2rem)}
+  .plane{height:clamp(96px,20vw,170px)}
+}
 @media (max-width:900px){
   .nav menu{display:none}
   .nav .btn{margin-left:auto}
@@ -280,33 +288,39 @@ a:focus-visible,button:focus-visible{outline:3px solid var(--flare);outline-offs
 
 <section class="hero">
   <div class="wrap">
-    <p class="cmdline"><span class="p">$</span> train.py --data demos/ --seed <span class="p">200…207</span> <span class="hash"># byte-identical data · identical config · sha 1715bd6b</span></p>
-    <h1><span class="ln">Same command.</span><span class="ln">Eight times.</span><span class="ln"><em>Eight robots.</em></span></h1>
-    <p class="hero-sub">Nothing changed but the seed. Here is what came out.</p>
-  </div>
+   <div class="hero-grid">
 
-  <!-- ============ THE SIGNATURE ============ -->
-  <div class="band">
-    <div class="wrap">
+    <div class="hero-copy">
+      <p class="cmdline"><span class="p">$</span> train.py --data demos/ --seed <span class="p">200…207</span> &nbsp;# identical data, identical config</p>
+      <h1><span class="ln">Same command.</span><span class="ln"><em>Eight different robots.</em></span></h1>
+      <p class="hero-sub">OrbitEval tells you how much of your policy's score is noise — then picks the release that doesn't quietly break a skill. <b>Runs on your compute.</b></p>
+
+      <div class="hero-cta">
+        <a class="btn btn-flare btn-lg" href="mailto:rahil@orbiteval.com?subject=OrbitEval%20demo">Book a demo</a>
+        <button class="cmd" id="cmd" type="button"><span class="d">$</span><span>pip install orbit-eval</span><span class="k" id="cmdk">Copy</span></button>
+      </div>
+
+      <p class="trust">
+        <span>701 policies measured</span>
+        <span>16 regimes</span>
+        <span>Pre-registered</span>
+        <span>Open source</span>
+      </p>
+    </div>
+
+    <div class="band">
       <div class="band-head">
-        <p class="lbl">Success rate · one task · held-out episodes</p>
-        <p class="lbl">LIBERO · π₀.₅ · k=88</p>
+        <p class="lbl">Success rate · one task · 8 retrains</p>
+        <p class="lbl">LIBERO · π₀.₅</p>
       </div>
-
       <div class="eight" id="eight"></div>
-
       <div class="mean">
-        <p class="l">Your dashboard reports the average — <b>54.3%</b></p>
-        <p class="r">↔ 20.4 points between best and worst</p>
+        <p class="l">Your dashboard reports <b>54.3%</b></p>
+        <p class="r">↔ 20.4 points apart</p>
       </div>
     </div>
-  </div>
 
-  <div class="wrap">
-    <div class="hero-cta">
-      <a class="btn btn-flare btn-lg" href="mailto:rahil@orbiteval.com?subject=OrbitEval%20demo">Book a demo</a>
-      <button class="cmd" id="cmd" type="button"><span class="d">$</span><span>pip install orbit-eval</span><span class="k" id="cmdk">Copy</span></button>
-    </div>
+   </div>
   </div>
 </section>
 
