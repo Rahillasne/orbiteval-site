@@ -4,229 +4,261 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>OrbitEval — know if your policy actually improved</title>
-<meta name="description" content="Retraining a robot policy on identical data moves one task's success rate by 20 points. OrbitEval measures the noise, then picks the release that doesn't regress a skill.">
+<meta name="description" content="Run the same training command eight times and you get eight different robots. OrbitEval measures the spread, then picks the release that doesn't regress a skill.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
-  color-scheme: light;
-  --deep:#0F1E24;
-  --deep-2:#16292F;
-  --paper:#F4F5F2;
-  --white:#FFFFFF;
-  --ink:#0E1517;
-  --ink-2:#55625F;
-  --ink-3:#8A9491;
-  --rule:#DEE2DC;
-  --rule-2:#C8CEC7;
-  --signal:#C87A1E;
-  --signal-soft:#F6E9D6;
-  --measured:#2F7A6E;
-  --measured-soft:#DEEDE9;
-  --damage:#AF4234;
-  --page:1140px;
-  --f:"Inter Tight",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
-  --m:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --bone:#F0EEE6;
+  --bone-2:#E8E4D9;
+  --white:#FAF9F5;
+  --ink:#141413;
+  --ink-2:#5A5852;
+  --ink-3:#8F8D85;
+  --hair:#DEDACE;
+  --slate:#1F1E1D;
+  --slate-2:#2B2A28;
+  --flare:#D97757;
+  --flare-2:#F5E5DD;
+  --green:#6A9B8E;
+  --green-2:#E3EDE9;
+  --page:1180px;
+  --d:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --f:"Archivo",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
 }
 *{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
 body{
-  margin:0;background:var(--paper);color:var(--ink);
-  font-family:var(--f);font-size:17px;line-height:1.55;
+  margin:0;background:var(--bone);color:var(--ink);
+  font-family:var(--f);font-size:17px;line-height:1.5;
   -webkit-font-smoothing:antialiased;
 }
-h1,h2,h3{margin:0;font-weight:700;letter-spacing:-.035em;line-height:1.04}
-h1,h2{text-wrap:balance}
 p{margin:0}
 a{color:inherit}
-.wrap{max-width:var(--page);margin:0 auto;padding:0 28px}
-.eyebrow{
-  font-family:var(--m);font-size:11.5px;font-weight:500;
-  letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3);
+h1,h2,h3{margin:0}
+.wrap{max-width:var(--page);margin:0 auto;padding:0 26px}
+
+.lbl{
+  font-family:var(--d);font-size:11px;font-weight:500;
+  letter-spacing:.2em;text-transform:uppercase;color:var(--ink-3);
 }
 
-/* ---------- nav ---------- */
-.nav{position:sticky;top:0;z-index:50;background:rgba(244,245,242,.88);backdrop-filter:blur(12px);border-bottom:1px solid var(--rule)}
-.nav .wrap{display:flex;align-items:center;gap:30px;height:62px}
-.brand{font-family:var(--m);font-weight:700;font-size:15px;letter-spacing:-.02em;text-decoration:none;white-space:nowrap}
-.brand span{color:var(--signal)}
-.nav nav{display:flex;gap:26px;margin-left:auto}
-.nav nav a{font-size:14.5px;color:var(--ink-2);text-decoration:none;transition:color .15s}
-.nav nav a:hover{color:var(--ink)}
+/* ---------------- nav ---------------- */
+.nav{position:sticky;top:0;z-index:60;background:var(--bone);border-bottom:1px solid var(--hair)}
+.nav .wrap{display:flex;align-items:center;height:60px;gap:34px}
+.brand{font-family:var(--d);font-weight:800;font-size:15px;letter-spacing:-.04em;text-decoration:none}
+.brand i{color:var(--flare);font-style:normal}
+.nav menu{display:flex;gap:28px;margin:0 0 0 auto;padding:0;list-style:none}
+.nav menu a{font-size:14px;font-weight:500;color:var(--ink-2);text-decoration:none}
+.nav menu a:hover{color:var(--flare)}
 .btn{
-  display:inline-flex;align-items:center;justify-content:center;gap:9px;
-  font-family:var(--f);font-size:14.5px;font-weight:600;letter-spacing:-.01em;
-  padding:10px 18px;border-radius:2px;border:1px solid transparent;
-  text-decoration:none;cursor:pointer;transition:background .16s,border-color .16s,color .16s;
+  display:inline-flex;align-items:center;justify-content:center;
+  font-family:var(--f);font-weight:700;font-size:14px;letter-spacing:-.01em;
+  padding:11px 20px;border:1.5px solid var(--ink);background:var(--ink);color:var(--bone);
+  text-decoration:none;cursor:pointer;transition:transform .12s ease,background .15s,color .15s;
 }
-.btn-solid{background:var(--ink);color:var(--paper)}
-.btn-solid:hover{background:var(--deep-2)}
-.btn-line{background:transparent;color:var(--ink);border-color:var(--rule-2)}
-.btn-line:hover{border-color:var(--ink);background:var(--white)}
-.btn-onDark{background:var(--signal);color:#12100C}
-.btn-onDark:hover{background:#DE8C2A}
-.btn-lg{padding:13px 24px;font-size:15.5px}
-.nav .btn{margin-left:4px}
+.btn:hover{transform:translate(-2px,-2px);box-shadow:3px 3px 0 var(--flare)}
+.btn-flare{background:var(--flare);border-color:var(--flare);color:#fff}
+.btn-flare:hover{box-shadow:3px 3px 0 var(--ink)}
+.btn-lg{padding:15px 28px;font-size:15.5px}
 
-/* ---------- hero ---------- */
-.hero{background:var(--deep);color:#E8EDEA;padding:84px 0 0;overflow:hidden}
-.hero .eyebrow{color:#7E938F}
-.hero h1{font-size:clamp(2.4rem,1.3rem+3.9vw,4.15rem);color:#FBFCFB;margin:20px 0 0;max-width:16ch}
-.hero .lede{margin-top:22px;max-width:56ch;font-size:clamp(1.02rem,.98rem+.3vw,1.2rem);color:#A9BCB7;line-height:1.5}
-.hero .lede b{color:#F1F5F3;font-weight:600}
-.hero-cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:32px;align-items:center}
+/* ---------------- hero ---------------- */
+.hero{padding:76px 0 0}
+.cmdline{
+  font-family:var(--d);font-size:clamp(12px,.6rem + .5vw,15px);
+  color:var(--ink-2);display:flex;flex-wrap:wrap;gap:0 10px;align-items:baseline;
+}
+.cmdline .p{color:var(--flare);font-weight:700}
+.cmdline .hash{color:var(--ink-3)}
+h1{
+  font-family:var(--d);font-weight:800;
+  font-size:clamp(2.5rem,.9rem + 6.4vw,6.4rem);
+  letter-spacing:-.065em;line-height:.92;margin:22px 0 0;
+  text-transform:uppercase;
+}
+h1 em{font-style:normal;color:var(--flare)}
+.hero-sub{
+  margin-top:26px;max-width:44ch;font-size:clamp(1.05rem,1rem + .35vw,1.32rem);
+  color:var(--ink-2);line-height:1.42;font-weight:500;
+}
+.hero-sub b{color:var(--ink);font-weight:700}
 
-.cmd{
-  display:inline-flex;align-items:center;gap:12px;
-  font-family:var(--m);font-size:14px;
-  background:#0A171C;border:1px solid #26404A;color:#CFE0DB;
-  padding:11px 14px;border-radius:2px;cursor:pointer;
+/* -------- the eight: full-bleed dark band -------- */
+.band{background:var(--slate);color:#EFEDE8;margin-top:54px;padding:44px 0 40px;overflow:hidden}
+.band-head{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:30px}
+.band-head .lbl{color:#8A8780}
+.eight{display:grid;grid-template-columns:repeat(8,1fr);gap:clamp(6px,1vw,16px);align-items:end}
+.col{position:relative;text-align:center}
+.col .seed{font-family:var(--d);font-size:10.5px;letter-spacing:.06em;color:#7C7972;margin-bottom:12px}
+.bar{
+  width:100%;background:linear-gradient(180deg,#E08A6B,#C15F3C);
+  height:0;transition:height .9s cubic-bezier(.16,.9,.3,1);
 }
-.cmd:hover{border-color:var(--signal)}
-.cmd .dollar{color:#5E7B78}
-.cmd .copy{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#6E8A86;margin-left:4px}
+.col.is-min .bar,.col.is-max .bar{background:linear-gradient(180deg,#EFA184,#D97757)}
+.val{
+  font-family:var(--d);font-weight:800;letter-spacing:-.05em;
+  font-size:clamp(1.05rem,.5rem + 1.75vw,2.35rem);margin-top:14px;line-height:1;
+}
+.col.is-min .val,.col.is-max .val{color:var(--flare)}
+.plane{height:clamp(90px,14vw,180px);display:flex;align-items:flex-end}
+.mean{
+  position:relative;margin-top:26px;border-top:1px dashed #45423E;padding-top:12px;
+  display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;
+}
+.mean .l{font-family:var(--d);font-size:12px;color:#96938B}
+.mean .l b{color:#EFEDE8;font-weight:700}
+.mean .r{font-family:var(--d);font-size:12px;color:var(--flare);font-weight:700}
 
-/* ---------- signature: the scatter ---------- */
-.scatter{margin-top:56px;padding-bottom:112px}
-.scatter-head{display:flex;justify-content:space-between;align-items:baseline;gap:20px;flex-wrap:wrap;margin-bottom:14px}
-.scatter-head .eyebrow{color:#6F8783}
-.plot{position:relative;height:168px;border-left:1px solid #2A4550;border-bottom:1px solid #2A4550}
-.tick{position:absolute;bottom:-26px;transform:translateX(-50%);font-family:var(--m);font-size:11px;color:#6F8783}
-.gridline{position:absolute;top:0;bottom:0;width:1px;background:#1D343C}
-.dot{
-  position:absolute;width:13px;height:13px;border-radius:50%;
-  background:var(--signal);transform:translate(-50%,-50%);
-  box-shadow:0 0 0 4px rgba(200,122,30,.16);
-  opacity:0;animation:land .5s cubic-bezier(.2,.8,.3,1) forwards;
-}
-@keyframes land{from{opacity:0;transform:translate(-50%,-50%) scale(.3)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
-.meanline{position:absolute;top:-6px;bottom:-6px;width:2px;background:#E8EDEA;opacity:0;animation:fade .6s ease 1.5s forwards}
-.meanlab{
-  position:absolute;top:-30px;transform:translateX(-50%);white-space:nowrap;
-  font-family:var(--m);font-size:11px;letter-spacing:.08em;text-transform:uppercase;
-  color:#E8EDEA;opacity:0;animation:fade .6s ease 1.5s forwards;
-}
-.spanbar{position:absolute;height:1px;background:var(--signal);opacity:0;animation:fade .6s ease 2s forwards}
-.spanbar::before,.spanbar::after{content:"";position:absolute;top:-4px;width:1px;height:9px;background:var(--signal)}
-.spanbar::before{left:0}
-.spanbar::after{right:0}
-.spanlab{
-  position:absolute;transform:translateX(-50%);white-space:nowrap;
-  font-family:var(--m);font-size:11.5px;color:var(--signal);
-  opacity:0;animation:fade .6s ease 2s forwards;
-}
-@keyframes fade{to{opacity:1}}
+/* the divergence: dim until they split, then the extremes take the accent */
+.val{transition:color .5s ease .1s}
+.col .val{color:#8E8A82}
+.eight.is-split .val{color:#EFEDE8}
+.eight.is-split .col.is-min .val,.eight.is-split .col.is-max .val{color:var(--flare)}
+.bar{transition:height .95s cubic-bezier(.16,.9,.3,1)}
+.eight.is-split .col.is-min .bar,.eight.is-split .col.is-max .bar{box-shadow:0 0 0 1px rgba(217,119,87,.55)}
+.mean{opacity:0;transform:translateY(6px);transition:opacity .7s ease 2.3s,transform .7s ease 2.3s}
+.eight.is-split ~ .mean{opacity:1;transform:none}
+
+/* hero entrance */
+@keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+.cmdline{opacity:0;animation:rise .7s cubic-bezier(.2,.8,.3,1) .05s forwards}
+h1 .ln{display:block;opacity:0;animation:rise .8s cubic-bezier(.2,.8,.3,1) forwards}
+h1 .ln:nth-child(1){animation-delay:.16s}
+h1 .ln:nth-child(2){animation-delay:.27s}
+h1 .ln:nth-child(3){animation-delay:.38s}
+.hero-sub{opacity:0;animation:rise .8s cubic-bezier(.2,.8,.3,1) .5s forwards}
+.hero-cta{opacity:0;animation:rise .8s cubic-bezier(.2,.8,.3,1) .62s forwards}
+
+/* scroll reveal */
+.rise{opacity:0;transform:translateY(20px);transition:opacity .7s cubic-bezier(.2,.8,.3,1),transform .7s cubic-bezier(.2,.8,.3,1)}
+.rise.in{opacity:1;transform:none}
+.rise:nth-child(2){transition-delay:.06s}
+.rows .row{transition-delay:calc(var(--i,0) * .08s)}
+
 @media (prefers-reduced-motion:reduce){
-  .dot,.meanline,.meanlab,.spanbar,.spanlab{animation:none!important;opacity:1!important}
-  .dot{transform:translate(-50%,-50%)}
+  .bar,.val,.mean{transition:none!important}
+  .cmdline,h1 .ln,.hero-sub,.hero-cta{animation:none!important;opacity:1!important}
+  .rise{opacity:1!important;transform:none!important}
+  .mean{opacity:1!important;transform:none!important}
 }
 
-/* ---------- stats ---------- */
-.stats{border-bottom:1px solid var(--rule);background:var(--white)}
-.stats .wrap{display:grid;grid-template-columns:repeat(3,1fr)}
-.stat{padding:34px 30px 34px 0}
-.stat + .stat{border-left:1px solid var(--rule);padding-left:30px}
-.stat .n{font-family:var(--m);font-weight:700;font-size:clamp(1.7rem,1.3rem+1.5vw,2.5rem);letter-spacing:-.04em;line-height:1}
-.stat .n small{font-size:.5em;font-weight:500;color:var(--ink-3);margin-left:4px}
-.stat .l{margin-top:10px;font-size:14.5px;color:var(--ink-2);max-width:30ch}
-
-/* ---------- sections ---------- */
-.sec{padding:88px 0;border-bottom:1px solid var(--rule)}
-.sec h2{font-size:clamp(1.75rem,1.3rem+1.8vw,2.6rem);max-width:26ch;margin-top:16px}
-.sec .sub{margin-top:18px;max-width:60ch;color:var(--ink-2);font-size:1.05rem}
-.sec-white{background:var(--white)}
-
-/* table */
-.tbl{width:100%;border-collapse:collapse;margin-top:38px;font-size:15px}
-.tbl th{
-  text-align:left;font-family:var(--m);font-size:11px;font-weight:500;
-  letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);
-  padding:0 16px 12px 0;border-bottom:1px solid var(--rule-2);
+/* -------- hero footer -------- */
+.hero-cta{display:flex;flex-wrap:wrap;gap:14px;align-items:center;padding:38px 0 0}
+.cmd{
+  display:inline-flex;align-items:center;gap:12px;font-family:var(--d);font-size:14px;
+  background:var(--white);border:1.5px solid var(--hair);color:var(--ink);
+  padding:13px 16px;cursor:pointer;transition:border-color .15s;
 }
-.tbl th.num,.tbl td.num{text-align:right;font-family:var(--m);padding-right:0}
-.tbl td{padding:17px 16px 17px 0;border-bottom:1px solid var(--rule);vertical-align:baseline}
-.tbl tr:last-child td{border-bottom:none}
-.tbl .who{font-weight:600}
-.tbl .note{display:block;font-size:13.5px;color:var(--ink-3);margin-top:3px;font-weight:400}
-.tbl td.num{font-weight:700;font-size:16px;white-space:nowrap}
-.hi-bad td.num{color:var(--damage)}
-.hi-good{background:var(--measured-soft)}
-.hi-good td{border-bottom-color:transparent}
-.hi-good td.num{color:var(--measured)}
-.hi-good td:first-child{padding-left:14px}
-.hi-good td:last-child{padding-right:14px}
-.after-tbl{margin-top:26px;font-size:1.05rem;max-width:62ch;color:var(--ink)}
-.after-tbl b{font-weight:600}
+.cmd:hover{border-color:var(--flare)}
+.cmd .d{color:var(--flare);font-weight:700}
+.cmd .k{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3)}
 
-/* steps */
-.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--rule);margin-top:40px;border:1px solid var(--rule)}
-.step{background:var(--paper);padding:26px 24px}
-.sec-white .step{background:var(--white)}
-.step code{font-family:var(--m);font-size:14px;font-weight:700;color:var(--signal)}
-.step h3{font-size:1.05rem;margin:12px 0 8px;letter-spacing:-.02em}
-.step p{font-size:14.5px;color:var(--ink-2)}
+/* ---------------- sections ---------------- */
+.sec{padding:96px 0;border-top:1px solid var(--hair)}
+.sec-w{background:var(--white)}
+h2{
+  font-family:var(--f);font-weight:800;letter-spacing:-.045em;line-height:1.02;
+  font-size:clamp(1.9rem,1.2rem + 2.4vw,3.15rem);max-width:22ch;margin-top:18px;
+  text-wrap:balance;
+}
+.sub{margin-top:20px;max-width:58ch;color:var(--ink-2);font-size:1.06rem}
+
+/* ranked comparison rows */
+.rows{margin-top:46px;display:grid;gap:10px}
+.row{
+  display:grid;grid-template-columns:1fr auto;gap:20px;align-items:center;
+  border:1.5px solid var(--hair);background:var(--white);padding:20px 22px;
+}
+.sec-w .row{background:var(--bone)}
+.row .who{font-weight:700;font-size:1.02rem;letter-spacing:-.02em}
+.row .note{display:block;font-weight:500;font-size:13.5px;color:var(--ink-3);margin-top:4px}
+.row .num{font-family:var(--d);font-weight:800;font-size:clamp(1.2rem,.9rem + 1.1vw,1.9rem);letter-spacing:-.045em;white-space:nowrap}
+.row-bad{border-color:var(--flare)}
+.row-bad .num{color:var(--flare)}
+.row-good{border-color:var(--green);background:var(--green-2)}
+.sec-w .row-good{background:var(--green-2)}
+.row-good .num{color:var(--green)}
+.row-good .who::after{
+  content:"orbit-eval";font-family:var(--d);font-size:10px;letter-spacing:.14em;
+  text-transform:uppercase;color:#fff;background:var(--green);padding:3px 7px;margin-left:10px;
+  vertical-align:2px;
+}
+.punch{margin-top:30px;font-size:1.12rem;max-width:60ch;font-weight:500}
+.punch b{font-weight:700}
+
+/* verbs */
+.verbs{margin-top:46px;display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1.5px solid var(--ink)}
+.verb{padding:26px 24px;border-right:1.5px solid var(--ink)}
+.verb:last-child{border-right:0}
+.verb code{font-family:var(--d);font-weight:800;font-size:14px;color:var(--flare);letter-spacing:-.02em}
+.verb h3{font-family:var(--f);font-weight:700;font-size:1.08rem;letter-spacing:-.025em;margin:12px 0 8px}
+.verb p{font-size:14.5px;color:var(--ink-2)}
 
 .term{
-  margin-top:34px;background:var(--deep);color:#CFE0DB;border-radius:3px;
-  padding:24px 26px;font-family:var(--m);font-size:13.5px;line-height:1.75;
-  overflow-x:auto;white-space:pre;
+  margin-top:0;background:var(--slate);color:#D6D2C6;
+  padding:26px 28px;font-family:var(--d);font-size:13px;line-height:1.8;
+  overflow-x:auto;white-space:pre;border:1.5px solid var(--ink);border-top:0;
 }
-.term .c{color:#5E7B78}
-.term .g{color:#6FBFA8}
-.term .y{color:#E0A649}
+.term .c{color:#78756D}.term .g{color:#9CC2B5}.term .y{color:#E5A183}
 
-/* research links */
-.links{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--rule);margin-top:40px;border:1px solid var(--rule)}
-.lk{background:var(--paper);padding:26px 24px;text-decoration:none;display:block;transition:background .15s}
-.sec-white .lk{background:var(--white)}
-.lk:hover{background:var(--signal-soft)}
-.lk .eyebrow{color:var(--signal)}
-.lk h3{font-size:1.12rem;margin:11px 0 7px;letter-spacing:-.025em}
-.lk p{font-size:14.5px;color:var(--ink-2)}
-
-.callout{
-  margin-top:44px;border-left:3px solid var(--signal);padding:4px 0 4px 24px;
-  max-width:64ch;
+/* research */
+.quote{
+  margin-top:44px;background:var(--ink);color:var(--bone);padding:36px 38px;
+  max-width:70ch;
 }
-.callout p{font-size:1.05rem}
-.callout .src{margin-top:10px;font-family:var(--m);font-size:12.5px;color:var(--ink-3)}
+.quote p{font-size:1.18rem;line-height:1.42;font-weight:500;letter-spacing:-.015em}
+.quote b{color:var(--flare);font-weight:700}
+.quote .src{margin-top:16px;font-family:var(--d);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:#96938B}
+.cards{margin-top:16px;display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.card{
+  border:1.5px solid var(--hair);background:var(--white);padding:24px;
+  text-decoration:none;display:block;transition:border-color .15s,transform .12s;
+}
+.sec-w .card{background:var(--bone)}
+.card:hover{border-color:var(--flare);transform:translate(-2px,-2px)}
+.card .lbl{color:var(--flare)}
+.card h3{font-family:var(--f);font-weight:700;font-size:1.1rem;letter-spacing:-.025em;margin:12px 0 6px}
+.card p{font-size:14.5px;color:var(--ink-2)}
 
-/* cta band */
-.cta{background:var(--deep);color:#E8EDEA;padding:82px 0}
-.cta h2{color:#FBFCFB;font-size:clamp(1.8rem,1.3rem+2vw,2.7rem);max-width:24ch}
-.cta p{margin-top:18px;color:#A9BCB7;max-width:52ch}
-.cta-row{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px;align-items:center}
+/* cta */
+.cta{background:var(--flare);color:#fff;padding:86px 0}
+.cta h2{color:#fff;max-width:19ch}
+.cta p{margin-top:20px;max-width:50ch;font-size:1.08rem;color:#FBE9E1;font-weight:500}
+.cta .btn{background:var(--ink);border-color:var(--ink);color:#fff}
+.cta .btn:hover{box-shadow:3px 3px 0 #fff}
+.cta .cmd{background:transparent;border-color:#EDB49C;color:#fff}
+.cta .cmd .d{color:#FBE7DE}.cta .cmd .k{color:#F0C3AE}
+.cta .cmd:hover{border-color:#fff}
+.cta-row{display:flex;flex-wrap:wrap;gap:14px;margin-top:34px;align-items:center}
 
-/* footer */
-.foot{background:var(--deep);color:#7E938F;padding:0 0 46px;font-size:14px}
-.foot .wrap{border-top:1px solid #234049;padding-top:28px;display:flex;flex-wrap:wrap;gap:18px 34px;align-items:baseline}
-.foot a{color:#A9BCB7;text-decoration:none}
-.foot a:hover{color:var(--signal)}
-.foot .sp{margin-left:auto;font-family:var(--m);font-size:12px}
+/* foot */
+.foot{background:var(--ink);color:#8F8D85;padding:34px 0;font-size:13.5px}
+.foot .wrap{display:flex;flex-wrap:wrap;gap:14px 30px;align-items:center}
+.foot a{color:#CBC7BB;text-decoration:none}
+.foot a:hover{color:var(--flare)}
+.foot .sp{margin-left:auto;font-family:var(--d);font-size:11.5px;letter-spacing:.08em}
 
-a:focus-visible,button:focus-visible{outline:2px solid var(--signal);outline-offset:3px;border-radius:2px}
-.hero a:focus-visible,.cta a:focus-visible,.cmd:focus-visible{outline-color:var(--signal)}
+a:focus-visible,button:focus-visible{outline:3px solid var(--flare);outline-offset:3px}
+.cta a:focus-visible,.cta button:focus-visible{outline-color:#fff}
 
-@media (max-width:860px){
-  .nav nav{display:none}
-  .stats .wrap{grid-template-columns:1fr}
-  .stat{padding:26px 0}
-  .stat + .stat{border-left:none;border-top:1px solid var(--rule);padding-left:0}
-  .steps,.links{grid-template-columns:1fr}
-  .sec{padding:62px 0}
-  .hero{padding-top:56px}
-  .tbl thead{display:none}
-  .tbl td{display:block;padding:6px 0;border-bottom:none}
-  .tbl tr{display:block;padding:16px 0;border-bottom:1px solid var(--rule)}
-  .tbl td.num{text-align:left;font-size:22px}
-  .hi-good td:first-child{padding-left:14px}
-  /* the axis ticks already say "%", so drop the redundant label
-     that would otherwise collide with the mean readout */
-  .scatter-head .eyebrow:last-child{display:none}
-  .plot{margin-top:34px}
-  .scatter{padding-bottom:120px}
-  .meanlab{font-size:10px;letter-spacing:.05em}
+@media (max-width:900px){
+  .nav menu{display:none}
+  .nav .btn{margin-left:auto}
+  .verbs{grid-template-columns:1fr}
+  .verb{border-right:0;border-bottom:1.5px solid var(--ink)}
+  .verb:last-child{border-bottom:0}
+  .cards{grid-template-columns:1fr}
+  .sec{padding:64px 0}
+}
+@media (max-width:660px){
+  .eight{grid-template-columns:repeat(4,1fr);row-gap:26px}
+  .plane{height:84px}
+  .col .seed{font-size:9.5px}
+  .row{grid-template-columns:1fr;gap:10px}
+  .row .num{font-size:1.9rem}
+  .quote{padding:26px 24px}
+  .quote p{font-size:1.05rem}
 }
 </style>
 </head>
@@ -234,57 +266,46 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--signal);outline-off
 
 <header class="nav">
   <div class="wrap">
-    <a class="brand" href="/">orbit<span>eval</span></a>
-    <nav>
-      <a href="#finding">Finding</a>
-      <a href="#product">Product</a>
-      <a href="#research">Research</a>
-      <a href="noisefloor.html">Noise floor</a>
-      <a href="about.html">About</a>
-    </nav>
-    <a class="btn btn-solid btn-sm" href="mailto:rahil@orbiteval.com?subject=OrbitEval%20demo">Book a demo</a>
+    <a class="brand" href="/">orbit<i>eval</i></a>
+    <menu>
+      <li><a href="#finding">Finding</a></li>
+      <li><a href="#product">Product</a></li>
+      <li><a href="#research">Research</a></li>
+      <li><a href="noisefloor.html">Noise floor</a></li>
+      <li><a href="about.html">About</a></li>
+    </menu>
+    <a class="btn" href="mailto:rahil@orbiteval.com?subject=OrbitEval%20demo">Book a demo</a>
   </div>
 </header>
 
-<!-- ============ HERO ============ -->
 <section class="hero">
   <div class="wrap">
-    <p class="eyebrow">Robot policy evaluation</p>
-    <h1>Eight identical retrains. Eight different robots.</h1>
-    <p class="lede">Same data, same config, only the seed differs. One LIBERO task's success rate moves <b>20.4 points</b>. The ten-task average moves 4.2 — which is why nobody sees it.</p>
+    <p class="cmdline"><span class="p">$</span> train.py --data demos/ --seed <span class="p">200…207</span> <span class="hash"># byte-identical data · identical config · sha 1715bd6b</span></p>
+    <h1><span class="ln">Same command.</span><span class="ln">Eight times.</span><span class="ln"><em>Eight robots.</em></span></h1>
+    <p class="hero-sub">Nothing changed but the seed. Here is what came out.</p>
+  </div>
 
-    <div class="hero-cta">
-      <button class="cmd" id="cmd" type="button" title="Copy to clipboard">
-        <span class="dollar">$</span><span>pip install orbit-eval</span><span class="copy" id="cmdlab">Copy</span>
-      </button>
-      <a class="btn btn-onDark btn-lg" href="mailto:rahil@orbiteval.com?subject=OrbitEval%20demo">Book a demo</a>
-    </div>
-
-    <!-- signature -->
-    <div class="scatter">
-      <div class="scatter-head">
-        <p class="eyebrow">One task · eight identical-data retrains</p>
-        <p class="eyebrow">Success rate</p>
+  <!-- ============ THE SIGNATURE ============ -->
+  <div class="band">
+    <div class="wrap">
+      <div class="band-head">
+        <p class="lbl">Success rate · one task · held-out episodes</p>
+        <p class="lbl">LIBERO · π₀.₅ · k=88</p>
       </div>
-      <div class="plot" id="plot"></div>
+
+      <div class="eight" id="eight"></div>
+
+      <div class="mean">
+        <p class="l">Your dashboard reports the average — <b>54.3%</b></p>
+        <p class="r">↔ 20.4 points between best and worst</p>
+      </div>
     </div>
   </div>
-</section>
 
-<!-- ============ STATS ============ -->
-<section class="stats">
   <div class="wrap">
-    <div class="stat">
-      <div class="n">701</div>
-      <p class="l">policies trained to measure it, every batch pre-registered</p>
-    </div>
-    <div class="stat">
-      <div class="n">20.4<small>pp</small></div>
-      <p class="l">worst-task swing across retrains on byte-identical data</p>
-    </div>
-    <div class="stat">
-      <div class="n">16</div>
-      <p class="l">measured regimes — the only replicate-retraining corpus in the field</p>
+    <div class="hero-cta">
+      <a class="btn btn-flare btn-lg" href="mailto:rahil@orbiteval.com?subject=OrbitEval%20demo">Book a demo</a>
+      <button class="cmd" id="cmd" type="button"><span class="d">$</span><span>pip install orbit-eval</span><span class="k" id="cmdk">Copy</span></button>
     </div>
   </div>
 </section>
@@ -292,118 +313,111 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--signal);outline-off
 <!-- ============ FINDING ============ -->
 <section class="sec" id="finding">
   <div class="wrap">
-    <p class="eyebrow">The finding</p>
-    <h2>Training it more times doesn't stop you shipping a broken skill.</h2>
-    <p class="sub">Retrain a policy eight times and ship the one with the best validation score. That's current best practice. Here's how often it still ships a skill that regressed.</p>
+    <p class="lbl">The finding</p>
+    <h2>Training it more times won't stop you shipping a broken skill.</h2>
+    <p class="sub">Retrain eight times, ship the best validation score. That is current best practice. Here is how often it still ships a skill that got worse.</p>
 
-    <table class="tbl">
-      <thead>
-        <tr><th>What you do</th><th class="num">Ships a damaged skill</th></tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td class="who">Train once, ship it<span class="note">No selection possible</span></td>
-          <td class="num">11–79%</td>
-        </tr>
-        <tr class="hi-bad">
-          <td class="who">Train 8×, ship the best-validation one<span class="note">What labs do today</span></td>
-          <td class="num">3–93%</td>
-        </tr>
-        <tr class="hi-good">
-          <td class="who">Train 3×, select per skill, abstain when unsure<span class="note">What orbit-eval does</span></td>
-          <td class="num">2–14%</td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="rows rise">
+      <div class="row">
+        <div><span class="who">Train once, ship it</span><span class="note">No selection possible</span></div>
+        <div class="num">11–79%</div>
+      </div>
+      <div class="row row-bad">
+        <div><span class="who">Train 8×, ship the best-validation one</span><span class="note">What labs do today</span></div>
+        <div class="num">3–93%</div>
+      </div>
+      <div class="row row-good">
+        <div><span class="who">Train 3×, pick per skill, abstain when unsure</span><span class="note">Three retrains, not eight</span></div>
+        <div class="num">2–14%</div>
+      </div>
+    </div>
 
-    <p class="after-tbl">More candidates don't help — in one cell, best-validation selection got <b>worse</b> with more of them. What helps is choosing <b>per skill</b> and holding the incumbent when the evidence is thin. At ten skills, three retrains is enough. At fifty, it isn't — so the budget has to be sized, not guessed.</p>
+    <p class="punch rise">More candidates don't help. In one cell, best-validation selection got <b>worse</b> with more of them. What helps is choosing <b>per skill</b>, and holding the incumbent when the evidence is thin.</p>
   </div>
 </section>
 
 <!-- ============ PRODUCT ============ -->
-<section class="sec sec-white" id="product">
+<section class="sec sec-w" id="product">
   <div class="wrap">
-    <p class="eyebrow">The product</p>
+    <p class="lbl">The product</p>
     <h2>Own the step between "training finished" and "this ships."</h2>
-    <p class="sub">Today that step is a file copy. It runs on your compute, over checkpoints you already paid for.</p>
+    <p class="sub">Right now that step is a file copy. This runs on your compute, over checkpoints you already paid for. Nothing leaves your infrastructure.</p>
 
-    <div class="steps">
-      <div class="step">
+    <div class="verbs rise">
+      <div class="verb">
         <code>plan</code>
         <h3>Size it first</h3>
-        <p>How many retrains your skill count actually needs, and what your eval budget can resolve. Costs nothing to run.</p>
+        <p>How many retrains your skill count actually needs. Free to run, answers before you spend.</p>
       </div>
-      <div class="step">
+      <div class="verb">
         <code>build</code>
         <h3>Decide per skill</h3>
-        <p>Per-task choice with a confidence interval, an abstention wherever nothing beats the incumbent, and a regression bound.</p>
+        <p>Per-task choice with a confidence interval, an abstention where nothing beats the incumbent.</p>
       </div>
-      <div class="step">
+      <div class="verb">
         <code>serve</code>
         <h3>Ship the artifact</h3>
-        <p>A routing table and a signed measurement record. Drop-in policy wrapper.</p>
+        <p>A routing table, a regression bound, and a signed measurement record.</p>
       </div>
     </div>
 
 <div class="term">$ orbit-eval route plan --candidates 3 --tasks 10 --select-eps 50
 
-<span class="c">  candidates J=3, tasks T=10 -> 1500 selection episodes total</span>
-  the rule defects at a per-task advantage <span class="y">>= 16.4 pp</span>
-  a true advantage of <span class="y">24.9 pp</span> is detected with 80% power
-<span class="c">  under a no-difference null, 0.50 of 10 tasks defect falsely</span>
+<span class="c">  J=3 candidates, T=10 tasks -> 1500 selection episodes</span>
+  defects at a per-task advantage <span class="y">>= 16.4 pp</span>
+  detects a true <span class="y">24.9 pp</span> advantage with 80% power
+<span class="c">  under the null, 0.50 of 10 tasks defect falsely</span>
 
-  measured cell — <span class="g">damaged tasks 1.82 -> 0.22</span>
-<span class="c">  cell-local, NOT a forecast for yours</span></div>
+  measured cell: <span class="g">damaged tasks 1.82 -> 0.22</span>
+<span class="c">  cell-local. NOT a forecast for yours.</span></div>
   </div>
 </section>
 
 <!-- ============ RESEARCH ============ -->
 <section class="sec" id="research">
   <div class="wrap">
-    <p class="eyebrow">The research</p>
+    <p class="lbl">The research</p>
     <h2>We publish the results that went against us.</h2>
-    <p class="sub">Every wave is pre-registered with its decision bands frozen before any data is scored. When a claim fails, it ships as a failure.</p>
+    <p class="sub">Every wave is pre-registered, decision bands frozen before any data is scored. When a claim fails, it ships as a failure. 701 policies so far.</p>
 
-    <div class="callout">
-      <p>Our routing result gained <b>+5.6 points</b> on one suite. We tested it on a second suite and got <b>+1.7, with zero inside the confidence interval</b>. So the gain is suite-dependent, and we say so — in the paper, on this page, and in the tool's own output.</p>
+    <div class="quote rise">
+      <p>Our routing result gained <b>+5.6 points</b> on one suite. We ran it on a second suite and got <b>+1.7, with zero inside the interval</b>. So the gain is suite-dependent — and we say so in the paper, on this page, and in the tool's own output.</p>
       <p class="src">ROUTE-1 scope check · libero_spatial · 2026-09-08</p>
     </div>
 
-    <div class="links">
-      <a class="lk" href="noisefloor.html">
-        <p class="eyebrow">Free · no account</p>
+    <div class="cards rise">
+      <a class="card" href="noisefloor.html">
+        <p class="lbl">Free · no account</p>
         <h3>Noise floor</h3>
         <p>The measured floors, and what your eval budget can actually resolve.</p>
       </a>
-      <a class="lk" href="atlas.html">
-        <p class="eyebrow">16 regimes</p>
+      <a class="card" href="atlas.html">
+        <p class="lbl">16 regimes</p>
         <h3>Variance atlas</h3>
-        <p>σ per policy class × task × data scale, every row scope-stamped.</p>
+        <p>σ per policy class × task × data scale. Every row scope-stamped.</p>
       </a>
-      <a class="lk" href="https://github.com/Rahillasne/orbit-eval">
-        <p class="eyebrow">Source · AGPL-3.0</p>
+      <a class="card" href="https://github.com/Rahillasne/orbit-eval">
+        <p class="lbl">Source · AGPL-3.0</p>
         <h3>Read the code</h3>
-        <p>Zero dependencies, pure stdlib. Run the tests yourself.</p>
+        <p>Zero dependencies, pure stdlib. Clone it and run the tests yourself.</p>
       </a>
-      <a class="lk" href="about.html">
-        <p class="eyebrow">Method</p>
+      <a class="card" href="about.html">
+        <p class="lbl">Method</p>
         <h3>How it's measured</h3>
-        <p>The 8-retrain protocol, and why a number from someone else's stack won't transfer.</p>
+        <p>The 8-retrain protocol, and why someone else's number won't transfer.</p>
       </a>
     </div>
   </div>
 </section>
 
-<!-- ============ CTA ============ -->
 <section class="cta">
   <div class="wrap">
+    <p class="lbl" style="color:#F7DACB">Get started</p>
     <h2>Find out what your last release broke.</h2>
     <p>Bring your checkpoints. Everything runs on your infrastructure — weights, data and logs never leave it.</p>
     <div class="cta-row">
-      <a class="btn btn-onDark btn-lg" href="mailto:rahil@orbiteval.com?subject=OrbitEval%20demo">Book a demo</a>
-      <button class="cmd" id="cmd2" type="button" title="Copy to clipboard">
-        <span class="dollar">$</span><span>pip install orbit-eval</span><span class="copy" id="cmdlab2">Copy</span>
-      </button>
+      <a class="btn btn-lg" href="mailto:rahil@orbiteval.com?subject=OrbitEval%20demo">Book a demo</a>
+      <button class="cmd" id="cmd2" type="button"><span class="d">$</span><span>pip install orbit-eval</span><span class="k" id="cmdk2">Copy</span></button>
     </div>
   </div>
 </section>
@@ -421,68 +435,81 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--signal);outline-off
 </footer>
 
 <script>
-// ---- the signature scatter: one task, eight identical-data retrains ----
+/* ---- the signature: eight identical runs, diverging ----
+   Every column starts at the reported average, showing the same number.
+   Then they separate into what actually came out. Same command in,
+   eight different robots out — told as one motion. */
 (function(){
-  var plot = document.getElementById('plot');
-  if(!plot) return;
+  var host = document.getElementById('eight');
+  if(!host) return;
 
-  var runs = [45.6, 52.0, 49.0, 61.0, 55.0, 66.0, 47.5, 58.0];   // range = 20.4pp
-  var lo = 42, hi = 70;                                           // axis bounds
-  var pct = function(v){ return ((v - lo) / (hi - lo)) * 100; };
+  var runs  = [45.6, 52.0, 49.0, 61.0, 55.0, 66.0, 47.5, 58.0];
+  var mean  = runs.reduce(function(a,b){return a+b;},0) / runs.length;   // 54.3
+  var min   = Math.min.apply(null, runs), max = Math.max.apply(null, runs);
+  var floor = 36;
+  var h = function(v){ return ((v - floor) / (max - floor)) * 100; };
+  var still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  [45,50,55,60,65,70].forEach(function(v){
-    var g = document.createElement('div');
-    g.className = 'gridline'; g.style.left = pct(v) + '%';
-    plot.appendChild(g);
-    var t = document.createElement('div');
-    t.className = 'tick'; t.style.left = pct(v) + '%'; t.textContent = v + '%';
-    plot.appendChild(t);
+  var cols = runs.map(function(v,i){
+    var el = document.createElement('div');
+    el.className = 'col' + (v===min ? ' is-min' : v===max ? ' is-max' : '');
+    el.innerHTML =
+      '<div class="seed">seed ' + (200+i) + '</div>' +
+      '<div class="plane"><div class="bar"></div></div>' +
+      '<div class="val">' + (still ? v.toFixed(1) : mean.toFixed(1)) + '</div>';
+    host.appendChild(el);
+    return {el:el, bar:el.querySelector('.bar'), val:el.querySelector('.val'), to:v};
   });
 
-  // spread the eight runs evenly down the plot, inside its bounds
-  runs.forEach(function(v, i){
-    var d = document.createElement('div');
-    d.className = 'dot';
-    d.style.left = pct(v) + '%';
-    d.style.top = (11 + i * (78 / (runs.length - 1))) + '%';
-    d.style.animationDelay = (0.12 * i) + 's';
-    d.title = 'retrain ' + (i+1) + ' — ' + v.toFixed(1) + '%';
-    plot.appendChild(d);
+  if(still){
+    cols.forEach(function(c){ c.bar.style.height = h(c.to) + '%'; });
+    host.classList.add('is-split');
+    return;
+  }
+
+  // 1. every bar rises to the SAME height — they look identical
+  requestAnimationFrame(function(){
+    setTimeout(function(){
+      cols.forEach(function(c){ c.bar.style.height = h(mean) + '%'; });
+    }, 180);
   });
 
-  var mean = runs.reduce(function(a,b){return a+b;},0) / runs.length;
-  var ml = document.createElement('div');
-  ml.className = 'meanline'; ml.style.left = pct(mean) + '%';
-  plot.appendChild(ml);
-  var mlab = document.createElement('div');
-  mlab.className = 'meanlab'; mlab.style.left = pct(mean) + '%';
-  mlab.textContent = 'what you report — ' + mean.toFixed(1) + '%';
-  plot.appendChild(mlab);
-
-  var min = Math.min.apply(null, runs), max = Math.max.apply(null, runs);
-  var bar = document.createElement('div');
-  bar.className = 'spanbar';
-  bar.style.left = pct(min) + '%';
-  bar.style.width = (pct(max) - pct(min)) + '%';
-  bar.style.bottom = '-54px';
-  plot.appendChild(bar);
-  var slab = document.createElement('div');
-  slab.className = 'spanlab';
-  slab.style.left = ((pct(min) + pct(max)) / 2) + '%';
-  slab.style.bottom = '-78px';
-  slab.textContent = 'what you ship — ' + (max - min).toFixed(1) + 'pp apart';
-  plot.appendChild(slab);
+  // 2. then they diverge, and the numbers travel with them
+  setTimeout(function(){
+    host.classList.add('is-split');
+    cols.forEach(function(c,i){
+      setTimeout(function(){
+        c.bar.style.height = h(c.to) + '%';
+        var t0 = performance.now(), dur = 900, from = mean;
+        (function tick(now){
+          var p = Math.min((now - t0) / dur, 1);
+          var e = 1 - Math.pow(1 - p, 3);
+          c.val.textContent = (from + (c.to - from) * e).toFixed(1);
+          if(p < 1) requestAnimationFrame(tick);
+        })(t0);
+      }, i * 70);
+    });
+  }, 1500);
 })();
 
-// ---- copy the install command ----
-[['cmd','cmdlab'],['cmd2','cmdlab2']].forEach(function(pair){
-  var btn = document.getElementById(pair[0]), lab = document.getElementById(pair[1]);
-  if(!btn) return;
-  btn.addEventListener('click', function(){
-    var done = function(){ lab.textContent = 'Copied'; setTimeout(function(){ lab.textContent = 'Copy'; }, 1600); };
-    if(navigator.clipboard && navigator.clipboard.writeText){
-      navigator.clipboard.writeText('pip install orbit-eval').then(done, done);
-    } else { done(); }
+/* ---- reveal sections as they arrive ---- */
+(function(){
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if(!('IntersectionObserver' in window)) return;
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(en){
+      if(en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target); }
+    });
+  }, {rootMargin:'0px 0px -12% 0px', threshold:.08});
+  document.querySelectorAll('.rise').forEach(function(el){ io.observe(el); });
+})();
+
+[['cmd','cmdk'],['cmd2','cmdk2']].forEach(function(p){
+  var b=document.getElementById(p[0]), k=document.getElementById(p[1]);
+  if(!b) return;
+  b.addEventListener('click',function(){
+    var done=function(){k.textContent='Copied';setTimeout(function(){k.textContent='Copy';},1600);};
+    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText('pip install orbit-eval').then(done,done);}else{done();}
   });
 });
 </script>
