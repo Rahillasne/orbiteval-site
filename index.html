@@ -3,529 +3,631 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>OrbitEval — know if your policy actually improved</title>
-<meta name="description" content="Run the same training command eight times and you get eight different robots. OrbitEval measures the spread, then picks the release that doesn't regress a skill.">
+<title>OrbitEval Capability Arena</title>
+<meta name="description" content="Embodied-AI leaderboards with the uncertainty attached. Robot policies and video world models, re-cut along the capabilities they actually test, with rank spreads and every cell's interval made visible.">
+<link rel="canonical" href="https://orbiteval.com/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="OrbitEval Capability Arena">
+<meta property="og:description" content="Embodied-AI leaderboards with the uncertainty attached. Robot policies and video world models, re-cut along the capabilities they actually test, with rank spreads and every cell's interval made visible.">
+<meta property="og:url" content="https://orbiteval.com/">
+<meta property="og:site_name" content="OrbitEval">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="OrbitEval Capability Arena">
+<meta name="twitter:description" content="Embodied-AI leaderboards with the uncertainty attached. Robot policies and video world models, re-cut along the capabilities they actually test, with rank spreads and every cell's interval made visible.">
+<meta name="theme-color" content="#452455">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Organization","name":"OrbitEval","url":"https://orbiteval.com","email":"rahil@orbiteval.com","description":"Embodied-AI leaderboards with the uncertainty attached. Robot policies and video world models, re-cut along the capabilities they actually test, with rank spreads and every cell's interval made visible.","founder":{"@type":"Person","name":"Rahil Lasne"},"foundingDate":"2026","sameAs":["https://github.com/Rahillasne/orbiteval-site"]}
+</script>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23452455'/%3E%3Ccircle cx='16' cy='16' r='5.5' fill='%23FBFAF6' stroke='%237A4E8C' stroke-width='3'/%3E%3C/svg%3E">
+<style>html,body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=DM+Mono:wght@400;500&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap">
+
 <style>
-:root{
-  --bone:#F0EEE6;
-  --bone-2:#E8E4D9;
-  --white:#FAF9F5;
-  --ink:#141413;
-  --ink-2:#5A5852;
-  --ink-3:#8F8D85;
-  --hair:#DEDACE;
-  --slate:#1F1E1D;
-  --slate-2:#2B2A28;
-  --flare:#D97757;
-  --flare-2:#F5E5DD;
-  --green:#6A9B8E;
-  --green-2:#E3EDE9;
-  --page:1180px;
-  --d:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
-  --f:"Archivo",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
-}
-*{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
-body{
-  margin:0;background:var(--bone);color:var(--ink);
-  font-family:var(--f);font-size:17px;line-height:1.5;
-  -webkit-font-smoothing:antialiased;
-}
-p{margin:0}
-a{color:inherit}
-h1,h2,h3{margin:0}
-.wrap{max-width:var(--page);margin:0 auto;padding:0 26px}
+  :root{
+    --paper:#FBFAF6; --card:#FFFFFF; --ink:#1C1B19; --muted:#6A665F; --faint:#A19C93;
+    --line:#E6E2D9; --line-soft:#F1EEE7; --hover:#F6F4EF;
+    --plum:#452455; --plum-mid:#7A4E8C; --plum-pale:#F3ECF5; --plum-soft:#E4D6EA;
+    --gold:#9A6B12; --undet:#EDEAE3; --undet-ink:#A8A29A;
+    --sb:236px; --rail:250px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:var(--paper);color:var(--ink);
+    font-family:Archivo,-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+    font-size:14.5px;line-height:1.5;-webkit-font-smoothing:antialiased}
+  h1,h2,h3,h4{margin:0;font-weight:500}
+  p{margin:0}
+  a{color:var(--plum-mid)}
+  button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;padding:0}
+  button:focus-visible,input:focus-visible,a:focus-visible{outline:2px solid var(--plum);
+    outline-offset:2px;border-radius:6px}
+  .mono{font-family:"DM Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+    font-variant-numeric:tabular-nums}
+  .serif{font-family:Newsreader,Georgia,"Times New Roman",serif;font-weight:500;
+    letter-spacing:-.005em}
+  .ico{width:15px;height:15px;flex:none;stroke:currentColor;fill:none;stroke-width:1.7;
+    stroke-linecap:round;stroke-linejoin:round}
 
-.lbl{
-  font-family:var(--d);font-size:11px;font-weight:500;
-  letter-spacing:.2em;text-transform:uppercase;color:var(--ink-3);
-}
+  .announce{display:flex;align-items:center;justify-content:center;gap:12px;
+    padding:9px 44px 9px 16px;background:var(--plum-pale);border-bottom:1px solid var(--plum-soft);
+    font-size:.86rem;position:relative;flex-wrap:wrap}
+  .announce b{font-weight:600}
+  .announce a{display:inline-flex;align-items:center;gap:6px;background:var(--card);
+    border:1px solid var(--plum-soft);border-radius:7px;padding:4px 11px;text-decoration:none;
+    color:var(--ink);font-weight:500}
+  .announce .x{position:absolute;right:14px;top:50%;transform:translateY(-50%);
+    color:var(--muted);font-size:1.1rem;line-height:1;padding:4px}
 
-/* ---------------- nav ---------------- */
-.nav{position:sticky;top:0;z-index:60;background:var(--bone);border-bottom:1px solid var(--hair)}
-.nav .wrap{display:flex;align-items:center;height:60px;gap:34px}
-.brand{font-family:var(--d);font-weight:800;font-size:15px;letter-spacing:-.04em;text-decoration:none}
-.brand i{color:var(--flare);font-style:normal}
-.nav menu{display:flex;gap:28px;margin:0 0 0 auto;padding:0;list-style:none}
-.nav menu a{font-size:14px;font-weight:500;color:var(--ink-2);text-decoration:none}
-.nav menu a:hover{color:var(--flare)}
-.btn{
-  display:inline-flex;align-items:center;justify-content:center;
-  font-family:var(--f);font-weight:700;font-size:14px;letter-spacing:-.01em;
-  padding:11px 20px;border:1.5px solid var(--ink);background:var(--ink);color:var(--bone);
-  text-decoration:none;cursor:pointer;transition:transform .12s ease,background .15s,color .15s;
-}
-.btn:hover{transform:translate(-2px,-2px);box-shadow:3px 3px 0 var(--flare)}
-.btn-flare{background:var(--flare);border-color:var(--flare);color:#fff}
-.btn-flare:hover{box-shadow:3px 3px 0 var(--ink)}
-.btn-lg{padding:15px 28px;font-size:15.5px}
+  .shell{display:grid;grid-template-columns:var(--sb) 1fr;min-height:100vh}
+  .sidebar{border-right:1px solid var(--line);display:flex;flex-direction:column;
+    padding:16px 12px;position:sticky;top:0;height:100vh;overflow-y:auto;gap:8px}
+  .brand{display:flex;align-items:center;gap:9px;padding:6px 8px 12px}
+  .brand .mark{width:26px;height:26px;border-radius:7px;background:var(--plum);
+    display:grid;place-items:center;flex:none}
+  .brand .mark i{width:9px;height:9px;border-radius:50%;background:var(--paper);
+    display:block;box-shadow:inset 0 0 0 2.5px var(--plum-mid)}
+  .brand .word{font-family:Newsreader,Georgia,serif;font-size:1.28rem;font-weight:500;
+    letter-spacing:-.01em;line-height:1}
+  .brand .word small{display:block;font-family:"DM Mono",Menlo,monospace;font-size:.6rem;
+    letter-spacing:.18em;text-transform:uppercase;color:var(--faint);margin-top:4px}
+  .nav{display:flex;flex-direction:column;gap:2px}
+  .nav button{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;
+    font-size:.93rem;color:var(--muted);width:100%;text-align:left}
+  .nav button:hover{background:var(--hover)}
+  .nav button[aria-current="true"]{background:var(--card);color:var(--ink);font-weight:500;
+    box-shadow:0 1px 2px rgba(28,27,25,.06),0 0 0 1px var(--line)}
+  .nav .ico{color:var(--faint)}
+  .nav button[aria-current="true"] .ico{color:var(--plum)}
+  .promo{margin-top:auto;border:1px solid var(--line);background:var(--card);border-radius:12px;
+    padding:14px;display:flex;flex-direction:column;gap:8px}
+  .promo .thumb{height:78px;border-radius:8px;background:var(--paper);border:1px solid var(--line-soft);
+    display:flex;flex-direction:column;justify-content:center;gap:9px;padding:0 16px}
+  .promo .thumb i{display:block;height:10px;border-radius:5px;
+    background:linear-gradient(90deg,var(--plum) 0 68%,var(--plum-soft) 68% 100%)}
+  .promo h4{font-family:Newsreader,Georgia,serif;font-size:1.02rem}
+  .promo p{font-size:.8rem;color:var(--muted);line-height:1.45}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    border-radius:9px;padding:9px 14px;font-size:.88rem;font-weight:500;text-decoration:none;
+    white-space:nowrap;border:1px solid transparent}
+  .btn.primary{background:var(--plum);color:#fff}
+  .btn.primary:hover{background:#36193F}
+  .btn.ghost{background:var(--card);color:var(--ink);border-color:var(--line)}
+  .btn.ghost:hover{background:var(--hover)}
+  .btn.block{width:100%}
+  .legal{display:flex;gap:14px;flex-wrap:wrap;padding:12px 8px 2px;font-size:.72rem;
+    color:var(--faint)}
+  .legal a{color:inherit;text-decoration:none}
 
-/* ---------------- hero: one screen, two columns ---------------- */
-.hero{
-  min-height:calc(100svh - 130px);
-  display:flex;align-items:center;
-  padding:clamp(24px,4vh,56px) 0;
-  border-bottom:1px solid var(--hair);
-}
-.hero-grid{
-  display:grid;grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);
-  gap:clamp(28px,4vw,64px);align-items:center;width:100%;
-}
-.cmdline{
-  font-family:var(--d);font-size:clamp(11px,.62vw + .3vh + 8px,13.5px);
-  color:var(--ink-3);letter-spacing:-.01em;
-}
-.cmdline .p{color:var(--flare);font-weight:700}
-h1{
-  font-family:var(--d);font-weight:800;
-  font-size:clamp(2.05rem,2.45vw + 2.5vh,4.3rem);
-  letter-spacing:-.06em;line-height:.94;margin:14px 0 0;text-transform:uppercase;
-}
-h1 em{font-style:normal;color:var(--flare)}
-.hero-sub{
-  margin-top:clamp(14px,2vh,22px);max-width:42ch;
-  font-size:clamp(1rem,.4vw + .62vh + .62rem,1.24rem);
-  color:var(--ink-2);line-height:1.45;font-weight:500;
-}
-.hero-sub b{color:var(--ink);font-weight:700}
-.hero-cta{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:clamp(16px,2.6vh,28px)}
-.trust{
-  margin-top:clamp(16px,2.4vh,26px);display:flex;flex-wrap:wrap;gap:6px 18px;
-  font-family:var(--d);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);
-}
-.trust span{display:inline-flex;align-items:center;gap:7px}
-.trust span::before{content:"";width:5px;height:5px;background:var(--flare);border-radius:50%}
+  .main{min-width:0;display:flex;flex-direction:column}
+  .topbar{display:flex;align-items:center;gap:6px;padding:12px 22px;border-bottom:1px solid var(--line);
+    background:var(--paper);position:sticky;top:0;z-index:6;flex-wrap:wrap}
+  .tab{display:inline-flex;align-items:center;gap:8px;padding:7px 13px;border-radius:9px;
+    font-size:.9rem;color:var(--muted)}
+  .tab:hover{background:var(--hover)}
+  .tab[aria-current="true"]{background:var(--card);color:var(--ink);font-weight:500;
+    box-shadow:0 0 0 1px var(--line)}
+  .tab .ico{color:var(--faint)}
+  .tab[aria-current="true"] .ico{color:var(--plum)}
+  .tabs-center{display:flex;gap:4px;margin-inline:auto;flex-wrap:wrap}
+  .grow{flex:1}
 
-/* -------- the eight -------- */
-.band{background:var(--slate);color:#EFEDE8;padding:clamp(20px,3vh,30px) clamp(20px,2.4vw,30px) clamp(16px,2.2vh,24px)}
-.band-head{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:clamp(14px,2.2vh,22px)}
-.band-head .lbl{color:#8A8780;font-size:10px;letter-spacing:.16em}
-.eight{display:grid;grid-template-columns:repeat(8,1fr);gap:clamp(4px,.55vw,10px);align-items:end}
-.col{position:relative;text-align:center}
-.col .seed{font-family:var(--d);font-size:9.5px;letter-spacing:.02em;color:#7C7972;margin-bottom:9px}
-.bar{width:100%;background:linear-gradient(180deg,#E08A6B,#C15F3C);height:0;transition:height .95s cubic-bezier(.16,.9,.3,1)}
-.col.is-min .bar,.col.is-max .bar{background:linear-gradient(180deg,#EFA184,#D97757)}
-.plane{height:clamp(100px,19vh,210px);display:flex;align-items:flex-end}
-.val{
-  font-family:var(--d);font-weight:800;letter-spacing:-.05em;
-  font-size:clamp(.88rem,.9vw + .4vh,1.62rem);margin-top:10px;line-height:1;
-  transition:color .5s ease .1s;color:#8E8A82;
-}
-.eight.is-split .val{color:#EFEDE8}
-.eight.is-split .col.is-min .val,.eight.is-split .col.is-max .val{color:var(--flare)}
-.mean{
-  margin-top:clamp(12px,1.8vh,18px);border-top:1px dashed #45423E;padding-top:11px;
-  display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;
-  opacity:0;transform:translateY(6px);transition:opacity .7s ease 2.3s,transform .7s ease 2.3s;
-}
-.is-split ~ .mean{opacity:1;transform:none}
-.mean .l{font-family:var(--d);font-size:11.5px;color:#96938B}
-.mean .l b{color:#EFEDE8;font-weight:700}
-.mean .r{font-family:var(--d);font-size:11.5px;color:var(--flare);font-weight:700}
+  .body{display:grid;grid-template-columns:var(--rail) 1fr;min-width:0;align-items:start}
+  .body.wide{grid-template-columns:1fr}
+  .rail{padding:18px 16px 30px;border-right:1px solid var(--line);position:sticky;top:57px;
+    display:flex;flex-direction:column;gap:6px;max-height:calc(100vh - 57px);overflow-y:auto}
+  .rail section{padding:10px 0 14px;border-bottom:1px solid var(--line-soft);
+    display:flex;flex-direction:column;gap:8px}
+  .rail section:last-child{border-bottom:0}
+  .rail h5{margin:0;display:flex;align-items:center;gap:8px;font-size:.9rem;font-weight:500}
+  .rail h5 .ico{color:var(--faint)}
+  .rail h5 .n{color:var(--faint);font-weight:400}
+  .seg{display:flex;background:var(--card);border:1px solid var(--line);border-radius:9px;
+    padding:3px;gap:3px}
+  .seg button{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:7px;
+    padding:6px 8px;border-radius:7px;font-size:.84rem;color:var(--muted)}
+  .seg button[aria-current="true"]{background:var(--plum-pale);color:var(--plum);font-weight:500}
+  .list{display:flex;flex-direction:column;gap:2px}
+  .list button,.list label{display:flex;align-items:center;gap:9px;padding:7px 9px;
+    border-radius:8px;font-size:.88rem;color:var(--muted);width:100%;text-align:left;cursor:pointer}
+  .list button:hover,.list label:hover{background:var(--hover)}
+  .list button[aria-current="true"]{background:var(--plum-pale);color:var(--plum);font-weight:500}
+  .list .tick{margin-left:auto;color:var(--plum);font-weight:700}
+  .list .sub{display:block;font-size:.72rem;color:var(--faint);font-weight:400}
+  .list input[type=checkbox],.list input[type=radio]{accent-color:var(--plum);width:15px;height:15px;margin:0}
+  .list label.on{color:var(--ink)}
 
-.cmd{
-  display:inline-flex;align-items:center;gap:10px;font-family:var(--d);font-size:13px;
-  background:var(--white);border:1.5px solid var(--hair);color:var(--ink);
-  padding:12px 15px;cursor:pointer;transition:border-color .15s;
-}
-.cmd:hover{border-color:var(--flare)}
-.cmd .d{color:var(--flare);font-weight:700}
-.cmd .k{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+  .content{padding:24px 24px 80px;min-width:0;display:flex;flex-direction:column;gap:20px}
+  .head{display:flex;flex-direction:column;gap:9px}
+  .titlerow{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .head h1{font-family:Newsreader,Georgia,serif;font-size:1.9rem;line-height:1.1}
+  .chip{display:inline-flex;align-items:center;gap:7px;background:var(--card);border:1px solid var(--line);
+    border-radius:8px;padding:5px 10px;font-size:.84rem;color:var(--ink)}
+  .chip .dot{width:8px;height:8px;border-radius:50%;background:var(--plum)}
+  .head .desc{color:var(--muted);max-width:76ch;font-size:.95rem}
+  .meta{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:.84rem;color:var(--muted)}
+  .meta span{display:inline-flex;align-items:center;gap:6px}
+  .meta .ico{color:var(--faint)}
 
-/* hero entrance */
-@keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
-.cmdline{opacity:0;animation:rise .7s cubic-bezier(.2,.8,.3,1) .05s forwards}
-h1 .ln{display:block;opacity:0;animation:rise .8s cubic-bezier(.2,.8,.3,1) forwards}
-h1 .ln:nth-child(1){animation-delay:.14s}
-h1 .ln:nth-child(2){animation-delay:.24s}
-.hero-sub{opacity:0;animation:rise .8s cubic-bezier(.2,.8,.3,1) .36s forwards}
-.hero-cta{opacity:0;animation:rise .8s cubic-bezier(.2,.8,.3,1) .46s forwards}
-.trust{opacity:0;animation:rise .8s cubic-bezier(.2,.8,.3,1) .56s forwards}
-.band{opacity:0;animation:rise .9s cubic-bezier(.2,.8,.3,1) .3s forwards}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .toolbar{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--line);
+    flex-wrap:wrap}
+  .toolbar .seg{padding:2px}
+  .toolbar .seg button{padding:5px 12px}
+  .search{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:9px;
+    padding:6px 11px;min-width:200px;background:var(--card)}
+  .search input{border:0;outline:0;background:none;font:inherit;font-size:.86rem;width:100%;color:var(--ink)}
+  .search input::placeholder{color:var(--faint)}
+  .toolbtn{display:inline-flex;align-items:center;gap:7px;padding:6px 11px;border-radius:9px;
+    border:1px solid var(--line);font-size:.84rem;color:var(--muted);background:var(--card)}
+  .toolbtn:hover{background:var(--hover);color:var(--ink)}
 
-/* scroll reveal */
-.rise{opacity:0;transform:translateY(20px);transition:opacity .7s cubic-bezier(.2,.8,.3,1),transform .7s cubic-bezier(.2,.8,.3,1)}
-.rise.in{opacity:1;transform:none}
+  .scroll{overflow-x:auto}
+  table{border-collapse:separate;border-spacing:0;width:100%;min-width:860px}
+  thead th{position:sticky;top:0;background:var(--card);z-index:2;text-align:left;
+    padding:11px 12px;font-size:.78rem;font-weight:500;color:var(--muted);
+    border-bottom:1px solid var(--line);white-space:nowrap;vertical-align:bottom}
+  thead th.sortable{cursor:pointer;user-select:none}
+  thead th.sortable:hover{color:var(--ink)}
+  thead th .ar{margin-left:4px;color:var(--plum)}
+  thead th small{display:block;font-family:"DM Mono",Menlo,monospace;font-size:.68rem;
+    color:var(--faint);font-weight:400;margin-top:2px}
+  th.mcol,td.mcol{min-width:212px;max-width:212px}
+  tbody td{padding:10px 12px;border-bottom:1px solid var(--line-soft);vertical-align:middle}
+  tbody tr:last-child td{border-bottom:0}
+  tbody tr:hover td{background:var(--hover)}
+  .rk{font-family:"DM Mono",Menlo,monospace;font-variant-numeric:tabular-nums;color:var(--muted);
+    width:2rem;text-align:center}
+  .spread{display:inline-flex;align-items:center;gap:7px;font-family:"DM Mono",Menlo,monospace;
+    font-size:.82rem;font-variant-numeric:tabular-nums;color:var(--muted);white-space:nowrap}
+  .spread .ln{position:relative;width:34px;height:2px;background:var(--line)}
+  .spread .ln i{position:absolute;top:50%;left:50%;width:7px;height:7px;border-radius:50%;
+    background:var(--plum-mid);transform:translate(-50%,-50%)}
+  .spread.pin{color:var(--plum);font-weight:500}
+  .model{display:flex;flex-direction:column;gap:2px;min-width:0}
+  .model .nm{font-family:"DM Mono",Menlo,monospace;font-size:.86rem;color:var(--ink);
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .model .org{font-size:.76rem;color:var(--faint);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .score{font-family:"DM Mono",Menlo,monospace;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .score b{font-weight:500}
+  .score small{color:var(--faint);margin-left:5px;font-size:.78rem}
+  .num{font-family:"DM Mono",Menlo,monospace;font-variant-numeric:tabular-nums;text-align:right;
+    color:var(--muted);white-space:nowrap}
+  .num.strong{color:var(--ink)}
 
-@media (prefers-reduced-motion:reduce){
-  .bar,.val,.mean{transition:none!important}
-  .cmdline,h1 .ln,.hero-sub,.hero-cta,.trust,.band{animation:none!important;opacity:1!important}
-  .rise,.mean{opacity:1!important;transform:none!important}
-}
+  .cell{height:34px;min-width:74px;border-radius:7px;display:flex;align-items:center;
+    justify-content:center;position:relative}
+  .cell .v{font-family:"DM Mono",Menlo,monospace;font-size:.82rem;font-weight:500;
+    font-variant-numeric:tabular-nums}
+  .cell.undet{background:var(--undet)}
+  .cell.undet .v{color:var(--undet-ink);font-weight:400}
+  .cell.missing{background:repeating-linear-gradient(135deg,transparent,transparent 5px,
+    var(--line-soft) 5px,var(--line-soft) 6px)}
+  .cell.missing .v{color:var(--faint);font-size:.76rem}
+  .cell.best::after{content:"";position:absolute;left:8px;right:8px;bottom:3px;height:2px;
+    border-radius:2px;background:var(--gold)}
+  .empty{padding:44px 16px;text-align:center;color:var(--faint);font-size:.9rem}
+  .empty button{color:var(--plum-mid);text-decoration:underline;text-underline-offset:3px}
 
-/* ---------------- sections ---------------- */
-.sec{padding:96px 0;border-top:1px solid var(--hair)}
-.sec-w{background:var(--white)}
-h2{
-  font-family:var(--f);font-weight:800;letter-spacing:-.045em;line-height:1.02;
-  font-size:clamp(1.9rem,1.2rem + 2.4vw,3.15rem);max-width:22ch;margin-top:18px;
-  text-wrap:balance;
-}
-.sub{margin-top:20px;max-width:58ch;color:var(--ink-2);font-size:1.06rem}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;align-items:center;padding:11px 16px;
+    border-top:1px solid var(--line);font-size:.78rem;color:var(--muted)}
+  .legend i{display:inline-flex;align-items:center;gap:7px;font-style:normal}
+  .sw{width:24px;height:13px;border-radius:4px;flex:none}
+  .ramp{width:80px;height:13px;border-radius:4px;flex:none;
+    background:linear-gradient(90deg,var(--plum-pale),var(--plum))}
 
-/* ranked comparison rows */
-.rows{margin-top:46px;display:grid;gap:10px}
-.row{
-  display:grid;grid-template-columns:1fr auto;gap:20px;align-items:center;
-  border:1.5px solid var(--hair);background:var(--white);padding:20px 22px;
-}
-.sec-w .row{background:var(--bone)}
-.row .who{font-weight:700;font-size:1.02rem;letter-spacing:-.02em}
-.row .note{display:block;font-weight:500;font-size:13.5px;color:var(--ink-3);margin-top:4px}
-.row .num{font-family:var(--d);font-weight:800;font-size:clamp(1.2rem,.9rem + 1.1vw,1.9rem);letter-spacing:-.045em;white-space:nowrap}
-.row-bad{border-color:var(--flare)}
-.row-bad .num{color:var(--flare)}
-.row-good{border-color:var(--green);background:var(--green-2)}
-.sec-w .row-good{background:var(--green-2)}
-.row-good .num{color:var(--green)}
-.row-good .who::after{
-  content:"orbit-eval";font-family:var(--d);font-size:10px;letter-spacing:.14em;
-  text-transform:uppercase;color:#fff;background:var(--green);padding:3px 7px;margin-left:10px;
-  vertical-align:2px;
-}
-.punch{margin-top:30px;font-size:1.12rem;max-width:60ch;font-weight:500}
-.punch b{font-weight:700}
+  .sect-title{font-family:Newsreader,Georgia,serif;font-size:1.2rem;margin-top:6px}
+  .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:14px}
+  .diag{padding:16px 18px;display:flex;flex-direction:column;gap:12px}
+  .diag h3{font-size:.92rem;font-weight:600}
+  .diag p{font-size:.82rem;color:var(--muted)}
+  .bars{display:flex;flex-direction:column;gap:8px}
+  .bar{display:grid;grid-template-columns:8.5rem 1fr 4.2rem;align-items:center;gap:10px;font-size:.82rem}
+  .bar .lab{color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .bar .trk{height:9px;background:var(--line-soft);border-radius:5px;overflow:hidden;position:relative}
+  .bar .fill{position:absolute;left:0;top:0;bottom:0;background:var(--plum-mid);border-radius:5px}
+  .bar .val{font-family:"DM Mono",Menlo,monospace;font-variant-numeric:tabular-nums;
+    text-align:right;color:var(--muted)}
 
-/* verbs */
-.verbs{margin-top:46px;display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1.5px solid var(--ink)}
-.verb{padding:26px 24px;border-right:1.5px solid var(--ink)}
-.verb:last-child{border-right:0}
-.verb code{font-family:var(--d);font-weight:800;font-size:14px;color:var(--flare);letter-spacing:-.02em}
-.verb h3{font-family:var(--f);font-weight:700;font-size:1.08rem;letter-spacing:-.025em;margin:12px 0 8px}
-.verb p{font-size:14.5px;color:var(--ink-2)}
+  .ovgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(440px,1fr));gap:16px}
+  .ov{display:flex;flex-direction:column}
+  .ovhead{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 18px;
+    border-bottom:1px solid var(--line)}
+  .ovhead h3{font-family:Newsreader,Georgia,serif;font-size:1.15rem;display:flex;align-items:center;gap:9px}
+  .ovhead .ico{color:var(--plum-mid)}
+  .ovrows{padding:8px 18px 12px;display:flex;flex-direction:column}
+  .ovrow{display:grid;grid-template-columns:1.6rem minmax(0,12.5rem) 1fr 6.4rem;align-items:center;
+    gap:12px;padding:8px 0;border-bottom:1px solid var(--line-soft)}
+  .ovrow:last-child{border-bottom:0}
+  .ovrow .badge{font-family:"DM Mono",Menlo,monospace;font-size:.74rem;color:var(--muted);
+    border:1px solid var(--line);border-radius:6px;height:22px;display:grid;place-items:center}
+  .ovrow .nm{font-family:"DM Mono",Menlo,monospace;font-size:.84rem;overflow:hidden;
+    text-overflow:ellipsis;white-space:nowrap}
+  .ovrow .trk{position:relative;height:22px;background:var(--line-soft);border-radius:5px;overflow:hidden}
+  .ovrow .lo{position:absolute;left:0;top:0;bottom:0;background:var(--plum);border-radius:5px 0 0 5px}
+  .ovrow .ci{position:absolute;top:0;bottom:0;background:var(--plum-soft)}
+  .ovrow .pt{position:absolute;top:3px;bottom:3px;width:2px;background:#fff;opacity:.9}
+  .ovrow .sc{font-family:"DM Mono",Menlo,monospace;font-variant-numeric:tabular-nums;font-size:.86rem;
+    text-align:right;white-space:nowrap}
+  .ovrow .sc small{color:var(--faint);font-size:.74rem;margin-left:4px}
+  .ovfoot{display:flex;align-items:center;justify-content:space-between;padding:11px 18px;
+    border-top:1px solid var(--line);font-size:.82rem;color:var(--muted)}
+  .ovfoot a{font-weight:500;text-decoration:none}
 
-.term{
-  margin-top:0;background:var(--slate);color:#D6D2C6;
-  padding:26px 28px;font-family:var(--d);font-size:13px;line-height:1.8;
-  overflow-x:auto;white-space:pre;border:1.5px solid var(--ink);border-top:0;
-}
-.term .c{color:#78756D}.term .g{color:#9CC2B5}.term .y{color:#E5A183}
+  .prose{display:flex;flex-direction:column;gap:12px;max-width:76ch}
+  .prose h2{font-family:Newsreader,Georgia,serif;font-size:1.5rem}
+  .prose h3{font-size:.95rem;font-weight:600;margin-top:8px}
+  .prose p,.prose li{font-size:.92rem;color:var(--muted)}
+  .prose strong{color:var(--ink)}
+  .prose code{font-family:"DM Mono",Menlo,monospace;font-size:.84em;background:var(--card);
+    border:1px solid var(--line);border-radius:4px;padding:1px 5px}
+  .prose table{min-width:0;font-size:.85rem;width:100%}
+  .prose td,.prose th{padding:7px 9px;border-bottom:1px solid var(--line-soft);text-align:left;
+    vertical-align:top}
+  .prose th{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);font-weight:600}
+  .prose ul{margin:0;padding-left:18px}
 
-/* research */
-.quote{
-  margin-top:44px;background:var(--ink);color:var(--bone);padding:36px 38px;
-  max-width:70ch;
-}
-.quote p{font-size:1.18rem;line-height:1.42;font-weight:500;letter-spacing:-.015em}
-.quote b{color:var(--flare);font-weight:700}
-.quote .src{margin-top:16px;font-family:var(--d);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:#96938B}
-.cards{margin-top:16px;display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-.card{
-  border:1.5px solid var(--hair);background:var(--white);padding:24px;
-  text-decoration:none;display:block;transition:border-color .15s,transform .12s;
-}
-.sec-w .card{background:var(--bone)}
-.card:hover{border-color:var(--flare);transform:translate(-2px,-2px)}
-.card .lbl{color:var(--flare)}
-.card h3{font-family:var(--f);font-weight:700;font-size:1.1rem;letter-spacing:-.025em;margin:12px 0 6px}
-.card p{font-size:14.5px;color:var(--ink-2)}
-
-/* cta */
-.cta{background:var(--flare);color:#fff;padding:86px 0}
-.cta h2{color:#fff;max-width:19ch}
-.cta p{margin-top:20px;max-width:50ch;font-size:1.08rem;color:#FBE9E1;font-weight:500}
-.cta .btn{background:var(--ink);border-color:var(--ink);color:#fff}
-.cta .btn:hover{box-shadow:3px 3px 0 #fff}
-.cta .cmd{background:transparent;border-color:#EDB49C;color:#fff}
-.cta .cmd .d{color:#FBE7DE}.cta .cmd .k{color:#F0C3AE}
-.cta .cmd:hover{border-color:#fff}
-.cta-row{display:flex;flex-wrap:wrap;gap:14px;margin-top:34px;align-items:center}
-
-/* foot */
-.foot{background:var(--ink);color:#8F8D85;padding:34px 0;font-size:13.5px}
-.foot .wrap{display:flex;flex-wrap:wrap;gap:14px 30px;align-items:center}
-.foot a{color:#CBC7BB;text-decoration:none}
-.foot a:hover{color:var(--flare)}
-.foot .sp{margin-left:auto;font-family:var(--d);font-size:11.5px;letter-spacing:.08em}
-
-a:focus-visible,button:focus-visible{outline:3px solid var(--flare);outline-offset:3px}
-.cta a:focus-visible,.cta button:focus-visible{outline-color:#fff}
-
-@media (max-width:980px){
-  .hero{min-height:0;padding:52px 0 60px}
-  .hero-grid{grid-template-columns:1fr;gap:34px}
-  h1{font-size:clamp(2.1rem,6.4vw,3.2rem)}
-  .plane{height:clamp(96px,20vw,170px)}
-}
-@media (max-width:900px){
-  .nav menu{display:none}
-  .nav .btn{margin-left:auto}
-  .verbs{grid-template-columns:1fr}
-  .verb{border-right:0;border-bottom:1.5px solid var(--ink)}
-  .verb:last-child{border-bottom:0}
-  .cards{grid-template-columns:1fr}
-  .sec{padding:64px 0}
-}
-@media (max-width:660px){
-  .eight{grid-template-columns:repeat(4,1fr);row-gap:26px}
-  .plane{height:84px}
-  .col .seed{font-size:9.5px}
-  .row{grid-template-columns:1fr;gap:10px}
-  .row .num{font-size:1.9rem}
-  .quote{padding:26px 24px}
-  .quote p{font-size:1.05rem}
-}
+  @media (max-width:1080px){
+    .shell{grid-template-columns:1fr}
+    .sidebar{position:static;height:auto;flex-direction:row;align-items:center;flex-wrap:wrap;
+      border-right:0;border-bottom:1px solid var(--line)}
+    .promo,.legal{display:none}
+    .nav{flex-direction:row}
+    .body{grid-template-columns:1fr}
+    .rail{position:static;border-right:0;border-bottom:1px solid var(--line);max-height:none;
+      flex-direction:row;flex-wrap:wrap;gap:18px}
+    .rail section{min-width:200px;flex:1;border-bottom:0}
+    .ovgrid{grid-template-columns:1fr}
+  }
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
+
 </head>
 <body>
+<script type="application/json" id="cap-data">{"boards":[{"key":"robochallenge","label":"RoboChallenge Table 30","blurb":"30 real-robot tasks at 10 rollouts each, pooled by the benchmark's own task tags.","domain":"manipulation","kind":"binomial","unit":"rollouts","capabilities":["precision","long_horizon","deformable","perception"],"column_rate":{"precision":22.575757575757578,"long_horizon":23.916083916083917,"deformable":8.93939393939394,"perception":27.77272727272727},"rows":[{"model":"Era0","org":"Robotera","overall":56.578947368421055,"pooled_ci":[51.5541750064211,61.47203642815986],"cells":{"precision":{"k":63,"n":120,"rate":52.5,"ci":[43.62699530204286,61.217908865732575],"width":17.590913563689714,"verdict":"above"},"long_horizon":{"k":71,"n":130,"rate":54.61538461538461,"ci":[46.04727382036087,62.918557922235344],"width":16.87128410187447,"verdict":"above"},"deformable":{"k":13,"n":30,"rate":43.333333333333336,"ci":[27.37748557057824,60.80269300624474],"width":33.42520743566649,"verdict":"above"},"perception":{"k":68,"n":100,"rate":68.0,"ci":[58.33738138518994,76.33085267824015],"width":17.9934712930502,"verdict":"above"}},"spread":24.666666666666664,"resolved":4,"n":380,"order":1,"best_rank":1,"worst_rank":2},{"model":"DM0","org":"Dexmal","overall":53.68421052631579,"pooled_ci":[48.65881785744994,58.6358605459154],"cells":{"precision":{"k":66,"n":120,"rate":55.00000000000001,"ci":[46.081543415852764,63.6082649196981],"width":17.526721503845334,"verdict":"above"},"long_horizon":{"k":78,"n":130,"rate":60.0,"ci":[51.40839981743087,68.01756895819427],"width":16.609169140763402,"verdict":"above"},"deformable":{"k":5,"n":30,"rate":16.666666666666664,"ci":[7.336542369282675,33.564350514832206],"width":26.227808145549535,"verdict":"undetermined"},"perception":{"k":55,"n":100,"rate":55.00000000000001,"ci":[45.24460299326664,64.38546202435283],"width":19.1408590310862,"verdict":"above"}},"spread":4.999999999999993,"resolved":3,"n":380,"order":2,"best_rank":1,"worst_rank":3},{"model":"Spirit-v1.5","org":"Spirit AI","overall":44.21052631578947,"pooled_ci":[39.299791223364146,49.237142714204616],"cells":{"precision":{"k":50,"n":120,"rate":41.66666666666667,"ci":[33.2383521370209,50.61196730372771],"width":17.37361516670682,"verdict":"above"},"long_horizon":{"k":63,"n":130,"rate":48.46153846153846,"ci":[40.03882278826001,56.972566630874574],"width":16.93374384261456,"verdict":"above"},"deformable":{"k":4,"n":30,"rate":13.333333333333334,"ci":[5.30965548201261,29.681326690513764],"width":24.371671208501155,"verdict":"undetermined"},"perception":{"k":51,"n":100,"rate":51.0,"ci":[41.34801192995866,60.578001073565225],"width":19.229989143606563,"verdict":"above"}},"spread":9.333333333333329,"resolved":3,"n":380,"order":3,"best_rank":2,"worst_rank":6},{"model":"GigaBrain-0.1","org":"lyf","overall":43.1578947368421,"pooled_ci":[38.27096886232462,48.1817712457112],"cells":{"precision":{"k":51,"n":120,"rate":42.5,"ci":[34.023039215787655,51.44224828088608],"width":17.41920906509843,"verdict":"above"},"long_horizon":{"k":65,"n":130,"rate":50.0,"ci":[41.52923244051303,58.47076755948697],"width":16.941535118973945,"verdict":"above"},"deformable":{"k":1,"n":30,"rate":3.3333333333333335,"ci":[0.5908590377996403,16.670390999961203],"width":16.07953196216156,"verdict":"undetermined"},"perception":{"k":47,"n":100,"rate":47.0,"ci":[37.51081795540279,56.71114303402551],"width":19.200325078622722,"verdict":"above"}},"spread":7.5,"resolved":3,"n":380,"order":4,"best_rank":3,"worst_rank":7},{"model":"Lira_generalist","org":"Atlas","overall":37.36842105263158,"pooled_ci":[32.65345549273128,42.33621855287329],"cells":{"precision":{"k":40,"n":120,"rate":33.33333333333333,"ci":[25.531740498167053,42.168898383330124],"width":16.637157885163067,"verdict":"above"},"long_horizon":{"k":53,"n":130,"rate":40.76923076923077,"ci":[32.704791443644446,49.36354507116311],"width":16.658753627518664,"verdict":"above"},"deformable":{"k":3,"n":30,"rate":10.0,"ci":[3.4599888732413526,25.621082587696513],"width":22.16109371445516,"verdict":"undetermined"},"perception":{"k":46,"n":100,"rate":46.0,"ci":[36.560808305121725,55.735139680782694],"width":19.17433137566097,"verdict":"above"}},"spread":12.666666666666671,"resolved":3,"n":380,"order":5,"best_rank":3,"worst_rank":9},{"model":"Atlas_generalist","org":"Atlas","overall":35.526315789473685,"pooled_ci":[30.881149401216952,40.461185442704945],"cells":{"precision":{"k":35,"n":120,"rate":29.166666666666668,"ci":[21.781563618169343,37.844234983702144],"width":16.0626713655328,"verdict":"undetermined"},"long_horizon":{"k":46,"n":130,"rate":35.38461538461539,"ci":[27.69244485640768,43.91575462537096],"width":16.22330976896328,"verdict":"above"},"deformable":{"k":5,"n":30,"rate":16.666666666666664,"ci":[7.336542369282675,33.564350514832206],"width":26.227808145549535,"verdict":"undetermined"},"perception":{"k":49,"n":100,"rate":49.0,"ci":[39.42199892643477,58.65198807004133],"width":19.229989143606556,"verdict":"above"}},"spread":13.615384615384613,"resolved":2,"n":380,"order":6,"best_rank":3,"worst_rank":9},{"model":"pi0.5","org":"rc_baseline","overall":33.68421052631579,"pooled_ci":[29.116501198364997,38.578494443874234],"cells":{"precision":{"k":41,"n":120,"rate":34.166666666666664,"ci":[26.290438365432067,43.02516857199026],"width":16.73473020655819,"verdict":"above"},"long_horizon":{"k":43,"n":130,"rate":33.07692307692307,"ci":[25.57703160140461,41.54825200907592],"width":15.971220407671305,"verdict":"above"},"deformable":{"k":2,"n":30,"rate":6.666666666666667,"ci":[1.8477023782052404,21.323458371144113],"width":19.475755992938872,"verdict":"undetermined"},"perception":{"k":42,"n":100,"rate":42.0,"ci":[32.79838267061134,51.7935133011975],"width":18.99513063058616,"verdict":"above"}},"spread":8.923076923076927,"resolved":3,"n":380,"order":7,"best_rank":4,"worst_rank":9},{"model":"DM0_generalist","org":"Dexmal","overall":30.263157894736842,"pooled_ci":[25.860647552623934,35.0607181436332],"cells":{"precision":{"k":41,"n":120,"rate":34.166666666666664,"ci":[26.290438365432067,43.02516857199026],"width":16.73473020655819,"verdict":"above"},"long_horizon":{"k":28,"n":130,"rate":21.53846153846154,"ci":[15.343130626209527,29.367573627780448],"width":14.02444300157092,"verdict":"undetermined"},"deformable":{"k":4,"n":30,"rate":13.333333333333334,"ci":[5.30965548201261,29.681326690513764],"width":24.371671208501155,"verdict":"undetermined"},"perception":{"k":42,"n":100,"rate":42.0,"ci":[32.79838267061134,51.7935133011975],"width":18.99513063058616,"verdict":"above"}},"spread":7.833333333333336,"resolved":2,"n":380,"order":8,"best_rank":5,"worst_rank":10},{"model":"wall-oss-v0.1","org":"Pushi Zhang","overall":29.473684210526315,"pooled_ci":[25.11343504233981,34.244785281767605],"cells":{"precision":{"k":29,"n":120,"rate":24.166666666666668,"ci":[17.38584121497308,32.550149051347546],"width":15.164307836374464,"verdict":"undetermined"},"long_horizon":{"k":51,"n":130,"rate":39.23076923076923,"ci":[31.262137421258974,47.81758851268317],"width":16.5554510914242,"verdict":"above"},"deformable":{"k":1,"n":30,"rate":3.3333333333333335,"ci":[0.5908590377996403,16.670390999961203],"width":16.07953196216156,"verdict":"undetermined"},"perception":{"k":31,"n":100,"rate":31.0,"ci":[22.779697209196204,40.62605572384982],"width":17.846358514653616,"verdict":"undetermined"}},"spread":null,"resolved":1,"n":380,"order":9,"best_rank":5,"worst_rank":10},{"model":"pi0","org":"rc_baseline","overall":23.68421052631579,"pooled_ci":[19.686299238117673,28.2088550235585],"cells":{"precision":{"k":27,"n":120,"rate":22.5,"ci":[15.949154665934632,30.756899488535716],"width":14.807744822601085,"verdict":"undetermined"},"long_horizon":{"k":26,"n":130,"rate":20.0,"ci":[14.029948857119864,27.692144816004706],"width":13.66219595888484,"verdict":"undetermined"},"deformable":{"k":3,"n":30,"rate":10.0,"ci":[3.4599888732413526,25.621082587696513],"width":22.16109371445516,"verdict":"undetermined"},"perception":{"k":34,"n":100,"rate":34.0,"ci":[25.461520793995252,43.72227114962245],"width":18.2607503556272,"verdict":"undetermined"}},"spread":null,"resolved":0,"n":380,"order":10,"best_rank":8,"worst_rank":13},{"model":"VLO","org":"Sicheng Xie","overall":19.736842105263158,"pooled_ci":[16.04650600170713,24.032921399220466],"cells":{"precision":{"k":26,"n":120,"rate":21.666666666666668,"ci":[15.23672356176147,29.85436253678373],"width":14.61763897502226,"verdict":"undetermined"},"long_horizon":{"k":21,"n":130,"rate":16.153846153846153,"ci":[10.815119415323172,23.435447805637878],"width":12.620328390314706,"verdict":"below"},"deformable":{"k":3,"n":30,"rate":10.0,"ci":[3.4599888732413526,25.621082587696513],"width":22.16109371445516,"verdict":"undetermined"},"perception":{"k":25,"n":100,"rate":25.0,"ci":[17.545211359502865,34.30446355239979],"width":16.759252192896923,"verdict":"undetermined"}},"spread":null,"resolved":1,"n":380,"order":11,"best_rank":10,"worst_rank":13},{"model":"X-VLA","org":"Chongyang Xu","overall":17.105263157894736,"pooled_ci":[13.653071332987722,21.215871494107493],"cells":{"precision":{"k":19,"n":120,"rate":15.833333333333332,"ci":[10.376977357479648,23.40933234958956],"width":13.032354992109912,"verdict":"undetermined"},"long_horizon":{"k":31,"n":130,"rate":23.846153846153847,"ci":[17.338377683562488,31.85524244172559],"width":14.5168647581631,"verdict":"undetermined"},"deformable":{"k":1,"n":30,"rate":3.3333333333333335,"ci":[0.5908590377996403,16.670390999961203],"width":16.07953196216156,"verdict":"undetermined"},"perception":{"k":14,"n":100,"rate":14.000000000000002,"ci":[8.526343658090505,22.13718821504932],"width":13.610844556958812,"verdict":"below"}},"spread":null,"resolved":1,"n":380,"order":12,"best_rank":10,"worst_rank":14},{"model":"pi05_generalist","org":"wyf","overall":16.05263157894737,"pooled_ci":[12.704302561690655,20.0804464358716],"cells":{"precision":{"k":21,"n":120,"rate":17.5,"ci":[11.740535942495528,25.275709876423964],"width":13.535173933928435,"verdict":"undetermined"},"long_horizon":{"k":17,"n":130,"rate":13.076923076923078,"ci":[8.32739218026618,19.94595387896406],"width":11.618561698697876,"verdict":"below"},"deformable":{"k":3,"n":30,"rate":10.0,"ci":[3.4599888732413526,25.621082587696513],"width":22.16109371445516,"verdict":"undetermined"},"perception":{"k":20,"n":100,"rate":20.0,"ci":[13.336693330704783,28.88291656357841],"width":15.546223232873627,"verdict":"undetermined"}},"spread":null,"resolved":1,"n":380,"order":13,"best_rank":10,"worst_rank":18},{"model":"pi0_generalist","org":"wyf","overall":10.263157894736842,"pooled_ci":[7.598931881642673,13.722751053488338],"cells":{"precision":{"k":13,"n":120,"rate":10.833333333333334,"ci":[6.441141152719792,17.65536021879857],"width":11.214219066078776,"verdict":"below"},"long_horizon":{"k":12,"n":130,"rate":9.230769230769232,"ci":[5.359342491335192,15.442477115731524],"width":10.083134624396331,"verdict":"below"},"deformable":{"k":2,"n":30,"rate":6.666666666666667,"ci":[1.8477023782052404,21.323458371144113],"width":19.475755992938872,"verdict":"undetermined"},"perception":{"k":12,"n":100,"rate":12.0,"ci":[6.999406435380474,19.812099430711562],"width":12.812692995331087,"verdict":"below"}},"spread":2.7692307692307683,"resolved":3,"n":380,"order":14,"best_rank":12,"worst_rank":21},{"model":"cogact","org":"hsk","overall":10.0,"pooled_ci":[7.372547140864127,13.428087336883648],"cells":{"precision":{"k":9,"n":120,"rate":7.5,"ci":[3.995711538520172,13.64091760929762],"width":9.645206070777448,"verdict":"below"},"long_horizon":{"k":16,"n":130,"rate":12.307692307692308,"ci":[7.719629883074247,19.05941088572329],"width":11.33978100264904,"verdict":"below"},"deformable":{"k":1,"n":30,"rate":3.3333333333333335,"ci":[0.5908590377996403,16.670390999961203],"width":16.07953196216156,"verdict":"undetermined"},"perception":{"k":12,"n":100,"rate":12.0,"ci":[6.999406435380474,19.812099430711562],"width":12.812692995331087,"verdict":"below"}},"spread":4.807692307692308,"resolved":3,"n":380,"order":15,"best_rank":13,"worst_rank":21},{"model":"GR00T-MULTI","org":"Sicheng Xie","overall":10.0,"pooled_ci":[7.372547140864127,13.428087336883648],"cells":{"precision":{"k":9,"n":120,"rate":7.5,"ci":[3.995711538520172,13.64091760929762],"width":9.645206070777448,"verdict":"below"},"long_horizon":{"k":15,"n":130,"rate":11.538461538461538,"ci":[7.11836727304466,18.16636820532017],"width":11.048000932275508,"verdict":"below"},"deformable":{"k":0,"n":30,"rate":0.0,"ci":[0.0,11.351339326172331],"width":11.351339326172331,"verdict":"undetermined"},"perception":{"k":14,"n":100,"rate":14.000000000000002,"ci":[8.526343658090505,22.13718821504932],"width":13.610844556958812,"verdict":"below"}},"spread":6.500000000000002,"resolved":3,"n":380,"order":16,"best_rank":13,"worst_rank":21},{"model":"GR00T","org":"Sicheng Xie","overall":10.0,"pooled_ci":[7.372547140864127,13.428087336883648],"cells":{"precision":{"k":16,"n":120,"rate":13.333333333333334,"ci":[8.376608960983912,20.564796578309874],"width":12.188187617325962,"verdict":"below"},"long_horizon":{"k":3,"n":130,"rate":2.307692307692308,"ci":[0.7878820370263384,6.565189956146046],"width":5.777307919119708,"verdict":"below"},"deformable":{"k":0,"n":30,"rate":0.0,"ci":[0.0,11.351339326172331],"width":11.351339326172331,"verdict":"undetermined"},"perception":{"k":19,"n":100,"rate":19.0,"ci":[12.514751507454744,27.77884538330455],"width":15.264093875849808,"verdict":"undetermined"}},"spread":11.025641025641026,"resolved":2,"n":380,"order":17,"best_rank":13,"worst_rank":21},{"model":"RDT-1B","org":"zsz","overall":10.0,"pooled_ci":[7.372547140864127,13.428087336883648],"cells":{"precision":{"k":16,"n":120,"rate":13.333333333333334,"ci":[8.376608960983912,20.564796578309874],"width":12.188187617325962,"verdict":"below"},"long_horizon":{"k":12,"n":130,"rate":9.230769230769232,"ci":[5.359342491335192,15.442477115731524],"width":10.083134624396331,"verdict":"below"},"deformable":{"k":3,"n":30,"rate":10.0,"ci":[3.4599888732413526,25.621082587696513],"width":22.16109371445516,"verdict":"undetermined"},"perception":{"k":7,"n":100,"rate":7.000000000000001,"ci":[3.4319261056910064,13.74951474278156],"width":10.317588637090553,"verdict":"below"}},"spread":6.333333333333333,"resolved":3,"n":380,"order":18,"best_rank":13,"worst_rank":21},{"model":"ZR-0_generalist","org":"Atlas","overall":7.631578947368421,"pooled_ci":[5.365886777924902,10.745311583373725],"cells":{"precision":{"k":2,"n":120,"rate":1.6666666666666667,"ci":[0.4582564563642536,5.873596299977551],"width":5.415339843613298,"verdict":"below"},"long_horizon":{"k":15,"n":130,"rate":11.538461538461538,"ci":[7.11836727304466,18.16636820532017],"width":11.048000932275508,"verdict":"below"},"deformable":{"k":5,"n":30,"rate":16.666666666666664,"ci":[7.336542369282675,33.564350514832206],"width":26.227808145549535,"verdict":"undetermined"},"perception":{"k":7,"n":100,"rate":7.000000000000001,"ci":[3.4319261056910064,13.74951474278156],"width":10.317588637090553,"verdict":"below"}},"spread":9.871794871794872,"resolved":3,"n":380,"order":19,"best_rank":14,"worst_rank":21},{"model":"VLA_test_0204","org":"Xiangyue Wu","overall":6.315789473684211,"pooled_ci":[4.280585669110959,9.225370405271477],"cells":{"precision":{"k":9,"n":120,"rate":7.5,"ci":[3.995711538520172,13.64091760929762],"width":9.645206070777448,"verdict":"below"},"long_horizon":{"k":10,"n":130,"rate":7.6923076923076925,"ci":[4.231743707522898,13.581465318678413],"width":9.349721611155514,"verdict":"below"},"deformable":{"k":0,"n":30,"rate":0.0,"ci":[0.0,11.351339326172331],"width":11.351339326172331,"verdict":"undetermined"},"perception":{"k":5,"n":100,"rate":5.0,"ci":[2.1543679146829247,11.175046926741853],"width":9.020679012058928,"verdict":"below"}},"spread":2.6923076923076925,"resolved":3,"n":380,"order":20,"best_rank":14,"worst_rank":22},{"model":"VLA_test_0119","org":"Xiangyue Wu","overall":5.7894736842105265,"pooled_ci":[3.8540341587939646,8.609825000821996],"cells":{"precision":{"k":3,"n":120,"rate":2.5,"ci":[0.8538174766231997,7.093003335643747],"width":6.239185859020547,"verdict":"below"},"long_horizon":{"k":8,"n":130,"rate":6.153846153846154,"ci":[3.1509285148370885,11.673669930498813],"width":8.522741415661725,"verdict":"below"},"deformable":{"k":0,"n":30,"rate":0.0,"ci":[0.0,11.351339326172331],"width":11.351339326172331,"verdict":"undetermined"},"perception":{"k":11,"n":100,"rate":11.0,"ci":[6.254196355536368,18.631296507031774],"width":12.377100151495405,"verdict":"below"}},"spread":8.5,"resolved":3,"n":380,"order":21,"best_rank":14,"worst_rank":22},{"model":"openvla-oft","org":"gkf","overall":2.6315789473684212,"pooled_ci":[1.4355814048863904,4.775696266130707],"cells":{"precision":{"k":10,"n":120,"rate":8.333333333333332,"ci":[4.589365036317053,14.66223216742588],"width":10.07286713110883,"verdict":"below"},"long_horizon":{"k":0,"n":130,"rate":0.0,"ci":[1.734723475976807e-16,2.870156121874274],"width":2.870156121874274,"verdict":"below"},"deformable":{"k":0,"n":30,"rate":0.0,"ci":[0.0,11.351339326172331],"width":11.351339326172331,"verdict":"undetermined"},"perception":{"k":0,"n":100,"rate":0.0,"ci":[0.0,3.699349823805308],"width":3.699349823805308,"verdict":"below"}},"spread":8.333333333333332,"resolved":3,"n":380,"order":22,"best_rank":20,"worst_rank":22}],"meta":{"orgs":{"DM0":"Dexmal","Era0":"Robotera","Spirit-v1.5":"Spirit AI","Atlas_generalist":"Atlas","Lira_generalist":"Atlas","cogact":"hsk","wall-oss-v0.1":"Pushi Zhang","DM0_generalist":"Dexmal","ZR-0_generalist":"Atlas","GigaBrain-0.1":"lyf","VLO":"Sicheng Xie","pi0.5":"rc_baseline","GR00T-MULTI":"Sicheng Xie","pi0":"rc_baseline","GR00T":"Sicheng Xie","pi0_generalist":"wyf","VLA_test_0119":"Xiangyue Wu","pi05_generalist":"wyf","RDT-1B":"zsz","VLA_test_0204":"Xiangyue Wu","X-VLA":"Chongyang Xu","openvla-oft":"gkf"},"name":"Table 30","version":"v1.0","tasks":30,"episodes":25627,"updated":"2025-09-24","submissions":507,"complete":22,"trials_per_task":10},"cells_total":88,"cells_resolved":53},{"key":"robodojo","label":"RoboDojo Sim","blurb":"42 simulation tasks across six designed capability dimensions, 2,100 episodes per seed.","domain":"manipulation","kind":"binomial","unit":"episodes","capabilities":["precision","long_horizon","generalization","memory","open_ended"],"column_rate":{"precision":4.95625,"long_horizon":7.30625,"generalization":4.333333333333334,"memory":4.1000000000000005,"open_ended":0.91875},"rows":[{"model":"DM0.5","org":"Dexmal","overall":17.19047619047619,"pooled_ci":[15.637046176765116,18.86372172947046],"cells":{"precision":{"k":67,"n":400,"rate":16.75,"ci":[13.410557405430762,20.72201016834635],"width":7.311452762915588,"verdict":"above"},"long_horizon":{"k":78,"n":400,"rate":19.5,"ci":[15.915064133189084,23.66518582170421],"width":7.750121688515127,"verdict":"above"},"generalization":{"k":66,"n":600,"rate":11.0,"ci":[8.740186473877687,13.75602620562095],"width":5.015839731743263,"verdict":"above"},"memory":{"k":142,"n":300,"rate":47.333333333333336,"ci":[41.752899796559056,52.98119605002991],"width":11.228296253470853,"verdict":"above"},"open_ended":{"k":8,"n":400,"rate":2.0,"ci":[1.016838678876509,3.8963415780047352],"width":2.8795028991282265,"verdict":"above"}},"spread":45.333333333333336,"resolved":5,"n":2100,"order":1,"best_rank":1,"worst_rank":3},{"model":"GalaxeaVLA (G0.5)","org":"Galaxea AI","overall":15.047619047619047,"pooled_ci":[13.582318524878174,16.640560492795142],"cells":{"precision":{"k":82,"n":400,"rate":20.5,"ci":[16.833283816309596,24.727941549898663],"width":7.894657733589066,"verdict":"above"},"long_horizon":{"k":129,"n":400,"rate":32.25,"ci":[27.856795805439717,36.98089064371949],"width":9.124094838279772,"verdict":"above"},"generalization":{"k":77,"n":600,"rate":12.833333333333332,"ci":[10.391651920324046,15.747901188770808],"width":5.356249268446763,"verdict":"above"},"memory":{"k":22,"n":300,"rate":7.333333333333333,"ci":[4.892399383062189,10.853134162361357],"width":5.960734779299168,"verdict":"above"},"open_ended":{"k":6,"n":400,"rate":1.5,"ci":[0.6892291917209175,3.2334633595028404],"width":2.544234167781923,"verdict":"undetermined"}},"spread":24.916666666666668,"resolved":4,"n":2100,"order":2,"best_rank":1,"worst_rank":4},{"model":"Xiaomi-Robotics-1","org":"Xiaomi Robotics","overall":14.571428571428571,"pooled_ci":[13.127103183953029,16.145133858484225],"cells":{"precision":{"k":75,"n":400,"rate":18.75,"ci":[15.228915454728002,22.865602941679057],"width":7.636687486951055,"verdict":"above"},"long_horizon":{"k":95,"n":400,"rate":23.75,"ci":[19.841751179154244,28.15764427382768],"width":8.315893094673438,"verdict":"above"},"generalization":{"k":102,"n":600,"rate":17.0,"ci":[14.206532511355624,20.213339755912457],"width":6.006807244556834,"verdict":"above"},"memory":{"k":20,"n":300,"rate":6.666666666666667,"ci":[4.356751553712007,10.072305953358782],"width":5.715554399646774,"verdict":"above"},"open_ended":{"k":14,"n":400,"rate":3.5000000000000004,"ci":[2.0961294193367275,5.78851395451698],"width":3.6923845351802527,"verdict":"above"}},"spread":20.25,"resolved":5,"n":2100,"order":3,"best_rank":1,"worst_rank":4},{"model":"OpenWAM-\u03b1","org":"OpenWAM Team","overall":12.285714285714286,"pooled_ci":[10.950149191184755,13.759006370119419],"cells":{"precision":{"k":37,"n":400,"rate":9.25,"ci":[6.78539344893761,12.489858539977197],"width":5.704465091039587,"verdict":"above"},"long_horizon":{"k":101,"n":400,"rate":25.25,"ci":[21.241694137572054,29.729164432382326],"width":8.487470294810272,"verdict":"above"},"generalization":{"k":89,"n":600,"rate":14.833333333333334,"ci":[12.213319199086579,17.90078710593143],"width":5.687467906844851,"verdict":"above"},"memory":{"k":27,"n":300,"rate":9.0,"ci":[6.259022559555564,12.777701081749877],"width":6.518678522194311,"verdict":"above"},"open_ended":{"k":4,"n":400,"rate":1.0,"ci":[0.389548379349601,2.5426564662166697],"width":2.1531080868670687,"verdict":"undetermined"}},"spread":16.25,"resolved":4,"n":2100,"order":4,"best_rank":2,"worst_rank":4},{"model":"Meituan-Robotics-0","org":"Meituan Robotics","overall":9.428571428571429,"pooled_ci":[8.251750504794343,10.753553205093482],"cells":{"precision":{"k":31,"n":400,"rate":7.75,"ci":[5.513293466865584,10.790495405076761],"width":5.277201938211176,"verdict":"above"},"long_horizon":{"k":74,"n":400,"rate":18.5,"ci":[15.000697381560679,22.598577162017637],"width":7.597879780456957,"verdict":"above"},"generalization":{"k":49,"n":600,"rate":8.166666666666666,"ci":[6.232360404809552,10.63323524713129],"width":4.400874842321739,"verdict":"above"},"memory":{"k":27,"n":300,"rate":9.0,"ci":[6.259022559555564,12.777701081749877],"width":6.518678522194311,"verdict":"above"},"open_ended":{"k":17,"n":400,"rate":4.25,"ci":[2.670169498578163,6.700205433761773],"width":4.0300359351836095,"verdict":"above"}},"spread":14.25,"resolved":5,"n":2100,"order":5,"best_rank":5,"worst_rank":11},{"model":"Hy-Embodied-0.5-VLA","org":"Tencent Robotics X","overall":8.619047619047619,"pooled_ci":[7.493007634910079,9.896204717076445],"cells":{"precision":{"k":32,"n":400,"rate":8.0,"ci":[5.72357504017698,11.07545768459411],"width":5.35188264441713,"verdict":"above"},"long_horizon":{"k":60,"n":400,"rate":15.0,"ci":[11.834499529100508,18.831361074875392],"width":6.996861545774885,"verdict":"above"},"generalization":{"k":51,"n":600,"rate":8.5,"ci":[6.524029663686952,11.00399152090775],"width":4.479961857220799,"verdict":"above"},"memory":{"k":36,"n":300,"rate":12.0,"ci":[8.79508442916398,16.165781384728863],"width":7.370696955564885,"verdict":"above"},"open_ended":{"k":2,"n":400,"rate":0.5,"ci":[0.13722529540285688,1.804491844505927],"width":1.6672665491030703,"verdict":"undetermined"}},"spread":7.0,"resolved":4,"n":2100,"order":6,"best_rank":5,"worst_rank":12},{"model":"Spatial Forcing","org":"OpenHelix Robotics","overall":8.285714285714286,"pooled_ci":[7.181476406462117,9.542286562859164],"cells":{"precision":{"k":42,"n":400,"rate":10.5,"ci":[7.862372742736488,13.889098510322034],"width":6.026725767585546,"verdict":"above"},"long_horizon":{"k":58,"n":400,"rate":14.499999999999998,"ci":[11.387048964711415,18.288323933607003],"width":6.9012749688955894,"verdict":"above"},"generalization":{"k":56,"n":600,"rate":9.333333333333334,"ci":[7.257445495628781,11.926639520600569],"width":4.669194024971787,"verdict":"above"},"memory":{"k":12,"n":300,"rate":4.0,"ci":[2.302732148250003,6.860421205409757],"width":4.557689057159754,"verdict":"undetermined"},"open_ended":{"k":6,"n":400,"rate":1.5,"ci":[0.6892291917209175,3.2334633595028404],"width":2.544234167781923,"verdict":"undetermined"}},"spread":5.166666666666664,"resolved":3,"n":2100,"order":7,"best_rank":5,"worst_rank":12},{"model":"VLAct","org":"StarVLA Team","overall":7.857142857142857,"pooled_ci":[6.781766936959441,9.08641825464939],"cells":{"precision":{"k":61,"n":400,"rate":15.25,"ci":[12.058718800341971,19.10238565646268],"width":7.043666856120708,"verdict":"above"},"long_horizon":{"k":55,"n":400,"rate":13.750000000000002,"ci":[10.718448672308995,17.471192667523194],"width":6.7527439952142,"verdict":"above"},"generalization":{"k":38,"n":600,"rate":6.333333333333334,"ci":[4.648712752756504,8.573542469588125],"width":3.92482971683162,"verdict":"above"},"memory":{"k":2,"n":300,"rate":0.6666666666666667,"ci":[0.18301483570023602,2.3977583261957385],"width":2.2147434904955023,"verdict":"below"},"open_ended":{"k":9,"n":400,"rate":2.25,"ci":[1.1881583527283044,4.220265756981684],"width":3.032107404253379,"verdict":"above"}},"spread":14.583333333333334,"resolved":5,"n":2100,"order":8,"best_rank":5,"worst_rank":12},{"model":"StarVLA-PI_v3","org":"StarVLA Team","overall":7.714285714285714,"pooled_ci":[6.648748850249947,8.934243748788065],"cells":{"precision":{"k":50,"n":400,"rate":12.5,"ci":[9.611512322566004,16.101909753122463],"width":6.4903974305564605,"verdict":"above"},"long_horizon":{"k":44,"n":400,"rate":11.0,"ci":[8.296867910884126,14.445091047831884],"width":6.148223136947759,"verdict":"above"},"generalization":{"k":48,"n":600,"rate":8.0,"ci":[6.086915493012937,10.447467392600979],"width":4.360551899588041,"verdict":"above"},"memory":{"k":12,"n":300,"rate":4.0,"ci":[2.302732148250003,6.860421205409757],"width":4.557689057159754,"verdict":"undetermined"},"open_ended":{"k":8,"n":400,"rate":2.0,"ci":[1.016838678876509,3.8963415780047352],"width":2.8795028991282265,"verdict":"above"}},"spread":10.5,"resolved":4,"n":2100,"order":9,"best_rank":5,"worst_rank":12},{"model":"InternVLA-A1.5","org":"InternVLA Team","overall":7.333333333333333,"pooled_ci":[6.294598326653758,8.527880692195408],"cells":{"precision":{"k":41,"n":400,"rate":10.25,"ci":[7.645885297237253,13.610342102992526],"width":5.9644568057552725,"verdict":"above"},"long_horizon":{"k":55,"n":400,"rate":13.750000000000002,"ci":[10.718448672308995,17.471192667523194],"width":6.7527439952142,"verdict":"above"},"generalization":{"k":41,"n":600,"rate":6.833333333333333,"ci":[5.076809443102709,9.139084078222703],"width":4.062274635119994,"verdict":"above"},"memory":{"k":11,"n":300,"rate":3.6666666666666665,"ci":[2.0595305157782238,6.445384818705156],"width":4.385854302926933,"verdict":"undetermined"},"open_ended":{"k":6,"n":400,"rate":1.5,"ci":[0.6892291917209175,3.2334633595028404],"width":2.544234167781923,"verdict":"undetermined"}},"spread":6.916666666666669,"resolved":3,"n":2100,"order":10,"best_rank":5,"worst_rank":12},{"model":"Pi-05","org":null,"overall":7.190476190476191,"pooled_ci":[6.162012257956707,8.37527416832164],"cells":{"precision":{"k":22,"n":400,"rate":5.5,"ci":[3.6598494143089577,8.186744782174694],"width":4.526895367865737,"verdict":"undetermined"},"long_horizon":{"k":59,"n":400,"rate":14.75,"ci":[11.61060733461431,18.560009416532854],"width":6.949402081918543,"verdict":"above"},"generalization":{"k":49,"n":600,"rate":8.166666666666666,"ci":[6.232360404809552,10.63323524713129],"width":4.400874842321739,"verdict":"above"},"memory":{"k":14,"n":300,"rate":4.666666666666667,"ci":[2.799893367618505,7.679736024394012],"width":4.879842656775508,"verdict":"undetermined"},"open_ended":{"k":7,"n":400,"rate":1.7500000000000002,"ci":[0.8502291104464753,3.567707293606026],"width":2.717478183159551,"verdict":"undetermined"}},"spread":6.583333333333334,"resolved":2,"n":2100,"order":11,"best_rank":5,"worst_rank":12},{"model":"X-VLA","org":null,"overall":6.714285714285714,"pooled_ci":[5.720983691298664,7.865660759743625],"cells":{"precision":{"k":48,"n":400,"rate":12.0,"ci":[9.171539074299401,15.551395295731579],"width":6.379856221432177,"verdict":"above"},"long_horizon":{"k":39,"n":400,"rate":9.75,"ci":[7.214511777587379,13.051227916984914],"width":5.836716139397535,"verdict":"undetermined"},"generalization":{"k":41,"n":600,"rate":6.833333333333333,"ci":[5.076809443102709,9.139084078222703],"width":4.062274635119994,"verdict":"above"},"memory":{"k":11,"n":300,"rate":3.6666666666666665,"ci":[2.0595305157782238,6.445384818705156],"width":4.385854302926933,"verdict":"undetermined"},"open_ended":{"k":2,"n":400,"rate":0.5,"ci":[0.13722529540285688,1.804491844505927],"width":1.6672665491030703,"verdict":"undetermined"}},"spread":5.166666666666667,"resolved":2,"n":2100,"order":12,"best_rank":6,"worst_rank":15},{"model":"MolmoAct2","org":"MolmoAct2 Team","overall":5.0476190476190474,"pooled_ci":[4.1906177348760005,6.0687798028400834],"cells":{"precision":{"k":18,"n":400,"rate":4.5,"ci":[2.8651458648303265,7.000472920338353],"width":4.135327055508027,"verdict":"undetermined"},"long_horizon":{"k":28,"n":400,"rate":7.000000000000001,"ci":[4.887162669209945,9.93089464424617],"width":5.0437319750362235,"verdict":"undetermined"},"generalization":{"k":28,"n":600,"rate":4.666666666666667,"ci":[3.248188566584646,6.66193899249069],"width":3.413750425906044,"verdict":"undetermined"},"memory":{"k":14,"n":300,"rate":4.666666666666667,"ci":[2.799893367618505,7.679736024394012],"width":4.879842656775508,"verdict":"undetermined"},"open_ended":{"k":18,"n":400,"rate":4.5,"ci":[2.8651458648303265,7.000472920338353],"width":4.135327055508027,"verdict":"above"}},"spread":null,"resolved":1,"n":2100,"order":13,"best_rank":12,"worst_rank":17},{"model":"StarVLA-OFT","org":"StarVLA Team","overall":5.0,"pooled_ci":[4.147251586952019,6.0170817532404595],"cells":{"precision":{"k":41,"n":400,"rate":10.25,"ci":[7.645885297237253,13.610342102992526],"width":5.9644568057552725,"verdict":"above"},"long_horizon":{"k":25,"n":400,"rate":6.25,"ci":[4.268914140513173,9.063411614456712],"width":4.7944974739435375,"verdict":"undetermined"},"generalization":{"k":29,"n":600,"rate":4.833333333333333,"ci":[3.386090038166081,6.855250287236184],"width":3.4691602490701032,"verdict":"undetermined"},"memory":{"k":5,"n":300,"rate":1.6666666666666667,"ci":[0.7139477348134464,3.841539484611664],"width":3.1275917497982175,"verdict":"below"},"open_ended":{"k":5,"n":400,"rate":1.25,"ci":[0.535075077809875,2.8923736205851394],"width":2.3572985427752644,"verdict":"undetermined"}},"spread":8.583333333333334,"resolved":2,"n":2100,"order":14,"best_rank":12,"worst_rank":17},{"model":"StarVLA-GR00T","org":"StarVLA Team","overall":4.809523809523809,"pooled_ci":[3.9740210351889558,5.810055514909099],"cells":{"precision":{"k":19,"n":400,"rate":4.75,"ci":[3.0617076956901688,7.299154942307255],"width":4.237447246617086,"verdict":"undetermined"},"long_horizon":{"k":29,"n":400,"rate":7.249999999999999,"ci":[5.095051839444728,10.218249326840128],"width":5.123197487395402,"verdict":"undetermined"},"generalization":{"k":32,"n":600,"rate":5.333333333333334,"ci":[3.8029103584519137,7.4320682659311395],"width":3.629157907479226,"verdict":"undetermined"},"memory":{"k":13,"n":300,"rate":4.333333333333334,"ci":[2.549644807860592,7.271746564975547],"width":4.722101757114955,"verdict":"undetermined"},"open_ended":{"k":8,"n":400,"rate":2.0,"ci":[1.016838678876509,3.8963415780047352],"width":2.8795028991282265,"verdict":"above"}},"spread":null,"resolved":1,"n":2100,"order":15,"best_rank":12,"worst_rank":19},{"model":"Xiaomi-Robotics-0","org":null,"overall":4.333333333333333,"pooled_ci":[3.5427031845580035,5.290731390303993],"cells":{"precision":{"k":18,"n":400,"rate":4.5,"ci":[2.8651458648303265,7.000472920338353],"width":4.135327055508027,"verdict":"undetermined"},"long_horizon":{"k":28,"n":400,"rate":7.000000000000001,"ci":[4.887162669209945,9.93089464424617],"width":5.0437319750362235,"verdict":"undetermined"},"generalization":{"k":33,"n":600,"rate":5.5,"ci":[3.9428138480651214,7.62337754264486],"width":3.680563694579739,"verdict":"undetermined"},"memory":{"k":11,"n":300,"rate":3.6666666666666665,"ci":[2.0595305157782238,6.445384818705156],"width":4.385854302926933,"verdict":"undetermined"},"open_ended":{"k":1,"n":400,"rate":0.25,"ci":[0.044144778653213215,1.402328508426827],"width":1.358183729773614,"verdict":"undetermined"}},"spread":null,"resolved":0,"n":2100,"order":16,"best_rank":13,"worst_rank":21},{"model":"X-WAM","org":"X-WAM Team","overall":3.7142857142857144,"pooled_ci":[2.986301741668266,4.611298265386856],"cells":{"precision":{"k":7,"n":400,"rate":1.7500000000000002,"ci":[0.8502291104464753,3.567707293606026],"width":2.717478183159551,"verdict":"below"},"long_horizon":{"k":36,"n":400,"rate":9.0,"ci":[6.57172937603584,12.208278760050224],"width":5.636549384014383,"verdict":"undetermined"},"generalization":{"k":20,"n":600,"rate":3.3333333333333335,"ci":[2.1680161452537323,5.092409283206172],"width":2.92439313795244,"verdict":"undetermined"},"memory":{"k":14,"n":300,"rate":4.666666666666667,"ci":[2.799893367618505,7.679736024394012],"width":4.879842656775508,"verdict":"undetermined"},"open_ended":{"k":1,"n":400,"rate":0.25,"ci":[0.044144778653213215,1.402328508426827],"width":1.358183729773614,"verdict":"undetermined"}},"spread":null,"resolved":1,"n":2100,"order":17,"best_rank":13,"worst_rank":23},{"model":"GigaWorld-Policy-0","org":null,"overall":3.2857142857142856,"pooled_ci":[2.6045190299407497,4.13750319940192],"cells":{"precision":{"k":7,"n":400,"rate":1.7500000000000002,"ci":[0.8502291104464753,3.567707293606026],"width":2.717478183159551,"verdict":"below"},"long_horizon":{"k":36,"n":400,"rate":9.0,"ci":[6.57172937603584,12.208278760050224],"width":5.636549384014383,"verdict":"undetermined"},"generalization":{"k":17,"n":600,"rate":2.833333333333333,"ci":[1.7763940157918046,4.490393113687312],"width":2.713999097895507,"verdict":"undetermined"},"memory":{"k":7,"n":300,"rate":2.3333333333333335,"ci":[1.13476602956916,4.737197228208707],"width":3.6024311986395476,"verdict":"undetermined"},"open_ended":{"k":2,"n":400,"rate":0.5,"ci":[0.13722529540285688,1.804491844505927],"width":1.6672665491030703,"verdict":"undetermined"}},"spread":null,"resolved":1,"n":2100,"order":18,"best_rank":15,"worst_rank":23},{"model":"StarVLA","org":null,"overall":3.142857142857143,"pooled_ci":[2.477983678033076,3.978845958738776],"cells":{"precision":{"k":17,"n":400,"rate":4.25,"ci":[2.670169498578163,6.700205433761773],"width":4.0300359351836095,"verdict":"undetermined"},"long_horizon":{"k":26,"n":400,"rate":6.5,"ci":[4.474048188893455,9.353521418905174],"width":4.879473230011719,"verdict":"undetermined"},"generalization":{"k":14,"n":600,"rate":2.3333333333333335,"ci":[1.394915794502986,3.8782330359953447],"width":2.4833172414923586,"verdict":"below"},"memory":{"k":7,"n":300,"rate":2.3333333333333335,"ci":[1.13476602956916,4.737197228208707],"width":3.6024311986395476,"verdict":"undetermined"},"open_ended":{"k":2,"n":400,"rate":0.5,"ci":[0.13722529540285688,1.804491844505927],"width":1.6672665491030703,"verdict":"undetermined"}},"spread":null,"resolved":1,"n":2100,"order":19,"best_rank":15,"worst_rank":25},{"model":"LingBot-VLA","org":null,"overall":3.0952380952380953,"pooled_ci":[2.435893262125911,3.925872177122335],"cells":{"precision":{"k":7,"n":400,"rate":1.7500000000000002,"ci":[0.8502291104464753,3.567707293606026],"width":2.717478183159551,"verdict":"below"},"long_horizon":{"k":21,"n":400,"rate":5.25,"ci":[3.459152835167134,7.892197508487775],"width":4.433044673320641,"verdict":"undetermined"},"generalization":{"k":26,"n":600,"rate":4.333333333333334,"ci":[2.9740998129930682,6.27360221342841],"width":3.2995024004353417,"verdict":"undetermined"},"memory":{"k":8,"n":300,"rate":2.666666666666667,"ci":[1.3573069804778244,5.172894296476422],"width":3.815587315998598,"verdict":"undetermined"},"open_ended":{"k":3,"n":400,"rate":0.75,"ci":[0.25538891941528796,2.181572073322239],"width":1.9261831539069512,"verdict":"undetermined"}},"spread":null,"resolved":1,"n":2100,"order":20,"best_rank":16,"worst_rank":25},{"model":"GalaxeaVLA (G0)","org":null,"overall":3.0,"pooled_ci":[2.351850344753661,3.819786699447372],"cells":{"precision":{"k":15,"n":400,"rate":3.75,"ci":[2.285502980984702,6.0943842456977455],"width":3.808881264713043,"verdict":"undetermined"},"long_horizon":{"k":22,"n":400,"rate":5.5,"ci":[3.6598494143089577,8.186744782174694],"width":4.526895367865737,"verdict":"undetermined"},"generalization":{"k":17,"n":600,"rate":2.833333333333333,"ci":[1.7763940157918046,4.490393113687312],"width":2.713999097895507,"verdict":"undetermined"},"memory":{"k":6,"n":300,"rate":2.0,"ci":[0.9197631554725847,4.293962083128904],"width":3.3741989276563196,"verdict":"undetermined"},"open_ended":{"k":3,"n":400,"rate":0.75,"ci":[0.25538891941528796,2.181572073322239],"width":1.9261831539069512,"verdict":"undetermined"}},"spread":null,"resolved":0,"n":2100,"order":21,"best_rank":16,"worst_rank":25},{"model":"EventVLA","org":"SJTU ScaleLab","overall":2.5714285714285716,"pooled_ci":[1.9761571355313485,3.339902130957232],"cells":{"precision":{"k":23,"n":400,"rate":5.75,"ci":[3.861754275106451,8.480083774205946],"width":4.618329499099495,"verdict":"undetermined"},"long_horizon":{"k":3,"n":400,"rate":0.75,"ci":[0.25538891941528796,2.181572073322239],"width":1.9261831539069512,"verdict":"below"},"generalization":{"k":11,"n":600,"rate":1.8333333333333333,"ci":[1.0267306163405634,3.2527799151769803],"width":2.2260492988364167,"verdict":"below"},"memory":{"k":14,"n":300,"rate":4.666666666666667,"ci":[2.799893367618505,7.679736024394012],"width":4.879842656775508,"verdict":"undetermined"},"open_ended":{"k":3,"n":400,"rate":0.75,"ci":[0.25538891941528796,2.181572073322239],"width":1.9261831539069512,"verdict":"undetermined"}},"spread":1.0833333333333333,"resolved":2,"n":2100,"order":22,"best_rank":17,"worst_rank":26},{"model":"AHA-WAM","org":"SJTU ScaleLab","overall":2.4761904761904763,"pooled_ci":[1.8932877141275295,3.23264315731384],"cells":{"precision":{"k":10,"n":400,"rate":2.5,"ci":[1.3635091742423961,4.540158788296337],"width":3.1766496140539404,"verdict":"below"},"long_horizon":{"k":11,"n":400,"rate":2.75,"ci":[1.542363625649443,4.8565481897180325],"width":3.3141845640685896,"verdict":"below"},"generalization":{"k":20,"n":600,"rate":3.3333333333333335,"ci":[2.1680161452537323,5.092409283206172],"width":2.92439313795244,"verdict":"undetermined"},"memory":{"k":8,"n":300,"rate":2.666666666666667,"ci":[1.3573069804778244,5.172894296476422],"width":3.815587315998598,"verdict":"undetermined"},"open_ended":{"k":3,"n":400,"rate":0.75,"ci":[0.25538891941528796,2.181572073322239],"width":1.9261831539069512,"verdict":"undetermined"}},"spread":0.25,"resolved":2,"n":2100,"order":23,"best_rank":17,"worst_rank":27},{"model":"ABot-M0","org":null,"overall":1.9047619047619047,"pooled_ci":[1.4019172197373018,2.5832432814207973],"cells":{"precision":{"k":7,"n":400,"rate":1.7500000000000002,"ci":[0.8502291104464753,3.567707293606026],"width":2.717478183159551,"verdict":"below"},"long_horizon":{"k":2,"n":400,"rate":0.5,"ci":[0.13722529540285688,1.804491844505927],"width":1.6672665491030703,"verdict":"below"},"generalization":{"k":21,"n":600,"rate":3.5000000000000004,"ci":[2.300435047183595,5.291203147603239],"width":2.9907681004196442,"verdict":"undetermined"},"memory":{"k":7,"n":300,"rate":2.3333333333333335,"ci":[1.13476602956916,4.737197228208707],"width":3.6024311986395476,"verdict":"undetermined"},"open_ended":{"k":3,"n":400,"rate":0.75,"ci":[0.25538891941528796,2.181572073322239],"width":1.9261831539069512,"verdict":"undetermined"}},"spread":1.2500000000000002,"resolved":2,"n":2100,"order":24,"best_rank":19,"worst_rank":28},{"model":"Fast-WAM","org":null,"overall":1.8571428571428572,"pooled_ci":[1.3614984088059654,2.5285978948285277],"cells":{"precision":{"k":0,"n":400,"rate":0.0,"ci":[0.0,0.9512294342512967],"width":0.9512294342512967,"verdict":"below"},"long_horizon":{"k":21,"n":400,"rate":5.25,"ci":[3.459152835167134,7.892197508487775],"width":4.433044673320641,"verdict":"undetermined"},"generalization":{"k":6,"n":600,"rate":1.0,"ci":[0.4590922176217158,2.1643544822611833],"width":1.7052622646394677,"verdict":"below"},"memory":{"k":10,"n":300,"rate":3.3333333333333335,"ci":[1.8204947334169126,6.026182581890089],"width":4.205687848473177,"verdict":"undetermined"},"open_ended":{"k":2,"n":400,"rate":0.5,"ci":[0.13722529540285688,1.804491844505927],"width":1.6672665491030703,"verdict":"undetermined"}},"spread":1.0,"resolved":2,"n":2100,"order":25,"best_rank":19,"worst_rank":28},{"model":"Pi-0","org":null,"overall":1.619047619047619,"pooled_ci":[1.1609045845784107,2.253870731438053],"cells":{"precision":{"k":3,"n":400,"rate":0.75,"ci":[0.25538891941528796,2.181572073322239],"width":1.9261831539069512,"verdict":"below"},"long_horizon":{"k":8,"n":400,"rate":2.0,"ci":[1.016838678876509,3.8963415780047352],"width":2.8795028991282265,"verdict":"below"},"generalization":{"k":16,"n":600,"rate":2.666666666666667,"ci":[1.647980981098328,4.287593382053861],"width":2.639612400955533,"verdict":"below"},"memory":{"k":6,"n":300,"rate":2.0,"ci":[0.9197631554725847,4.293962083128904],"width":3.3741989276563196,"verdict":"undetermined"},"open_ended":{"k":1,"n":400,"rate":0.25,"ci":[0.044144778653213215,1.402328508426827],"width":1.358183729773614,"verdict":"undetermined"}},"spread":1.916666666666667,"resolved":3,"n":2100,"order":26,"best_rank":22,"worst_rank":29},{"model":"GROOT-N1.7","org":null,"overall":1.3333333333333333,"pooled_ci":[0.9240915450250183,1.9202985858498107],"cells":{"precision":{"k":3,"n":400,"rate":0.75,"ci":[0.25538891941528796,2.181572073322239],"width":1.9261831539069512,"verdict":"below"},"long_horizon":{"k":14,"n":400,"rate":3.5000000000000004,"ci":[2.0961294193367275,5.78851395451698],"width":3.6923845351802527,"verdict":"below"},"generalization":{"k":7,"n":600,"rate":1.1666666666666667,"ci":[0.5662583796163178,2.3884010865935106],"width":1.822142706977193,"verdict":"below"},"memory":{"k":3,"n":300,"rate":1.0,"ci":[0.3406618436251778,2.898349337447175],"width":2.557687493821997,"verdict":"below"},"open_ended":{"k":1,"n":400,"rate":0.25,"ci":[0.044144778653213215,1.402328508426827],"width":1.358183729773614,"verdict":"undetermined"}},"spread":2.7500000000000004,"resolved":4,"n":2100,"order":27,"best_rank":23,"worst_rank":30},{"model":"InternVLA-A1","org":null,"overall":1.1904761904761905,"pooled_ci":[0.8076589281414186,1.7515386101625927],"cells":{"precision":{"k":4,"n":400,"rate":1.0,"ci":[0.389548379349601,2.5426564662166697],"width":2.1531080868670687,"verdict":"below"},"long_horizon":{"k":5,"n":400,"rate":1.25,"ci":[0.535075077809875,2.8923736205851394],"width":2.3572985427752644,"verdict":"below"},"generalization":{"k":11,"n":600,"rate":1.8333333333333333,"ci":[1.0267306163405634,3.2527799151769803],"width":2.2260492988364167,"verdict":"below"},"memory":{"k":4,"n":300,"rate":1.3333333333333335,"ci":[0.5196961737364302,3.377553026512301],"width":2.857856852775871,"verdict":"below"},"open_ended":{"k":1,"n":400,"rate":0.25,"ci":[0.044144778653213215,1.402328508426827],"width":1.358183729773614,"verdict":"undetermined"}},"spread":0.8333333333333333,"resolved":4,"n":2100,"order":28,"best_rank":24,"worst_rank":32},{"model":"SmolVLA (Single Task)","org":null,"overall":0.7619047619047619,"pooled_ci":[0.46952575306789046,1.2340940075236684],"cells":{"precision":{"k":1,"n":400,"rate":0.25,"ci":[0.044144778653213215,1.402328508426827],"width":1.358183729773614,"verdict":"below"},"long_horizon":{"k":1,"n":400,"rate":0.25,"ci":[0.044144778653213215,1.402328508426827],"width":1.358183729773614,"verdict":"below"},"generalization":{"k":7,"n":600,"rate":1.1666666666666667,"ci":[0.5662583796163178,2.3884010865935106],"width":1.822142706977193,"verdict":"below"},"memory":{"k":7,"n":300,"rate":2.3333333333333335,"ci":[1.13476602956916,4.737197228208707],"width":3.6024311986395476,"verdict":"undetermined"},"open_ended":{"k":0,"n":400,"rate":0.0,"ci":[0.0,0.9512294342512967],"width":0.9512294342512967,"verdict":"undetermined"}},"spread":0.9166666666666667,"resolved":3,"n":2100,"order":29,"best_rank":26,"worst_rank":33},{"model":"GO-1","org":null,"overall":0.5714285714285714,"pooled_ci":[0.3271848538585867,0.9961781166385486],"cells":{"precision":{"k":2,"n":400,"rate":0.5,"ci":[0.13722529540285688,1.804491844505927],"width":1.6672665491030703,"verdict":"below"},"long_horizon":{"k":1,"n":400,"rate":0.25,"ci":[0.044144778653213215,1.402328508426827],"width":1.358183729773614,"verdict":"below"},"generalization":{"k":7,"n":600,"rate":1.1666666666666667,"ci":[0.5662583796163178,2.3884010865935106],"width":1.822142706977193,"verdict":"below"},"memory":{"k":2,"n":300,"rate":0.6666666666666667,"ci":[0.18301483570023602,2.3977583261957385],"width":2.2147434904955023,"verdict":"below"},"open_ended":{"k":0,"n":400,"rate":0.0,"ci":[0.0,0.9512294342512967],"width":0.9512294342512967,"verdict":"undetermined"}},"spread":0.9166666666666667,"resolved":4,"n":2100,"order":30,"best_rank":27,"worst_rank":35},{"model":"ACT (Single Task)","org":null,"overall":0.47619047619047616,"pooled_ci":[0.2588644269557476,0.8743701484941764],"cells":{"precision":{"k":0,"n":400,"rate":0.0,"ci":[0.0,0.9512294342512967],"width":0.9512294342512967,"verdict":"below"},"long_horizon":{"k":4,"n":400,"rate":1.0,"ci":[0.389548379349601,2.5426564662166697],"width":2.1531080868670687,"verdict":"below"},"generalization":{"k":3,"n":600,"rate":0.5,"ci":[0.17018776575470196,1.4596206351474101],"width":1.2894328693927082,"verdict":"below"},"memory":{"k":3,"n":300,"rate":1.0,"ci":[0.3406618436251778,2.898349337447175],"width":2.557687493821997,"verdict":"below"},"open_ended":{"k":0,"n":400,"rate":0.0,"ci":[0.0,0.9512294342512967],"width":0.9512294342512967,"verdict":"undetermined"}},"spread":1.0,"resolved":4,"n":2100,"order":31,"best_rank":28,"worst_rank":37},{"model":"LDA-1B","org":null,"overall":0.42857142857142855,"pooled_ci":[0.22563785437512512,0.8125325235511929],"cells":{"precision":{"k":3,"n":400,"rate":0.75,"ci":[0.25538891941528796,2.181572073322239],"width":1.9261831539069512,"verdict":"below"},"long_horizon":{"k":0,"n":400,"rate":0.0,"ci":[0.0,0.9512294342512967],"width":0.9512294342512967,"verdict":"below"},"generalization":{"k":1,"n":600,"rate":0.16666666666666669,"ci":[0.029426820066992543,0.9379560481812618],"width":0.9085292281142693,"verdict":"below"},"memory":{"k":5,"n":300,"rate":1.6666666666666667,"ci":[0.7139477348134464,3.841539484611664],"width":3.1275917497982175,"verdict":"below"},"open_ended":{"k":0,"n":400,"rate":0.0,"ci":[0.0,0.9512294342512967],"width":0.9512294342512967,"verdict":"undetermined"}},"spread":1.6666666666666667,"resolved":4,"n":2100,"order":32,"best_rank":28,"worst_rank":37},{"model":"Spirit v1.5","org":null,"overall":0.19047619047619047,"pooled_ci":[0.07409662987436128,0.4887527604339274],"cells":{"precision":{"k":0,"n":400,"rate":0.0,"ci":[0.0,0.9512294342512967],"width":0.9512294342512967,"verdict":"below"},"long_horizon":{"k":0,"n":400,"rate":0.0,"ci":[0.0,0.9512294342512967],"width":0.9512294342512967,"verdict":"below"},"generalization":{"k":3,"n":600,"rate":0.5,"ci":[0.17018776575470196,1.4596206351474101],"width":1.2894328693927082,"verdict":"below"},"memory":{"k":1,"n":300,"rate":0.33333333333333337,"ci":[0.05886577214917581,1.86366937057042],"width":1.804803598421244,"verdict":"below"},"open_ended":{"k":0,"n":400,"rate":0.0,"ci":[0.0,0.9512294342512967],"width":0.9512294342512967,"verdict":"undetermined"}},"spread":0.5,"resolved":4,"n":2100,"order":33,"best_rank":29,"worst_rank":40},{"model":"RDT","org":null,"overall":0.14285714285714285,"pooled_ci":[0.048595949963414896,0.41918924282126796],"cells":{"precision":{"k":0,"n":400,"rate":0.0,"ci":[0.0,0.9512294342512967],"width":0.9512294342512967,"verdict":"below"},"long_horizon":{"k":0,"n":400,"rate":0.0,"ci":[0.0,0.9512294342512967],"width":0.9512294342512967,"verdict":"below"},"generalization":{"k":2,"n":600,"rate":0.33333333333333337,"ci":[0.09145966863502684,1.2071359659401564],"width":1.1156762973051297,"verdict":"below"},"memory":{"k":1,"n":300,"rate":0.33333333333333337,"ci":[0.05886577214917581,1.86366937057042],"width":1.804803598421244,"verdict":"below"},"open_ended":{"k":0,"n":400,"rate":0.0,"ci":[0.0,0.9512294342512967],"width":0.9512294342512967,"verdict":"undetermined"}},"spread":0.33333333333333337,"resolved":4,"n":2100,"order":34,"best_rank":30,"worst_rank":40},{"model":"H-RDT","org":null,"overall":0.09523809523809523,"pooled_ci":[0.02612160728360782,0.3465993879774692],"cells":{"precision":{"k":0,"n":400,"rate":0.0,"ci":[0.0,0.9512294342512967],"width":0.9512294342512967,"verdict":"below"},"long_horizon":{"k":1,"n":400,"rate":0.25,"ci":[0.044144778653213215,1.402328508426827],"width":1.358183729773614,"verdict":"below"},"generalization":{"k":1,"n":600,"rate":0.16666666666666669,"ci":[0.029426820066992543,0.9379560481812618],"width":0.9085292281142693,"verdict":"below"},"memory":{"k":0,"n":300,"rate":0.0,"ci":[0.0,1.2642971235432172],"width":1.2642971235432172,"verdict":"below"},"open_ended":{"k":0,"n":400,"rate":0.0,"ci":[0.0,0.9512294342512967],"width":0.9512294342512967,"verdict":"undetermined"}},"spread":0.25,"resolved":4,"n":2100,"order":35,"best_rank":30,"worst_rank":40},{"model":"Dexora-1B","org":null,"overall":0.047619047619047616,"pooled_ci":[0.008406425804051518,0.26925037193341966],"cells":{"precision":{"k":0,"n":400,"rate":0.0,"ci":[0.0,0.9512294342512967],"width":0.9512294342512967,"verdict":"below"},"long_horizon":{"k":0,"n":400,"rate":0.0,"ci":[0.0,0.9512294342512967],"width":0.9512294342512967,"verdict":"below"},"generalization":{"k":1,"n":600,"rate":0.16666666666666669,"ci":[0.029426820066992543,0.9379560481812618],"width":0.9085292281142693,"verdict":"below"},"memory":{"k":0,"n":300,"rate":0.0,"ci":[0.0,1.2642971235432172],"width":1.2642971235432172,"verdict":"below"},"open_ended":{"k":0,"n":400,"rate":0.0,"ci":[0.0,0.9512294342512967],"width":0.9512294342512967,"verdict":"undetermined"}},"spread":0.16666666666666669,"resolved":4,"n":2100,"order":36,"best_rank":31,"worst_rank":40},{"model":"TinyVLA","org":null,"overall":0.047619047619047616,"pooled_ci":[0.008406425804051518,0.26925037193341966],"cells":{"precision":{"k":0,"n":400,"rate":0.0,"ci":[0.0,0.9512294342512967],"width":0.9512294342512967,"verdict":"below"},"long_horizon":{"k":0,"n":400,"rate":0.0,"ci":[0.0,0.9512294342512967],"width":0.9512294342512967,"verdict":"below"},"generalization":{"k":0,"n":600,"rate":0.0,"ci":[0.0,0.6361701019213253],"width":0.6361701019213253,"verdict":"below"},"memory":{"k":0,"n":300,"rate":0.0,"ci":[0.0,1.2642971235432172],"width":1.2642971235432172,"verdict":"below"},"open_ended":{"k":1,"n":400,"rate":0.25,"ci":[0.044144778653213215,1.402328508426827],"width":1.358183729773614,"verdict":"undetermined"}},"spread":0.0,"resolved":4,"n":2100,"order":37,"best_rank":31,"worst_rank":40},{"model":"DM0","org":null,"overall":0.0,"pooled_ci":[0.0,0.18259260021386534],"cells":{"precision":{"k":0,"n":400,"rate":0.0,"ci":[0.0,0.9512294342512967],"width":0.9512294342512967,"verdict":"below"},"long_horizon":{"k":0,"n":400,"rate":0.0,"ci":[0.0,0.9512294342512967],"width":0.9512294342512967,"verdict":"below"},"generalization":{"k":0,"n":600,"rate":0.0,"ci":[0.0,0.6361701019213253],"width":0.6361701019213253,"verdict":"below"},"memory":{"k":0,"n":300,"rate":0.0,"ci":[0.0,1.2642971235432172],"width":1.2642971235432172,"verdict":"below"},"open_ended":{"k":0,"n":400,"rate":0.0,"ci":[0.0,0.9512294342512967],"width":0.9512294342512967,"verdict":"undetermined"}},"spread":0.0,"resolved":4,"n":2100,"order":38,"best_rank":33,"worst_rank":40},{"model":"A1","org":null,"overall":0.0,"pooled_ci":[0.0,0.18259260021386534],"cells":{"precision":{"k":0,"n":400,"rate":0.0,"ci":[0.0,0.9512294342512967],"width":0.9512294342512967,"verdict":"below"},"long_horizon":{"k":0,"n":400,"rate":0.0,"ci":[0.0,0.9512294342512967],"width":0.9512294342512967,"verdict":"below"},"generalization":{"k":0,"n":600,"rate":0.0,"ci":[0.0,0.6361701019213253],"width":0.6361701019213253,"verdict":"below"},"memory":{"k":0,"n":300,"rate":0.0,"ci":[0.0,1.2642971235432172],"width":1.2642971235432172,"verdict":"below"},"open_ended":{"k":0,"n":400,"rate":0.0,"ci":[0.0,0.9512294342512967],"width":0.9512294342512967,"verdict":"undetermined"}},"spread":0.0,"resolved":4,"n":2100,"order":39,"best_rank":33,"worst_rank":40},{"model":"OpenVLA-OFT","org":null,"overall":0.0,"pooled_ci":[0.0,0.18259260021386534],"cells":{"precision":{"k":0,"n":400,"rate":0.0,"ci":[0.0,0.9512294342512967],"width":0.9512294342512967,"verdict":"below"},"long_horizon":{"k":0,"n":400,"rate":0.0,"ci":[0.0,0.9512294342512967],"width":0.9512294342512967,"verdict":"below"},"generalization":{"k":0,"n":600,"rate":0.0,"ci":[0.0,0.6361701019213253],"width":0.6361701019213253,"verdict":"below"},"memory":{"k":0,"n":300,"rate":0.0,"ci":[0.0,1.2642971235432172],"width":1.2642971235432172,"verdict":"below"},"open_ended":{"k":0,"n":400,"rate":0.0,"ci":[0.0,0.9512294342512967],"width":0.9512294342512967,"verdict":"undetermined"}},"spread":0.0,"resolved":4,"n":2100,"order":40,"best_rank":33,"worst_rank":40}],"meta":{"name":"RoboDojo Sim","version":"sim track","tasks":42,"episodes":2100,"seeds":3,"submissions":40,"complete":40},"cells_total":200,"cells_resolved":120},{"key":"wbench-navi","label":"WBench \u00b7 Navigation split","blurb":"35 video world models scored on the 158 navigation cases. Five published dimensions.","domain":"world_model","kind":"mean","unit":"cases","capabilities":["quality","setting","interaction","consistency","physical"],"column_rate":{"quality":77.29142857142857,"setting":76.44857142857143,"interaction":74.64571428571428,"consistency":82.81428571428572,"physical":66.14857142857143},"rows":[{"model":"JoyAI-Echo-1.5 (WM) | bidirection","org":"JD Future Academy \u00b7 Open Source","overall":81.58,"pooled_ci":[73.7836818734859,89.3763181265141],"cells":{"quality":{"mean":81.5,"n":158,"rate":81.5,"ci":[73.7036818734859,89.2963181265141],"width":15.59263625302819,"verdict":"undetermined","bound":true},"setting":{"mean":79.4,"n":158,"rate":79.4,"ci":[71.60368187348591,87.1963181265141],"width":15.59263625302819,"verdict":"undetermined","bound":true},"interaction":{"mean":86.6,"n":158,"rate":86.6,"ci":[78.8036818734859,94.39631812651409],"width":15.59263625302819,"verdict":"above","bound":true},"consistency":{"mean":89.8,"n":158,"rate":89.8,"ci":[82.0036818734859,97.59631812651409],"width":15.59263625302819,"verdict":"undetermined","bound":true},"physical":{"mean":70.6,"n":158,"rate":70.6,"ci":[62.80368187348589,78.39631812651409],"width":15.592636253028196,"verdict":"undetermined","bound":true}},"spread":null,"resolved":1,"n":790,"order":1,"best_rank":1,"worst_rank":34},{"model":"JoyAI-Echo-1.5 (WM) | flash, 4-step","org":"JD Future Academy \u00b7 Open Source","overall":80.97999999999999,"pooled_ci":[73.1836818734859,88.77631812651408],"cells":{"quality":{"mean":81.1,"n":158,"rate":81.1,"ci":[73.3036818734859,88.89631812651409],"width":15.59263625302819,"verdict":"undetermined","bound":true},"setting":{"mean":77.5,"n":158,"rate":77.5,"ci":[69.7036818734859,85.2963181265141],"width":15.59263625302819,"verdict":"undetermined","bound":true},"interaction":{"mean":87.9,"n":158,"rate":87.9,"ci":[80.10368187348591,95.6963181265141],"width":15.59263625302819,"verdict":"above","bound":true},"consistency":{"mean":88.3,"n":158,"rate":88.3,"ci":[80.5036818734859,96.09631812651409],"width":15.59263625302819,"verdict":"undetermined","bound":true},"physical":{"mean":70.1,"n":158,"rate":70.1,"ci":[62.30368187348589,77.89631812651409],"width":15.592636253028196,"verdict":"undetermined","bound":true}},"spread":null,"resolved":1,"n":790,"order":2,"best_rank":1,"worst_rank":34},{"model":"Zing-0.5","org":"SeedLeap.ai \u00b7 Open Source","overall":80.97999999999999,"pooled_ci":[73.1836818734859,88.77631812651408],"cells":{"quality":{"mean":80.6,"n":158,"rate":80.6,"ci":[72.8036818734859,88.39631812651409],"width":15.59263625302819,"verdict":"undetermined","bound":true},"setting":{"mean":77.8,"n":158,"rate":77.8,"ci":[70.0036818734859,85.59631812651409],"width":15.59263625302819,"verdict":"undetermined","bound":true},"interaction":{"mean":84.2,"n":158,"rate":84.2,"ci":[76.40368187348591,91.9963181265141],"width":15.59263625302819,"verdict":"above","bound":true},"consistency":{"mean":88.5,"n":158,"rate":88.5,"ci":[80.7036818734859,96.2963181265141],"width":15.59263625302819,"verdict":"undetermined","bound":true},"physical":{"mean":73.8,"n":158,"rate":73.8,"ci":[66.0036818734859,81.59631812651409],"width":15.59263625302819,"verdict":"undetermined","bound":true}},"spread":null,"resolved":1,"n":790,"order":3,"best_rank":1,"worst_rank":34},{"model":"HiDream-O1-World","org":"HiDream.ai","overall":80.9,"pooled_ci":[73.10368187348591,88.6963181265141],"cells":{"quality":{"mean":81.0,"n":158,"rate":81.0,"ci":[73.2036818734859,88.7963181265141],"width":15.59263625302819,"verdict":"undetermined","bound":true},"setting":{"mean":82.2,"n":158,"rate":82.2,"ci":[74.40368187348591,89.9963181265141],"width":15.59263625302819,"verdict":"undetermined","bound":true},"interaction":{"mean":80.0,"n":158,"rate":80.0,"ci":[72.2036818734859,87.7963181265141],"width":15.59263625302819,"verdict":"undetermined","bound":true},"consistency":{"mean":88.0,"n":158,"rate":88.0,"ci":[80.2036818734859,95.7963181265141],"width":15.59263625302819,"verdict":"undetermined","bound":true},"physical":{"mean":73.3,"n":158,"rate":73.3,"ci":[65.5036818734859,81.09631812651409],"width":15.59263625302819,"verdict":"undetermined","bound":true}},"spread":null,"resolved":0,"n":790,"order":4,"best_rank":1,"worst_rank":34},{"model":"Alaya-EVOKE","org":"Alaya Lab \u00b7 Open Source","overall":80.84,"pooled_ci":[73.04368187348591,88.6363181265141],"cells":{"quality":{"mean":82.8,"n":158,"rate":82.8,"ci":[75.0036818734859,90.59631812651409],"width":15.59263625302819,"verdict":"undetermined","bound":true},"setting":{"mean":83.8,"n":158,"rate":83.8,"ci":[76.0036818734859,91.59631812651409],"width":15.59263625302819,"verdict":"undetermined","bound":true},"interaction":{"mean":78.6,"n":158,"rate":78.6,"ci":[70.8036818734859,86.39631812651409],"width":15.59263625302819,"verdict":"undetermined","bound":true},"consistency":{"mean":86.9,"n":158,"rate":86.9,"ci":[79.10368187348591,94.6963181265141],"width":15.59263625302819,"verdict":"undetermined","bound":true},"physical":{"mean":72.1,"n":158,"rate":72.1,"ci":[64.3036818734859,79.89631812651409],"width":15.59263625302819,"verdict":"undetermined","bound":true}},"spread":null,"resolved":0,"n":790,"order":5,"best_rank":1,"worst_rank":34},{"model":"LingBot-World v2","org":"Ant Group \u00b7 Open Source","overall":79.4,"pooled_ci":[71.60368187348591,87.1963181265141],"cells":{"quality":{"mean":81.8,"n":158,"rate":81.8,"ci":[74.0036818734859,89.59631812651409],"width":15.59263625302819,"verdict":"undetermined","bound":true},"setting":{"mean":76.8,"n":158,"rate":76.8,"ci":[69.0036818734859,84.59631812651409],"width":15.59263625302819,"verdict":"undetermined","bound":true},"interaction":{"mean":82.8,"n":158,"rate":82.8,"ci":[75.0036818734859,90.59631812651409],"width":15.59263625302819,"verdict":"above","bound":true},"consistency":{"mean":86.5,"n":158,"rate":86.5,"ci":[78.7036818734859,94.2963181265141],"width":15.59263625302819,"verdict":"undetermined","bound":true},"physical":{"mean":69.1,"n":158,"rate":69.1,"ci":[61.30368187348589,76.89631812651409],"width":15.592636253028196,"verdict":"undetermined","bound":true}},"spread":null,"resolved":1,"n":790,"order":6,"best_rank":1,"worst_rank":34},{"model":"Kling 3.0","org":"Kling AI \u00b7 API","overall":78.96000000000001,"pooled_ci":[71.16368187348591,86.7563181265141],"cells":{"quality":{"mean":81.4,"n":158,"rate":81.4,"ci":[73.60368187348591,89.1963181265141],"width":15.59263625302819,"verdict":"undetermined","bound":true},"setting":{"mean":91.0,"n":158,"rate":91.0,"ci":[83.2036818734859,98.7963181265141],"width":15.59263625302819,"verdict":"above","bound":true},"interaction":{"mean":69.4,"n":158,"rate":69.4,"ci":[61.603681873485904,77.1963181265141],"width":15.592636253028196,"verdict":"undetermined","bound":true},"consistency":{"mean":83.7,"n":158,"rate":83.7,"ci":[75.90368187348591,91.4963181265141],"width":15.59263625302819,"verdict":"undetermined","bound":true},"physical":{"mean":69.3,"n":158,"rate":69.3,"ci":[61.503681873485895,77.09631812651409],"width":15.592636253028196,"verdict":"undetermined","bound":true}},"spread":null,"resolved":1,"n":790,"order":7,"best_rank":1,"worst_rank":35},{"model":"LingBot-World | base-camera","org":"Ant Group \u00b7 Open Source","overall":78.53999999999999,"pooled_ci":[70.7436818734859,86.33631812651409],"cells":{"quality":{"mean":78.9,"n":158,"rate":78.9,"ci":[71.10368187348591,86.6963181265141],"width":15.59263625302819,"verdict":"undetermined","bound":true},"setting":{"mean":72.6,"n":158,"rate":72.6,"ci":[64.8036818734859,80.39631812651409],"width":15.59263625302819,"verdict":"undetermined","bound":true},"interaction":{"mean":80.1,"n":158,"rate":80.1,"ci":[72.3036818734859,87.89631812651409],"width":15.59263625302819,"verdict":"undetermined","bound":true},"consistency":{"mean":89.9,"n":158,"rate":89.9,"ci":[82.10368187348591,97.6963181265141],"width":15.59263625302819,"verdict":"undetermined","bound":true},"physical":{"mean":71.2,"n":158,"rate":71.2,"ci":[63.4036818734859,78.9963181265141],"width":15.592636253028196,"verdict":"undetermined","bound":true}},"spread":null,"resolved":0,"n":790,"order":8,"best_rank":1,"worst_rank":35},{"model":"Wan 2.7","org":"Alibaba \u00b7 API","overall":78.14,"pooled_ci":[70.3436818734859,85.9363181265141],"cells":{"quality":{"mean":81.5,"n":158,"rate":81.5,"ci":[73.7036818734859,89.2963181265141],"width":15.59263625302819,"verdict":"undetermined","bound":true},"setting":{"mean":91.4,"n":158,"rate":91.4,"ci":[83.60368187348591,99.1963181265141],"width":15.59263625302819,"verdict":"above","bound":true},"interaction":{"mean":64.4,"n":158,"rate":64.4,"ci":[56.603681873485904,72.1963181265141],"width":15.592636253028196,"verdict":"below","bound":true},"consistency":{"mean":81.6,"n":158,"rate":81.6,"ci":[73.8036818734859,89.39631812651409],"width":15.59263625302819,"verdict":"undetermined","bound":true},"physical":{"mean":71.8,"n":158,"rate":71.8,"ci":[64.0036818734859,79.59631812651409],"width":15.59263625302819,"verdict":"undetermined","bound":true}},"spread":27.0,"resolved":2,"n":790,"order":9,"best_rank":1,"worst_rank":35},{"model":"HY-World 1.5","org":"Tencent \u00b7 Open Source","overall":78.06,"pooled_ci":[70.26368187348591,85.8563181265141],"cells":{"quality":{"mean":78.1,"n":158,"rate":78.1,"ci":[70.3036818734859,85.89631812651409],"width":15.59263625302819,"verdict":"undetermined","bound":true},"setting":{"mean":72.2,"n":158,"rate":72.2,"ci":[64.40368187348591,79.9963181265141],"width":15.59263625302819,"verdict":"undetermined","bound":true},"interaction":{"mean":86.8,"n":158,"rate":86.8,"ci":[79.0036818734859,94.59631812651409],"width":15.59263625302819,"verdict":"above","bound":true},"consistency":{"mean":86.9,"n":158,"rate":86.9,"ci":[79.10368187348591,94.6963181265141],"width":15.59263625302819,"verdict":"undetermined","bound":true},"physical":{"mean":66.3,"n":158,"rate":66.3,"ci":[58.503681873485895,74.09631812651409],"width":15.592636253028196,"verdict":"undetermined","bound":true}},"spread":null,"resolved":1,"n":790,"order":10,"best_rank":1,"worst_rank":35},{"model":"HY-Video 1.5","org":"Tencent \u00b7 Open Source","overall":77.88,"pooled_ci":[70.0836818734859,85.67631812651409],"cells":{"quality":{"mean":77.6,"n":158,"rate":77.6,"ci":[69.8036818734859,85.39631812651409],"width":15.59263625302819,"verdict":"undetermined","bound":true},"setting":{"mean":85.6,"n":158,"rate":85.6,"ci":[77.8036818734859,93.39631812651409],"width":15.59263625302819,"verdict":"above","bound":true},"interaction":{"mean":71.4,"n":158,"rate":71.4,"ci":[63.603681873485904,79.1963181265141],"width":15.592636253028196,"verdict":"undetermined","bound":true},"consistency":{"mean":87.4,"n":158,"rate":87.4,"ci":[79.60368187348591,95.1963181265141],"width":15.59263625302819,"verdict":"undetermined","bound":true},"physical":{"mean":67.4,"n":158,"rate":67.4,"ci":[59.603681873485904,75.1963181265141],"width":15.592636253028196,"verdict":"undetermined","bound":true}},"spread":null,"resolved":1,"n":790,"order":11,"best_rank":1,"worst_rank":35},{"model":"LingBot-World | fast","org":"Ant Group \u00b7 Open Source","overall":77.42,"pooled_ci":[69.6236818734859,85.2163181265141],"cells":{"quality":{"mean":79.4,"n":158,"rate":79.4,"ci":[71.60368187348591,87.1963181265141],"width":15.59263625302819,"verdict":"undetermined","bound":true},"setting":{"mean":77.9,"n":158,"rate":77.9,"ci":[70.10368187348591,85.6963181265141],"width":15.59263625302819,"verdict":"undetermined","bound":true},"interaction":{"mean":79.2,"n":158,"rate":79.2,"ci":[71.40368187348591,86.9963181265141],"width":15.59263625302819,"verdict":"undetermined","bound":true},"consistency":{"mean":84.9,"n":158,"rate":84.9,"ci":[77.10368187348591,92.6963181265141],"width":15.59263625302819,"verdict":"undetermined","bound":true},"physical":{"mean":65.7,"n":158,"rate":65.7,"ci":[57.9036818734859,73.4963181265141],"width":15.592636253028196,"verdict":"undetermined","bound":true}},"spread":null,"resolved":0,"n":790,"order":12,"best_rank":1,"worst_rank":35},{"model":"Happy Oyster","org":"Alibaba \u00b7 Web","overall":76.84,"pooled_ci":[69.04368187348591,84.6363181265141],"cells":{"quality":{"mean":77.3,"n":158,"rate":77.3,"ci":[69.5036818734859,85.09631812651409],"width":15.59263625302819,"verdict":"undetermined","bound":true},"setting":{"mean":74.2,"n":158,"rate":74.2,"ci":[66.40368187348591,81.9963181265141],"width":15.59263625302819,"verdict":"undetermined","bound":true},"interaction":{"mean":84.9,"n":158,"rate":84.9,"ci":[77.10368187348591,92.6963181265141],"width":15.59263625302819,"verdict":"above","bound":true},"consistency":{"mean":84.3,"n":158,"rate":84.3,"ci":[76.5036818734859,92.09631812651409],"width":15.59263625302819,"verdict":"undetermined","bound":true},"physical":{"mean":63.5,"n":158,"rate":63.5,"ci":[55.7036818734859,71.2963181265141],"width":15.592636253028196,"verdict":"undetermined","bound":true}},"spread":null,"resolved":1,"n":790,"order":13,"best_rank":1,"worst_rank":35},{"model":"Lyra 2.0","org":"NVIDIA \u00b7 Open Source","overall":76.38,"pooled_ci":[68.5836818734859,84.17631812651409],"cells":{"quality":{"mean":77.1,"n":158,"rate":77.1,"ci":[69.3036818734859,84.89631812651409],"width":15.59263625302819,"verdict":"undetermined","bound":true},"setting":{"mean":73.2,"n":158,"rate":73.2,"ci":[65.40368187348591,80.9963181265141],"width":15.59263625302819,"verdict":"undetermined","bound":true},"interaction":{"mean":85.6,"n":158,"rate":85.6,"ci":[77.8036818734859,93.39631812651409],"width":15.59263625302819,"verdict":"above","bound":true},"consistency":{"mean":79.3,"n":158,"rate":79.3,"ci":[71.5036818734859,87.09631812651409],"width":15.59263625302819,"verdict":"undetermined","bound":true},"physical":{"mean":66.7,"n":158,"rate":66.7,"ci":[58.9036818734859,74.4963181265141],"width":15.592636253028196,"verdict":"undetermined","bound":true}},"spread":null,"resolved":1,"n":790,"order":14,"best_rank":1,"worst_rank":35},{"model":"AlayaWorld","org":"Alaya Lab \u00b7 Open Source","overall":76.32000000000001,"pooled_ci":[68.52368187348591,84.1163181265141],"cells":{"quality":{"mean":79.3,"n":158,"rate":79.3,"ci":[71.5036818734859,87.09631812651409],"width":15.59263625302819,"verdict":"undetermined","bound":true},"setting":{"mean":69.7,"n":158,"rate":69.7,"ci":[61.9036818734859,77.4963181265141],"width":15.592636253028196,"verdict":"undetermined","bound":true},"interaction":{"mean":80.0,"n":158,"rate":80.0,"ci":[72.2036818734859,87.7963181265141],"width":15.59263625302819,"verdict":"undetermined","bound":true},"consistency":{"mean":89.5,"n":158,"rate":89.5,"ci":[81.7036818734859,97.2963181265141],"width":15.59263625302819,"verdict":"undetermined","bound":true},"physical":{"mean":63.1,"n":158,"rate":63.1,"ci":[55.3036818734859,70.8963181265141],"width":15.592636253028203,"verdict":"undetermined","bound":true}},"spread":null,"resolved":0,"n":790,"order":15,"best_rank":1,"worst_rank":35},{"model":"Seedance 1.5","org":"ByteDance \u00b7 API","overall":76.2,"pooled_ci":[68.40368187348591,83.9963181265141],"cells":{"quality":{"mean":82.1,"n":158,"rate":82.1,"ci":[74.3036818734859,89.89631812651409],"width":15.59263625302819,"verdict":"undetermined","bound":true},"setting":{"mean":82.9,"n":158,"rate":82.9,"ci":[75.10368187348591,90.6963181265141],"width":15.59263625302819,"verdict":"undetermined","bound":true},"interaction":{"mean":66.3,"n":158,"rate":66.3,"ci":[58.503681873485895,74.09631812651409],"width":15.592636253028196,"verdict":"below","bound":true},"consistency":{"mean":81.3,"n":158,"rate":81.3,"ci":[73.5036818734859,89.09631812651409],"width":15.59263625302819,"verdict":"undetermined","bound":true},"physical":{"mean":68.4,"n":158,"rate":68.4,"ci":[60.603681873485904,76.1963181265141],"width":15.592636253028196,"verdict":"undetermined","bound":true}},"spread":null,"resolved":1,"n":790,"order":16,"best_rank":1,"worst_rank":35},{"model":"Cosmos3-Super","org":"NVIDIA \u00b7 Open Source","overall":76.03999999999999,"pooled_ci":[68.2436818734859,83.83631812651409],"cells":{"quality":{"mean":76.4,"n":158,"rate":76.4,"ci":[68.60368187348591,84.1963181265141],"width":15.59263625302819,"verdict":"undetermined","bound":true},"setting":{"mean":91.6,"n":158,"rate":91.6,"ci":[83.8036818734859,99.39631812651409],"width":15.59263625302819,"verdict":"above","bound":true},"interaction":{"mean":58.0,"n":158,"rate":58.0,"ci":[50.2036818734859,65.7963181265141],"width":15.592636253028196,"verdict":"below","bound":true},"consistency":{"mean":85.0,"n":158,"rate":85.0,"ci":[77.2036818734859,92.7963181265141],"width":15.59263625302819,"verdict":"undetermined","bound":true},"physical":{"mean":69.2,"n":158,"rate":69.2,"ci":[61.4036818734859,76.9963181265141],"width":15.592636253028196,"verdict":"undetermined","bound":true}},"spread":33.599999999999994,"resolved":2,"n":790,"order":17,"best_rank":1,"worst_rank":35},{"model":"SANA-WM","org":"NVIDIA \u00b7 Open Source","overall":76.03999999999999,"pooled_ci":[68.2436818734859,83.83631812651409],"cells":{"quality":{"mean":79.3,"n":158,"rate":79.3,"ci":[71.5036818734859,87.09631812651409],"width":15.59263625302819,"verdict":"undetermined","bound":true},"setting":{"mean":76.1,"n":158,"rate":76.1,"ci":[68.3036818734859,83.89631812651409],"width":15.59263625302819,"verdict":"undetermined","bound":true},"interaction":{"mean":82.2,"n":158,"rate":82.2,"ci":[74.40368187348591,89.9963181265141],"width":15.59263625302819,"verdict":"undetermined","bound":true},"consistency":{"mean":80.7,"n":158,"rate":80.7,"ci":[72.90368187348591,88.4963181265141],"width":15.59263625302819,"verdict":"undetermined","bound":true},"physical":{"mean":61.9,"n":158,"rate":61.9,"ci":[54.1036818734859,69.6963181265141],"width":15.592636253028203,"verdict":"undetermined","bound":true}},"spread":null,"resolved":0,"n":790,"order":18,"best_rank":1,"worst_rank":35},{"model":"DreamX-World","org":"Amap \u00b7 Open Source","overall":75.02000000000001,"pooled_ci":[67.22368187348592,82.8163181265141],"cells":{"quality":{"mean":77.5,"n":158,"rate":77.5,"ci":[69.7036818734859,85.2963181265141],"width":15.59263625302819,"verdict":"undetermined","bound":true},"setting":{"mean":80.8,"n":158,"rate":80.8,"ci":[73.0036818734859,88.59631812651409],"width":15.59263625302819,"verdict":"undetermined","bound":true},"interaction":{"mean":78.6,"n":158,"rate":78.6,"ci":[70.8036818734859,86.39631812651409],"width":15.59263625302819,"verdict":"undetermined","bound":true},"consistency":{"mean":74.9,"n":158,"rate":74.9,"ci":[67.10368187348591,82.6963181265141],"width":15.59263625302819,"verdict":"below","bound":true},"physical":{"mean":63.3,"n":158,"rate":63.3,"ci":[55.503681873485895,71.09631812651409],"width":15.592636253028196,"verdict":"undetermined","bound":true}},"spread":null,"resolved":1,"n":790,"order":19,"best_rank":1,"worst_rank":35},{"model":"ABot-World","org":"Amap \u00b7 Open Source","overall":74.67999999999999,"pooled_ci":[66.8836818734859,82.47631812651409],"cells":{"quality":{"mean":76.8,"n":158,"rate":76.8,"ci":[69.0036818734859,84.59631812651409],"width":15.59263625302819,"verdict":"undetermined","bound":true},"setting":{"mean":71.4,"n":158,"rate":71.4,"ci":[63.603681873485904,79.1963181265141],"width":15.592636253028196,"verdict":"undetermined","bound":true},"interaction":{"mean":84.0,"n":158,"rate":84.0,"ci":[76.2036818734859,91.7963181265141],"width":15.59263625302819,"verdict":"above","bound":true},"consistency":{"mean":79.5,"n":158,"rate":79.5,"ci":[71.7036818734859,87.2963181265141],"width":15.59263625302819,"verdict":"undetermined","bound":true},"physical":{"mean":61.7,"n":158,"rate":61.7,"ci":[53.9036818734859,69.4963181265141],"width":15.592636253028196,"verdict":"undetermined","bound":true}},"spread":null,"resolved":1,"n":790,"order":20,"best_rank":1,"worst_rank":35},{"model":"Cosmos 2.5","org":"NVIDIA \u00b7 Open Source","overall":74.64,"pooled_ci":[66.8436818734859,82.4363181265141],"cells":{"quality":{"mean":72.9,"n":158,"rate":72.9,"ci":[65.10368187348591,80.6963181265141],"width":15.59263625302819,"verdict":"undetermined","bound":true},"setting":{"mean":83.3,"n":158,"rate":83.3,"ci":[75.5036818734859,91.09631812651409],"width":15.59263625302819,"verdict":"undetermined","bound":true},"interaction":{"mean":63.1,"n":158,"rate":63.1,"ci":[55.3036818734859,70.8963181265141],"width":15.592636253028203,"verdict":"below","bound":true},"consistency":{"mean":86.5,"n":158,"rate":86.5,"ci":[78.7036818734859,94.2963181265141],"width":15.59263625302819,"verdict":"undetermined","bound":true},"physical":{"mean":67.4,"n":158,"rate":67.4,"ci":[59.603681873485904,75.1963181265141],"width":15.592636253028196,"verdict":"undetermined","bound":true}},"spread":null,"resolved":1,"n":790,"order":21,"best_rank":1,"worst_rank":35},{"model":"Helios","org":"PKU-YuanGroup \u00b7 Open Source","overall":74.26,"pooled_ci":[66.46368187348591,82.0563181265141],"cells":{"quality":{"mean":73.8,"n":158,"rate":73.8,"ci":[66.0036818734859,81.59631812651409],"width":15.59263625302819,"verdict":"undetermined","bound":true},"setting":{"mean":75.4,"n":158,"rate":75.4,"ci":[67.60368187348591,83.1963181265141],"width":15.59263625302819,"verdict":"undetermined","bound":true},"interaction":{"mean":64.4,"n":158,"rate":64.4,"ci":[56.603681873485904,72.1963181265141],"width":15.592636253028196,"verdict":"below","bound":true},"consistency":{"mean":81.5,"n":158,"rate":81.5,"ci":[73.7036818734859,89.2963181265141],"width":15.59263625302819,"verdict":"undetermined","bound":true},"physical":{"mean":76.2,"n":158,"rate":76.2,"ci":[68.40368187348591,83.9963181265141],"width":15.59263625302819,"verdict":"above","bound":true}},"spread":11.799999999999997,"resolved":2,"n":790,"order":22,"best_rank":1,"worst_rank":35},{"model":"Cosmos3-Nano","org":"NVIDIA \u00b7 Open Source","overall":74.22,"pooled_ci":[66.4236818734859,82.0163181265141],"cells":{"quality":{"mean":77.4,"n":158,"rate":77.4,"ci":[69.60368187348591,85.1963181265141],"width":15.59263625302819,"verdict":"undetermined","bound":true},"setting":{"mean":87.3,"n":158,"rate":87.3,"ci":[79.5036818734859,95.09631812651409],"width":15.59263625302819,"verdict":"above","bound":true},"interaction":{"mean":59.1,"n":158,"rate":59.1,"ci":[51.3036818734859,66.8963181265141],"width":15.592636253028203,"verdict":"below","bound":true},"consistency":{"mean":83.7,"n":158,"rate":83.7,"ci":[75.90368187348591,91.4963181265141],"width":15.59263625302819,"verdict":"undetermined","bound":true},"physical":{"mean":63.6,"n":158,"rate":63.6,"ci":[55.8036818734859,71.3963181265141],"width":15.592636253028203,"verdict":"undetermined","bound":true}},"spread":28.199999999999996,"resolved":2,"n":790,"order":23,"best_rank":1,"worst_rank":35},{"model":"LTX 2.3","org":"Lightricks \u00b7 Open Source","overall":74.16,"pooled_ci":[66.3636818734859,81.95631812651409],"cells":{"quality":{"mean":77.1,"n":158,"rate":77.1,"ci":[69.3036818734859,84.89631812651409],"width":15.59263625302819,"verdict":"undetermined","bound":true},"setting":{"mean":85.2,"n":158,"rate":85.2,"ci":[77.40368187348591,92.9963181265141],"width":15.59263625302819,"verdict":"above","bound":true},"interaction":{"mean":66.4,"n":158,"rate":66.4,"ci":[58.603681873485904,74.1963181265141],"width":15.592636253028196,"verdict":"below","bound":true},"consistency":{"mean":77.2,"n":158,"rate":77.2,"ci":[69.40368187348591,84.9963181265141],"width":15.59263625302819,"verdict":"undetermined","bound":true},"physical":{"mean":64.9,"n":158,"rate":64.9,"ci":[57.103681873485904,72.6963181265141],"width":15.592636253028196,"verdict":"undetermined","bound":true}},"spread":18.799999999999997,"resolved":2,"n":790,"order":24,"best_rank":1,"worst_rank":35},{"model":"InSpatio-World","org":"InSpatio \u00b7 Open Source","overall":73.94000000000001,"pooled_ci":[66.14368187348592,81.7363181265141],"cells":{"quality":{"mean":71.5,"n":158,"rate":71.5,"ci":[63.7036818734859,79.2963181265141],"width":15.592636253028196,"verdict":"undetermined","bound":true},"setting":{"mean":71.4,"n":158,"rate":71.4,"ci":[63.603681873485904,79.1963181265141],"width":15.592636253028196,"verdict":"undetermined","bound":true},"interaction":{"mean":73.2,"n":158,"rate":73.2,"ci":[65.40368187348591,80.9963181265141],"width":15.59263625302819,"verdict":"undetermined","bound":true},"consistency":{"mean":88.4,"n":158,"rate":88.4,"ci":[80.60368187348591,96.1963181265141],"width":15.59263625302819,"verdict":"undetermined","bound":true},"physical":{"mean":65.2,"n":158,"rate":65.2,"ci":[57.4036818734859,72.9963181265141],"width":15.592636253028196,"verdict":"undetermined","bound":true}},"spread":null,"resolved":0,"n":790,"order":25,"best_rank":1,"worst_rank":35},{"model":"Genie 3","org":"Google \u00b7 Web","overall":73.88,"pooled_ci":[66.0836818734859,81.67631812651409],"cells":{"quality":{"mean":75.2,"n":158,"rate":75.2,"ci":[67.40368187348591,82.9963181265141],"width":15.59263625302819,"verdict":"undetermined","bound":true},"setting":{"mean":72.5,"n":158,"rate":72.5,"ci":[64.7036818734859,80.2963181265141],"width":15.59263625302819,"verdict":"undetermined","bound":true},"interaction":{"mean":73.4,"n":158,"rate":73.4,"ci":[65.60368187348591,81.1963181265141],"width":15.59263625302819,"verdict":"undetermined","bound":true},"consistency":{"mean":82.6,"n":158,"rate":82.6,"ci":[74.8036818734859,90.39631812651409],"width":15.59263625302819,"verdict":"undetermined","bound":true},"physical":{"mean":65.7,"n":158,"rate":65.7,"ci":[57.9036818734859,73.4963181265141],"width":15.592636253028196,"verdict":"undetermined","bound":true}},"spread":null,"resolved":0,"n":790,"order":26,"best_rank":1,"worst_rank":35},{"model":"Fantasy-World","org":"Amap \u00b7 Open Source","overall":73.76,"pooled_ci":[65.96368187348591,81.5563181265141],"cells":{"quality":{"mean":72.4,"n":158,"rate":72.4,"ci":[64.60368187348591,80.1963181265141],"width":15.59263625302819,"verdict":"undetermined","bound":true},"setting":{"mean":71.3,"n":158,"rate":71.3,"ci":[63.503681873485895,79.09631812651409],"width":15.592636253028196,"verdict":"undetermined","bound":true},"interaction":{"mean":71.9,"n":158,"rate":71.9,"ci":[64.10368187348591,79.6963181265141],"width":15.59263625302819,"verdict":"undetermined","bound":true},"consistency":{"mean":86.4,"n":158,"rate":86.4,"ci":[78.60368187348591,94.1963181265141],"width":15.59263625302819,"verdict":"undetermined","bound":true},"physical":{"mean":66.8,"n":158,"rate":66.8,"ci":[59.003681873485895,74.59631812651409],"width":15.592636253028196,"verdict":"undetermined","bound":true}},"spread":null,"resolved":0,"n":790,"order":27,"best_rank":1,"worst_rank":35},{"model":"YUME 1.5","org":"Shanghai AI Lab \u00b7 Open Source","overall":73.34,"pooled_ci":[65.54368187348591,81.1363181265141],"cells":{"quality":{"mean":77.6,"n":158,"rate":77.6,"ci":[69.8036818734859,85.39631812651409],"width":15.59263625302819,"verdict":"undetermined","bound":true},"setting":{"mean":72.4,"n":158,"rate":72.4,"ci":[64.60368187348591,80.1963181265141],"width":15.59263625302819,"verdict":"undetermined","bound":true},"interaction":{"mean":71.4,"n":158,"rate":71.4,"ci":[63.603681873485904,79.1963181265141],"width":15.592636253028196,"verdict":"undetermined","bound":true},"consistency":{"mean":80.1,"n":158,"rate":80.1,"ci":[72.3036818734859,87.89631812651409],"width":15.59263625302819,"verdict":"undetermined","bound":true},"physical":{"mean":65.2,"n":158,"rate":65.2,"ci":[57.4036818734859,72.9963181265141],"width":15.592636253028196,"verdict":"undetermined","bound":true}},"spread":null,"resolved":0,"n":790,"order":28,"best_rank":1,"worst_rank":35},{"model":"LongCat-Video","org":"Meituan \u00b7 Open Source","overall":73.16,"pooled_ci":[65.3636818734859,80.95631812651409],"cells":{"quality":{"mean":75.4,"n":158,"rate":75.4,"ci":[67.60368187348591,83.1963181265141],"width":15.59263625302819,"verdict":"undetermined","bound":true},"setting":{"mean":72.3,"n":158,"rate":72.3,"ci":[64.5036818734859,80.09631812651409],"width":15.59263625302819,"verdict":"undetermined","bound":true},"interaction":{"mean":62.1,"n":158,"rate":62.1,"ci":[54.3036818734859,69.8963181265141],"width":15.592636253028203,"verdict":"below","bound":true},"consistency":{"mean":87.1,"n":158,"rate":87.1,"ci":[79.3036818734859,94.89631812651409],"width":15.59263625302819,"verdict":"undetermined","bound":true},"physical":{"mean":68.9,"n":158,"rate":68.9,"ci":[61.103681873485904,76.6963181265141],"width":15.592636253028196,"verdict":"undetermined","bound":true}},"spread":null,"resolved":1,"n":790,"order":29,"best_rank":1,"worst_rank":35},{"model":"Infinite-World","org":"Meituan \u00b7 Open Source","overall":72.76,"pooled_ci":[64.96368187348591,80.5563181265141],"cells":{"quality":{"mean":77.0,"n":158,"rate":77.0,"ci":[69.2036818734859,84.7963181265141],"width":15.59263625302819,"verdict":"undetermined","bound":true},"setting":{"mean":69.3,"n":158,"rate":69.3,"ci":[61.503681873485895,77.09631812651409],"width":15.592636253028196,"verdict":"undetermined","bound":true},"interaction":{"mean":75.4,"n":158,"rate":75.4,"ci":[67.60368187348591,83.1963181265141],"width":15.59263625302819,"verdict":"undetermined","bound":true},"consistency":{"mean":80.0,"n":158,"rate":80.0,"ci":[72.2036818734859,87.7963181265141],"width":15.59263625302819,"verdict":"undetermined","bound":true},"physical":{"mean":62.1,"n":158,"rate":62.1,"ci":[54.3036818734859,69.8963181265141],"width":15.592636253028203,"verdict":"undetermined","bound":true}},"spread":null,"resolved":0,"n":790,"order":30,"best_rank":1,"worst_rank":35},{"model":"MatrixGame3","org":"Skywork \u00b7 Open Source","overall":71.3,"pooled_ci":[63.503681873485895,79.09631812651409],"cells":{"quality":{"mean":75.5,"n":158,"rate":75.5,"ci":[67.7036818734859,83.2963181265141],"width":15.59263625302819,"verdict":"undetermined","bound":true},"setting":{"mean":63.6,"n":158,"rate":63.6,"ci":[55.8036818734859,71.3963181265141],"width":15.592636253028203,"verdict":"below","bound":true},"interaction":{"mean":83.6,"n":158,"rate":83.6,"ci":[75.8036818734859,91.39631812651409],"width":15.59263625302819,"verdict":"above","bound":true},"consistency":{"mean":74.5,"n":158,"rate":74.5,"ci":[66.7036818734859,82.2963181265141],"width":15.59263625302819,"verdict":"below","bound":true},"physical":{"mean":59.3,"n":158,"rate":59.3,"ci":[51.503681873485895,67.09631812651409],"width":15.592636253028196,"verdict":"undetermined","bound":true}},"spread":19.999999999999993,"resolved":3,"n":790,"order":31,"best_rank":1,"worst_rank":35},{"model":"Kairos 3.0","org":"SenseTime \u00b7 Open Source","overall":70.28,"pooled_ci":[62.4836818734859,78.0763181265141],"cells":{"quality":{"mean":74.0,"n":158,"rate":74.0,"ci":[66.2036818734859,81.7963181265141],"width":15.59263625302819,"verdict":"undetermined","bound":true},"setting":{"mean":70.3,"n":158,"rate":70.3,"ci":[62.503681873485895,78.09631812651409],"width":15.592636253028196,"verdict":"undetermined","bound":true},"interaction":{"mean":64.1,"n":158,"rate":64.1,"ci":[56.30368187348589,71.89631812651409],"width":15.592636253028196,"verdict":"below","bound":true},"consistency":{"mean":82.6,"n":158,"rate":82.6,"ci":[74.8036818734859,90.39631812651409],"width":15.59263625302819,"verdict":"undetermined","bound":true},"physical":{"mean":60.4,"n":158,"rate":60.4,"ci":[52.6036818734859,68.1963181265141],"width":15.592636253028203,"verdict":"undetermined","bound":true}},"spread":null,"resolved":1,"n":790,"order":32,"best_rank":1,"worst_rank":35},{"model":"MatrixGame2","org":"Skywork \u00b7 Open Source","overall":68.7,"pooled_ci":[60.9036818734859,76.4963181265141],"cells":{"quality":{"mean":73.8,"n":158,"rate":73.8,"ci":[66.0036818734859,81.59631812651409],"width":15.59263625302819,"verdict":"undetermined","bound":true},"setting":{"mean":67.1,"n":158,"rate":67.1,"ci":[59.30368187348589,74.89631812651409],"width":15.592636253028196,"verdict":"below","bound":true},"interaction":{"mean":80.3,"n":158,"rate":80.3,"ci":[72.5036818734859,88.09631812651409],"width":15.59263625302819,"verdict":"undetermined","bound":true},"consistency":{"mean":65.1,"n":158,"rate":65.1,"ci":[57.30368187348589,72.89631812651409],"width":15.592636253028196,"verdict":"below","bound":true},"physical":{"mean":57.2,"n":158,"rate":57.2,"ci":[49.4036818734859,64.9963181265141],"width":15.592636253028196,"verdict":"below","bound":true}},"spread":9.899999999999991,"resolved":3,"n":790,"order":33,"best_rank":1,"worst_rank":35},{"model":"HY-GameCraft","org":"Tencent \u00b7 Open Source","overall":68.17999999999999,"pooled_ci":[60.38368187348589,75.97631812651409],"cells":{"quality":{"mean":73.0,"n":158,"rate":73.0,"ci":[65.2036818734859,80.7963181265141],"width":15.59263625302819,"verdict":"undetermined","bound":true},"setting":{"mean":66.6,"n":158,"rate":66.6,"ci":[58.80368187348589,74.39631812651409],"width":15.592636253028196,"verdict":"below","bound":true},"interaction":{"mean":66.3,"n":158,"rate":66.3,"ci":[58.503681873485895,74.09631812651409],"width":15.592636253028196,"verdict":"below","bound":true},"consistency":{"mean":72.6,"n":158,"rate":72.6,"ci":[64.8036818734859,80.39631812651409],"width":15.59263625302819,"verdict":"below","bound":true},"physical":{"mean":62.4,"n":158,"rate":62.4,"ci":[54.6036818734859,70.1963181265141],"width":15.592636253028203,"verdict":"undetermined","bound":true}},"spread":6.299999999999997,"resolved":3,"n":790,"order":34,"best_rank":1,"worst_rank":35},{"model":"Astra","org":"Tsinghua \u00b7 Open Source","overall":63.660000000000004,"pooled_ci":[55.8636818734859,71.4563181265141],"cells":{"quality":{"mean":67.1,"n":158,"rate":67.1,"ci":[59.30368187348589,74.89631812651409],"width":15.592636253028196,"verdict":"below","bound":true},"setting":{"mean":59.6,"n":158,"rate":59.6,"ci":[51.8036818734859,67.3963181265141],"width":15.592636253028203,"verdict":"below","bound":true},"interaction":{"mean":66.9,"n":158,"rate":66.9,"ci":[59.103681873485904,74.6963181265141],"width":15.592636253028196,"verdict":"undetermined","bound":true},"consistency":{"mean":73.3,"n":158,"rate":73.3,"ci":[65.5036818734859,81.09631812651409],"width":15.59263625302819,"verdict":"below","bound":true},"physical":{"mean":51.4,"n":158,"rate":51.4,"ci":[43.6036818734859,59.1963181265141],"width":15.592636253028203,"verdict":"below","bound":true}},"spread":21.9,"resolved":4,"n":790,"order":35,"best_rank":7,"worst_rank":35}],"meta":{"name":"WBench","version":"live leaderboard","cases":289,"turns":1058,"navigation_subset":158,"metrics":22,"dimensions":5,"base_models":33,"url":"https://meituan-longcat.github.io/WBench/","paper":"https://arxiv.org/abs/2605.25874","licence":"MIT","split":"navi","split_label":"navigation split","split_cases":"158 navigation cases","assumed_n":158,"submissions":35,"complete":35,"types":{"text":0,"camera":0,"action":0},"other_split":{"name":"full","label":"full split","cases":"all 289 cases","models":12}},"cells_total":175,"cells_resolved":38,"crosscheck":{"published_entries":35,"max_deviation":0.04000000000000625,"what":"mean of the five published dimensions vs the site's Average"},"calibration":{"metric":"temporal flicker","points":[{"model":"HY-World 1.5","split":"navigation","cases":158,"of":158,"mean":93.59594324627854,"published":93.5,"sd":3.3235894249825573,"se":0.26441057766542997,"bound_se":3.97778642087865,"ratio":15.043976137414267},{"model":"Kling 3.0","split":"full","cases":40,"of":289,"mean":94.2041414822186,"published":94.5,"sd":2.784415524325225,"se":0.16378914848971912,"bound_se":2.9411764705882355,"ratio":17.957089939770032}]}},{"key":"wbench-full","label":"WBench \u00b7 Full split","blurb":"12 video world models scored on the all 289 cases. Five published dimensions.","domain":"world_model","kind":"mean","unit":"cases","capabilities":["quality","setting","interaction","consistency","physical"],"column_rate":{"quality":76.59166666666667,"setting":82.14166666666667,"interaction":51.65,"consistency":82.75833333333334,"physical":67.61666666666666},"rows":[{"model":"Kling 3.0","org":"Kling AI \u00b7 API","overall":79.44,"pooled_ci":[73.67540004295687,85.20459995704313],"cells":{"quality":{"mean":80.0,"n":289,"rate":80.0,"ci":[74.23540004295687,85.76459995704313],"width":11.529199914086263,"verdict":"undetermined","bound":true},"setting":{"mean":91.0,"n":289,"rate":91.0,"ci":[85.23540004295687,96.76459995704313],"width":11.529199914086263,"verdict":"above","bound":true},"interaction":{"mean":73.1,"n":289,"rate":73.1,"ci":[67.33540004295686,78.86459995704313],"width":11.529199914086263,"verdict":"above","bound":true},"consistency":{"mean":83.9,"n":289,"rate":83.9,"ci":[78.13540004295687,89.66459995704314],"width":11.529199914086263,"verdict":"undetermined","bound":true},"physical":{"mean":69.2,"n":289,"rate":69.2,"ci":[63.43540004295687,74.96459995704313],"width":11.529199914086263,"verdict":"undetermined","bound":true}},"spread":17.900000000000006,"resolved":2,"n":1445,"order":1,"best_rank":1,"worst_rank":11},{"model":"Wan 2.7","org":"Alibaba \u00b7 API","overall":78.38,"pooled_ci":[72.61540004295686,84.14459995704313],"cells":{"quality":{"mean":81.0,"n":289,"rate":81.0,"ci":[75.23540004295687,86.76459995704313],"width":11.529199914086263,"verdict":"undetermined","bound":true},"setting":{"mean":91.4,"n":289,"rate":91.4,"ci":[85.63540004295687,97.16459995704314],"width":11.529199914086263,"verdict":"above","bound":true},"interaction":{"mean":72.1,"n":289,"rate":72.1,"ci":[66.33540004295686,77.86459995704313],"width":11.529199914086263,"verdict":"above","bound":true},"consistency":{"mean":75.8,"n":289,"rate":75.8,"ci":[70.03540004295687,81.56459995704313],"width":11.529199914086263,"verdict":"below","bound":true},"physical":{"mean":71.6,"n":289,"rate":71.6,"ci":[65.83540004295686,77.36459995704313],"width":11.529199914086263,"verdict":"undetermined","bound":true}},"spread":19.30000000000001,"resolved":3,"n":1445,"order":2,"best_rank":1,"worst_rank":11},{"model":"Seedance 1.5","org":"ByteDance \u00b7 API","overall":76.24000000000001,"pooled_ci":[70.47540004295688,82.00459995704314],"cells":{"quality":{"mean":81.9,"n":289,"rate":81.9,"ci":[76.13540004295687,87.66459995704314],"width":11.529199914086263,"verdict":"undetermined","bound":true},"setting":{"mean":82.9,"n":289,"rate":82.9,"ci":[77.13540004295687,88.66459995704314],"width":11.529199914086263,"verdict":"undetermined","bound":true},"interaction":{"mean":68.3,"n":289,"rate":68.3,"ci":[62.535400042956866,74.06459995704313],"width":11.529199914086263,"verdict":"above","bound":true},"consistency":{"mean":79.9,"n":289,"rate":79.9,"ci":[74.13540004295687,85.66459995704314],"width":11.529199914086263,"verdict":"undetermined","bound":true},"physical":{"mean":68.2,"n":289,"rate":68.2,"ci":[62.43540004295687,73.96459995704313],"width":11.529199914086263,"verdict":"undetermined","bound":true}},"spread":null,"resolved":1,"n":1445,"order":3,"best_rank":1,"worst_rank":12},{"model":"HY-Video 1.5","org":"Tencent \u00b7 Open Source","overall":74.3,"pooled_ci":[68.53540004295687,80.06459995704313],"cells":{"quality":{"mean":76.6,"n":289,"rate":76.6,"ci":[70.83540004295686,82.36459995704313],"width":11.529199914086263,"verdict":"undetermined","bound":true},"setting":{"mean":85.6,"n":289,"rate":85.6,"ci":[79.83540004295686,91.36459995704313],"width":11.529199914086263,"verdict":"undetermined","bound":true},"interaction":{"mean":54.7,"n":289,"rate":54.7,"ci":[48.93540004295687,60.464599957043134],"width":11.529199914086263,"verdict":"undetermined","bound":true},"consistency":{"mean":87.5,"n":289,"rate":87.5,"ci":[81.73540004295687,93.26459995704313],"width":11.529199914086263,"verdict":"undetermined","bound":true},"physical":{"mean":67.1,"n":289,"rate":67.1,"ci":[61.33540004295686,72.86459995704313],"width":11.529199914086263,"verdict":"undetermined","bound":true}},"spread":null,"resolved":0,"n":1445,"order":4,"best_rank":1,"worst_rank":12},{"model":"Cosmos3-Super","org":"NVIDIA \u00b7 Open Source","overall":72.5,"pooled_ci":[66.73540004295687,78.26459995704313],"cells":{"quality":{"mean":74.7,"n":289,"rate":74.7,"ci":[68.93540004295687,80.46459995704313],"width":11.529199914086263,"verdict":"undetermined","bound":true},"setting":{"mean":89.4,"n":289,"rate":89.4,"ci":[83.63540004295687,95.16459995704314],"width":11.529199914086263,"verdict":"above","bound":true},"interaction":{"mean":45.2,"n":289,"rate":45.2,"ci":[39.43540004295687,50.964599957043134],"width":11.529199914086263,"verdict":"below","bound":true},"consistency":{"mean":84.3,"n":289,"rate":84.3,"ci":[78.53540004295687,90.06459995704313],"width":11.529199914086263,"verdict":"undetermined","bound":true},"physical":{"mean":68.9,"n":289,"rate":68.9,"ci":[63.135400042956874,74.66459995704314],"width":11.529199914086263,"verdict":"undetermined","bound":true}},"spread":44.2,"resolved":2,"n":1445,"order":5,"best_rank":1,"worst_rank":12},{"model":"LTX 2.3","org":"Lightricks \u00b7 Open Source","overall":70.94,"pooled_ci":[65.17540004295687,76.70459995704313],"cells":{"quality":{"mean":77.0,"n":289,"rate":77.0,"ci":[71.23540004295687,82.76459995704313],"width":11.529199914086263,"verdict":"undetermined","bound":true},"setting":{"mean":85.2,"n":289,"rate":85.2,"ci":[79.43540004295687,90.96459995704313],"width":11.529199914086263,"verdict":"undetermined","bound":true},"interaction":{"mean":49.4,"n":289,"rate":49.4,"ci":[43.63540004295687,55.16459995704313],"width":11.529199914086263,"verdict":"undetermined","bound":true},"consistency":{"mean":78.0,"n":289,"rate":78.0,"ci":[72.23540004295687,83.76459995704313],"width":11.529199914086263,"verdict":"undetermined","bound":true},"physical":{"mean":65.1,"n":289,"rate":65.1,"ci":[59.33540004295686,70.86459995704313],"width":11.529199914086263,"verdict":"undetermined","bound":true}},"spread":null,"resolved":0,"n":1445,"order":6,"best_rank":1,"worst_rank":12},{"model":"Cosmos 2.5","org":"NVIDIA \u00b7 Open Source","overall":70.36,"pooled_ci":[64.59540004295687,76.12459995704313],"cells":{"quality":{"mean":71.7,"n":289,"rate":71.7,"ci":[65.93540004295687,77.46459995704313],"width":11.529199914086263,"verdict":"undetermined","bound":true},"setting":{"mean":83.3,"n":289,"rate":83.3,"ci":[77.53540004295687,89.06459995704313],"width":11.529199914086263,"verdict":"undetermined","bound":true},"interaction":{"mean":43.5,"n":289,"rate":43.5,"ci":[37.73540004295687,49.26459995704313],"width":11.529199914086263,"verdict":"below","bound":true},"consistency":{"mean":86.3,"n":289,"rate":86.3,"ci":[80.53540004295687,92.06459995704313],"width":11.529199914086263,"verdict":"undetermined","bound":true},"physical":{"mean":67.0,"n":289,"rate":67.0,"ci":[61.23540004295687,72.76459995704313],"width":11.529199914086263,"verdict":"undetermined","bound":true}},"spread":null,"resolved":1,"n":1445,"order":7,"best_rank":1,"worst_rank":12},{"model":"LongCat-Video","org":"Meituan \u00b7 Open Source","overall":69.92,"pooled_ci":[64.15540004295687,75.68459995704313],"cells":{"quality":{"mean":77.2,"n":289,"rate":77.2,"ci":[71.43540004295687,82.96459995704313],"width":11.529199914086263,"verdict":"undetermined","bound":true},"setting":{"mean":72.3,"n":289,"rate":72.3,"ci":[66.53540004295687,78.06459995704313],"width":11.529199914086263,"verdict":"below","bound":true},"interaction":{"mean":45.1,"n":289,"rate":45.1,"ci":[39.33540004295687,50.86459995704313],"width":11.529199914086263,"verdict":"below","bound":true},"consistency":{"mean":86.6,"n":289,"rate":86.6,"ci":[80.83540004295686,92.36459995704313],"width":11.529199914086263,"verdict":"undetermined","bound":true},"physical":{"mean":68.4,"n":289,"rate":68.4,"ci":[62.635400042956874,74.16459995704314],"width":11.529199914086263,"verdict":"undetermined","bound":true}},"spread":27.199999999999996,"resolved":2,"n":1445,"order":8,"best_rank":1,"worst_rank":12},{"model":"Helios","org":"PKU-YuanGroup \u00b7 Open Source","overall":69.7,"pooled_ci":[63.93540004295687,75.46459995704313],"cells":{"quality":{"mean":73.3,"n":289,"rate":73.3,"ci":[67.53540004295687,79.06459995704313],"width":11.529199914086263,"verdict":"undetermined","bound":true},"setting":{"mean":75.3,"n":289,"rate":75.3,"ci":[69.53540004295687,81.06459995704313],"width":11.529199914086263,"verdict":"below","bound":true},"interaction":{"mean":41.6,"n":289,"rate":41.6,"ci":[35.83540004295687,47.36459995704313],"width":11.529199914086263,"verdict":"below","bound":true},"consistency":{"mean":82.2,"n":289,"rate":82.2,"ci":[76.43540004295687,87.96459995704313],"width":11.529199914086263,"verdict":"undetermined","bound":true},"physical":{"mean":76.1,"n":289,"rate":76.1,"ci":[70.33540004295686,81.86459995704313],"width":11.529199914086263,"verdict":"above","bound":true}},"spread":34.49999999999999,"resolved":3,"n":1445,"order":9,"best_rank":1,"worst_rank":12},{"model":"Cosmos3-Nano","org":"NVIDIA \u00b7 Open Source","overall":69.36,"pooled_ci":[63.59540004295687,75.12459995704313],"cells":{"quality":{"mean":75.0,"n":289,"rate":75.0,"ci":[69.23540004295687,80.76459995704313],"width":11.529199914086263,"verdict":"undetermined","bound":true},"setting":{"mean":86.6,"n":289,"rate":86.6,"ci":[80.83540004295686,92.36459995704313],"width":11.529199914086263,"verdict":"undetermined","bound":true},"interaction":{"mean":36.8,"n":289,"rate":36.8,"ci":[31.035400042956866,42.56459995704313],"width":11.529199914086263,"verdict":"below","bound":true},"consistency":{"mean":84.5,"n":289,"rate":84.5,"ci":[78.73540004295687,90.26459995704313],"width":11.529199914086263,"verdict":"undetermined","bound":true},"physical":{"mean":63.9,"n":289,"rate":63.9,"ci":[58.13540004295687,69.66459995704314],"width":11.52919991408627,"verdict":"undetermined","bound":true}},"spread":null,"resolved":1,"n":1445,"order":10,"best_rank":1,"worst_rank":12},{"model":"YUME 1.5","org":"Shanghai AI Lab \u00b7 Open Source","overall":68.94,"pooled_ci":[63.175400042956866,74.70459995704313],"cells":{"quality":{"mean":77.6,"n":289,"rate":77.6,"ci":[71.83540004295686,83.36459995704313],"width":11.529199914086263,"verdict":"undetermined","bound":true},"setting":{"mean":72.4,"n":289,"rate":72.4,"ci":[66.63540004295687,78.16459995704314],"width":11.529199914086263,"verdict":"below","bound":true},"interaction":{"mean":48.4,"n":289,"rate":48.4,"ci":[42.63540004295687,54.16459995704313],"width":11.529199914086263,"verdict":"undetermined","bound":true},"consistency":{"mean":80.9,"n":289,"rate":80.9,"ci":[75.13540004295687,86.66459995704314],"width":11.529199914086263,"verdict":"undetermined","bound":true},"physical":{"mean":65.4,"n":289,"rate":65.4,"ci":[59.635400042956874,71.16459995704314],"width":11.529199914086263,"verdict":"undetermined","bound":true}},"spread":null,"resolved":1,"n":1445,"order":11,"best_rank":1,"worst_rank":12},{"model":"Kairos 3.0","org":"SenseTime \u00b7 Open Source","overall":65.74,"pooled_ci":[59.97540004295686,71.50459995704313],"cells":{"quality":{"mean":73.1,"n":289,"rate":73.1,"ci":[67.33540004295686,78.86459995704313],"width":11.529199914086263,"verdict":"undetermined","bound":true},"setting":{"mean":70.3,"n":289,"rate":70.3,"ci":[64.53540004295687,76.06459995704313],"width":11.529199914086263,"verdict":"below","bound":true},"interaction":{"mean":41.6,"n":289,"rate":41.6,"ci":[35.83540004295687,47.36459995704313],"width":11.529199914086263,"verdict":"below","bound":true},"consistency":{"mean":83.2,"n":289,"rate":83.2,"ci":[77.43540004295687,88.96459995704313],"width":11.529199914086263,"verdict":"undetermined","bound":true},"physical":{"mean":60.5,"n":289,"rate":60.5,"ci":[54.73540004295687,66.26459995704313],"width":11.529199914086263,"verdict":"below","bound":true}},"spread":28.699999999999996,"resolved":3,"n":1445,"order":12,"best_rank":3,"worst_rank":12}],"meta":{"name":"WBench","version":"live leaderboard","cases":289,"turns":1058,"navigation_subset":158,"metrics":22,"dimensions":5,"base_models":12,"url":"https://meituan-longcat.github.io/WBench/","paper":"https://arxiv.org/abs/2605.25874","licence":"MIT","split":"full","split_label":"full split","split_cases":"all 289 cases","assumed_n":289,"submissions":12,"complete":12,"types":{"text":0,"camera":0,"action":0},"other_split":{"name":"navi","label":"navigation split","cases":"158 navigation cases","models":35}},"cells_total":60,"cells_resolved":19,"crosscheck":{"published_entries":12,"max_deviation":0.04000000000000625,"what":"mean of the five published dimensions vs the site's Average"},"calibration":{"metric":"temporal flicker","points":[{"model":"HY-World 1.5","split":"navigation","cases":158,"of":158,"mean":93.59594324627854,"published":93.5,"sd":3.3235894249825573,"se":0.26441057766542997,"bound_se":3.97778642087865,"ratio":15.043976137414267},{"model":"Kling 3.0","split":"full","cases":40,"of":289,"mean":94.2041414822186,"published":94.5,"sd":2.784415524325225,"se":0.16378914848971912,"bound_se":2.9411764705882355,"ratio":17.957089939770032}]}}],"schema":{"domains":{"manipulation":{"label":"Robot manipulation","blurb":"Policies that move a physical arm. Cells are successes out of trials."},"world_model":{"label":"Video world models","blurb":"Models that generate the next frames of a world under control. Cells are mean metric scores on a 0-100 scale."}},"capabilities":[{"key":"precision","label":"Precision","definition":"Tight tolerances: insertion, alignment, fine placement","domain":"manipulation"},{"key":"long_horizon","label":"Long-horizon","definition":"Multi-stage tasks where early errors compound","domain":"manipulation"},{"key":"generalization","label":"Generalization","definition":"Novel objects, scenes or phrasings at test time","domain":"manipulation"},{"key":"memory","label":"Memory","definition":"Carrying state across occlusion or time","domain":"manipulation"},{"key":"deformable","label":"Deformable","definition":"Cloth, cable, food and other soft bodies","domain":"manipulation"},{"key":"perception","label":"Perception","definition":"Classifying or disambiguating before acting","domain":"manipulation"},{"key":"open_ended","label":"Open-ended","definition":"Loosely specified goals with no single solution","domain":"manipulation"},{"key":"quality","label":"Quality","definition":"Aesthetic and imaging quality, flicker, motion smoothness","domain":"world_model"},{"key":"setting","label":"Setting","definition":"Adherence to the specified scene and subject","domain":"world_model"},{"key":"interaction","label":"Interaction","definition":"Following navigation, actions, edits and viewpoint changes","domain":"world_model"},{"key":"consistency","label":"Consistency","definition":"Spatial, geometric, photometric and subject consistency over time","domain":"world_model"},{"key":"physical","label":"Physical","definition":"Visual plausibility and causal fidelity","domain":"world_model"}],"robodojo":{"precision":"precision","longHorizon":"long_horizon","generalizationStd":"generalization","generalizationRand":"generalization","memory":"memory","open":"open_ended"},"robochallenge":{"precise3d":"precision","temporal":"long_horizon","repeated":"long_horizon","softbody":"deformable","classification":"perception","multiview":"perception"},"excluded":{"single-arm":"embodiment","two-arm":"embodiment","dual-arm":"embodiment","bimanual":"embodiment","ALOHA":"embodiment","ARX5":"embodiment","UR5":"embodiment","Franka":"embodiment","DOS-W1":"release batch","manipulation":"too broad to be a capability","simple-pick":"difficulty, not capability"},"caveats":["RoboChallenge tags overlap, so capability groups are overlapping sets rather than a partition -- a model's capability scores do not average back to its suite score.","Tags are each benchmark's own. We pool them; we do not relabel tasks.","Group sizes are uneven, so intervals differ sharply in width between capabilities. That is the measurement, not a defect.","Embodiment tags (single-arm, ALOHA, ARX5...) are excluded: they say where a task runs, not what it tests."]},"overlap":{"shared":[{"a":"DM0","b":"DM0"},{"a":"openvla-oft","b":"OpenVLA-OFT"},{"a":"pi0","b":"Pi-0"},{"a":"pi0.5","b":"Pi-05"},{"a":"Spirit-v1.5","b":"Spirit v1.5"},{"a":"X-VLA","b":"X-VLA"}],"n_shared":6,"n_a":22,"n_b":40,"rows_a":22,"rows_b":40},"built":"2026-09-11"}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
 
-<header class="nav">
-  <div class="wrap">
-    <a class="brand" href="/">orbit<i>eval</i></a>
-    <menu>
-      <li><a href="#finding">Finding</a></li>
-      <li><a href="#product">Product</a></li>
-      <li><a href="#research">Research</a></li>
-      <li><a href="noisefloor.html">Noise floor</a></li>
-      <li><a href="about.html">About</a></li>
-    </menu>
-    <a class="btn" href="mailto:rahil@orbiteval.com?subject=OrbitEval%20demo">Book a demo</a>
-  </div>
-</header>
-
-<section class="hero">
-  <div class="wrap">
-   <div class="hero-grid">
-
-    <div class="hero-copy">
-      <p class="cmdline"><span class="p">$</span> train.py --data demos/ --seed <span class="p">200…207</span> &nbsp;# identical data, identical config</p>
-      <h1><span class="ln">Same command.</span><span class="ln"><em>Eight different robots.</em></span></h1>
-      <p class="hero-sub">OrbitEval tells you how much of your policy's score is noise — then picks the release that doesn't quietly break a skill. <b>Runs on your compute.</b></p>
-
-      <div class="hero-cta">
-        <a class="btn btn-flare btn-lg" href="mailto:rahil@orbiteval.com?subject=OrbitEval%20demo">Book a demo</a>
-        <button class="cmd" id="cmd" type="button"><span class="d">$</span><span>pip install orbit-eval</span><span class="k" id="cmdk">Copy</span></button>
-      </div>
-
-      <p class="trust">
-        <span>701 policies measured</span>
-        <span>16 regimes</span>
-        <span>Pre-registered</span>
-        <span>Open source</span>
-      </p>
-    </div>
-
-    <div class="band">
-      <div class="band-head">
-        <p class="lbl">Success rate · one task · 8 retrains</p>
-        <p class="lbl">LIBERO · π₀.₅</p>
-      </div>
-      <div class="eight" id="eight"></div>
-      <div class="mean">
-        <p class="l">Your dashboard reports <b>54.3%</b></p>
-        <p class="r">↔ 20.4 points apart</p>
-      </div>
-    </div>
-
-   </div>
-  </div>
-</section>
-
-<!-- ============ FINDING ============ -->
-<section class="sec" id="finding">
-  <div class="wrap">
-    <p class="lbl">The finding</p>
-    <h2>Training it more times won't stop you shipping a broken skill.</h2>
-    <p class="sub">Retrain eight times, ship the best validation score. That is current best practice. Here is how often it still ships a skill that got worse.</p>
-
-    <div class="rows rise">
-      <div class="row">
-        <div><span class="who">Train once, ship it</span><span class="note">No selection possible</span></div>
-        <div class="num">11–79%</div>
-      </div>
-      <div class="row row-bad">
-        <div><span class="who">Train 8×, ship the best-validation one</span><span class="note">What labs do today</span></div>
-        <div class="num">3–93%</div>
-      </div>
-      <div class="row row-good">
-        <div><span class="who">Train 3×, pick per skill, abstain when unsure</span><span class="note">Three retrains, not eight</span></div>
-        <div class="num">2–14%</div>
-      </div>
-    </div>
-
-    <p class="punch rise">More candidates don't help. In one cell, best-validation selection got <b>worse</b> with more of them. What helps is choosing <b>per skill</b>, and holding the incumbent when the evidence is thin.</p>
-  </div>
-</section>
-
-<!-- ============ PRODUCT ============ -->
-<section class="sec sec-w" id="product">
-  <div class="wrap">
-    <p class="lbl">The product</p>
-    <h2>Own the step between "training finished" and "this ships."</h2>
-    <p class="sub">Right now that step is a file copy. This runs on your compute, over checkpoints you already paid for. Nothing leaves your infrastructure.</p>
-
-    <div class="verbs rise">
-      <div class="verb">
-        <code>plan</code>
-        <h3>Size it first</h3>
-        <p>How many retrains your skill count actually needs. Free to run, answers before you spend.</p>
-      </div>
-      <div class="verb">
-        <code>build</code>
-        <h3>Decide per skill</h3>
-        <p>Per-task choice with a confidence interval, an abstention where nothing beats the incumbent.</p>
-      </div>
-      <div class="verb">
-        <code>serve</code>
-        <h3>Ship the artifact</h3>
-        <p>A routing table, a regression bound, and a signed measurement record.</p>
-      </div>
-    </div>
-
-<div class="term">$ orbit-eval route plan --candidates 3 --tasks 10 --select-eps 50
-
-<span class="c">  J=3 candidates, T=10 tasks -> 1500 selection episodes</span>
-  defects at a per-task advantage <span class="y">>= 16.4 pp</span>
-  detects a true <span class="y">24.9 pp</span> advantage with 80% power
-<span class="c">  under the null, 0.50 of 10 tasks defect falsely</span>
-
-  measured cell: <span class="g">damaged tasks 1.82 -> 0.22</span>
-<span class="c">  cell-local. NOT a forecast for yours.</span></div>
-  </div>
-</section>
-
-<!-- ============ RESEARCH ============ -->
-<section class="sec" id="research">
-  <div class="wrap">
-    <p class="lbl">The research</p>
-    <h2>We publish the results that went against us.</h2>
-    <p class="sub">Every wave is pre-registered, decision bands frozen before any data is scored. When a claim fails, it ships as a failure. 701 policies so far.</p>
-
-    <div class="quote rise">
-      <p>Our routing result gained <b>+5.6 points</b> on one suite. We ran it on a second suite and got <b>+1.7, with zero inside the interval</b>. So the gain is suite-dependent — and we say so in the paper, on this page, and in the tool's own output.</p>
-      <p class="src">ROUTE-1 scope check · libero_spatial · 2026-09-08</p>
-    </div>
-
-    <div class="cards rise">
-      <a class="card" href="noisefloor.html">
-        <p class="lbl">Free · no account</p>
-        <h3>Noise floor</h3>
-        <p>The measured floors, and what your eval budget can actually resolve.</p>
-      </a>
-      <a class="card" href="atlas.html">
-        <p class="lbl">16 regimes</p>
-        <h3>Variance atlas</h3>
-        <p>σ per policy class × task × data scale. Every row scope-stamped.</p>
-      </a>
-      <a class="card" href="https://github.com/Rahillasne/orbit-eval">
-        <p class="lbl">Source · AGPL-3.0</p>
-        <h3>Read the code</h3>
-        <p>Zero dependencies, pure stdlib. Clone it and run the tests yourself.</p>
-      </a>
-      <a class="card" href="about.html">
-        <p class="lbl">Method</p>
-        <h3>How it's measured</h3>
-        <p>The 8-retrain protocol, and why someone else's number won't transfer.</p>
-      </a>
-    </div>
-  </div>
-</section>
-
-<section class="cta">
-  <div class="wrap">
-    <p class="lbl" style="color:#F7DACB">Get started</p>
-    <h2>Find out what your last release broke.</h2>
-    <p>Bring your checkpoints. Everything runs on your infrastructure — weights, data and logs never leave it.</p>
-    <div class="cta-row">
-      <a class="btn btn-lg" href="mailto:rahil@orbiteval.com?subject=OrbitEval%20demo">Book a demo</a>
-      <button class="cmd" id="cmd2" type="button"><span class="d">$</span><span>pip install orbit-eval</span><span class="k" id="cmdk2">Copy</span></button>
-    </div>
-  </div>
-</section>
-
-<footer class="foot">
-  <div class="wrap">
-    <span>© 2026 OrbitEval</span>
-    <a href="https://github.com/Rahillasne/orbit-eval">GitHub</a>
-    <a href="https://pypi.org/project/orbit-eval/">PyPI</a>
-    <a href="noisefloor.html">Noise floor</a>
-    <a href="about.html">About</a>
-    <a href="mailto:rahil@orbiteval.com">rahil@orbiteval.com</a>
-    <span class="sp">orbit-eval 0.8.1</span>
-  </div>
-</footer>
+<div id="root"></div>
 
 <script>
-/* ---- the signature: eight identical runs, diverging ----
-   Every column starts at the reported average, showing the same number.
-   Then they separate into what actually came out. Same command in,
-   eight different robots out — told as one motion. */
 (function(){
-  var host = document.getElementById('eight');
-  if(!host) return;
+  var D = JSON.parse(document.getElementById('cap-data').textContent);
+  var h = React.createElement, F = React.Fragment;
+  var useState = React.useState, useMemo = React.useMemo;
+  var LABEL={}, DEF={};
+  D.schema.capabilities.forEach(function(c){ LABEL[c.key]=c.label; DEF[c.key]=c.definition; });
+  var f1=function(x,d){ return x==null?'—':x.toFixed(d===undefined?1:d); };
+  var big=function(n){ return (n||0).toLocaleString(); };
+  var unitOf=function(b){ return b.kind==='mean'?'':'%'; };
 
-  var runs  = [45.6, 52.0, 49.0, 61.0, 55.0, 66.0, 47.5, 58.0];
-  var mean  = runs.reduce(function(a,b){return a+b;},0) / runs.length;   // 54.3
-  var min   = Math.min.apply(null, runs), max = Math.max.apply(null, runs);
-  var floor = 36;
-  var h = function(v){ return ((v - floor) / (max - floor)) * 100; };
-  var still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var I = {
+    grid: function(){ return h('svg',{className:'ico',viewBox:'0 0 24 24'},
+      h('rect',{x:3,y:3,width:7,height:7,rx:1.5}),h('rect',{x:14,y:3,width:7,height:7,rx:1.5}),
+      h('rect',{x:3,y:14,width:7,height:7,rx:1.5}),h('rect',{x:14,y:14,width:7,height:7,rx:1.5})); },
+    list: function(){ return h('svg',{className:'ico',viewBox:'0 0 24 24'},
+      h('path',{d:'M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01'})); },
+    book: function(){ return h('svg',{className:'ico',viewBox:'0 0 24 24'},
+      h('path',{d:'M4 4h6a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H4zM20 4h-6a3 3 0 0 0-3 3v13a2 2 0 0 1 2-2h7z'})); },
+    info: function(){ return h('svg',{className:'ico',viewBox:'0 0 24 24'},
+      h('circle',{cx:12,cy:12,r:9}),h('path',{d:'M12 11v5M12 8h.01'})); },
+    clock: function(){ return h('svg',{className:'ico',viewBox:'0 0 24 24'},
+      h('circle',{cx:12,cy:12,r:9}),h('path',{d:'M12 7v5l3 2'})); },
+    db: function(){ return h('svg',{className:'ico',viewBox:'0 0 24 24'},
+      h('ellipse',{cx:12,cy:6,rx:8,ry:3}),h('path',{d:'M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3'})); },
+    check: function(){ return h('svg',{className:'ico',viewBox:'0 0 24 24'},
+      h('rect',{x:3,y:3,width:18,height:18,rx:3}),h('path',{d:'M8 12l3 3 5-6'})); },
+    eye: function(){ return h('svg',{className:'ico',viewBox:'0 0 24 24'},
+      h('path',{d:'M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z'}),h('circle',{cx:12,cy:12,r:3})); },
+    layers: function(){ return h('svg',{className:'ico',viewBox:'0 0 24 24'},
+      h('path',{d:'M12 3l9 5-9 5-9-5 9-5zM3 13l9 5 9-5M3 17l9 5 9-5'})); },
+    sliders: function(){ return h('svg',{className:'ico',viewBox:'0 0 24 24'},
+      h('path',{d:'M4 7h10M18 7h2M4 17h4M12 17h8'}),h('circle',{cx:16,cy:7,r:2}),h('circle',{cx:10,cy:17,r:2})); },
+    search: function(){ return h('svg',{className:'ico',viewBox:'0 0 24 24'},
+      h('circle',{cx:11,cy:11,r:7}),h('path',{d:'M20 20l-3.5-3.5'})); },
+    arm: function(){ return h('svg',{className:'ico',viewBox:'0 0 24 24'},
+      h('path',{d:'M4 20h8M8 20V9l6-4 4 3-6 4v8'}),h('circle',{cx:8,cy:9,r:1.5}),h('circle',{cx:18,cy:8,r:1.5})); },
+    film: function(){ return h('svg',{className:'ico',viewBox:'0 0 24 24'},
+      h('rect',{x:3,y:4,width:18,height:16,rx:2}),h('path',{d:'M7 4v16M17 4v16M3 9h4M17 9h4M3 15h4M17 15h4'})); },
+    arrow: function(){ return h('svg',{className:'ico',viewBox:'0 0 24 24'},h('path',{d:'M5 12h14M13 6l6 6-6 6'})); }
+  };
+  var DOMICON = {manipulation:I.arm, world_model:I.film};
 
-  var cols = runs.map(function(v,i){
-    var el = document.createElement('div');
-    el.className = 'col' + (v===min ? ' is-min' : v===max ? ' is-max' : '');
-    el.innerHTML =
-      '<div class="seed">seed ' + (200+i) + '</div>' +
-      '<div class="plane"><div class="bar"></div></div>' +
-      '<div class="val">' + (still ? v.toFixed(1) : mean.toFixed(1)) + '</div>';
-    host.appendChild(el);
-    return {el:el, bar:el.querySelector('.bar'), val:el.querySelector('.val'), to:v};
-  });
-
-  if(still){
-    cols.forEach(function(c){ c.bar.style.height = h(c.to) + '%'; });
-    host.classList.add('is-split');
-    return;
+  function shade(t){
+    t=Math.max(0,Math.min(1,t)); var a=[243,236,245], b=[69,36,85], e=Math.pow(t,0.72);
+    return 'rgb('+a.map(function(v,i){return Math.round(v+(b[i]-v)*e);}).join(',')+')';
+  }
+  function inkFor(t){ return t>0.55?'#FFFFFF':'var(--ink)'; }
+  function Spread(p){
+    var r=p.row;
+    if(r.best_rank==null) return h('span',{className:'spread'},'—');
+    if(r.best_rank===r.worst_rank) return h('span',{className:'spread pin'},'rank '+r.best_rank);
+    return h('span',{className:'spread'}, r.best_rank, h('span',{className:'ln'},h('i')), r.worst_rank);
+  }
+  function domainOf(b){ return D.schema.domains[b.domain]||{label:b.domain}; }
+  function observations(b){
+    return b.kind==='mean' ? b.meta.assumed_n : b.rows.reduce(function(a,r){return a+r.n;},0);
   }
 
-  // 1. every bar rises to the SAME height — they look identical
-  requestAnimationFrame(function(){
-    setTimeout(function(){
-      cols.forEach(function(c){ c.bar.style.height = h(mean) + '%'; });
-    }, 180);
-  });
+  function Board(p){
+    var b=p.board, caps=b.capabilities.filter(function(c){return !p.hidden[c];});
+    var u=unitOf(b), st=p.sort;
+    var ranges=useMemo(function(){
+      var o={}; b.capabilities.forEach(function(c){
+        var vs=b.rows.map(function(r){return r.cells[c].rate;}).filter(function(v){return v!=null;});
+        o[c]={min:Math.min.apply(null,vs),max:Math.max.apply(null,vs)}; }); return o; },[b]);
+    var best=useMemo(function(){
+      var o={}; b.capabilities.forEach(function(c){
+        var m=null; b.rows.forEach(function(r){ var x=r.cells[c];
+          if(x.rate!=null && x.verdict!=='missing' && (m==null||x.rate>m)) m=x.rate; }); o[c]=m; });
+      return o; },[b]);
+    var rows=useMemo(function(){
+      var q=p.query.toLowerCase();
+      var r=b.rows.filter(function(x){
+        if(p.onlyResolved && x.resolved===0) return false;
+        if(q && x.model.toLowerCase().indexOf(q)<0 && (x.org||'').toLowerCase().indexOf(q)<0) return false;
+        return true; });
+      var k=st.key;
+      r.sort(function(x,y){
+        var vx,vy;
+        if(k==='overall'){vx=x.overall;vy=y.overall;}
+        else if(k==='spread'){vx=(x.worst_rank||0)-(x.best_rank||0);vy=(y.worst_rank||0)-(y.best_rank||0);}
+        else if(k==='resolved'){vx=x.resolved;vy=y.resolved;}
+        else if(k==='range'){vx=x.spread==null?-1:x.spread;vy=y.spread==null?-1:y.spread;}
+        else {vx=x.cells[k]?x.cells[k].rate:null;vy=y.cells[k]?y.cells[k].rate:null;
+              if(vx==null)vx=-1;if(vy==null)vy=-1;}
+        return st.desc?vy-vx:vx-vy; });
+      return r; },[b,p.hidden,p.onlyResolved,p.query,st.key,st.desc]);
+    var Th=function(q){ return h('th',{className:(q.num?'num ':'')+'sortable', onClick:function(){p.onSort(q.k);},
+        title:q.title||null},
+        q.label, st.key===q.k? h('span',{className:'ar'}, st.desc?'↓':'↑'):null,
+        q.sub? h('small',null,q.sub):null); };
 
-  // 2. then they diverge, and the numbers travel with them
-  setTimeout(function(){
-    host.classList.add('is-split');
-    cols.forEach(function(c,i){
-      setTimeout(function(){
-        c.bar.style.height = h(c.to) + '%';
-        var t0 = performance.now(), dur = 900, from = mean;
-        (function tick(now){
-          var p = Math.min((now - t0) / dur, 1);
-          var e = 1 - Math.pow(1 - p, 3);
-          c.val.textContent = (from + (c.to - from) * e).toFixed(1);
-          if(p < 1) requestAnimationFrame(tick);
-        })(t0);
-      }, i * 70);
-    });
-  }, 1500);
+    if(!rows.length) return h('div',{className:'empty'},
+      'No models match “'+p.query+'”. ', h('button',{onClick:p.onClear},'Clear the filter'));
+
+    return h('div',{className:'scroll'}, h('table',null,
+      h('thead',null,h('tr',null,
+        h('th',{style:{width:'2rem',textAlign:'center'}},'Rank'),
+        h(Th,{k:'spread',label:'Rank spread',title:'Best and worst rank consistent with the pooled interval'}),
+        h('th',{className:'mcol'},'Model'),
+        h(Th,{k:'overall',label:'Pooled',num:true,title:'Pooled across this model’s capability cells; orders the table'}),
+        p.view==='matrix'? caps.map(function(c){
+          return h(Th,{key:c,k:c,label:LABEL[c],sub:'field '+f1(b.column_rate[c])+u,title:DEF[c]}); })
+        : [h(Th,{key:'range',k:'range',label:'Range',num:true,title:'Best minus worst resolved capability'})],
+        h(Th,{k:'resolved',label:'Known',num:true,title:'How many of this model’s cells the data settles'}))),
+      h('tbody',null, rows.map(function(r){
+        var half=r.pooled_ci? (r.pooled_ci[1]-r.pooled_ci[0])/2 : null;
+        return h('tr',{key:r.model},
+          h('td',{className:'rk'}, r.order),
+          h('td',null, h(Spread,{row:r})),
+          h('td',{className:'mcol'}, h('div',{className:'model'},
+            h('span',{className:'nm',title:r.model}, r.model),
+            h('span',{className:'org'}, r.org || domainOf(b).label))),
+          h('td',{className:'num strong'}, h('span',{className:'score'},
+            h('b',null, f1(r.overall)+u), half!=null? h('small',null,'±'+f1(half)):null)),
+          p.view==='matrix'? caps.map(function(c){
+            var x=r.cells[c];
+            if(x.verdict==='missing') return h('td',{key:c},h('div',{className:'cell missing'},h('span',{className:'v'},'–')));
+            var rg=ranges[c], t=rg.max>rg.min?(x.rate-rg.min)/(rg.max-rg.min):0.5, und=x.verdict==='undetermined';
+            var tip = x.bound
+              ? f1(x.rate)+' over '+x.n+' cases · worst-case 95% bound ['+f1(x.ci[0])+', '+f1(x.ci[1])+']'+(und?' · published data cannot prove a difference':'')
+              : x.k+'/'+x.n+' → '+f1(x.rate)+'% · 95% CI ['+f1(x.ci[0])+', '+f1(x.ci[1])+']'+(und?' · not distinguishable from the field':'');
+            return h('td',{key:c,title:tip}, h('div',{className:'cell'+(und?' undet':'')+(best[c]!=null&&Math.abs(x.rate-best[c])<1e-9?' best':''),
+              style: und?null:{background:shade(t)}}, h('span',{className:'v',style:und?null:{color:inkFor(t)}}, f1(x.rate)))); })
+          : [h('td',{key:'range',className:'num'}, r.spread==null?'—':f1(r.spread))],
+          h('td',{className:'num strong'}, r.resolved+'/'+b.capabilities.length)); }))));
+  }
+
+  function Diagnostics(p){
+    var b=p.board;
+    var byCap=b.capabilities.map(function(c){
+      var n=b.rows.length, res=b.rows.filter(function(r){return r.cells[c].verdict==='above'||r.cells[c].verdict==='below';}).length;
+      return {c:c,pct:100*res/n}; });
+    var spiky=b.rows.filter(function(r){return r.spread!=null;}).sort(function(a,c){return c.spread-a.spread;}).slice(0,6);
+    var maxS=spiky.length?spiky[0].spread:1;
+    return h(F,null,
+      h('h2',{className:'sect-title'},'Board diagnostics'),
+      h('div',{className:'grid2'},
+        h('div',{className:'card diag'},
+          h('h3',null,'How much each capability actually resolves'),
+          h('p',null,'Share of models whose cell is distinguishable from the field. A capability the data cannot resolve for most models is greyed on the board, not ranked.'),
+          h('div',{className:'bars'}, byCap.map(function(x){
+            return h('div',{className:'bar',key:x.c},
+              h('span',{className:'lab',title:DEF[x.c]}, LABEL[x.c]),
+              h('span',{className:'trk'}, h('span',{className:'fill',style:{width:x.pct+'%'}})),
+              h('span',{className:'val'}, Math.round(x.pct)+'%')); }))),
+        h('div',{className:'card diag'},
+          h('h3',null,'Spikiest profiles'),
+          h('p',null,'Largest gap between a model’s best and worst resolved capability. These are the models a single average misdescribes most.'),
+          spiky.length? h('div',{className:'bars'}, spiky.map(function(r){
+            return h('div',{className:'bar',key:r.model},
+              h('span',{className:'lab mono',title:r.model}, r.model),
+              h('span',{className:'trk'}, h('span',{className:'fill',style:{width:(100*r.spread/maxS)+'%'}})),
+              h('span',{className:'val'}, f1(r.spread)+' pts')); }))
+          : h('p',null,'No model on this board has two resolved cells yet, so no profile can be called spiky.'))));
+  }
+
+  function Overview(p){
+    return h(F,null,
+      h('div',{className:'head'},
+        h('h1',{className:'serif'},'Leaderboard overview'),
+        h('p',{className:'desc'},'How embodied-AI models stack up across robot manipulation and video world models. Every bar carries its interval: solid to the lower bound, pale to the upper. Open a board for the full capability matrix.'),
+        h('div',{className:'meta'},
+          h('span',null,I.clock(),'Built '+D.built),
+          h('span',null,I.db(), D.boards.length+' boards'),
+          h('span',null,I.layers(), D.boards.reduce(function(a,b){return a+b.rows.length;},0)+' model entries'))),
+      h('div',{className:'ovgrid'}, D.boards.map(function(b){
+        var top=b.rows.slice(0,8), u=unitOf(b);
+        var hi=Math.max.apply(null,top.map(function(r){return r.pooled_ci?r.pooled_ci[1]:r.overall;}));
+        var lo=Math.min.apply(null,top.map(function(r){return r.pooled_ci?r.pooled_ci[0]:r.overall;}));
+        var x0=Math.max(0,lo-(hi-lo)*0.35), span=(hi-x0)||1, pos=function(v){return Math.max(0,Math.min(100,(v-x0)/span*100));};
+        return h('div',{className:'card ov',key:b.key},
+          h('div',{className:'ovhead'},
+            h('h3',null, DOMICON[b.domain](), b.label),
+            h('span',{className:'chip'},h('span',{className:'dot'}), domainOf(b).label)),
+          h('div',{className:'ovrows'}, top.map(function(r){
+            var ci=r.pooled_ci||[r.overall,r.overall];
+            return h('div',{className:'ovrow',key:r.model},
+              h('span',{className:'badge'}, r.order),
+              h('span',{className:'nm',title:r.model}, r.model),
+              h('span',{className:'trk',title:f1(ci[0])+' – '+f1(ci[1])+u},
+                h('span',{className:'lo',style:{width:pos(ci[0])+'%'}}),
+                h('span',{className:'ci',style:{left:pos(ci[0])+'%',width:(pos(ci[1])-pos(ci[0]))+'%'}}),
+                h('span',{className:'pt',style:{left:pos(r.overall)+'%'}})),
+              h('span',{className:'sc'}, f1(r.overall)+u, h('small',null,'±'+f1((ci[1]-ci[0])/2)))); })),
+          h('div',{className:'ovfoot'},
+            h('span',null, b.rows.length+' models · '+b.cells_resolved+'/'+b.cells_total+' cells resolved'),
+            h('a',{href:'#',onClick:function(e){e.preventDefault();p.open(b.key);}},'Open board →'))); })));
+  }
+
+  function Methodology(){
+    var wm=D.boards.filter(function(b){return b.calibration;})[0];
+    var cal=wm&&wm.calibration;
+    return h('div',{className:'prose'},
+      h('h2',null,'Methodology'),
+      h('p',null,'Every board answers one question: what does this benchmark’s own data actually support? The scores are the benchmarks’ own. What is added is the capability cut and the uncertainty they do not publish.'),
+      h('h3',null,'Domains and capabilities'),
+      h('p',null,'A robot policy and a video world model are not measured along the same axes, so each board declares a domain with its own vocabulary. RoboDojo reports designed capability dimensions, which map almost one-to-one. RoboChallenge reports per-task scores and tags each task, so capabilities are built by pooling the tasks carrying a tag — the tags are the benchmark’s own, and embodiment tags (which arm a task runs on) are excluded because they say where a task runs, not what it tests. WBench’s five dimensions are taken as published.'),
+      h('table',null,h('thead',null,h('tr',null,h('th',null,'Capability'),h('th',null,'RoboChallenge tags'),h('th',null,'RoboDojo dimensions'))),
+        h('tbody',null, D.schema.capabilities.filter(function(c){return c.domain==='manipulation';}).map(function(c){
+          var rc=Object.keys(D.schema.robochallenge).filter(function(t){return D.schema.robochallenge[t]===c.key;});
+          var rd=Object.keys(D.schema.robodojo).filter(function(t){return D.schema.robodojo[t]===c.key;});
+          return h('tr',{key:c.key},h('td',null,h('strong',null,c.label),h('div',{style:{fontSize:'.78rem',color:'var(--faint)'}},c.definition)),
+            h('td',{className:'mono'},rc.length?rc.join(', '):'—'),h('td',{className:'mono'},rd.length?rd.join(', '):'—')); }))),
+      h('h3',null,'How a cell is judged'),
+      h('p',null,h('strong',null,'Robot boards. '),'Each cell is a success count over a trial count, so it gets a Wilson 95% interval. A cell reads as strong or weak only when that interval excludes the column’s pooled rate; otherwise it is greyed. A 30-rollout group at 40% has an interval of roughly [24%, 58%] — printing it at the same weight as a resolved cell is how a matrix misleads someone scanning it.'),
+      h('p',null,h('strong',null,'World-model boards. '),'WBench publishes each dimension as a mean on a 0–100 scale and no uncertainty of any kind. A score confined to 0–100 has variance at most 2,500, so the standard error of a mean over N cases is at most 50/√N. That worst case is drawn. A greyed cell there means the published data cannot prove a difference, which is weaker than the robot boards’ greying.'),
+      cal? h('p',null,h('strong',null,'The bound is measured, not assumed. '),'Re-scoring '+cal.metric+' per case on WBench’s released videos — '
+        +cal.points.map(function(q){return q.model+' ('+q.cases+(q.of!==q.cases?' of '+q.of:'')+' cases; reproduced '+f1(q.mean,2)+' vs published '+f1(q.published,2)+')';}).join(' and ')
+        +' — puts the bound at '+cal.points.map(function(q){return q.ratio.toFixed(0)+'×';}).join(' and ')+' wider than the real standard error for that metric. Flicker is low-variance, so the multiple does not generalise; the direction does.') : null,
+      h('h3',null,'Rank spread and Pooled'),
+      h('p',null,'Pooled is a model’s success pooled across its capability cells (tagged groups overlap on RoboChallenge, so it is not that benchmark’s headline figure; it orders the table). Its interval gives a rank spread on LMArena’s rule: best rank is one plus the models clearly ahead, worst is one plus the models that could be. Two models are tied when their spreads overlap. Range is the gap between a model’s best and worst resolved capability; Known counts how many of its cells the data settles.'),
+      h('h3',null,'What the boards’ own data says about their reliability'),
+      h('ul',null,
+        h('li',null,h('strong',null,'RoboChallenge Table 30: '),'split-half reliability 0.95 (Spearman–Brown), yet the suite rank predicts a single held-out task at a true-ordering ρ of only 0.74 — about 45% of the rank variance on a new task is not in the leaderboard. Model × task interaction is 1.22× the between-model effect. Shortlist with the board; certify on your task.'),
+        h('li',null,h('strong',null,'WBench: '),'split-half reliability 0.75. Interaction is an independent axis — rank on the other four dimensions predicts it at ρ = −0.07 — and it is the only dimension where world models reliably separate. “Quality” is six sub-metrics with mean pairwise agreement of 0.06 and one anti-correlated pair; the composite has no support from its components.')),
+      h('h3',null,'Independence and sources'),
+      h('p',null,'OrbitEval is not affiliated with RoboChallenge, RoboDojo or WBench. All three publish their results openly and are used under the terms they were published with. Where a computation can be checked against a benchmark’s own published figure it is: RoboChallenge’s suite means reproduce to 0.000 pp; the mean of WBench’s five dimensions reproduces its Average to 0.04.'));
+  }
+
+  function App(){
+    var s0=useState('overview'), page=s0[0], setPage=s0[1];
+    var s1=useState(D.boards[0].key), bkey=s1[0], setBkey=s1[1];
+    var s2=useState('matrix'), view=s2[0], setView=s2[1];
+    var s3=useState({key:'overall',desc:true}), sort=s3[0], setSort=s3[1];
+    var s4=useState(''), query=s4[0], setQuery=s4[1];
+    var s5=useState({}), hidden=s5[0], setHidden=s5[1];
+    var s6=useState(false), onlyRes=s6[0], setOnlyRes=s6[1];
+    var s7=useState(true), announce=s7[0], setAnnounce=s7[1];
+    var s8=useState(true), showRail=s8[0], setShowRail=s8[1];
+    var board=D.boards.filter(function(b){return b.key===bkey;})[0];
+    var domains=Object.keys(D.schema.domains);
+
+    function openBoard(k){ setBkey(k); setPage('board'); setSort({key:'overall',desc:true}); setQuery(''); setHidden({}); }
+    function onSort(k){ setSort(function(p){ return p.key===k?{key:k,desc:!p.desc}:{key:k,desc:true}; }); }
+    function domainOfKey(k){ return D.boards.filter(function(b){return b.key===k;})[0].domain; }
+
+    var sidebar=h('aside',{className:'sidebar'},
+      h('div',{className:'brand'}, h('span',{className:'mark'},h('i')),
+        h('div',{className:'word'},'OrbitEval', h('small',null,'Capability Arena'))),
+      h('nav',{className:'nav'},
+        h('button',{'aria-current':page==='overview',onClick:function(){setPage('overview');}}, I.grid(),'Overview'),
+        h('button',{'aria-current':page==='board',onClick:function(){setPage('board');}}, I.list(),'Leaderboards'),
+        h('button',{'aria-current':page==='method',onClick:function(){setPage('method');}}, I.book(),'Methodology')),
+      h('div',{className:'promo'},
+        h('div',{className:'thumb'}, h('i',{style:{width:'78%'}}), h('i',{style:{width:'62%'}}), h('i',{style:{width:'44%'}})),
+        h('h4',null,'Run it on your own evals'),
+        h('p',null,'Pairwise or fixed-suite, private or public — the same statistics on your data.'),
+        h('a',{className:'btn primary block',href:'mailto:rahil@orbiteval.com?subject=Private%20capability%20board'},'Get a private board'),
+        h('a',{className:'btn ghost block',href:'https://pypi.org/project/orbit-eval/'},'pip install orbit-eval')),
+      h('div',{className:'legal'}, h('a',{href:'about.html'},'About OrbitEval'), h('span',null,'Independent · not affiliated with any benchmark')));
+
+    var topbar=h('div',{className:'topbar'},
+      h('button',{className:'tab','aria-current':page==='overview',onClick:function(){setPage('overview');}}, I.grid(),'Overview'),
+      h('div',{className:'tabs-center'}, domains.map(function(d){
+        var first=D.boards.filter(function(b){return b.domain===d;})[0];
+        var cur=page==='board'&&domainOfKey(bkey)===d;
+        return h('button',{key:d,className:'tab','aria-current':cur,onClick:function(){openBoard(first.key);}},
+          DOMICON[d](), D.schema.domains[d].label); })),
+      h('a',{className:'btn ghost',href:'#',onClick:function(e){e.preventDefault();setPage('method');}},'Methodology'),
+      h('a',{className:'btn primary',href:'mailto:rahil@orbiteval.com?subject=Private%20capability%20board'},'Get a private board'));
+
+    var rail=null, content=null;
+    if(page==='board'){
+      var u=unitOf(board);
+      rail=h('aside',{className:'rail'},
+        h('section',null, h('h5',null,I.eye(),'View as'),
+          h('div',{className:'seg'},
+            h('button',{'aria-current':view==='matrix',onClick:function(){setView('matrix');}},I.grid(),'Matrix'),
+            h('button',{'aria-current':view==='list',onClick:function(){setView('list');}},I.list(),'Ranking'))),
+        h('section',null, h('h5',null,I.db(),'Boards ',h('span',{className:'n'},'('+D.boards.length+')')),
+          h('div',{className:'list'}, D.boards.map(function(b){
+            return h('button',{key:b.key,'aria-current':b.key===bkey,onClick:function(){openBoard(b.key);}},
+              DOMICON[b.domain](), h('span',null,b.label,h('span',{className:'sub'},b.rows.length+' models · '+Math.round(100*b.cells_resolved/b.cells_total)+'% resolved')),
+              b.key===bkey?h('span',{className:'tick'},'✓'):null); }))),
+        view==='matrix'? h('section',null, h('h5',null,I.layers(),'Capabilities ',h('span',{className:'n'},'('+board.capabilities.length+')')),
+          h('div',{className:'list'}, board.capabilities.map(function(c){
+            var on=!hidden[c];
+            return h('label',{key:c,className:on?'on':''},
+              h('input',{type:'checkbox',checked:on,onChange:function(){ var n=Object.assign({},hidden); if(on) n[c]=true; else delete n[c]; setHidden(n); }}),
+              h('span',null,LABEL[c],h('span',{className:'sub'},'field '+f1(board.column_rate[c])+u))); }))) : null,
+        h('section',null, h('h5',null,I.sliders(),'Show'),
+          h('div',{className:'list'},
+            h('label',{className:!onlyRes?'on':''}, h('input',{type:'radio',name:'show',checked:!onlyRes,onChange:function(){setOnlyRes(false);}}),'All models'),
+            h('label',{className:onlyRes?'on':''}, h('input',{type:'radio',name:'show',checked:onlyRes,onChange:function(){setOnlyRes(true);}}),'Only models with a resolved cell'))));
+
+      var tied=board.rows.filter(function(r){return r.best_rank!=null && r.best_rank!==r.worst_rank;}).length;
+      content=h(F,null,
+        h('div',{className:'head'},
+          h('div',{className:'titlerow'}, h('h1',{className:'serif'}, board.label),
+            h('span',{className:'chip'},h('span',{className:'dot'}), domainOf(board).label)),
+          h('p',{className:'desc'}, board.blurb+' Cells the data cannot distinguish from the field are greyed, so what you read here is only what is known.'),
+          h('div',{className:'meta'},
+            h('span',null,I.clock(),'Built '+D.built),
+            h('span',null,I.check(), big(observations(board))+' '+board.unit),
+            h('span',null,I.db(), board.rows.length+' models'),
+            h('span',null,I.info(), (board.rows.length-tied)+' of '+board.rows.length+' ranks fixed by the data'))),
+        h('div',{className:'card'},
+          h('div',{className:'toolbar'},
+            h('button',{className:'toolbtn',onClick:function(){setShowRail(!showRail);}}, I.sliders(), showRail?'Hide filters':'Show filters'),
+            h('div',{className:'grow'}),
+            h('div',{className:'seg'},
+              h('button',{'aria-current':view==='matrix',onClick:function(){setView('matrix');}},'Matrix'),
+              h('button',{'aria-current':view==='list',onClick:function(){setView('list');}},'Ranking')),
+            h('div',{className:'search'}, I.search(), h('input',{id:'q',value:query,placeholder:'Filter models or teams…',onChange:function(e){setQuery(e.target.value);}}))),
+          h(Board,{board:board,view:view,sort:sort,onSort:onSort,query:query,hidden:hidden,onlyResolved:onlyRes,onClear:function(){setQuery('');}}),
+          view==='matrix'? h('div',{className:'legend'},
+            h('i',null,h('span',{className:'ramp'}),'weaker → stronger, within column'),
+            h('i',null,h('span',{className:'sw',style:{background:'var(--undet)'}}), board.kind==='mean'?'published data cannot prove a difference':'not distinguishable from the field'),
+            h('i',null,h('span',{className:'sw',style:{background:'repeating-linear-gradient(135deg,transparent,transparent 5px,var(--line-soft) 5px,var(--line-soft) 6px)',border:'1px solid var(--line-soft)'}}),'not measured here'),
+            h('i',null,h('span',{className:'sw',style:{background:'var(--plum-pale)',borderBottom:'2px solid var(--gold)'}}),'best in column')) : null),
+        board.kind==='mean'&&board.calibration? h('div',{className:'card diag'},
+          h('h3',null,'These intervals are bounds — and the bound has been measured'),
+          h('p',null, board.label+' publishes no uncertainty, so intervals here are a worst case: at most ±'+f1(1.96*50/Math.sqrt(board.meta.assumed_n))+' points over '+board.meta.assumed_n+' cases. Re-scoring '+board.calibration.metric+' on the released videos of '
+            +board.calibration.points.map(function(q){return q.model;}).join(' and ')+' reproduces the published means to within 0.3 and shows the real standard error is '
+            +board.calibration.points.map(function(q){return q.ratio.toFixed(0)+'×';}).join(' and ')+' tighter than this bound for that metric. Per-case results would collapse most of the grey.')) : null,
+        h(Diagnostics,{board:board}));
+    } else if(page==='method'){
+      content=h(Methodology);
+    } else {
+      content=h(Overview,{open:openBoard});
+    }
+
+    var wide = page!=='board' || !showRail;
+    return h(F,null,
+      announce? h('div',{className:'announce'},
+        h('span',null,h('b',null,'New analysis: '),'WBench’s Interaction axis is independent of its other four dimensions — and it’s the only one that separates world models.'),
+        h('a',{href:'#',onClick:function(e){e.preventDefault();setPage('method');}},'Read the methodology', I.arrow()),
+        h('button',{className:'x','aria-label':'Dismiss',onClick:function(){setAnnounce(false);}},'×')) : null,
+      h('div',{className:'shell'}, sidebar,
+        h('div',{className:'main'}, topbar,
+          h('div',{className:'body'+(wide?' wide':'')}, wide?null:rail, h('main',{className:'content'}, content)))));
+  }
+
+  ReactDOM.createRoot(document.getElementById('root')).render(h(App));
 })();
-
-/* ---- reveal sections as they arrive ---- */
-(function(){
-  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  if(!('IntersectionObserver' in window)) return;
-  var io = new IntersectionObserver(function(entries){
-    entries.forEach(function(en){
-      if(en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target); }
-    });
-  }, {rootMargin:'0px 0px -12% 0px', threshold:.08});
-  document.querySelectorAll('.rise').forEach(function(el){ io.observe(el); });
-})();
-
-[['cmd','cmdk'],['cmd2','cmdk2']].forEach(function(p){
-  var b=document.getElementById(p[0]), k=document.getElementById(p[1]);
-  if(!b) return;
-  b.addEventListener('click',function(){
-    var done=function(){k.textContent='Copied';setTimeout(function(){k.textContent='Copy';},1600);};
-    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText('pip install orbit-eval').then(done,done);}else{done();}
-  });
-});
 </script>
 </body>
 </html>
