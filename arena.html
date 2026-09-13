@@ -1,0 +1,710 @@
+<title>OrbitEval Arena</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap">
+
+<style>
+  :root{
+    --bg:#F4F3F0; --surface:#FFFFFF; --surface-2:#FAF9F7;
+    --ink:#14161A; --muted:#666B74; --faint:#95999F;
+    --line:#E5E3DE; --line-soft:#EFEDE9;
+    --pinned:#1C6B4B; --pinned-bg:#E8F2ED;
+    --tied:#A8482A; --tied-bg:#FAEDE8;
+    --reach:#7A5B14; --reach-bg:#FBF2DD;
+    --band:#C6D3E6; --band-lit:#8DA6C9; --band-gen:#DDE4EE;
+    --dot:#14161A; --brand:#E08C1F;
+    --sb:236px; --rail:214px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);
+    font-family:"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+    font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+  #root{min-height:100vh}
+  .mono{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+    font-variant-numeric:tabular-nums}
+  h1,h2,h3{margin:0}
+  a{color:inherit}
+  button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+  button:focus-visible,input:focus-visible{outline:2px solid var(--ink);outline-offset:2px;
+    border-radius:4px}
+
+  /* ---------- shell ---------- */
+  .shell{display:grid;grid-template-columns:var(--sb) 1fr;min-height:100vh}
+  .sidebar{background:var(--bg);border-right:1px solid var(--line);
+    display:flex;flex-direction:column;gap:18px;padding:18px 14px;position:sticky;top:0;
+    height:100vh;overflow-y:auto}
+  .brandmark{display:flex;align-items:center;gap:9px;padding:4px 8px 2px}
+  .brandmark .glyph{width:22px;height:22px;border-radius:5px;background:var(--ink);
+    display:grid;place-items:center;flex:none}
+  .brandmark .glyph i{width:7px;height:7px;border-radius:50%;background:var(--brand);
+    display:block;font-style:normal}
+  .brandmark b{font-family:Newsreader,Georgia,serif;font-weight:500;font-size:1.12rem;
+    letter-spacing:.01em}
+  .brandmark span{font-size:.7rem;color:var(--faint);letter-spacing:.13em;text-transform:uppercase}
+
+  .navlist{display:flex;flex-direction:column;gap:2px}
+  .navlist button{display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:7px;
+    font-size:.9rem;color:var(--muted);text-align:left;width:100%}
+  .navlist button:hover{background:#EDEBE6}
+  .navlist button[aria-current="true"]{background:var(--surface);color:var(--ink);
+    font-weight:500;box-shadow:0 1px 2px rgba(20,22,26,.05)}
+  .navlist .ic{width:15px;text-align:center;color:var(--faint);flex:none}
+  .navlist button[aria-current="true"] .ic{color:var(--ink)}
+
+  .sbcard{margin-top:auto;background:var(--surface);border:1px solid var(--line);
+    border-radius:10px;padding:13px;display:flex;flex-direction:column;gap:7px}
+  .sbcard h4{margin:0;font-size:.84rem;font-weight:600}
+  .sbcard p{margin:0;font-size:.76rem;color:var(--muted);line-height:1.45}
+  .sbcard code{font-family:"JetBrains Mono",Menlo,monospace;font-size:.72rem;
+    background:var(--surface-2);border:1px solid var(--line);border-radius:5px;
+    padding:5px 7px;display:block;overflow-x:auto;white-space:nowrap}
+
+  /* ---------- top bar ---------- */
+  .main{display:flex;flex-direction:column;min-width:0}
+  .topbar{display:flex;align-items:center;gap:8px;padding:11px 22px;
+    border-bottom:1px solid var(--line);background:var(--bg);position:sticky;top:0;z-index:5;
+    flex-wrap:wrap}
+  .tabs{display:flex;gap:4px;flex-wrap:wrap}
+  .tabs button{padding:6px 13px;border-radius:8px;font-size:.88rem;color:var(--muted)}
+  .tabs button:hover{background:#EDEBE6}
+  .tabs button[aria-current="true"]{background:var(--surface);color:var(--ink);font-weight:500;
+    border:1px solid var(--line)}
+  .grow{flex:1}
+  .cta{background:var(--ink);color:#fff;border-radius:8px;padding:7px 15px;font-size:.85rem;
+    font-weight:500;white-space:nowrap;text-decoration:none}
+  .cta:hover{background:#2A2E36}
+  .topnote{font-size:.78rem;color:var(--faint);margin-right:6px}
+
+  .body{display:grid;grid-template-columns:var(--rail) 1fr;min-width:0;align-items:start}
+  .rail{padding:20px 16px;display:flex;flex-direction:column;gap:22px;
+    border-right:1px solid var(--line);position:sticky;top:53px}
+  .rail h5{margin:0 0 8px;font-size:.7rem;letter-spacing:.13em;text-transform:uppercase;
+    color:var(--faint);font-weight:600}
+  .seg{display:flex;flex-direction:column;gap:2px}
+  .seg button{display:flex;align-items:center;justify-content:space-between;gap:8px;
+    padding:7px 10px;border-radius:7px;font-size:.86rem;color:var(--muted);width:100%;
+    text-align:left;line-height:1.3}
+  .seg button:hover{background:#EDEBE6}
+  .seg button[aria-current="true"]{background:var(--surface);color:var(--ink);font-weight:500;
+    border:1px solid var(--line)}
+  .seg .tick{color:var(--pinned);font-weight:700;flex:none}
+  .seg small{display:block;font-size:.72rem;color:var(--faint);font-weight:400}
+
+  .content{padding:26px 22px 70px;min-width:0;display:flex;flex-direction:column;gap:18px}
+  .pagehead{display:flex;flex-direction:column;gap:9px}
+  .pagehead h1{font-family:Newsreader,Georgia,serif;font-weight:400;
+    font-size:clamp(1.7rem,3.4vw,2.4rem);line-height:1.1}
+  .pagehead .sub{color:var(--muted);max-width:74ch;font-size:.95rem;margin:0}
+  .chips{display:flex;flex-wrap:wrap;gap:7px 16px;font-size:.8rem;color:var(--muted)}
+  .chips span{display:inline-flex;align-items:center;gap:6px}
+  .chips b{font-weight:500;color:var(--ink);font-family:"JetBrains Mono",Menlo,monospace;
+    font-variant-numeric:tabular-nums}
+
+  .toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .search{display:flex;align-items:center;gap:7px;background:var(--surface);
+    border:1px solid var(--line);border-radius:8px;padding:6px 11px;min-width:190px}
+  .search input{border:0;outline:0;background:none;font:inherit;font-size:.85rem;width:100%;
+    color:var(--ink)}
+  .search input::placeholder{color:var(--faint)}
+  .pillbar{display:flex;gap:3px;background:var(--surface);border:1px solid var(--line);
+    border-radius:8px;padding:3px}
+  .pillbar button{padding:4px 11px;border-radius:6px;font-size:.82rem;color:var(--muted)}
+  .pillbar button[aria-current="true"]{background:var(--ink);color:#fff;font-weight:500}
+
+  /* ---------- table ---------- */
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:11px;
+    overflow:hidden}
+  .tblwrap{overflow-x:auto}
+  table{border-collapse:collapse;width:100%;font-size:.85rem;min-width:900px}
+  thead th{text-align:left;padding:9px 13px;font-size:.68rem;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--faint);font-weight:600;
+    border-bottom:1px solid var(--line);white-space:nowrap;background:var(--surface-2)}
+  thead th.sortable{cursor:pointer;user-select:none}
+  thead th.sortable:hover{color:var(--ink)}
+  thead th .ar{color:var(--ink);margin-left:3px}
+  tbody td{padding:9px 13px;border-bottom:1px solid var(--line-soft);vertical-align:middle}
+  tbody tr:last-child td{border-bottom:0}
+  tbody tr:hover{background:var(--surface-2)}
+  td.num,th.num{text-align:right;font-family:"JetBrains Mono",Menlo,monospace;
+    font-variant-numeric:tabular-nums;white-space:nowrap}
+  .model{display:flex;flex-direction:column;gap:1px;min-width:0}
+  .model .nm{font-family:"JetBrains Mono",Menlo,monospace;font-size:.85rem;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:30ch}
+  .model .org{font-size:.74rem;color:var(--faint)}
+  .rk{font-family:"JetBrains Mono",Menlo,monospace;font-variant-numeric:tabular-nums;
+    color:var(--muted)}
+  .sc{font-family:"JetBrains Mono",Menlo,monospace;font-variant-numeric:tabular-nums;
+    font-weight:500}
+  .ci{font-family:"JetBrains Mono",Menlo,monospace;font-size:.74rem;color:var(--faint);
+    margin-left:5px;font-variant-numeric:tabular-nums}
+
+  .spread{display:flex;align-items:center;gap:6px;min-width:104px}
+  .spread .e{font-family:"JetBrains Mono",Menlo,monospace;font-size:.76rem;color:var(--muted);
+    font-variant-numeric:tabular-nums;width:1.5rem;text-align:center;flex:none}
+  .spread .ln{position:relative;flex:1;height:9px;min-width:44px}
+  .spread .ln::before{content:"";position:absolute;left:0;right:0;top:50%;height:1px;
+    background:var(--line);transform:translateY(-50%)}
+  .spread .seg2{position:absolute;top:50%;height:3px;border-radius:2px;background:var(--band-lit);
+    transform:translateY(-50%)}
+  .spread .kn{position:absolute;top:50%;width:7px;height:7px;border-radius:50%;
+    background:var(--dot);transform:translate(-50%,-50%)}
+  .pin .spread .seg2{background:var(--pinned)}
+  .pin .spread .kn{background:var(--pinned)}
+  .pin .model .nm{font-weight:600}
+
+  .iv{position:relative;height:16px;min-width:150px}
+  .iv .gridline{position:absolute;top:0;bottom:0;width:1px;background:var(--line-soft)}
+  .iv .gen{position:absolute;top:50%;height:12px;transform:translateY(-50%);
+    border:1px solid var(--band-gen);border-radius:3px}
+  .iv .bar{position:absolute;top:50%;height:6px;transform:translateY(-50%);
+    background:var(--band);border-radius:2px}
+  .pin .iv .bar{background:var(--band-lit)}
+  .iv .pt{position:absolute;top:50%;width:7px;height:7px;border-radius:50%;background:var(--dot);
+    transform:translate(-50%,-50%)}
+  .iv .off{position:absolute;top:50%;left:0;width:14%;height:6px;transform:translateY(-50%);
+    background:linear-gradient(90deg,var(--band),transparent);border-radius:2px}
+  .iv .offtx{position:absolute;top:50%;left:16%;transform:translateY(-50%);font-size:.68rem;
+    color:var(--faint);font-family:"JetBrains Mono",Menlo,monospace;white-space:nowrap}
+
+  .tag{display:inline-block;font-family:"JetBrains Mono",Menlo,monospace;font-size:.7rem;
+    padding:2px 8px;border-radius:20px;white-space:nowrap;font-weight:500}
+  .tag.pinned{background:var(--pinned-bg);color:var(--pinned)}
+  .tag.tied{background:var(--tied-bg);color:var(--tied)}
+  .tag.reach{background:var(--reach-bg);color:var(--reach)}
+
+  .note{background:var(--surface);border:1px solid var(--line);
+    border-left:3px solid var(--ink);border-radius:9px;padding:12px 14px;font-size:.87rem;
+    color:var(--muted);max-width:92ch}
+  .note.warn{border-left-color:var(--tied)}
+  .note.good{border-left-color:var(--pinned)}
+  .note strong{color:var(--ink);font-weight:600}
+  .note p{margin:0}
+
+  .prose{display:flex;flex-direction:column;gap:12px;max-width:74ch}
+  .prose h2{font-family:Newsreader,Georgia,serif;font-weight:400;font-size:1.5rem}
+  .prose h3{font-size:.95rem;font-weight:600;margin-top:6px}
+  .prose p{margin:0;color:var(--muted);font-size:.92rem}
+  .prose strong{color:var(--ink)}
+  .prose code{font-family:"JetBrains Mono",Menlo,monospace;font-size:.84em;
+    background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:1px 5px}
+
+  .empty{padding:38px 16px;text-align:center;color:var(--faint);font-size:.88rem}
+
+  @media (max-width:1000px){
+    .shell{grid-template-columns:1fr}
+    .sidebar{position:static;height:auto;flex-direction:row;align-items:center;
+      border-right:0;border-bottom:1px solid var(--line);overflow-x:auto}
+    .sbcard{display:none}
+    .navlist{flex-direction:row}
+    .body{grid-template-columns:1fr}
+    .rail{position:static;border-right:0;border-bottom:1px solid var(--line);
+      flex-direction:row;flex-wrap:wrap;gap:18px}
+    .rail>div{min-width:160px;flex:1}
+  }
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<script type="application/json" id="arena-data">{"boards":{"roboarena":{"policies":[{"policy":"dreaming_zebra","order":1,"score":194.5253578948501,"ci":[141.8402146207669,247.2105011689333],"half_width":52.6851432740832,"best_rank":1,"worst_rank":1,"pinned":true,"n":172},{"policy":"pi05_droid","order":2,"score":93.47648856639425,"ci":[65.995244171211,120.95773296157753],"half_width":27.48124439518326,"best_rank":2,"worst_rank":5,"pinned":false,"n":662},{"policy":"pi0_fast_droid","order":3,"score":67.58703214015524,"ci":[42.527562057227556,92.64650222308293],"half_width":25.059470082927692,"best_rank":2,"worst_rank":8,"pinned":false,"n":841},{"policy":"paligemma_vq_droid","order":4,"score":46.60797006888823,"ci":[21.59535651462891,71.62058362314754],"half_width":25.01261355425932,"best_rank":2,"worst_rank":8,"pinned":false,"n":855},{"policy":"paligemma_fast_specialist_droid","order":5,"score":36.758424952791145,"ci":[13.352753424748853,60.164096480833436],"half_width":23.405671528042294,"best_rank":3,"worst_rank":8,"pinned":false,"n":984},{"policy":"paligemma_diffusion_droid","order":6,"score":35.51806493015392,"ci":[10.810573462258327,60.22555639804951],"half_width":24.707491467895593,"best_rank":3,"worst_rank":8,"pinned":false,"n":855},{"policy":"paligemma_fast_droid","order":7,"score":26.334047882854158,"ci":[3.0538485264627813,49.614247239245536],"half_width":23.280199356391375,"best_rank":3,"worst_rank":9,"pinned":false,"n":999},{"policy":"dam","order":8,"score":-12.450467451418985,"ci":[-98.02486393477002,73.12392903193205],"half_width":85.57439648335104,"best_rank":2,"worst_rank":9,"pinned":false,"n":57},{"policy":"pi0_droid","order":9,"score":-14.830462351845453,"ci":[-37.856407935190774,8.195483231499873],"half_width":23.025945583345326,"best_rank":7,"worst_rank":9,"pinned":false,"n":1048},{"policy":"paligemma_binning_droid","order":10,"score":-473.5264566328226,"ci":[-531.9469055559385,-415.1060077097066],"half_width":58.42044892311597,"best_rank":10,"worst_rank":10,"pinned":true,"n":593}],"dropped":[{"policy":"floppy_bagel_525k_temp1p0","n":31,"reason":"fewer than 50 comparisons"},{"policy":"floppy_bagel_420k","n":29,"reason":"fewer than 50 comparisons"},{"policy":"paligemma_norm_droid","n":24,"reason":"fewer than 50 comparisons"},{"policy":"j2-vla","n":22,"reason":"fewer than 50 comparisons"},{"policy":"Apricot","n":19,"reason":"fewer than 50 comparisons"},{"policy":"floppy_bagel_285k_temp1p0","n":12,"reason":"fewer than 50 comparisons"},{"policy":"floppy_bagel_90k_temp1p0","n":10,"reason":"fewer than 50 comparisons"},{"policy":"floppy_bagel_195k_temp1p0","n":7,"reason":"fewer than 50 comparisons"},{"policy":"allenai/MolmoAct2-DROID","n":5,"reason":"fewer than 50 comparisons"},{"policy":"Cosmos3-Nano-Policy","n":2,"reason":"fewer than 50 comparisons"}],"n_comparisons":3533,"n_policies":10,"pairs_separated":25,"pairs_total":45,"pinned":2,"sizing":[{"higher":"dreaming_zebra","lower":"pi05_droid","gap":101.04886932845582,"se":31.272150213972722,"budget_multiple":0.7517271660203212,"exact_tie":false,"resolved":true,"hopeless":false,"head_to_head":33},{"higher":"pi05_droid","lower":"pi0_fast_droid","gap":25.889456426239004,"se":17.864380494218338,"budget_multiple":3.737125917600898,"exact_tie":false,"resolved":false,"hopeless":false,"head_to_head":98},{"higher":"pi0_fast_droid","lower":"paligemma_vq_droid","gap":20.97906207126702,"se":16.435664566727127,"budget_multiple":4.81737081759627,"exact_tie":false,"resolved":false,"hopeless":false,"head_to_head":135},{"higher":"paligemma_vq_droid","lower":"paligemma_fast_specialist_droid","gap":9.849545116097085,"se":16.252204805918627,"budget_multiple":21.369772576121132,"exact_tie":false,"resolved":false,"hopeless":false,"head_to_head":104},{"higher":"paligemma_fast_specialist_droid","lower":"paligemma_diffusion_droid","gap":1.2403600226372273,"se":15.89755409964133,"budget_multiple":1289.3557976529412,"exact_tie":false,"resolved":false,"hopeless":true,"head_to_head":127},{"higher":"paligemma_diffusion_droid","lower":"paligemma_fast_droid","gap":9.184017047299761,"se":15.844560264295012,"budget_multiple":23.361605928338328,"exact_tie":false,"resolved":false,"hopeless":false,"head_to_head":125},{"higher":"paligemma_fast_droid","lower":"dam","gap":38.784515334273145,"se":49.199211780836755,"budget_multiple":12.630112746876227,"exact_tie":false,"resolved":false,"hopeless":false,"head_to_head":10},{"higher":"dam","lower":"pi0_droid","gap":2.3799949004264676,"se":49.2062677014292,"budget_multiple":3355.03049436564,"exact_tie":false,"resolved":false,"hopeless":true,"head_to_head":9},{"higher":"pi0_droid","lower":"paligemma_binning_droid","gap":458.6959942809771,"se":33.82856718363404,"budget_multiple":0.04268988519705005,"exact_tie":false,"resolved":true,"hopeless":false,"head_to_head":93}],"min_comparisons":50,"block":{"sessions":566,"slots":7,"pairs_per_session":21,"labelled":566,"derivable":11886,"net_new":11320,"growth":4.20407585621285,"ci_width_after":0.4877134450652431},"corpus":{"sessions":3884,"usable":3677,"policies":21,"instructions":2598,"instructions_once":2207,"instructions_ten_plus":21,"comparisons_per_instruction":1.4153194765204002,"evaluators":58,"locations":32,"top_location":"frodobots","top_location_share":0.5683981506663041,"top3_evaluator_share":0.7291270057111776,"span":["2025-04-15","2026-07-16"]},"kind":"pairwise","source":{"name":"RoboArena","dump":"RoboArena/DataDump_07-17-2026","url":"https://huggingface.co/datasets/RoboArena/DataDump_07-17-2026","paper":"https://arxiv.org/abs/2506.18123","licence":"MIT","platform":"DROID (Franka Panda 7DoF)","method":"Bradley\u2013Terry on double-blind pairwise preferences","unit":"comparisons"}},"robochallenge":{"policies":[{"policy":"Era0","order":1,"score":64.33333333333333,"ci":[60.473757752764044,68.19290891390261],"half_width":3.859575580569283,"best_rank":1,"worst_rank":2,"pinned":false,"gen_ci":[52.092159753818734,76.57450691284792],"gen_best_rank":1,"gen_worst_rank":7,"n":300},{"policy":"DM0 (Dexmal)","order":2,"score":62.0,"ci":[58.65591365758138,65.34408634241862],"half_width":3.344086342418616,"best_rank":1,"worst_rank":2,"pinned":false,"gen_ci":[47.98571793788039,76.0142820621196],"gen_best_rank":1,"gen_worst_rank":8,"n":300},{"policy":"GigaBrain-0.1","order":3,"score":51.66666666666667,"ci":[47.75218682633618,55.58114650699717],"half_width":3.9144798403304932,"best_rank":3,"worst_rank":5,"pinned":false,"gen_ci":[38.54123647332468,64.79209686000867],"gen_best_rank":1,"gen_worst_rank":10,"n":300},{"policy":"Spirit-v1.5","order":4,"score":51.0,"ci":[47.06377288210592,54.93622711789408],"half_width":3.9362271178940746,"best_rank":3,"worst_rank":5,"pinned":false,"gen_ci":[37.93301023479804,64.06698976520197],"gen_best_rank":1,"gen_worst_rank":10,"n":300},{"policy":"Lira_generalist","order":5,"score":45.0,"ci":[41.264052945500026,48.73594705449998],"half_width":3.735947054499975,"best_rank":3,"worst_rank":7,"pinned":false,"gen_ci":[31.455156890076108,58.544843109923896],"gen_best_rank":1,"gen_worst_rank":12,"n":300},{"policy":"pi0.5 (rc_baseline)","order":6,"score":42.66666666666667,"ci":[38.71420761550461,46.61912571782872],"half_width":3.952459051162052,"best_rank":5,"worst_rank":9,"pinned":false,"gen_ci":[29.921847332718265,55.41148600061507],"gen_best_rank":1,"gen_worst_rank":12,"n":300},{"policy":"Atlas_generalist","order":7,"score":39.666666666666664,"ci":[35.75218682633617,43.58114650699716],"half_width":3.9144798403304932,"best_rank":5,"worst_rank":9,"pinned":false,"gen_ci":[27.076962475039,52.25637085829433],"gen_best_rank":1,"gen_worst_rank":12,"n":300},{"policy":"DM0_generalist","order":8,"score":37.33333333333333,"ci":[33.95117267474731,40.715493991919345],"half_width":3.3821606585860158,"best_rank":6,"worst_rank":9,"pinned":false,"gen_ci":[23.492360777953838,51.17430588871282],"gen_best_rank":2,"gen_worst_rank":13,"n":300},{"policy":"wall-oss-v0.1","order":9,"score":35.333333333333336,"ci":[31.413405362544,39.25326130412267],"half_width":3.91992797078933,"best_rank":6,"worst_rank":10,"pinned":false,"gen_ci":[23.345471663078676,47.32119500358799],"gen_best_rank":3,"gen_worst_rank":13,"n":300},{"policy":"pi0 (rc_baseline)","order":10,"score":28.333333333333332,"ci":[24.451702855632295,32.214963811034366],"half_width":3.8816304777010355,"best_rank":9,"worst_rank":11,"pinned":false,"gen_ci":[17.698032635647888,38.96863403101878],"gen_best_rank":3,"gen_worst_rank":18,"n":300},{"policy":"VLO","order":11,"score":25.666666666666664,"ci":[21.976702251195245,29.356631082138087],"half_width":3.68996441547142,"best_rank":10,"worst_rank":12,"pinned":false,"gen_ci":[15.089649631857933,36.2436837014754],"gen_best_rank":5,"gen_worst_rank":19,"n":300},{"policy":"X-VLA","order":12,"score":21.333333333333336,"ci":[18.561525683425376,24.105140983241295],"half_width":2.771807649907958,"best_rank":11,"worst_rank":13,"pinned":false,"gen_ci":[9.382361262299868,33.2843054043668],"gen_best_rank":5,"gen_worst_rank":22,"n":300},{"policy":"pi05_generalist","order":13,"score":17.666666666666668,"ci":[14.30348928612028,21.029844047213054],"half_width":3.3631773805463867,"best_rank":12,"worst_rank":18,"pinned":false,"gen_ci":[8.968021020904338,26.365312312428994],"gen_best_rank":8,"gen_worst_rank":22,"n":300},{"policy":"RDT-1B","order":14,"score":15.0,"ci":[11.901024837125933,18.098975162874066],"half_width":3.0989751628740665,"best_rank":13,"worst_rank":18,"pinned":false,"gen_ci":[6.660716390184526,23.33928360981547],"gen_best_rank":10,"gen_worst_rank":22,"n":300},{"policy":"GR00T","order":15,"score":14.333333333333334,"ci":[11.47808741010043,17.18857925656624],"half_width":2.8552459232329035,"best_rank":13,"worst_rank":19,"pinned":false,"gen_ci":[5.483716504444268,23.182950162222397],"gen_best_rank":10,"gen_worst_rank":22,"n":300},{"policy":"GR00T-MULTI","order":16,"score":13.333333333333334,"ci":[10.172986367806484,16.49368029886018],"half_width":3.160346965526849,"best_rank":13,"worst_rank":20,"pinned":false,"gen_ci":[6.280133514596894,20.38653315206977],"gen_best_rank":10,"gen_worst_rank":22,"n":300},{"policy":"ZR-0_generalist","order":17,"score":12.666666666666668,"ci":[9.789084711342674,15.544248621990661],"half_width":2.877581955323993,"best_rank":13,"worst_rank":20,"pinned":false,"gen_ci":[4.864448272965191,20.468885060368144],"gen_best_rank":10,"gen_worst_rank":22,"n":300},{"policy":"cogact","order":18,"score":11.666666666666666,"ci":[8.781677795729905,14.551655537603429],"half_width":2.8849888709367613,"best_rank":13,"worst_rank":20,"pinned":false,"gen_ci":[4.566670316672685,18.76666301666065],"gen_best_rank":10,"gen_worst_rank":22,"n":300},{"policy":"pi0_generalist","order":19,"score":9.000000000000002,"ci":[6.330161004406257,11.669838995593745],"half_width":2.6698389955937443,"best_rank":15,"worst_rank":22,"pinned":false,"gen_ci":[3.105108295065547,14.894891704934455],"gen_best_rank":12,"gen_worst_rank":22,"n":300},{"policy":"VLA_test_0204","order":20,"score":9.000000000000002,"ci":[6.862930110401101,11.137069889598902],"half_width":2.1370698895988998,"best_rank":16,"worst_rank":21,"pinned":false,"gen_ci":[1.1742369260837258,16.825763073916278],"gen_best_rank":11,"gen_worst_rank":22,"n":300},{"policy":"VLA_test_0119","order":21,"score":5.0,"ci":[3.0509551189822677,6.949044881017732],"half_width":1.9490448810177325,"best_rank":19,"worst_rank":22,"pinned":false,"gen_ci":[0.13967449311107355,9.860325506888927],"gen_best_rank":12,"gen_worst_rank":22,"n":300},{"policy":"openvla-oft","order":22,"score":5.0,"ci":[3.163713750529537,6.836286249470463],"half_width":1.8362862494704628,"best_rank":20,"worst_rank":22,"pinned":false,"gen_ci":[-0.29511415793932805,10.295114157939327],"gen_best_rank":12,"gen_worst_rank":22,"n":300}],"dropped":[{"policy":"exp125","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"exp61","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"Lira-A","n":220,"reason":"covers 22 of 30 tasks"},{"policy":"exp108","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"exp36","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test (Kaidong Zhang)","n":280,"reason":"covers 28 of 30 tasks"},{"policy":"model_test (Pushi Zhang)","n":80,"reason":"covers 8 of 30 tasks"},{"policy":"Model_Test (Xiaoyu Chen)","n":60,"reason":"covers 6 of 30 tasks"},{"policy":"model_test (Yu Sun)","n":60,"reason":"covers 6 of 30 tasks"},{"policy":"exp34","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"DualArmVLA","n":210,"reason":"covers 21 of 30 tasks"},{"policy":"ZR-0 Generalist test","n":50,"reason":"covers 5 of 30 tasks"},{"policy":"pi05_full_30k_defaultlr","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"omnivla-0 (lyf)","n":220,"reason":"covers 22 of 30 tasks"},{"policy":"gxy_pi_ur5_special_arrange_fruits_in_basket","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"TAU","n":30,"reason":"covers 3 of 30 tasks"},{"policy":"delta_full_30k_ho10","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"TengenX0.1","n":280,"reason":"covers 28 of 30 tasks"},{"policy":"imo01","n":30,"reason":"covers 3 of 30 tasks"},{"policy":"pi05_full_20k_chunksize50","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"pi05_lora_20k","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"pi05-lora6k","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"pi05lora_flip_padding","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"pi05lora2","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"pi05lora1","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"pi05_lora_5000steps_deltafix","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"pi05_lora_5000steps_delta","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"pi05_lora_5000steps","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test (Kailun Su)","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test/jky_arrange_fruits_in_basket","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"wx-test3","n":30,"reason":"covers 3 of 30 tasks"},{"policy":"initial-test","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"pi05 (Zhaolin Sun)","n":120,"reason":"covers 12 of 30 tasks"},{"policy":"Atlas_generalist_0517","n":80,"reason":"covers 8 of 30 tasks"},{"policy":" GigaBrain-0.1","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"exp102","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"model-test-0108","n":20,"reason":"covers 2 of 30 tasks"},{"policy":"omnivla-0 (Yang Cui)","n":50,"reason":"covers 5 of 30 tasks"},{"policy":"model-test","n":120,"reason":"covers 12 of 30 tasks"},{"policy":"test (Bocheng Li)","n":40,"reason":"covers 4 of 30 tasks"},{"policy":"exp9","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"turn_on_light_switch\u20143w-1","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"zys_v1","n":50,"reason":"covers 5 of 30 tasks"},{"policy":"gxy_pi_arx_special_turn_on_light_switch","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"old","n":40,"reason":"covers 4 of 30 tasks"},{"policy":"lingbot","n":20,"reason":"covers 2 of 30 tasks"},{"policy":"wx-test (Yu Sun)","n":70,"reason":"covers 7 of 30 tasks"},{"policy":"exp16","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"exp115","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_gxy_pi_arx_sort_electronic_products","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"sort_electronic_products","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"1\u2014\u2014multi","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"pi05_aloha_rc_joint_stack_bowls\u2014\u20143wsteps_AH_3","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_pi05_ft_aloha_qpos_stackbowls_fps15","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test1_stackbowls_fps15","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_stack_bowls","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test (Weichen Xu)","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_dyl_self_norm_lowdist_transfer_013","n":40,"reason":"covers 4 of 30 tasks"},{"policy":"test_dyl_self_norm_lowdist_013","n":40,"reason":"covers 4 of 30 tasks"},{"policy":"test_ljk_task_cluster5_global_008","n":50,"reason":"covers 5 of 30 tasks"},{"policy":"test (Robotera)","n":20,"reason":"covers 2 of 30 tasks"},{"policy":"pi05_aloha_3_stack_bowls","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"pi05_aloha_rc_joint_stack_bowls\u2014\u20143wsteps_AH","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"pi0.5test","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_ljk_task_cluster5_datawise_008","n":50,"reason":"covers 5 of 30 tasks"},{"policy":"xvla-test","n":40,"reason":"covers 4 of 30 tasks"},{"policy":"Model_Test (lyf)","n":70,"reason":"covers 7 of 30 tasks"},{"policy":"lhy_vla_test","n":40,"reason":"covers 4 of 30 tasks"},{"policy":"pi05_ft_starry","n":60,"reason":"covers 6 of 30 tasks"},{"policy":"pi05_aloha_stack_bowls","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"pi05_aloha_rc_joint_stack_bowls\u2014\u20143wsteps_AH_2","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"Atlas_generalist_0524","n":70,"reason":"covers 7 of 30 tasks"},{"policy":"test-ljk-gen-003-special","n":90,"reason":"covers 9 of 30 tasks"},{"policy":"test_wuchong_3","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"pi05_aloha_rc_joint_stack_bowls\u2014\u20143wsteps-3","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"pi05 (Yuxiang Lu)","n":30,"reason":"covers 3 of 30 tasks"},{"policy":"test-os","n":20,"reason":"covers 2 of 30 tasks"},{"policy":"pi05_aloha_rc_joint_stack_bowls","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"pi05_aloha_rc_joint_stack_bowls\u2014\u20143wsteps-2","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"L-Prime","n":50,"reason":"covers 5 of 30 tasks"},{"policy":"M0-EXP0","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test (Shuoshuo Xue)","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"joint-c12","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"pi05_aloha_6_stack_bowls","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"pi05 (Yunhao Ji)","n":20,"reason":"covers 2 of 30 tasks"},{"policy":"Fish","n":70,"reason":"covers 7 of 30 tasks"},{"policy":"test_model_wuchong2","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"stack_bowls","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"xvla-test-ac-30/120","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"xvla-test-ac-20/120","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"pi05_aloha_4_stack_bowls","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"pai","n":110,"reason":"covers 11 of 30 tasks"},{"policy":"test (Hongzhe Bi)","n":20,"reason":"covers 2 of 30 tasks"},{"policy":"test (Pushi Zhang)","n":90,"reason":"covers 9 of 30 tasks"},{"policy":"1B_0407","n":40,"reason":"covers 4 of 30 tasks"},{"policy":"test-0121","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"vla-test-fix-action-interpolation","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test (Yu Sun)","n":90,"reason":"covers 9 of 30 tasks"},{"policy":"test-joint-ck99-cw32","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"MSFM","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"Dev1ce","n":40,"reason":"covers 4 of 30 tasks"},{"policy":"test-stack_bowls","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"DualArmVlA","n":20,"reason":"covers 2 of 30 tasks"},{"policy":"pi05_aloha_ee_pose_quaternion_stackbowls_action_horizon_50_baseline","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_overlap_free0","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_version_d","n":30,"reason":"covers 3 of 30 tasks"},{"policy":"test_pi05_aloha_ee_pose_quaternion_stackbowls","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"pi05_aloha_ee_pose_quaternion_stackbowls_action_horizon_50_on_hor8_pretrained","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"action_horizon_50_on_hor8_pretrained_exec8","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"hb_test","n":70,"reason":"covers 7 of 30 tasks"},{"policy":"LMLA","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test (Xiaoquan Sun)","n":20,"reason":"covers 2 of 30 tasks"},{"policy":"pi05_aloha_ee_pose_quaternion_stackbowls_action_horizon_50_noisy_state","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"BS","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"WMA-v0.1","n":200,"reason":"covers 20 of 30 tasks"},{"policy":"Lingbot-va","n":20,"reason":"covers 2 of 30 tasks"},{"policy":"pi05 (Shuoshuo Xue)","n":30,"reason":"covers 3 of 30 tasks"},{"policy":"2B_0413_2.2","n":30,"reason":"covers 3 of 30 tasks"},{"policy":"v0.1","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_0317","n":20,"reason":"covers 2 of 30 tasks"},{"policy":"test_dm0_stack_bowls","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"DP","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"pi05_aloha_ee_pose_quaternion_stackbowls_action_horizon_16","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"pi05_aloha_ee_pose_quaternion_stackbowls_exc_32","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"exp96","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"alpha_vla_ver2","n":40,"reason":"covers 4 of 30 tasks"},{"policy":"exp94","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"exp95","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"exp78","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"exp4","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"exp82","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"Pi0.5 base lora by scanQR","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"R0-specialist","n":20,"reason":"covers 2 of 30 tasks"},{"policy":"test-sqc-001","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"wx-test2 (Pushi Zhang)","n":20,"reason":"covers 2 of 30 tasks"},{"policy":"wx-test (Pushi Zhang)","n":30,"reason":"covers 3 of 30 tasks"},{"policy":"test_dyl_rc_special_005","n":40,"reason":"covers 4 of 30 tasks"},{"policy":"pyro_test2","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"ljk_alh_2w_sqc_cln","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_dyl_gen_001","n":20,"reason":"covers 2 of 30 tasks"},{"policy":"gxy_pi_aloha_scan_QR_code","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test-dyl-gen-002","n":30,"reason":"covers 3 of 30 tasks"},{"policy":"scan_QR_code","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"VA-Test","n":30,"reason":"covers 3 of 30 tasks"},{"policy":"omnivla-0 (Kerui Li)","n":40,"reason":"covers 4 of 30 tasks"},{"policy":"joint-c9","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"pyyro_test_01","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"pi05_aloha_rc_joint_scan_QR_code_3","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_dyl_self_special_001","n":30,"reason":"covers 3 of 30 tasks"},{"policy":"pi05_aloha_rc_joint_scan_QR_code","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"2B_0414_1.6","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"SCD_sqc_260316_260318","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_dm0_special_scan_QR_code","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"ljk_alh_2w_sqc","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_version_d1","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test-ljk-gen-002","n":40,"reason":"covers 4 of 30 tasks"},{"policy":"test_ppipc_001","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_ljk_rc_special_005","n":40,"reason":"covers 4 of 30 tasks"},{"policy":"test_ljk_ppipc_002_single","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_ljk_multi_node","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_ljk_multi_node_01","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"pi05_aloha_rc_joint_put_pen_into_pencil_case_3w-AH-retry","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"pen_into_penci_vodp","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"pi05_aloha_rc_joint_put_pen_into_pencil_case_3w_3","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"pi05_aloha_rc_joint_put_pen_into_pencil_case_3w-AH","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"pi05_aloha_rc_joint_put_pen_into_pencil_case_3w","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_put_pen_into_pencil_case","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"pi05_aloha_rc_joint_put_pen_into_pencil_case_3w_2","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"put_pen_into_pencil_case","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"2B_0409","n":20,"reason":"covers 2 of 30 tasks"},{"policy":"vodpp_v3cnn_r2_d2","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"spirit-v1.5 (Siqi Zhou)","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"exp1","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"cdt_scd_rrd_10_95_9_rc_20260413_shared","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"cdt_rc_20260413_shared","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_data_batch_mix1a2_011","n":20,"reason":"covers 2 of 30 tasks"},{"policy":"cdt_scd_rc_20260413_shared","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"VA_Test (Xiaoyu Chen)","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_dyl_spec_rd_006","n":20,"reason":"covers 2 of 30 tasks"},{"policy":"test_ljk_task_cluster_global_01_ft_008","n":20,"reason":"covers 2 of 30 tasks"},{"policy":"test_data_batch2_011","n":20,"reason":"covers 2 of 30 tasks"},{"policy":"test_ljk_task_cluster_global_01_008","n":20,"reason":"covers 2 of 30 tasks"},{"policy":"test_ljk_task_cluster_global_008","n":20,"reason":"covers 2 of 30 tasks"},{"policy":"test_data_batch1_011","n":20,"reason":"covers 2 of 30 tasks"},{"policy":"test_cdt_002","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_cdt_001","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"joint-xp","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"pi05_r2a","n":30,"reason":"covers 3 of 30 tasks"},{"policy":"2B_0412_3.7","n":30,"reason":"covers 3 of 30 tasks"},{"policy":"t-pv2","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"task-p2","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"clean_dining_table","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"ljk_alh_2w_ivst_cdt","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"omnivla-0 (Xiaoyu Chen)","n":20,"reason":"covers 2 of 30 tasks"},{"policy":"Model","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"2B_robochallenge_0401","n":20,"reason":"covers 2 of 30 tasks"},{"policy":"pi05-clean_dining_table-2wsteps","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_ljk_task_cluster_01_007","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_ljk_task_cluster_007","n":20,"reason":"covers 2 of 30 tasks"},{"policy":"Policy-ZZW","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"nebula_rdt","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"exp123","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"exp18","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"gxy_pi_arx_special_wipe_the_table","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"2B_0415_1.1","n":20,"reason":"covers 2 of 30 tasks"},{"policy":"test (A-Team)","n":60,"reason":"covers 6 of 30 tasks"},{"policy":"VLA-Eval (Xiaoyu Chen)","n":30,"reason":"covers 3 of 30 tasks"},{"policy":"turn_on_faucet","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"1B_0403","n":20,"reason":"covers 2 of 30 tasks"},{"policy":"joint-c5","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"joint-c10","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"joint-x","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"ZR-0-Generalist","n":20,"reason":"covers 2 of 30 tasks"},{"policy":"joint-h64-c20","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"2B_0403","n":20,"reason":"covers 2 of 30 tasks"},{"policy":"exp19","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"gxy_pi_arx_special_search_green_boxes","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"old_aug","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"ominivla-0","n":20,"reason":"covers 2 of 30 tasks"},{"policy":"test_press_3b","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_press_3","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"exp75","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"exp35","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"pi0.5_test1","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"pi0.5 (Mao Zan)","n":20,"reason":"covers 2 of 30 tasks"},{"policy":"WR-V1.0","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"ZR-0-test","n":60,"reason":"covers 6 of 30 tasks"},{"policy":"fix_image_order","n":20,"reason":"covers 2 of 30 tasks"},{"policy":"test (Yinan Liang)","n":20,"reason":"covers 2 of 30 tasks"},{"policy":"VLA-Eval (lyf)","n":50,"reason":"covers 5 of 30 tasks"},{"policy":"test (Julong Wei)","n":20,"reason":"covers 2 of 30 tasks"},{"policy":"omnivla-0 ","n":40,"reason":"covers 4 of 30 tasks"},{"policy":"VA_Test (lyf)","n":60,"reason":"covers 6 of 30 tasks"},{"policy":"re_press","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"multitask-model-test","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_press_1","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_4","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_2","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_w","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"yx_test_aloha_pinc_eh","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"exp5","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"exp46","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"ljk_3_pinc","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_ljk_first_wave_012","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_ljk_batch_mix2a3_011","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"SCD_pinc_26031810_26031909","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_ljk_mix_two_012","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"ljk_34_pinc","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_pinc_002","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"ljk_RCCD_pinc","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_ljk-gen-001","n":30,"reason":"covers 3 of 30 tasks"},{"policy":"test_ljk_data_batch3_011","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_ljk_data_batch4_011","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_ljk_second_wave_012","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"gxy_pi_aloha_plug_in_network_cable","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"plug_in_network_cable_pi05_joint","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"plug_in_network_cable","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_ljk_batch_mixall_011","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"pi0.5_test","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_dm0_special_plug_in_network_cable","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test (Juntu Zhao)","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"lingo_s","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"spirit-v1.5 (Zichuan Lin)","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"cmhi-yk-t-s","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"exp73","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"cmhi-lhx-t-s","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"exp134","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"rdt1","n":40,"reason":"covers 4 of 30 tasks"},{"policy":"exp12","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"spirit-v1.5 (Liu Weilin)","n":20,"reason":"covers 2 of 30 tasks"},{"policy":"test_gxy_pi_franka_move_objects_into_box","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"exp31","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_franka_pipe","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"tp1","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test--","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"re_move","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_move_1","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test-r","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_kairos_v1","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_pi05","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test1","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"SA-VLA","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"exp39","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"tj","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"tp2","n":20,"reason":"covers 2 of 30 tasks"},{"policy":"test-p1","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_02_04","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"re_move_2","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test-v2","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test-j-r","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test-m","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"move_objects_into_box_new_rotation_trans","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_move_12","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_move_11","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_move_objects_into_box","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_move_10","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_move_9","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"move_test_8","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_move_7_rev","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_move_6","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_move_5","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_move_3","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"move_test_2","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_move_2","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_3","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"wx-test2 (Yu Sun)","n":30,"reason":"covers 3 of 30 tasks"},{"policy":"DM0 (Liu Weilin)","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test (Kaixin Liu)","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"wallx","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"gxy_pi_arx_special_put_cup_on_coaster","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"Pi05","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"sigma","n":20,"reason":"covers 2 of 30 tasks"},{"policy":"test_75000_0122_16","n":20,"reason":"covers 2 of 30 tasks"},{"policy":"model_test_4","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"fastwam","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"vodpp_v3_vith_test","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"151000_50","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"cpu_test_vodp_abs","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"vodpp_fixed_v3_cnn_r4","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"vodpp_fixed_3v_v3cnn","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_mask","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"vodpp_v3_sm_test","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"dreamzero","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"vodpp_v2_vith","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"GROOT","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"GROOT-5w-delta","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"OFT","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"yt","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"vodpp_v3_fm_mv_test","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"afei-table30_put_cup_on_coaster","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"2B_0420_1.4","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"put_cup_on_coaster","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"2B_0415_1.7","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"2B_0415_1.07","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"cup_test_vodp","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"pi0 (Liu Weilin)","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"151000_base","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"pi0.5_Fine-tuning","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"PI","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"dannyXSC","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"exp114","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"exp116","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"gxy_pi_arx_special_fold_dishcloth","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"fold_dishcloth","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test (Shang Yu)","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"exp92","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"Model_VLA","n":40,"reason":"covers 4 of 30 tasks"},{"policy":"exp11","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test-gen-ur-001","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_ur_htc_009","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_gxy_pi_special_hang_toothbrush_cup","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"exp20","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"exp41","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"exp107","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"gxy_pi_arx5_place_shoes_on_rack ","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"exp121","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"spike_gxy_pi_arx_special_place_shoes_on_rack","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"place_shoes_on_rack","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_gxy_pi_arx_place_shoes_on_rack","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"exp6","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"gxy_pi_aloha_stick_tape_to_box","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_sttb_001","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"ljk_2w_sttb","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"pi05_aloha_rc_joint_stick_tape_to_box_3w","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"exp38","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"exp47","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"exp127","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_sttb_002","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"joint-c7","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_sttb_v4_50k","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_sttb_v3","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"stick_tape_to_box","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"2B_0412_2.8","n":30,"reason":"covers 3 of 30 tasks"},{"policy":"ljk_alh_2w_sttb","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test (Jianyong Sun 2)","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"rc_sttb_ft_32k","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"tengenx-pi05-test","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"exp106","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"gxy_pi_arx_special_open_the_drawer","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"open_the_drawer","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"exp133","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"model-test-pushi","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_model","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"exp13","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"pi05-test","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"exp104","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"gigabrain0.1","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"joint-xpred","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"gxy_pi_aloha_put_opener_in_drawer","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"pi05_aloha_rc_niejunnan_right_arm_put_opener_in_drawer_qpos\u20141","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"retest_poid_gnrlst","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"base_rRS_poid","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"base_rR_poid","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"2B_0407","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"ljk_2w_poid","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"scd_rrd_rc_str_260409","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"rrd_rc_str_20260409","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"exp7","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"VLA_Test","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"str_rrd_rc_baseline_20260404_shared_stage2","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"exp2","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_str_002","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"ljk_alh_2w_str_cln","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"str_rc_baseline_20260409_shared_ns","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"sweep_the_rubbish","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_str_001","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"ljk_alh_2w_ivst_str","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_dyl_task_cluster_low_transfer_010","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_dyl_task_cluster_low_base_010","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_str_v3","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"rc_str_ft_45k","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"pi05_ur5_rc_joint_stack_color_blocks\u2014\u20143w","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"pi05_finetune","n":20,"reason":"covers 2 of 30 tasks"},{"policy":"test (Zhihao Zhan)","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"stack_color_blocks","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test-ee","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"hcp-e","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_gxy_ur5_pi_special_stack_color_blocks","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_ur_scb_009","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test/jky_stack_color_blocks","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"ljk_2w_pfip","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"joint-h64-c8","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"joint-c6","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_pfip_v3","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"rc_pfip_ft_90k","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_pfip_v4_80k","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"pour_fries_into_plate","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"DM0-test","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test-pour_fries_into_plate","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_dm0_special_pour_fries_into_plate","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"exp3","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"scd_mvs_wave_26031103_26031701","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"ljk_alh_2w_ivst_mvs","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_data_batch3_011","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"v11_unified_20260507","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test_mvs_001","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"v11_unified_20260427","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"casbot-V1","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"v11_mix_20260509","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test-p2","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"ZR-0 Generalist","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"exp8","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"GigaBrain-0 (Zuoyi Li)","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"exp81","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"exp48","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"exp80","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"exp74","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"exp129","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"arx5_test_arrange_flowers","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"gxy_pi_arx_special_arrange_flowers","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"ws-test","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"multitask","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"TEST_ZERO","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"custom_dp_trial_pos","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"exp88","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"exp122","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"exp87","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"exp45","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"exp109","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"exp100","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"exp10","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"exp128","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"gxy_pi_arx_special_arrange_paper_cups","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"GigaBrain-0 (Zichuan Lin)","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"arrange_paper_cups","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"exp37","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"exp32","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"gxy_pi_ur5_special_sort_books","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"exp130","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"gxy_pi_ur5_special_shred_scrap_paper","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"exp43","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"exp44","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"exp84","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"gxy_pi_ur5_special_set_the_plates","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"exp120","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"gxy_pi0.5_base_ur5_set_the_plates","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"exp85","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test/ky_set_the_plates","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test/jky_set_the_plates","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"test/jky_set_the_plate","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"exp76","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"exp97","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"exp17","n":10,"reason":"covers 1 of 30 tasks"},{"policy":"gxy_pi_arx_special_water_potted_plant","n":10,"reason":"covers 1 of 30 tasks"}],"n_policies":22,"n_tasks":30,"task_ids":["227f","22q7","22ru","22v9","22wr","22wy","22xh","22xr","2336","233i","233y","233z","2343","2345","2368","238h","238i","238j","238r","238s","238w","2396","239v","23a4","23a8","23a9","23aa","23cm","23cn","23cp"],"trials_per_task":10,"trials_by_task":null,"trials_min":10,"trials_total":300,"n_rollouts":6600,"pairs_separated":188,"pairs_total":231,"pinned":0,"gen_pairs_separated":108,"gen_pinned":0,"sizing":[{"higher":"Era0","lower":"DM0 (Dexmal)","gap":2.3333333333333317,"se":2.605549632781707,"budget_multiple":9.787072491047123,"exact_tie":false,"trials_needed":98,"resolved":false,"hopeless":false,"head_to_head":300},{"higher":"DM0 (Dexmal)","lower":"GigaBrain-0.1","gap":10.333333333333329,"se":2.6267851073127395,"budget_multiple":0.5071960788766354,"exact_tie":false,"trials_needed":6,"resolved":true,"hopeless":false,"head_to_head":300},{"higher":"GigaBrain-0.1","lower":"Spirit-v1.5","gap":0.666666666666671,"se":2.8323527714997336,"budget_multiple":141.67227929143223,"exact_tie":false,"trials_needed":1417,"resolved":false,"hopeless":true,"head_to_head":300},{"higher":"Spirit-v1.5","lower":"Lira_generalist","gap":6.0,"se":2.768874620972692,"budget_multiple":1.671520685186716,"exact_tie":false,"trials_needed":17,"resolved":false,"hopeless":false,"head_to_head":300},{"higher":"Lira_generalist","lower":"pi0.5 (rc_baseline)","gap":2.3333333333333317,"se":2.7748873851023217,"budget_multiple":11.100558488208938,"exact_tie":false,"trials_needed":112,"resolved":false,"hopeless":false,"head_to_head":300},{"higher":"pi0.5 (rc_baseline)","lower":"Atlas_generalist","gap":3.0000000000000027,"se":2.8382310609877335,"budget_multiple":7.0252318652774886,"exact_tie":false,"trials_needed":71,"resolved":false,"hopeless":false,"head_to_head":300},{"higher":"Atlas_generalist","lower":"DM0_generalist","gap":2.3333333333333375,"se":2.6394443859772205,"budget_multiple":10.043362441712796,"exact_tie":false,"trials_needed":101,"resolved":false,"hopeless":false,"head_to_head":300},{"higher":"DM0_generalist","lower":"wall-oss-v0.1","gap":1.9999999999999962,"se":2.64154836748786,"budget_multiple":13.691934656051231,"exact_tie":false,"trials_needed":137,"resolved":false,"hopeless":false,"head_to_head":300},{"higher":"wall-oss-v0.1","lower":"pi0 (rc_baseline)","gap":7.000000000000001,"se":2.8146442443446067,"budget_multiple":1.2689912140601183,"exact_tie":false,"trials_needed":13,"resolved":false,"hopeless":false,"head_to_head":300},{"higher":"pi0 (rc_baseline)","lower":"VLO","gap":2.666666666666667,"se":2.732520204255893,"budget_multiple":8.241323726094498,"exact_tie":false,"trials_needed":83,"resolved":false,"hopeless":false,"head_to_head":300},{"higher":"VLO","lower":"X-VLA","gap":4.33333333333333,"se":2.354664401659915,"budget_multiple":2.3175094614376794,"exact_tie":false,"trials_needed":24,"resolved":false,"hopeless":false,"head_to_head":300},{"higher":"X-VLA","lower":"pi05_generalist","gap":3.666666666666668,"se":2.223610677354389,"budget_multiple":2.8865714743109407,"exact_tie":false,"trials_needed":29,"resolved":false,"hopeless":false,"head_to_head":300},{"higher":"pi05_generalist","lower":"RDT-1B","gap":2.666666666666667,"se":2.333333333333333,"budget_multiple":6.0092985502772365,"exact_tie":false,"trials_needed":61,"resolved":false,"hopeless":false,"head_to_head":300},{"higher":"RDT-1B","lower":"GR00T","gap":0.6666666666666654,"se":2.1499353995462798,"budget_multiple":81.62834928703155,"exact_tie":false,"trials_needed":817,"resolved":false,"hopeless":false,"head_to_head":300},{"higher":"GR00T","lower":"GR00T-MULTI","gap":1.0000000000000009,"se":2.1730674684008826,"budget_multiple":37.06415432370536,"exact_tie":false,"trials_needed":371,"resolved":false,"hopeless":false,"head_to_head":300},{"higher":"GR00T-MULTI","lower":"ZR-0_generalist","gap":0.6666666666666654,"se":2.1807236311728166,"budget_multiple":83.98301320877286,"exact_tie":false,"trials_needed":840,"resolved":false,"hopeless":false,"head_to_head":300},{"higher":"ZR-0_generalist","lower":"cogact","gap":1.0000000000000009,"se":2.0789954839350235,"budget_multiple":33.924602428050314,"exact_tie":false,"trials_needed":340,"resolved":false,"hopeless":false,"head_to_head":300},{"higher":"cogact","lower":"pi0_generalist","gap":2.6666666666666656,"se":2.00554786086551,"budget_multiple":4.439522602449719,"exact_tie":false,"trials_needed":45,"resolved":false,"hopeless":false,"head_to_head":300},{"higher":"pi0_generalist","lower":"VLA_test_0204","gap":0.0,"se":1.7448336437736534,"budget_multiple":null,"exact_tie":true,"trials_needed":null,"resolved":false,"hopeless":true,"head_to_head":300},{"higher":"VLA_test_0204","lower":"VLA_test_0119","gap":4.000000000000001,"se":1.4757295747452437,"budget_multiple":1.0683197422715087,"exact_tie":false,"trials_needed":11,"resolved":false,"hopeless":false,"head_to_head":300},{"higher":"VLA_test_0119","lower":"openvla-oft","gap":0.0,"se":1.3662601021279464,"budget_multiple":null,"exact_tie":true,"trials_needed":null,"resolved":false,"hopeless":true,"head_to_head":300}],"per_task_ci":{"median_width":27.753280003774616,"max_width":52.68138191408291,"examples":[{"k":0,"n":10,"rate":0.0,"ci":[0.0,27.75328000377461],"width":27.75328000377461},{"k":1,"n":10,"rate":10.0,"ci":[1.787621308407239,40.415002694612454],"width":38.627381386205215},{"k":2,"n":10,"rate":20.0,"ci":[5.668215142581756,50.98375285968301],"width":45.31553771710125},{"k":5,"n":10,"rate":50.0,"ci":[23.659309042958547,76.34069095704146],"width":52.68138191408291},{"k":7,"n":10,"rate":70.0,"ci":[39.67781473442204,89.22087326406809],"width":49.543058529646046},{"k":10,"n":10,"rate":100.0,"ci":[72.24671999622537,99.99999999999999],"width":27.753280003774616}]},"corpus":{"benchmark":"Table 30","version":"v1.0","tasks_declared":30,"episodes_declared":25627,"runs_declared":1088,"last_update":"2025-09-24","submissions":472,"tasks_seen":30,"cells":1558,"trials_per_task":10,"overall_board":22,"task_tags":["ALOHA","ARX5","Franka","UR5","bimanual","classification","manipulation","multiview","precise3d","repeated","simple-pick","single-arm","softbody","temporal","two-arm"]},"kind":"suite","crosscheck":{"published_entries":22,"max_deviation_pp":1.4210854715202004e-14},"source":{"name":"RoboChallenge Table 30","dump":"Table 30 (v1.0)","url":"https://robochallenge.ai/leaderboard","paper":"https://arxiv.org/abs/2510.17950","licence":"public leaderboard JSON","platform":"4 embodiments, tabletop; retired 27 May 2026","method":"success rate over a fixed 30-task suite","unit":"rollouts"}},"robochallenge-v2":{"policies":[{"policy":"my16","order":1,"score":46.0,"ci":[40.70446892035159,51.295531079648406],"half_width":5.2955310796484065,"best_rank":1,"worst_rank":1,"pinned":true,"gen_ci":[31.611309565785977,60.38869043421402],"gen_best_rank":1,"gen_worst_rank":4,"n":200},{"policy":"JV0","order":2,"score":24.0,"ci":[19.959430732905624,28.04056926709438],"half_width":4.040569267094377,"best_rank":2,"worst_rank":5,"pinned":false,"gen_ci":[9.966992117044015,38.033007882955985],"gen_best_rank":1,"gen_worst_rank":8,"n":200},{"policy":"MagicBot","order":3,"score":22.000000000000004,"ci":[18.96363685016006,25.036363149839946],"half_width":3.036363149839942,"best_rank":2,"worst_rank":7,"pinned":false,"gen_ci":[6.191869003381847,37.80813099661816],"gen_best_rank":1,"gen_worst_rank":8,"n":200},{"policy":"Baseline Model","order":4,"score":20.5,"ci":[16.35385380894529,24.646146191054715],"half_width":4.146146191054715,"best_rank":2,"worst_rank":7,"pinned":false,"gen_ci":[8.311757453732135,32.68824254626787],"gen_best_rank":1,"gen_worst_rank":8,"n":200},{"policy":"holobrain","order":5,"score":20.5,"ci":[15.998478557550474,25.00152144244952],"half_width":4.501521442449524,"best_rank":2,"worst_rank":7,"pinned":false,"gen_ci":[9.720198080329341,31.279801919670657],"gen_best_rank":2,"gen_worst_rank":8,"n":200},{"policy":"debuggers_vla","order":6,"score":16.5,"ci":[13.147945844660455,19.852054155339545],"half_width":3.3520541553395446,"best_rank":3,"worst_rank":7,"pinned":false,"gen_ci":[3.839833536554213,29.16016646344579],"gen_best_rank":2,"gen_worst_rank":8,"n":200},{"policy":"hcp-e","order":7,"score":15.5,"ci":[11.239613521802447,19.760386478197553],"half_width":4.260386478197554,"best_rank":3,"worst_rank":8,"pinned":false,"gen_ci":[6.912456677286634,24.087543322713366],"gen_best_rank":2,"gen_worst_rank":8,"n":200},{"policy":"metrics","order":8,"score":8.5,"ci":[4.98024081682534,12.01975918317466],"half_width":3.5197591831746604,"best_rank":7,"worst_rank":8,"pinned":false,"gen_ci":[3.319298671273716,13.680701328726286],"gen_best_rank":2,"gen_worst_rank":8,"n":200}],"dropped":[],"n_policies":8,"n_tasks":20,"task_ids":["2b13","2945","3809","6ab4","8fc9","e358","3232","bf87","43ea","44df","6dcb","cb19","9d9d","f5b4","3624","bec8","d96c","90e1","ae1f","2acf"],"trials_per_task":10,"trials_by_task":null,"trials_min":10,"trials_total":200,"n_rollouts":1600,"pairs_separated":14,"pairs_total":28,"pinned":1,"gen_pairs_separated":4,"gen_pinned":0,"sizing":[{"higher":"my16","lower":"JV0","gap":21.999999999999996,"se":3.398529093593286,"budget_multiple":0.18730281195669327,"exact_tie":false,"trials_needed":2,"resolved":true,"hopeless":false,"head_to_head":200},{"higher":"JV0","lower":"MagicBot","gap":1.9999999999999962,"se":2.5787593916455256,"budget_multiple":13.048762566316343,"exact_tie":false,"trials_needed":131,"resolved":false,"hopeless":false,"head_to_head":200},{"higher":"MagicBot","lower":"Baseline Model","gap":1.5000000000000013,"se":2.622022120425379,"budget_multiple":23.982688091809358,"exact_tie":false,"trials_needed":240,"resolved":false,"hopeless":false,"head_to_head":200},{"higher":"Baseline Model","lower":"holobrain","gap":2.7755575615628914e-15,"se":3.122498999199199,"budget_multiple":9.933717693057094e+30,"exact_tie":false,"trials_needed":99337176930570928363879872331776,"resolved":false,"hopeless":true,"head_to_head":200},{"higher":"holobrain","lower":"debuggers_vla","gap":3.9999999999999982,"se":2.863564212655271,"budget_multiple":4.022550866308034,"exact_tie":false,"trials_needed":41,"resolved":false,"hopeless":false,"head_to_head":200},{"higher":"debuggers_vla","lower":"hcp-e","gap":1.0000000000000009,"se":2.765863337187866,"budget_multiple":60.043930004402675,"exact_tie":false,"trials_needed":601,"resolved":false,"hopeless":false,"head_to_head":200},{"higher":"hcp-e","lower":"metrics","gap":6.999999999999999,"se":2.8195744359743373,"budget_multiple":1.2734406923702875,"exact_tie":false,"trials_needed":13,"resolved":false,"hopeless":false,"head_to_head":200}],"per_task_ci":{"median_width":38.627381386205215,"max_width":52.68138191408291,"examples":[{"k":0,"n":10,"rate":0.0,"ci":[0.0,27.75328000377461],"width":27.75328000377461},{"k":1,"n":10,"rate":10.0,"ci":[1.787621308407239,40.415002694612454],"width":38.627381386205215},{"k":2,"n":10,"rate":20.0,"ci":[5.668215142581756,50.98375285968301],"width":45.31553771710125},{"k":5,"n":10,"rate":50.0,"ci":[23.659309042958547,76.34069095704146],"width":52.68138191408291},{"k":7,"n":10,"rate":70.0,"ci":[39.67781473442204,89.22087326406809],"width":49.543058529646046},{"k":10,"n":10,"rate":100.0,"ci":[72.24671999622537,99.99999999999999],"width":27.753280003774616}]},"core":{"tasks_available":30,"models_available":47,"core_tasks":20,"core_models":8,"cells":160,"frontier":[{"tasks":20,"models":8,"cells":160},{"tasks":19,"models":8,"cells":152},{"tasks":18,"models":8,"cells":144},{"tasks":17,"models":8,"cells":136},{"tasks":16,"models":8,"cells":128},{"tasks":7,"models":18,"cells":126}]},"corpus":{"benchmark":"Table 30 V2","version":"v2.0","tasks_declared":30,"episodes_declared":32980,"runs_declared":0,"last_update":"2026-05-28","submissions":47,"tasks_seen":30,"cells":555,"trials_per_task":10,"overall_board":47,"task_tags":["ALOHA","ARX5","DOS-W1","UR5","bimanual","classification","dual-arm","manipulation","multiview","precise3d","repeated","simple-pick","single-arm","softbody","temporal"]},"kind":"suite","source":{"name":"RoboChallenge Table 30 v2","dump":"Table 30 (v2.0)","url":"https://robochallenge.ai/leaderboard","paper":"https://arxiv.org/abs/2510.17950","licence":"public leaderboard JSON","platform":"live board, still filling","method":"success rate over the tasks these submissions share","unit":"rollouts"}},"robodojo-sim":{"policies":[{"policy":"DM0.5","order":1,"score":17.930555555555557,"ci":[16.38416666016693,19.476944450944185],"half_width":1.546388895388629,"best_rank":1,"worst_rank":1,"pinned":true,"gen_ci":[4.948214086438063,30.912897024673054],"gen_best_rank":1,"gen_worst_rank":20,"n":2100},{"policy":"GalaxeaVLA (G0.5)","order":2,"score":14.541666666666666,"ci":[13.112280638122552,15.97105269521078],"half_width":1.429386028544114,"best_rank":2,"worst_rank":4,"pinned":false,"gen_ci":[4.930054772782625,24.15327856055071],"gen_best_rank":1,"gen_worst_rank":20,"n":2100},{"policy":"Xiaomi-Robotics-1","order":3,"score":14.444444444444446,"ci":[12.98890131842813,15.89998757046076],"half_width":1.4555431260163136,"best_rank":2,"worst_rank":4,"pinned":false,"gen_ci":[6.125422060624923,22.76346682826397],"gen_best_rank":1,"gen_worst_rank":17,"n":2100},{"policy":"OpenWAM-\u03b1","order":4,"score":12.36111111111111,"ci":[10.997158405646426,13.725063816575798],"half_width":1.3639527054646852,"best_rank":2,"worst_rank":4,"pinned":false,"gen_ci":[3.869539376427632,20.85268284579459],"gen_best_rank":1,"gen_worst_rank":23,"n":2100},{"policy":"Meituan-Robotics-0","order":5,"score":9.305555555555555,"ci":[8.07595355594807,10.53515755516304],"half_width":1.229601999607486,"best_rank":5,"worst_rank":11,"pinned":false,"gen_ci":[4.840396482133323,13.770714628977787],"gen_best_rank":1,"gen_worst_rank":21,"n":2100},{"policy":"Hy-Embodied-0.5-VLA","order":6,"score":8.75,"ci":[7.553679386987679,9.946320613012324],"half_width":1.1963206130123223,"best_rank":5,"worst_rank":12,"pinned":false,"gen_ci":[3.072146495526412,14.427853504473589],"gen_best_rank":1,"gen_worst_rank":26,"n":2100},{"policy":"Spatial Forcing","order":7,"score":8.194444444444445,"ci":[7.038345676649567,9.350543212239321],"half_width":1.1560987677948773,"best_rank":5,"worst_rank":12,"pinned":false,"gen_ci":[3.470146154619764,12.918742734269125],"gen_best_rank":1,"gen_worst_rank":24,"n":2100},{"policy":"StarVLA-PI_v3","order":8,"score":7.583333333333334,"ci":[6.471192442717004,8.695474223949663],"half_width":1.1121408906163301,"best_rank":5,"worst_rank":12,"pinned":false,"gen_ci":[3.050904355087812,12.115762311578855],"gen_best_rank":1,"gen_worst_rank":26,"n":2100},{"policy":"VLAct","order":9,"score":7.430555555555555,"ci":[6.360438593775489,8.500672517335623],"half_width":1.070116961780067,"best_rank":5,"worst_rank":12,"pinned":false,"gen_ci":[1.9688034682901498,12.89230764282096],"gen_best_rank":1,"gen_worst_rank":28,"n":2100},{"policy":"Pi-05","order":10,"score":7.166666666666667,"ci":[6.0810767019918055,8.25225663134153],"half_width":1.0855899646748615,"best_rank":5,"worst_rank":12,"pinned":false,"gen_ci":[2.2178204924114335,12.1155128409219],"gen_best_rank":1,"gen_worst_rank":28,"n":2100},{"policy":"InternVLA-A1.5","order":11,"score":7.138888888888889,"ci":[6.0604144426770175,8.21736333510076],"half_width":1.0784744462118718,"best_rank":5,"worst_rank":12,"pinned":false,"gen_ci":[2.84261462827142,11.435163149506359],"gen_best_rank":1,"gen_worst_rank":26,"n":2100},{"policy":"X-VLA","order":12,"score":6.597222222222222,"ci":[5.554759100263474,7.63968534418097],"half_width":1.0424631219587481,"best_rank":6,"worst_rank":15,"pinned":false,"gen_ci":[2.2807634515673034,10.913680992877142],"gen_best_rank":1,"gen_worst_rank":28,"n":2100},{"policy":"MolmoAct2","order":13,"score":5.0,"ci":[4.065857214694185,5.934142785305814],"half_width":0.9341427853058146,"best_rank":12,"worst_rank":17,"pinned":false,"gen_ci":[3.4379379863360926,6.5620620136639065],"gen_best_rank":1,"gen_worst_rank":25,"n":2100},{"policy":"StarVLA-OFT","order":14,"score":4.847222222222222,"ci":[3.948441165201086,5.746003279243358],"half_width":0.8987810570211365,"best_rank":12,"worst_rank":18,"pinned":false,"gen_ci":[1.4725849674913403,8.221859476953105],"gen_best_rank":1,"gen_worst_rank":29,"n":2100},{"policy":"StarVLA-GR00T","order":15,"score":4.833333333333333,"ci":[3.9137513568156943,5.752915309850972],"half_width":0.9195819765176388,"best_rank":12,"worst_rank":19,"pinned":false,"gen_ci":[2.2484448406873137,7.418221825979352],"gen_best_rank":1,"gen_worst_rank":28,"n":2100},{"policy":"Xiaomi-Robotics-0","order":16,"score":4.402777777777778,"ci":[3.5245122520216348,5.281043303533921],"half_width":0.8782655257561427,"best_rank":13,"worst_rank":21,"pinned":false,"gen_ci":[1.1953934703672286,7.6101620851883265],"gen_best_rank":1,"gen_worst_rank":30,"n":2100},{"policy":"X-WAM","order":17,"score":3.722222222222222,"ci":[2.9125166880570474,4.531927756387397],"half_width":0.8097055341651744,"best_rank":13,"worst_rank":23,"pinned":false,"gen_ci":[1.1172300076289512,6.327214436815493],"gen_best_rank":1,"gen_worst_rank":30,"n":2100},{"policy":"GigaWorld-Policy-0","order":18,"score":3.208333333333333,"ci":[2.46751186899177,3.949154797674896],"half_width":0.7408214643415629,"best_rank":14,"worst_rank":24,"pinned":false,"gen_ci":[0.43404051171685964,5.9826261549498065],"gen_best_rank":2,"gen_worst_rank":33,"n":2100},{"policy":"LingBot-VLA","order":19,"score":3.1805555555555554,"ci":[2.420457106758158,3.9406540043529525],"half_width":0.760098448797397,"best_rank":15,"worst_rank":25,"pinned":false,"gen_ci":[0.9927350707416488,5.368376040369462],"gen_best_rank":2,"gen_worst_rank":30,"n":2100},{"policy":"StarVLA","order":20,"score":3.0416666666666665,"ci":[2.318300515892365,3.765032817440968],"half_width":0.7233661507743012,"best_rank":16,"worst_rank":25,"pinned":false,"gen_ci":[1.0087671293367497,5.074566203996583],"gen_best_rank":2,"gen_worst_rank":30,"n":2100},{"policy":"GalaxeaVLA (G0)","order":21,"score":2.944444444444444,"ci":[2.227054363508713,3.6618345253801756],"half_width":0.7173900809357309,"best_rank":16,"worst_rank":26,"pinned":false,"gen_ci":[1.0185003973502198,4.870388491538669],"gen_best_rank":4,"gen_worst_rank":30,"n":2100},{"policy":"EventVLA","order":22,"score":2.597222222222222,"ci":[1.912417344908298,3.282027099536146],"half_width":0.684804877313924,"best_rank":17,"worst_rank":26,"pinned":false,"gen_ci":[0.747707029679984,4.44673741476446],"gen_best_rank":5,"gen_worst_rank":32,"n":2100},{"policy":"AHA-WAM","order":23,"score":2.555555555555556,"ci":[1.8689931807236417,3.2421179303874696],"half_width":0.6865623748319138,"best_rank":17,"worst_rank":26,"pinned":false,"gen_ci":[0.8573040410171748,4.253807070093937],"gen_best_rank":5,"gen_worst_rank":32,"n":2100},{"policy":"ABot-M0","order":24,"score":2.055555555555556,"ci":[1.4247365644815868,2.6863745466295246],"half_width":0.6308189910739689,"best_rank":18,"worst_rank":28,"pinned":false,"gen_ci":[0.6609104614429977,3.4502006496681137],"gen_best_rank":7,"gen_worst_rank":32,"n":2100},{"policy":"Fast-WAM","order":25,"score":1.8472222222222219,"ci":[1.2725058657662616,2.421938578678182],"half_width":0.5747163564559603,"best_rank":19,"worst_rank":29,"pinned":false,"gen_ci":[0.15172190445590406,3.5427225399885396],"gen_best_rank":6,"gen_worst_rank":36,"n":2100},{"policy":"Pi-0","order":26,"score":1.7222222222222223,"ci":[1.1483913782642214,2.296053066180223],"half_width":0.5738308439580008,"best_rank":21,"worst_rank":29,"pinned":false,"gen_ci":[0.2935615175294217,3.1508829269150227],"gen_best_rank":8,"gen_worst_rank":34,"n":2100},{"policy":"GROOT-N1.7","order":27,"score":1.3055555555555556,"ci":[0.8229767889038357,1.7881343222072756],"half_width":0.4825787666517199,"best_rank":24,"worst_rank":30,"pinned":false,"gen_ci":[0.22653099531216614,2.3845801157989452],"gen_best_rank":11,"gen_worst_rank":34,"n":2100},{"policy":"InternVLA-A1","order":28,"score":1.25,"ci":[0.7617145899896066,1.7382854100103933],"half_width":0.4882854100103933,"best_rank":24,"worst_rank":31,"pinned":false,"gen_ci":[0.20843558664832754,2.2915644133516726],"gen_best_rank":11,"gen_worst_rank":35,"n":2100},{"policy":"SmolVLA (Single Task)","order":29,"score":0.8611111111111112,"ci":[0.4422782823338833,1.279943939888339],"half_width":0.41883282877722783,"best_rank":25,"worst_rank":32,"pinned":false,"gen_ci":[-0.055739763687803756,1.777961985910026],"gen_best_rank":15,"gen_worst_rank":40,"n":2100},{"policy":"GO-1","order":30,"score":0.625,"ci":[0.272102281111058,0.977897718888942],"half_width":0.35289771888894195,"best_rank":27,"worst_rank":34,"pinned":false,"gen_ci":[-0.07782669627009421,1.327826696270094],"gen_best_rank":16,"gen_worst_rank":40,"n":2100},{"policy":"ACT (Single Task)","order":31,"score":0.5,"ci":[0.18881392299336508,0.8111860770066349],"half_width":0.3111860770066349,"best_rank":28,"worst_rank":35,"pinned":false,"gen_ci":[0.06173872952061239,0.9382612704793877],"gen_best_rank":21,"gen_worst_rank":37,"n":2100},{"policy":"LDA-1B","order":32,"score":0.4583333333333333,"ci":[0.15838647685118987,0.7582801898154767],"half_width":0.2999468564821435,"best_rank":29,"worst_rank":36,"pinned":false,"gen_ci":[-0.07133730572113761,0.9880039723878042],"gen_best_rank":21,"gen_worst_rank":40,"n":2100},{"policy":"Spirit v1.5","order":33,"score":0.2222222222222222,"ci":[0.005357735116521666,0.43908670932792276],"half_width":0.21686448710570055,"best_rank":30,"worst_rank":37,"pinned":false,"gen_ci":[-0.10078848762768672,0.5452329320721311],"gen_best_rank":24,"gen_worst_rank":40,"n":2100},{"policy":"RDT","order":34,"score":0.16666666666666669,"ci":[-0.021616364012260695,0.35494969734559406],"half_width":0.18828303067892738,"best_rank":30,"worst_rank":40,"pinned":false,"gen_ci":[0.020579576506870777,0.3127537568264626],"gen_best_rank":25,"gen_worst_rank":37,"n":2100},{"policy":"H-RDT","order":35,"score":0.09722222222222222,"ci":[-0.03867979970096786,0.2331242441454123],"half_width":0.1359020219231901,"best_rank":31,"worst_rank":40,"pinned":false,"gen_ci":[-0.025124201607562947,0.2195686460520074],"gen_best_rank":27,"gen_worst_rank":40,"n":2100},{"policy":"Dexora-1B","order":36,"score":0.05555555555555555,"ci":[-0.05314970289076172,0.1642608140018728],"half_width":0.10870525844631727,"best_rank":32,"worst_rank":40,"pinned":false,"gen_ci":[-0.053331332521925845,0.16444244363303695],"gen_best_rank":28,"gen_worst_rank":40,"n":2100},{"policy":"TinyVLA","order":37,"score":0.04166666666666667,"ci":[-0.03989635405308479,0.12322968738641812],"half_width":0.08156302071975145,"best_rank":33,"worst_rank":40,"pinned":false,"gen_ci":[-0.03999849939144438,0.12333183272477773],"gen_best_rank":29,"gen_worst_rank":40,"n":2100},{"policy":"DM0","order":38,"score":0.0,"ci":[0.0,0.0],"half_width":0.0,"best_rank":34,"worst_rank":38,"pinned":false,"gen_ci":[0.0,0.0],"gen_best_rank":31,"gen_worst_rank":38,"n":2100},{"policy":"A1","order":39,"score":0.0,"ci":[0.0,0.0],"half_width":0.0,"best_rank":34,"worst_rank":38,"pinned":false,"gen_ci":[0.0,0.0],"gen_best_rank":31,"gen_worst_rank":38,"n":2100},{"policy":"OpenVLA-OFT","order":40,"score":0.0,"ci":[0.0,0.0],"half_width":0.0,"best_rank":34,"worst_rank":38,"pinned":false,"gen_ci":[0.0,0.0],"gen_best_rank":31,"gen_worst_rank":38,"n":2100}],"dropped":[],"n_policies":40,"n_tasks":6,"task_ids":["generalizationRand","generalizationStd","longHorizon","memory","open","precision"],"trials_per_task":null,"trials_by_task":{"generalizationRand":300,"generalizationStd":300,"longHorizon":400,"memory":300,"open":400,"precision":400},"trials_min":300,"trials_total":2100,"n_rollouts":84000,"pairs_separated":638,"pairs_total":780,"pinned":1,"gen_pairs_separated":339,"gen_pinned":0,"sizing":[{"higher":"DM0.5","lower":"GalaxeaVLA (G0.5)","gap":3.388888888888891,"se":1.074415903858939,"budget_multiple":0.788928911253703,"exact_tie":false,"trials_needed":237,"resolved":true,"hopeless":false,"head_to_head":2100},{"higher":"GalaxeaVLA (G0.5)","lower":"Xiaomi-Robotics-1","gap":0.09722222222222077,"se":1.0408542356479389,"budget_multiple":899.6144350327569,"exact_tie":false,"trials_needed":269885,"resolved":false,"hopeless":true,"head_to_head":2100},{"higher":"Xiaomi-Robotics-1","lower":"OpenWAM-\u03b1","gap":2.0833333333333344,"se":1.0177412859380721,"budget_multiple":1.8731171263917168,"exact_tie":false,"trials_needed":562,"resolved":false,"hopeless":false,"head_to_head":2100},{"higher":"OpenWAM-\u03b1","lower":"Meituan-Robotics-0","gap":3.055555555555556,"se":0.9369453091539972,"budget_multiple":0.7379990258192527,"exact_tie":false,"trials_needed":222,"resolved":true,"hopeless":false,"head_to_head":2100},{"higher":"Meituan-Robotics-0","lower":"Hy-Embodied-0.5-VLA","gap":0.5555555555555549,"se":0.8752955482639562,"budget_multiple":19.483282352377753,"exact_tie":false,"trials_needed":5845,"resolved":false,"hopeless":false,"head_to_head":2100},{"higher":"Hy-Embodied-0.5-VLA","lower":"Spatial Forcing","gap":0.5555555555555564,"se":0.8488190779904126,"budget_multiple":18.322424863042812,"exact_tie":false,"trials_needed":5497,"resolved":false,"hopeless":false,"head_to_head":2100},{"higher":"Spatial Forcing","lower":"StarVLA-PI_v3","gap":0.6111111111111109,"se":0.8184787153050516,"budget_multiple":14.079333449420018,"exact_tie":false,"trials_needed":4224,"resolved":false,"hopeless":false,"head_to_head":2100},{"higher":"StarVLA-PI_v3","lower":"VLAct","gap":0.15277777777777807,"se":0.7874509056158003,"budget_multiple":208.5135445613825,"exact_tie":false,"trials_needed":62555,"resolved":false,"hopeless":true,"head_to_head":2100},{"higher":"VLAct","lower":"Pi-05","gap":0.2638888888888885,"se":0.7777460517669599,"budget_multiple":68.17750375864004,"exact_tie":false,"trials_needed":20454,"resolved":false,"hopeless":false,"head_to_head":2100},{"higher":"Pi-05","lower":"InternVLA-A1.5","gap":0.027777777777777957,"se":0.7807454131826592,"budget_multiple":6200.569208786827,"exact_tie":false,"trials_needed":1860171,"resolved":false,"hopeless":true,"head_to_head":2100},{"higher":"InternVLA-A1.5","lower":"X-VLA","gap":0.5416666666666667,"se":0.7652923765159939,"budget_multiple":15.667446771020591,"exact_tie":false,"trials_needed":4701,"resolved":false,"hopeless":false,"head_to_head":2100},{"higher":"X-VLA","lower":"MolmoAct2","gap":1.5972222222222228,"se":0.7141807706013288,"budget_multiple":1.5692541728984242,"exact_tie":false,"trials_needed":471,"resolved":false,"hopeless":false,"head_to_head":2100},{"higher":"MolmoAct2","lower":"StarVLA-OFT","gap":0.15277777777777737,"se":0.6613968754864905,"budget_multiple":147.0996282752408,"exact_tie":false,"trials_needed":44130,"resolved":false,"hopeless":true,"head_to_head":2100},{"higher":"StarVLA-OFT","lower":"StarVLA-GR00T","gap":0.013888888888888978,"se":0.6560635635623704,"budget_multiple":17513.159576805734,"exact_tie":false,"trials_needed":5253948,"resolved":false,"hopeless":true,"head_to_head":2100},{"higher":"StarVLA-GR00T","lower":"Xiaomi-Robotics-0","gap":0.4305555555555556,"se":0.6487903977367985,"budget_multiple":17.82206844443977,"exact_tie":false,"trials_needed":5347,"resolved":false,"hopeless":false,"head_to_head":2100},{"higher":"Xiaomi-Robotics-0","lower":"X-WAM","gap":0.6805555555555558,"se":0.609480542458742,"budget_multiple":6.295064705648423,"exact_tie":false,"trials_needed":1889,"resolved":false,"hopeless":false,"head_to_head":2100},{"higher":"X-WAM","lower":"GigaWorld-Policy-0","gap":0.5138888888888887,"se":0.559943751538341,"budget_multiple":9.318757813538303,"exact_tie":false,"trials_needed":2796,"resolved":false,"hopeless":false,"head_to_head":2100},{"higher":"GigaWorld-Policy-0","lower":"LingBot-VLA","gap":0.027777777777777957,"se":0.5415396337269501,"budget_multiple":2983.1368039202284,"exact_tie":false,"trials_needed":894942,"resolved":false,"hopeless":true,"head_to_head":2100},{"higher":"LingBot-VLA","lower":"StarVLA","gap":0.13888888888888873,"se":0.5353615706388276,"budget_multiple":116.61839353478237,"exact_tie":false,"trials_needed":34986,"resolved":false,"hopeless":true,"head_to_head":2100},{"higher":"StarVLA","lower":"GalaxeaVLA (G0)","gap":0.09722222222222215,"se":0.5197938701430324,"budget_multiple":224.35662326581792,"exact_tie":false,"trials_needed":67307,"resolved":false,"hopeless":true,"head_to_head":2100},{"higher":"GalaxeaVLA (G0)","lower":"EventVLA","gap":0.3472222222222224,"se":0.5060140180579916,"budget_multiple":16.66931474273165,"exact_tie":false,"trials_needed":5001,"resolved":false,"hopeless":false,"head_to_head":2100},{"higher":"EventVLA","lower":"AHA-WAM","gap":0.04166666666666624,"se":0.4947559684978015,"budget_multiple":1106.6549790641034,"exact_tie":false,"trials_needed":331997,"resolved":false,"hopeless":true,"head_to_head":2100},{"higher":"AHA-WAM","lower":"ABot-M0","gap":0.5000000000000001,"se":0.47570407532829756,"budget_multiple":7.104629097823865,"exact_tie":false,"trials_needed":2132,"resolved":false,"hopeless":false,"head_to_head":2100},{"higher":"ABot-M0","lower":"Fast-WAM","gap":0.20833333333333365,"se":0.43539820682707275,"budget_multiple":34.28178459603095,"exact_tie":false,"trials_needed":10285,"resolved":false,"hopeless":false,"head_to_head":2100},{"higher":"Fast-WAM","lower":"Pi-0","gap":0.12499999999999976,"se":0.4143676931587993,"budget_multiple":86.25006360667707,"exact_tie":false,"trials_needed":25876,"resolved":false,"hopeless":false,"head_to_head":2100},{"higher":"Pi-0","lower":"GROOT-N1.7","gap":0.4166666666666666,"se":0.3825458228557229,"budget_multiple":6.616024221593821,"exact_tie":false,"trials_needed":1985,"resolved":false,"hopeless":false,"head_to_head":2100},{"higher":"GROOT-N1.7","lower":"InternVLA-A1","gap":0.05555555555555574,"se":0.35026995761822993,"budget_multiple":312.00278073039226,"exact_tie":false,"trials_needed":93601,"resolved":false,"hopeless":true,"head_to_head":2100},{"higher":"InternVLA-A1","lower":"SmolVLA (Single Task)","gap":0.3888888888888888,"se":0.328223762816415,"budget_multiple":5.591092083904486,"exact_tie":false,"trials_needed":1678,"resolved":false,"hopeless":false,"head_to_head":2100},{"higher":"SmolVLA (Single Task)","lower":"GO-1","gap":0.23611111111111116,"se":0.27943573499055546,"budget_multiple":10.993569165648445,"exact_tie":false,"trials_needed":3299,"resolved":false,"hopeless":false,"head_to_head":2100},{"higher":"GO-1","lower":"ACT (Single Task)","gap":0.12499999999999994,"se":0.24005723393775003,"budget_multiple":28.947912024729526,"exact_tie":false,"trials_needed":8685,"resolved":false,"hopeless":false,"head_to_head":2100},{"higher":"ACT (Single Task)","lower":"LDA-1B","gap":0.04166666666666667,"se":0.2205190081903395,"budget_multiple":219.84784824136864,"exact_tie":false,"trials_needed":65955,"resolved":false,"hopeless":true,"head_to_head":2100},{"higher":"LDA-1B","lower":"Spirit v1.5","gap":0.2361111111111111,"se":0.1888467579648302,"budget_multiple":5.021042435890709,"exact_tie":false,"trials_needed":1507,"resolved":false,"hopeless":false,"head_to_head":2100},{"higher":"Spirit v1.5","lower":"RDT","gap":0.055555555555555546,"se":0.14653052042369147,"budget_multiple":54.60204005193406,"exact_tie":false,"trials_needed":16381,"resolved":false,"hopeless":false,"head_to_head":2100},{"higher":"RDT","lower":"H-RDT","gap":0.06944444444444445,"se":0.11847488165136326,"budget_multiple":22.844687739409313,"exact_tie":false,"trials_needed":6854,"resolved":false,"hopeless":false,"head_to_head":2100},{"higher":"H-RDT","lower":"Dexora-1B","gap":0.04166666666666667,"se":0.08879208415066588,"budget_multiple":35.64336174129671,"exact_tie":false,"trials_needed":10694,"resolved":false,"hopeless":false,"head_to_head":2100},{"higher":"Dexora-1B","lower":"TinyVLA","gap":0.013888888888888886,"se":0.06933904037824676,"budget_multiple":195.6267867648894,"exact_tie":false,"trials_needed":58689,"resolved":false,"hopeless":true,"head_to_head":2100},{"higher":"TinyVLA","lower":"DM0","gap":0.04166666666666667,"se":0.04161455074049621,"budget_multiple":7.829257539789777,"exact_tie":false,"trials_needed":2349,"resolved":false,"hopeless":false,"head_to_head":2100},{"higher":"DM0","lower":"A1","gap":0.0,"se":0.0,"budget_multiple":null,"exact_tie":true,"trials_needed":null,"resolved":false,"hopeless":true,"head_to_head":2100},{"higher":"A1","lower":"OpenVLA-OFT","gap":0.0,"se":0.0,"budget_multiple":null,"exact_tie":true,"trials_needed":null,"resolved":false,"hopeless":true,"head_to_head":2100}],"per_task_ci":{"median_width":2.857856852775871,"max_width":11.228296253470853,"examples":[{"k":0,"n":300,"rate":0.0,"ci":[0.0,1.2642971235432172],"width":1.2642971235432172},{"k":1,"n":300,"rate":0.3333333333333333,"ci":[0.05886577214917581,1.86366937057042],"width":1.804803598421244},{"k":75,"n":300,"rate":25.0,"ci":[20.436988913988355,30.19515964778325],"width":9.758170733794893},{"k":150,"n":300,"rate":50.0,"ci":[44.37795161097128,55.62204838902872],"width":11.244096778057443},{"k":225,"n":300,"rate":75.0,"ci":[69.80484035221674,79.56301108601164],"width":9.758170733794902},{"k":300,"n":300,"rate":100.0,"ci":[98.73570287645677,99.99999999999999],"width":1.264297123543212}]},"corpus":{"track":"sim","submissions":40,"teams":12,"dimensions":6,"labels":{"generalizationStd":"Gen-Std","generalizationRand":"Gen-Rand","precision":"Precision","longHorizon":"Long-Horizon","memory":"Memory","open":"Open"},"tasks_declared":42,"episodes_per_seed":2100,"seeds":3,"evaluators":null},"kind":"suite","cell_label":"dimension","source":{"name":"RoboDojo Sim","dump":"leaderboard bundle, sim track","url":"https://robodojo-benchmark.com/LeaderBoard","paper":"https://arxiv.org/abs/2607.04434","licence":"public leaderboard","platform":"42 tasks, heterogeneous parallel simulation","method":"success rate over a fixed task suite","unit":"episodes","caveat":"Published figures are means over three random seeds. Intervals here use one seed's episodes, so they are a FLOOR: seed-to-seed variation in policy training routinely exceeds the binomial, and treating three seeds as interchangeable draws would narrow these intervals on an assumption the data does not support."}},"robodojo-real":{"policies":[{"policy":"OpenWAM-\u03b1","order":1,"score":24.444444444444443,"ci":[18.323490279542902,30.565398609345984],"half_width":6.120954164901543,"best_rank":1,"worst_rank":1,"pinned":true,"gen_ci":[11.197782787674852,37.69110610121403],"gen_best_rank":1,"gen_worst_rank":4,"n":180},{"policy":"Pi-05","order":2,"score":12.77777777777778,"ci":[8.025267375595359,17.530288179960202],"half_width":4.752510402182421,"best_rank":2,"worst_rank":3,"pinned":false,"gen_ci":[2.390630672036885,23.164924883518673],"gen_best_rank":1,"gen_worst_rank":9,"n":180},{"policy":"InternVLA-A1","order":3,"score":7.222222222222221,"ci":[3.62455813542584,10.819886309018603],"half_width":3.5976640867963816,"best_rank":2,"worst_rank":6,"pinned":false,"gen_ci":[-3.8285899773646923,18.273034421809136],"gen_best_rank":1,"gen_worst_rank":11,"n":180},{"policy":"GalaxeaVLA (G0)","order":4,"score":4.444444444444445,"ci":[1.5773194534466821,7.311569435442207],"half_width":2.8671249909977625,"best_rank":3,"worst_rank":10,"pinned":false,"gen_ci":[-4.266506601754066,13.155395490642954],"gen_best_rank":1,"gen_worst_rank":11,"n":180},{"policy":"Xiaomi-Robotics-0","order":5,"score":3.888888888888889,"ci":[1.1092502527461732,6.668527525031605],"half_width":2.7796386361427157,"best_rank":3,"worst_rank":10,"pinned":false,"gen_ci":[-0.8573805251747626,8.63515830295254],"gen_best_rank":2,"gen_worst_rank":11,"n":180},{"policy":"X-VLA","order":6,"score":3.3333333333333335,"ci":[0.7642795620016528,5.902387104665014],"half_width":2.5690537713316806,"best_rank":3,"worst_rank":10,"pinned":false,"gen_ci":[-1.6564907346990967,8.323157401365764],"gen_best_rank":2,"gen_worst_rank":11,"n":180},{"policy":"GROOT-N1.7","order":7,"score":1.6666666666666667,"ci":[-0.19293096864750822,3.5262643019808415],"half_width":1.8595976353141748,"best_rank":4,"worst_rank":11,"pinned":false,"gen_ci":[-0.2193095576159692,3.552642890949302],"gen_best_rank":2,"gen_worst_rank":11,"n":180},{"policy":"Pi-0","order":8,"score":1.6666666666666667,"ci":[-0.17155557306154923,3.5048889063948825],"half_width":1.838222239728216,"best_rank":4,"worst_rank":11,"pinned":false,"gen_ci":[-1.599939975657776,4.93327330899111],"gen_best_rank":2,"gen_worst_rank":11,"n":180},{"policy":"StarVLA","order":9,"score":1.6666666666666667,"ci":[-0.17155557306154923,3.5048889063948825],"half_width":1.838222239728216,"best_rank":4,"worst_rank":11,"pinned":false,"gen_ci":[-1.599939975657776,4.93327330899111],"gen_best_rank":2,"gen_worst_rank":11,"n":180},{"policy":"Spirit v1.5","order":10,"score":0.5555555555555556,"ci":[-0.524201291545278,1.635312402656389],"half_width":1.0797568471008334,"best_rank":4,"worst_rank":11,"pinned":false,"gen_ci":[-0.5333133252192582,1.6444244363303693],"gen_best_rank":3,"gen_worst_rank":11,"n":180},{"policy":"DM0","order":11,"score":0.0,"ci":[0.0,0.0],"half_width":0.0,"best_rank":7,"worst_rank":11,"pinned":false,"gen_ci":[0.0,0.0],"gen_best_rank":3,"gen_worst_rank":11,"n":180}],"dropped":[],"n_policies":11,"n_tasks":3,"task_ids":["arxX5","piper","piperX"],"trials_per_task":null,"trials_by_task":{"arxX5":60,"piper":60,"piperX":60},"trials_min":60,"trials_total":180,"n_rollouts":1980,"pairs_separated":26,"pairs_total":55,"pinned":1,"gen_pairs_separated":9,"gen_pinned":0,"sizing":[{"higher":"OpenWAM-\u03b1","lower":"Pi-05","gap":11.666666666666664,"se":3.9538229663684636,"budget_multiple":0.901464305640183,"exact_tie":false,"trials_needed":55,"resolved":true,"hopeless":false,"head_to_head":180},{"higher":"Pi-05","lower":"InternVLA-A1","gap":5.555555555555558,"se":3.0412121256853553,"budget_multiple":2.352047628494905,"exact_tie":false,"trials_needed":142,"resolved":false,"hopeless":false,"head_to_head":180},{"higher":"InternVLA-A1","lower":"GalaxeaVLA (G0)","gap":2.777777777777777,"se":2.34718113047529,"budget_multiple":5.604100133744268,"exact_tie":false,"trials_needed":337,"resolved":false,"hopeless":false,"head_to_head":180},{"higher":"GalaxeaVLA (G0)","lower":"Xiaomi-Robotics-0","gap":0.5555555555555557,"se":2.037457868988028,"budget_multiple":105.56743249140095,"exact_tie":false,"trials_needed":6335,"resolved":false,"hopeless":true,"head_to_head":180},{"higher":"Xiaomi-Robotics-0","lower":"X-VLA","gap":0.5555555555555557,"se":1.931171630982797,"budget_multiple":94.8406301812462,"exact_tie":false,"trials_needed":5691,"resolved":false,"hopeless":false,"head_to_head":180},{"higher":"X-VLA","lower":"GROOT-N1.7","gap":1.6666666666666667,"se":1.6181201306459436,"budget_multiple":7.398295902261198,"exact_tie":false,"trials_needed":444,"resolved":false,"hopeless":false,"head_to_head":180},{"higher":"GROOT-N1.7","lower":"Pi-0","gap":0.0,"se":1.3341047151353984,"budget_multiple":null,"exact_tie":true,"trials_needed":null,"resolved":false,"hopeless":true,"head_to_head":180},{"higher":"Pi-0","lower":"StarVLA","gap":0.0,"se":1.3263707095903692,"budget_multiple":null,"exact_tie":true,"trials_needed":null,"resolved":false,"hopeless":true,"head_to_head":180},{"higher":"StarVLA","lower":"Spirit v1.5","gap":1.111111111111111,"se":1.0877166781917342,"budget_multiple":7.521843083340221,"exact_tie":false,"trials_needed":452,"resolved":false,"hopeless":false,"head_to_head":180},{"higher":"Spirit v1.5","lower":"DM0","gap":0.5555555555555556,"se":0.5509064733571674,"budget_multiple":7.718065076818661,"exact_tie":false,"trials_needed":464,"resolved":false,"hopeless":false,"head_to_head":180}],"per_task_ci":{"median_width":8.560313753239072,"max_width":23.696082692426646,"examples":[{"k":0,"n":60,"rate":0.0,"ci":[0.0,6.017185219140635],"width":6.017185219140635},{"k":1,"n":60,"rate":1.6666666666666667,"ci":[0.2948159792984385,8.85512973253751],"width":8.560313753239072},{"k":15,"n":60,"rate":25.0,"ci":[15.776522526806932,37.23207008276338],"width":21.455547555956446},{"k":30,"n":60,"rate":50.0,"ci":[37.73502423652962,62.26497576347039],"width":24.529951526940767},{"k":45,"n":60,"rate":75.0,"ci":[62.76792991723662,84.22347747319307],"width":21.455547555956443},{"k":60,"n":60,"rate":100.0,"ci":[93.98281478085936,99.99999999999999],"width":6.0171852191406305}]},"corpus":{"track":"real","submissions":11,"teams":1,"dimensions":3,"labels":{"arxX5":"ARX X5","piper":"Piper","piperX":"Piper X"},"tasks_declared":18,"episodes_per_seed":180,"seeds":1,"evaluators":3},"kind":"suite","cell_label":"embodiment","source":{"name":"RoboDojo Real-World","dump":"leaderboard bundle, real track","url":"https://robodojo-benchmark.com/LeaderBoard","paper":"https://arxiv.org/abs/2607.04434","licence":"public leaderboard","platform":"18 tasks across ARX X5, Piper, Piper X","method":"success rate over a fixed task suite","unit":"episodes","caveat":"Published figures are means over three random seeds. Intervals here use one seed's episodes, so they are a FLOOR: seed-to-seed variation in policy training routinely exceeds the binomial, and treating three seeds as interchangeable draws would narrow these intervals on an assumption the data does not support."}}},"order":["roboarena","robochallenge","robochallenge-v2","robodojo-sim","robodojo-real"],"groups":[{"id":"roboarena","label":"RoboArena","blurb":"Distributed pairwise evaluation on DROID","boards":[{"key":"roboarena","label":"Preferences"}]},{"id":"robochallenge","label":"RoboChallenge","blurb":"Centralised real-robot suite","boards":[{"key":"robochallenge","label":"Table 30"},{"key":"robochallenge-v2","label":"Table 30 v2"}]},{"id":"robodojo","label":"RoboDojo","blurb":"Unified sim-and-real capability suite","boards":[{"key":"robodojo-sim","label":"Simulation"},{"key":"robodojo-real","label":"Real-world"}]}]}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+
+<div id="root"></div>
+
+<script>
+(function(){
+  var DATA = JSON.parse(document.getElementById('arena-data').textContent);
+  var h = React.createElement, F = React.Fragment;
+  var useState = React.useState, useMemo = React.useMemo;
+
+  var fmt = function(x,d){ d = (d===undefined?1:d);
+    return (x<0?'−':'')+Math.abs(x).toFixed(d); };
+  var big = function(n){ return (n||0).toLocaleString(); };
+
+  function domainOf(pols, useGen){
+    var sc = pols.map(function(p){return p.score;}).slice().sort(function(a,b){return a-b;});
+    var q = function(a,t){var i=(a.length-1)*t,lo=Math.floor(i),hi=Math.ceil(i);
+      return a[lo]+(a[hi]-a[lo])*(i-lo);};
+    var med=q(sc,.5), iqr=q(sc,.75)-q(sc,.25), floor=med-4*iqr;
+    var inr = pols.filter(function(p){return p.ci[1]>=floor;});
+    if(!inr.length) inr = pols;
+    var lo = Math.min.apply(null, inr.map(function(p){
+      return useGen&&p.gen_ci ? Math.min(p.ci[0],p.gen_ci[0]) : p.ci[0];}));
+    var hi = Math.max.apply(null, inr.map(function(p){
+      return useGen&&p.gen_ci ? Math.max(p.ci[1],p.gen_ci[1]) : p.ci[1];}));
+    var pad=(hi-lo)*0.06 || 1; lo-=pad; hi+=pad;
+    return {lo:lo, hi:hi, floor:floor,
+            pos:function(x){return Math.max(0,Math.min(100,(x-lo)/(hi-lo)*100));}};
+  }
+  function ticksOf(d){
+    var span=d.hi-d.lo;
+    var step=Math.pow(10,Math.floor(Math.log(span/5)/Math.LN10));
+    [1,2,2.5,5,10].some(function(m){ if(span/(step*m)<=6){step=step*m;return true;} return false;});
+    var out=[]; for(var v=Math.ceil(d.lo/step)*step; v<=d.hi; v+=step){
+      out.push(Math.round(v*1e6)/1e6);} return out;
+  }
+
+  function Spread(p){
+    var n=p.total, pc=function(r){ return n<=1?50:((r-1)/(n-1))*100; };
+    return h('div',{className:'spread'},
+      h('span',{className:'e'}, p.best),
+      h('div',{className:'ln'},
+        h('div',{className:'seg2',style:{left:pc(p.best)+'%',
+          width:Math.max(2,pc(p.worst)-pc(p.best))+'%'}}),
+        h('div',{className:'kn',style:{left:pc(p.order)+'%'}})),
+      h('span',{className:'e'}, p.worst));
+  }
+
+  function Interval(p){
+    var dom=p.dom, x=p.p, off = x.ci[1] < dom.floor, kids=[];
+    (p.ticks||[]).forEach(function(t,i){
+      kids.push(h('div',{className:'gridline',key:'g'+i,style:{left:dom.pos(t)+'%'}}));
+    });
+    if(off){
+      kids.push(h('div',{className:'off',key:'o'}));
+      kids.push(h('div',{className:'offtx',key:'ot'},
+        '← '+fmt(x.ci[0],0)+' to '+fmt(x.ci[1],0)));
+    } else {
+      if(p.gen && x.gen_ci){
+        kids.push(h('div',{className:'gen',key:'gn',style:{left:dom.pos(x.gen_ci[0])+'%',
+          width:Math.max(1,dom.pos(x.gen_ci[1])-dom.pos(x.gen_ci[0]))+'%'}}));
+      }
+      kids.push(h('div',{className:'bar',key:'b',style:{left:dom.pos(x.ci[0])+'%',
+        width:Math.max(1,dom.pos(x.ci[1])-dom.pos(x.ci[0]))+'%'}}));
+      kids.push(h('div',{className:'pt',key:'p',style:{left:dom.pos(x.score)+'%'}}));
+    }
+    return h('div',{className:'iv'}, kids);
+  }
+
+  function Th(p){
+    return h('th',{className:(p.num?'num ':'')+(p.sort?'sortable':''),
+      onClick:p.sort?function(){p.onSort(p.k);}:null, title:p.title||null},
+      p.label, p.active? h('span',{className:'ar'}, p.desc?'↓':'↑') : null);
+  }
+
+  function Ranking(p){
+    var b=p.board, st=p.sort;
+    var gen = b.kind==='suite' && b.policies[0] && b.policies[0].gen_ci;
+    var rows = useMemo(function(){
+      var r = b.policies.filter(function(x){
+        return !p.query || x.policy.toLowerCase().indexOf(p.query.toLowerCase())>=0; });
+      return r.slice().sort(function(x,y){
+        var vx,vy,k=st.key;
+        if(k==='score'){vx=x.score;vy=y.score;}
+        else if(k==='n'){vx=x.n;vy=y.n;}
+        else if(k==='width'){vx=x.ci[1]-x.ci[0];vy=y.ci[1]-y.ci[0];}
+        else if(k==='spread'){vx=x.worst_rank-x.best_rank;vy=y.worst_rank-y.best_rank;}
+        else {vx=x.order;vy=y.order;}
+        return st.desc ? vy-vx : vx-vy;
+      });
+    },[b,st.key,st.desc,p.query]);
+
+    var dom = useMemo(function(){return domainOf(b.policies, gen);},[b,gen]);
+    var ticks = useMemo(function(){return ticksOf(dom);},[dom]);
+    var pct = b.kind==='suite';
+    var unit = (b.source&&b.source.unit)||'observations';
+
+    if(!rows.length) return h('div',{className:'card'},
+      h('div',{className:'empty'},'No models match “'+p.query+'”.'));
+
+    return h('div',{className:'card'},
+      h('div',{className:'tblwrap'},
+        h('table',null,
+          h('thead',null,h('tr',null,
+            h(Th,{label:'Rank',k:'rank',sort:true,active:st.key==='rank',desc:st.desc,onSort:p.onSort}),
+            h(Th,{label:'Rank spread',k:'spread',sort:true,active:st.key==='spread',desc:st.desc,
+                  onSort:p.onSort,title:'Best and worst rank consistent with the 95% interval'}),
+            h(Th,{label:'Model',k:'model'}),
+            h(Th,{label:pct?'Success rate':'Arena score',k:'score',num:true,sort:true,
+                  active:st.key==='score',desc:st.desc,onSort:p.onSort}),
+            h(Th,{label:'95% interval '+fmt(dom.lo,0)+(pct?'%':'')+' \u2192 '
+                  +fmt(dom.hi,0)+(pct?'%':''),k:'iv'}),
+            h(Th,{label:unit,k:'n',num:true,sort:true,active:st.key==='n',desc:st.desc,
+                  onSort:p.onSort}),
+            h(Th,{label:'Verdict',k:'v'}))),
+          h('tbody',null, rows.map(function(x){
+            var w=(x.ci[1]-x.ci[0])/2;
+            return h('tr',{key:x.policy,className:x.pinned?'pin':''},
+              h('td',{className:'rk'}, x.order),
+              h('td',null, h(Spread,{best:x.best_rank,worst:x.worst_rank,order:x.order,
+                                     total:b.n_policies})),
+              h('td',null, h('div',{className:'model'},
+                h('span',{className:'nm',title:x.policy}, x.policy),
+                h('span',{className:'org'}, x.pinned? 'rank fixed by the data'
+                  : 'consistent with ranks '+x.best_rank+'–'+x.worst_rank))),
+              h('td',{className:'num'},
+                h('span',{className:'sc'}, fmt(x.score, pct?1:0)+(pct?'%':'')),
+                h('span',{className:'ci'}, '+'+fmt(w,1)+'/−'+fmt(w,1))),
+              h('td',null, h(Interval,{p:x,dom:dom,ticks:ticks,gen:gen})),
+              h('td',{className:'num'}, big(x.n)),
+              h('td',null, x.pinned
+                ? h('span',{className:'tag pinned'},'pinned')
+                : h('span',{className:'tag tied'},
+                    (x.worst_rank-x.best_rank+1)+'-way tie')));
+          })))));
+  }
+
+  function Resolution(p){
+    var b=p.board, pct=b.kind==='suite';
+    return h(F,null,
+      h('div',{className:'note'}, h('p',null,
+        h('strong',null,'What would it take to break each tie? '),
+        'For every adjacent pair, the factor by which the whole evaluation budget must grow ',
+        'for that gap to reach significance — computed from the fitted covariance, which ',
+        'already pools information across the board.')),
+      h('div',{className:'card'}, h('div',{className:'tblwrap'},
+        h('table',null,
+          h('thead',null,h('tr',null,
+            h('th',null,'Adjacent pair'),
+            h('th',{className:'num'},'Gap'),
+            h('th',{className:'num'},'SE'),
+            h('th',{className:'num'},'Budget ×'),
+            h('th',{className:'num'}, pct?'Needed per cell':'Head to head'),
+            h('th',null,'Verdict'))),
+          h('tbody',null, b.sizing.map(function(s,i){
+            var mult, v;
+            if(s.exact_tie){ mult='∞'; v=h('span',{className:'tag tied'},'identical score'); }
+            else if(s.resolved){ mult=s.budget_multiple.toFixed(1)+'×';
+              v=h('span',{className:'tag pinned'},'settled'); }
+            else if(s.hopeless){ mult=Math.round(s.budget_multiple).toLocaleString()+'×';
+              v=h('span',{className:'tag tied'},'tied — declare it'); }
+            else { mult=s.budget_multiple.toFixed(1)+'×';
+              v=h('span',{className:'tag reach'},'reachable'); }
+            return h('tr',{key:i},
+              h('td',null,h('span',{className:'mono',style:{fontSize:'.8rem'}},
+                s.higher+' › '+s.lower)),
+              h('td',{className:'num'}, fmt(s.gap,1)+(pct?'pp':'')),
+              h('td',{className:'num'}, s.se.toFixed(2)),
+              h('td',{className:'num'}, mult),
+              h('td',{className:'num'}, s.exact_tie ? '—'
+                : big(pct ? s.trials_needed : s.head_to_head)),
+              h('td',null, v));
+          }))))));
+  }
+
+  function Evidence(p){
+    var b=p.board, pols=b.policies.filter(function(x){return x.n>0;});
+    var W=780, H=390, M={t:18,r:20,b:48,l:58};
+    var xs=pols.map(function(x){return Math.log10(Math.max(1,x.n));});
+    var x0=Math.min.apply(null,xs), x1=Math.max.apply(null,xs);
+    if(x1-x0<0.35){x0-=0.25;x1+=0.25;}
+    var y0=Math.min.apply(null,pols.map(function(x){return x.ci[0];}));
+    var y1=Math.max.apply(null,pols.map(function(x){return x.ci[1];}));
+    var ypad=(y1-y0)*0.08||1; y0-=ypad; y1+=ypad;
+    var px=function(v){return M.l+(v-x0)/((x1-x0)||1)*(W-M.l-M.r);};
+    var py=function(v){return M.t+(1-(v-y0)/((y1-y0)||1))*(H-M.t-M.b);};
+    var pct=b.kind==='suite';
+    var xt=[]; for(var e=Math.floor(x0);e<=Math.ceil(x1);e++){ if(e>=0) xt.push(e); }
+    var yt=ticksOf({lo:y0,hi:y1});
+    var sup=function(n){ return String(n).split('').map(function(c){
+      return '⁰¹²³⁴⁵⁶⁷⁸⁹'[+c]; }).join(''); };
+
+    return h(F,null,
+      h('div',{className:'note'}, h('p',null,
+        h('strong',null,'Evidence, not just score. '),
+        'Vertical bars are 95% intervals. Models to the left were measured with less data, so ',
+        'their position is a weaker claim — a high point estimate on a long bar is worth ',
+        'less than a slightly lower one on a short bar.')),
+      h('div',{className:'card',style:{padding:'14px'}},
+        h('div',{style:{overflowX:'auto'}},
+          h('svg',{viewBox:'0 0 '+W+' '+H, width:'100%',
+            style:{maxWidth:'100%',display:'block',minWidth:'560px'},
+            role:'img','aria-label':'Score against evaluation budget with 95% intervals'},
+            yt.map(function(t,i){ return h('g',{key:'y'+i},
+              h('line',{x1:M.l,x2:W-M.r,y1:py(t),y2:py(t),stroke:'#EFEDE9',strokeWidth:1}),
+              h('text',{x:M.l-9,y:py(t)+4,textAnchor:'end',fontSize:11,fill:'#95999F',
+                fontFamily:'JetBrains Mono, monospace'}, fmt(t,0)+(pct?'%':''))); }),
+            xt.map(function(t,i){ return h('g',{key:'x'+i},
+              h('line',{x1:px(t),x2:px(t),y1:M.t,y2:H-M.b,stroke:'#EFEDE9',strokeWidth:1}),
+              h('text',{x:px(t),y:H-M.b+18,textAnchor:'middle',fontSize:11,fill:'#95999F',
+                fontFamily:'JetBrains Mono, monospace'}, t===0?'1':('10'+sup(t)))); }),
+            pols.map(function(x,i){
+              var cx=px(Math.log10(Math.max(1,x.n)));
+              return h('g',{key:i},
+                h('line',{x1:cx,x2:cx,y1:py(x.ci[1]),y2:py(x.ci[0]),
+                  stroke:x.pinned?'#1C6B4B':'#C6D3E6',strokeWidth:3,strokeLinecap:'round'}),
+                h('circle',{cx:cx,cy:py(x.score),r:4,fill:x.pinned?'#1C6B4B':'#14161A'}),
+                x.pinned ? h('text',{x:cx+9,y:py(x.score)+4,fontSize:11,fill:'#1C6B4B',
+                  fontFamily:'JetBrains Mono, monospace'}, x.policy) : null); }),
+            h('text',{x:M.l+(W-M.l-M.r)/2,y:H-6,textAnchor:'middle',fontSize:11.5,fill:'#666B74'},
+              'Evaluation budget behind the estimate ('
+              +((b.source&&b.source.unit)||'observations')+', log scale)'),
+            h('text',{x:15,y:M.t+(H-M.t-M.b)/2,fontSize:11.5,fill:'#666B74',textAnchor:'middle',
+              transform:'rotate(-90 15 '+(M.t+(H-M.t-M.b)/2)+')'},
+              pct?'Suite success rate':'Arena score')))));
+  }
+
+  function Method(){
+    return h('div',{className:'prose'},
+      h('h2',null,'How these boards are computed'),
+      h('p',null,'Every board answers one question: what does this benchmark’s own data ',
+        'actually support? Nothing here is a new evaluation. The scores are the benchmarks’ ',
+        'own; what is added is the uncertainty they do not publish.'),
+      h('h3',null,'Two measurement models'),
+      h('p',null,h('strong',null,'Pairwise arenas. '),'Bradley–Terry by Newton iteration ',
+        'under a sum-to-zero constraint, ties as half a win each. Intervals in closed form from ',
+        'the pseudo-inverse of the Fisher information, which for Bradley–Terry is a graph ',
+        'Laplacian whose null space is exactly the constraint direction. Validated against a ',
+        '2,000-sample bootstrap (closed-form SEs within 1.03–1.13×, median 1.09) and ',
+        'against raw head-to-head rates.'),
+      h('p',null,h('strong',null,'Fixed task suites. '),'The suite mean is a sum of independent ',
+        'binomials, so its sampling variance is ',
+        h('code',null,'Σ p(1−p)/nₜ ÷ T²'),'. Cells may carry different ',
+        'budgets — RoboDojo runs 12 tasks at 25 episodes and 8 at 50 — so trial counts ',
+        'are declared per cell. Where the data allows, the interval for ',h('em',null,'new'),
+        ' tasks drawn from the same pool is also computed; it is several times wider and is the ',
+        'honest answer to “which model is better in general?”'),
+      h('h3',null,'Rank spread'),
+      h('p',null,'Best rank is one plus the number of models clearly ahead; worst rank is one ',
+        'plus the number that could be ahead. Two models are tied when their spreads overlap. ',
+        'This follows LMArena’s definition, so the boards read the same way.'),
+      h('h3',null,'Guards, each found the hard way'),
+      h('p',null,'Policies with too few comparisons are excluded rather than ranked — one ',
+        'that wins or loses all of them sends ability to infinity and, abilities being centred, ',
+        'drags every other model with it. Suite means are computed only over full task coverage. ',
+        'The ridge that keeps the optimiser stable is kept out of the covariance, where it would ',
+        'fill the null direction and inflate every interval by ',h('code',null,'1/√(2λ)'),
+        '. Trial counts are inferred from the reported data rather than read from a paper. And an ',
+        'exactly zero gap is carried as unresolvable, not as a very large number.'),
+      h('h3',null,'Limits'),
+      h('p',null,'These fits are deliberately plainer than the benchmarks’ own richer models ',
+        '— RoboArena adds task-difficulty and policy–task terms with a Davidson tie ',
+        'extension. The question here is not what the ranking is, but whether the data can ',
+        'resolve it, and interval width is driven by observation counts rather than tie ',
+        'parameterisation. A fuller model moves point estimates; it does not close a ',
+        'thousandfold gap.'));
+  }
+
+  function About(){
+    var ra=DATA.boards.roboarena;
+    return h('div',{className:'prose'},
+      h('h2',null,'Why this exists'),
+      h('p',null,'Every real-robot evaluation benchmark reports a point ordering with no ',
+        'uncertainty attached. Run the numbers and those orderings turn out to be supported very ',
+        'unevenly — sometimes the top is solid and the middle is noise, sometimes the ',
+        'ordering holds and the per-task detail underneath it collapses entirely.'),
+      h('p',null,'The fix is not more robots. It is reporting the interval, naming the ties, and ',
+        'pricing what resolution would cost — so that evaluation budget goes where it ',
+        'changes a conclusion.'),
+      h('h3',null,'Found in the data'),
+      h('p',null,h('strong',null, big(ra.block.net_new)+' paired comparisons already paid for. '),
+        big(ra.block.sessions)+' RoboArena sessions ran '+ra.block.slots+' policies on one ',
+        'identical scene and recorded a progress score for each — then labelled a preference ',
+        'over a single pair. There are '+ra.block.pairs_per_session+' paired comparisons in such ',
+        'a session and one is used. Recovering the rest is '+ra.block.growth.toFixed(1)+'× ',
+        'the data at zero robot time, halving every interval. Because they share a scene they are ',
+        'common-random-number paired, so that is a lower bound on the gain.'),
+      h('p',null,'They are deliberately not folded into the board: a progress-score comparison is ',
+        'a different measurement from a human preference label, and quietly mixing the two would ',
+        'be the same error this project exists to object to.'),
+      h('h3',null,'Two failures every benchmark inherits'),
+      h('p',null,h('strong',null,'The aggregate hides per-task damage. '),'In preregistered work ',
+        '— three replicates, 50 tasks, 200 episodes each — selecting on the suite ',
+        'average ships at least one genuinely damaged task with probability 1.000 at 50 tasks, ',
+        'carrying 4.1 to 6.1 damaged tasks, while the suite average that certifies it grows ',
+        h('em',null,'steadier'),', from 10pp to 3.3pp. The certifying number stabilises exactly ',
+        'as it stops certifying anything.'),
+      h('p',null,h('strong',null,'A fixed episode budget is wrong for every task. '),'On two ',
+        'ALOHA tasks — same robot, same policy class, same 500-episode protocol — ',
+        'floor-subtracted run-to-run σ is 6.24pp and 1.73pp. The ratio is 3.60×, 95% CI ',
+        '[1.29, 6.44], excluding 1: a 13× difference in the episodes needed to resolve the ',
+        'same effect, between two tasks on one arm. And it is not predictable from success rate ',
+        '— across measured cells the coefficient of variation of σ is 57%, and every ',
+        'scale-free transform is worse.'),
+      h('h3',null,'Independence'),
+      h('p',null,'OrbitEval is not affiliated with RoboArena, RoboChallenge or RoboDojo. All ',
+        'three publish their results openly and all three are used here under the terms they were ',
+        'published with. Where a computation can be checked against a benchmark’s own ',
+        'published figures it is — RoboChallenge’s suite means reproduce to 0.000 pp.'));
+  }
+
+  function App(){
+    var a=useState('boards'), page=a[0], setPage=a[1];
+    var b=useState('roboarena'), group=b[0], setGroup=b[1];
+    var c=useState({}), tracks=c[0], setTracks=c[1];
+    var d=useState('ranking'), view=d[0], setView=d[1];
+    var e=useState({key:'rank',desc:false}), sort=e[0], setSort=e[1];
+    var f=useState(''), query=f[0], setQuery=f[1];
+
+    var grp = DATA.groups.filter(function(g){return g.id===group;})[0] || DATA.groups[0];
+    var key = tracks[grp.id] || grp.boards[0].key;
+    var board = DATA.boards[key];
+
+    function onSort(k){
+      setSort(function(prev){
+        if(prev.key===k) return {key:k,desc:!prev.desc};
+        return {key:k, desc:(k!=='rank')};
+      });
+    }
+    function goto(k){
+      var g=DATA.groups.filter(function(gg){
+        return gg.boards.some(function(x){return x.key===k;});})[0];
+      if(g){ setPage('boards'); setGroup(g.id);
+        var t=Object.assign({},tracks); t[g.id]=k; setTracks(t); }
+    }
+
+    var total = DATA.order.reduce(function(acc,k){
+      var bd=DATA.boards[k];
+      return acc + (bd.kind==='suite' ? (bd.n_rollouts||0) : (bd.n_comparisons||0));
+    },0);
+
+    var sidebar = h('aside',{className:'sidebar'},
+      h('div',{className:'brandmark'},
+        h('span',{className:'glyph'}, h('i')),
+        h('div',null, h('b',null,'OrbitEval'), ' ', h('span',null,'Arena'))),
+      h('nav',{className:'navlist'},
+        [['boards','Leaderboards','▤'],['method','Method','ƒ'],
+         ['about','About','○']].map(function(it){
+          return h('button',{key:it[0],'aria-current':page===it[0],
+            onClick:function(){setPage(it[0]);}},
+            h('span',{className:'ic'},it[2]), it[1]); })),
+      h('div',{className:'sbcard'},
+        h('h4',null,'Run it on your own evals'),
+        h('p',null,'Pairwise or fixed-suite, same output: score, interval, rank spread, and what ',
+          'resolution costs.'),
+        h('code',null,'pip install orbit-eval')));
+
+    var content;
+    if(page==='method') content = h(Method);
+    else if(page==='about') content = h(About);
+    else {
+      var pct = board.kind==='suite';
+      var cellWord = board.cell_label ? board.cell_label+'s' : 'tasks';
+      var chips=[['Models', big(board.n_policies)]];
+      chips.push(board.kind==='pairwise'
+        ? ['Comparisons', big(board.n_comparisons)]
+        : ['Rollouts', big(board.n_rollouts)]);
+      chips.push([pct? (cellWord.charAt(0).toUpperCase()+cellWord.slice(1)) : 'Tasks',
+        big(pct? board.n_tasks : ((board.corpus&&board.corpus.instructions)||0))]);
+      chips.push(['Pinned ranks', board.pinned+' / '+board.n_policies]);
+      chips.push(['Indistinguishable pairs',
+        (board.pairs_total-board.pairs_separated)+' / '+board.pairs_total]);
+
+      var headline = board.pinned===0
+        ? 'Not one model here has a rank the data fixes'
+        : board.pinned+' of '+board.n_policies+' ranks are fixed by the data';
+
+      var ex = board.per_task_ci && board.per_task_ci.examples
+        ? board.per_task_ci.examples[Math.min(3,board.per_task_ci.examples.length-1)] : null;
+
+      content = h(F,null,
+        h('div',{className:'pagehead'},
+          h('h1',null, board.source.name),
+          h('p',{className:'sub'}, board.source.method+'. '+board.source.platform
+            +'. Refit from the benchmark’s own public data, with intervals attached.'),
+          h('div',{className:'chips'}, chips.map(function(x,i){
+            return h('span',{key:i}, x[0], ' ', h('b',null,x[1])); }))),
+
+        h('div',{className:'toolbar'},
+          h('div',{className:'pillbar'},
+            [['ranking','Ranking'],['resolution','Resolution'],['evidence','Evidence']]
+              .map(function(v){
+                return h('button',{key:v[0],'aria-current':view===v[0],
+                  onClick:function(){setView(v[0]);}}, v[1]); })),
+          view==='ranking' ? h('div',{className:'search'},
+            h('span',{style:{color:'#95999F',fontSize:'.8rem'}},'⌕'),
+            h('input',{id:'model-search',value:query,placeholder:'Filter models…',
+              onChange:function(ev){setQuery(ev.target.value);}})) : null,
+          h('div',{className:'grow'}),
+          h('span',{className:'topnote'}, headline)),
+
+        view==='ranking' ? h(Ranking,{board:board,sort:sort,onSort:onSort,query:query})
+          : view==='resolution' ? h(Resolution,{board:board})
+          : h(Evidence,{board:board}),
+
+        board.core ? h('div',{className:'note warn'}, h('p',null,
+              h('strong',null,'Ranked on a shared-task core, not the whole suite. '),
+              'This board is still filling: '+big(board.core.models_available)+' submissions ',
+              'have attempted overlapping but different task sets, and only ',
+              (board.core.frontier&&board.core.frontier.length? '' : ''),
+              'one has completed all '+board.core.tasks_available+'. Suite means over ',
+              'different task sets are not comparable, so the ranking uses the largest ',
+              'complete block those submissions share \u2014 ',
+              h('span',{className:'mono'}, board.core.core_models+' models \u00d7 '
+                +board.core.core_tasks+' tasks'),
+              '. The basis maximises cells; a wider board is available on fewer shared tasks',
+              board.core.frontier && board.core.frontier[1]
+                ? ' (next best: '+board.core.frontier[1].models+' models \u00d7 '
+                  +board.core.frontier[1].tasks+' tasks)' : '',
+              '. Scores here are therefore not comparable with the whole-suite board.')) : null,
+
+        board.crosscheck && board.crosscheck.max_deviation_pp!=null && !board.core
+          ? h('div',{className:'note good'}, h('p',null,
+              h('strong',null,'Checked against the source. '),
+              'Computed suite means reproduce '+board.source.name+'’s own published ',
+              'leaderboard to '+board.crosscheck.max_deviation_pp.toFixed(3)+' pp across all ',
+              board.crosscheck.published_entries+' published entries. The intervals are added; ',
+              'nothing is restated.')) : null,
+
+        board.source.caveat
+          ? h('div',{className:'note warn'}, h('p',null,
+              h('strong',null,'These intervals are a floor. '), board.source.caveat)) : null,
+
+        ex ? h('div',{className:'note warn'}, h('p',null,
+              h('strong',null,'What one cell can tell you. '),
+              'At '+big(board.trials_min)+' '+((board.source&&board.source.unit)||'trials')+' per ',
+              (board.cell_label||'task')+', a result of ',
+              h('span',{className:'mono'}, ex.k+'/'+ex.n),
+              ' carries a 95% interval of ',
+              h('span',{className:'mono'},'['+ex.ci[0].toFixed(0)+'%, '+ex.ci[1].toFixed(0)+'%]'),
+              ' — '+Math.round(ex.width)+'pp wide. The reason to run many '
+              +(board.cell_label||'task')+'s is to see where a model is strong; that is exactly ',
+              'the part this budget cannot support.')) : null,
+
+        board.dropped && board.dropped.length
+          ? h('div',{className:'note'}, h('p',null,
+              h('strong',null, board.dropped.length+' further '
+                +(board.dropped.length===1?'entry is':'entries are')+' excluded, not ranked. '),
+              board.dropped.slice(0,3).map(function(x){return x.policy;}).join(', '),
+              board.dropped.length>3 ? ' and '+(board.dropped.length-3)+' more' : '',
+              ' — '+board.dropped[0].reason+'. Their rank is unidentified, not low. A ',
+              'leaderboard that silently drops entrants is the failure this project exists to ',
+              'object to, so they are named here instead.')) : null);
+    }
+
+    var rail = h('aside',{className:'rail'},
+      page==='boards' ? h('div',null,
+        h('h5',null,'View as'),
+        h('div',{className:'seg'},
+          [['ranking','Ranking','Scores, intervals, ties'],
+           ['resolution','Resolution','Cost of breaking each tie'],
+           ['evidence','Evidence','Score against budget']].map(function(v){
+            return h('button',{key:v[0],'aria-current':view===v[0],
+              onClick:function(){setView(v[0]);}},
+              h('span',null, v[1], h('small',null,v[2])),
+              view===v[0]? h('span',{className:'tick'},'✓') : null); }))) : null,
+      page==='boards' && grp.boards.length>1 ? h('div',null,
+        h('h5',null,'Track'),
+        h('div',{className:'seg'}, grp.boards.map(function(bd){
+          return h('button',{key:bd.key,'aria-current':key===bd.key,
+            onClick:function(){goto(bd.key);}},
+            h('span',null, bd.label,
+              h('small',null, big(DATA.boards[bd.key].n_policies)+' models')),
+            key===bd.key? h('span',{className:'tick'},'✓') : null); }))) : null,
+      h('div',null,
+        h('h5',null,'All boards'),
+        h('div',{className:'seg'}, DATA.order.map(function(k){
+          var bd=DATA.boards[k];
+          return h('button',{key:k,'aria-current':page==='boards'&&key===k,
+            onClick:function(){goto(k);}},
+            h('span',null, bd.source.name,
+              h('small',null, bd.pinned+'/'+bd.n_policies+' ranks fixed')),
+            page==='boards'&&key===k ? h('span',{className:'tick'},'✓') : null); }))));
+
+    return h('div',{className:'shell'}, sidebar,
+      h('div',{className:'main'},
+        h('div',{className:'topbar'},
+          h('div',{className:'tabs'}, DATA.groups.map(function(g){
+            return h('button',{key:g.id,'aria-current':page==='boards'&&group===g.id,
+              onClick:function(){setPage('boards');setGroup(g.id);}}, g.label); })),
+          h('div',{className:'grow'}),
+          h('span',{className:'topnote'},
+            big(total)+' observations across '+DATA.order.length+' boards'),
+          h('a',{className:'cta',href:'https://orbiteval.com'},'orbiteval.com')),
+        h('div',{className:'body'}, rail,
+          h('main',{className:'content'}, content))));
+  }
+
+  ReactDOM.createRoot(document.getElementById('root')).render(h(App));
+})();
+</script>
