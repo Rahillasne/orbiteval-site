@@ -130,6 +130,22 @@
   .gpu{border:1px dashed var(--line);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:8px;font-size:.88rem;color:var(--muted)}
   .gpu pre{margin:0;font-family:"DM Mono",Menlo,monospace;font-size:.76rem;line-height:1.5;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:10px;overflow-x:auto;white-space:pre}
   .gpu a{font-weight:500;text-decoration:none}
+  .live{display:flex;flex-direction:column;gap:12px;border-top:1px solid var(--line-soft);padding-top:14px}
+  .live .lh{font-family:Newsreader,Georgia,serif;font-size:1.15rem;font-weight:500;line-height:1.2}
+  .lstage{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media (max-width:640px){.lstage{grid-template-columns:1fr}}
+  .lcol{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:10px;display:flex;flex-direction:column;gap:8px;align-items:center}
+  .lcol img{width:100%;max-width:340px;aspect-ratio:1;border-radius:8px;background:#fff;border:1px solid var(--line);image-rendering:auto}
+  .lname{font-weight:600;font-size:.95rem;align-self:flex-start}
+  .lmeta{font-family:"DM Mono",Menlo,monospace;font-size:.72rem;color:var(--muted);align-self:flex-start}
+  .ticks{display:flex;flex-wrap:wrap;gap:4px;align-self:flex-start;min-height:18px}
+  .ticks span{width:18px;height:18px;border-radius:5px;display:grid;place-items:center;font-size:.7rem;font-family:"DM Mono",Menlo,monospace;border:1px solid var(--line);background:var(--card);color:var(--faint)}
+  .ticks span.ok{background:#EAF4EC;border-color:#C6DECB;color:#2F6B3F}
+  .ticks span.no{background:#F8ECEC;border-color:#E4C4C4;color:#8C2F2F}
+  .ticks span.run{background:var(--plum-pale);border-color:var(--plum-soft);color:var(--plum);animation:pulse 1s infinite}
+  .live .gpu{background:var(--paper)}
+  .live [hidden]{display:none}
+  .live .lspec{display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
   @media (max-width:600px){.hero{padding-top:16px}.ib.send{margin-left:0}}
 </style>
 
@@ -173,6 +189,26 @@
     </div>
     <p class="bsub">Real counts from the public boards. Or attach two of your own evaluation files above, one CSV with two versions or two eval_info.json files, and press send with Battle selected: the referee runs on your files.</p>
     <div id="bOut"></div>
+    <div class="live" id="live">
+      <div><span class="label">Live battle</span><h3 class="lh">Two real policies, running now, on the same seeds</h3>
+        <p class="bsub">The arena runs the world and the referee; each policy runs on its owner's machine (or here, for the house policies). Every frame is rendered as it happens. Nothing is recorded in advance.</p></div>
+      <div class="brow">
+        <select id="lEmb" aria-label="Embodiment"><option value="pusht">PushT · push the T into the goal</option></select>
+        <select id="lA" aria-label="Policy A"></select>
+        <span class="vs">VS</span>
+        <select id="lB" aria-label="Policy B"></select>
+        <select id="lEps" aria-label="Episodes"><option value="1">1 episode</option><option value="3" selected>3 episodes</option><option value="5">5 episodes</option><option value="10">10 episodes</option></select>
+        <button class="btn primary" id="lGo" type="button">Start live battle</button>
+        <span class="lspec"><span class="bsub">or spectate</span><input class="txt" id="lCode" placeholder="session code" style="width:120px"><button class="btn ghost" id="lWatch" type="button">Watch</button></span>
+      </div>
+      <div id="lJoin" class="gpu" hidden></div>
+      <div id="lStatus" class="status"><span class="dot"></span><span id="lStatusText"></span></div>
+      <div class="lstage" id="lStage" hidden>
+        <div class="lcol"><div class="lname" id="lNameA"></div><img id="lFrameA" alt="policy A rollout"><div class="lmeta" id="lMetaA"></div><div class="ticks" id="lTicksA"></div></div>
+        <div class="lcol"><div class="lname" id="lNameB"></div><img id="lFrameB" alt="policy B rollout"><div class="lmeta" id="lMetaB"></div><div class="ticks" id="lTicksB"></div></div>
+      </div>
+      <div id="lTally" class="bsum"></div>
+    </div>
     <details class="box" id="gpuBox"><summary>Battle two checkpoints on your own GPU</summary>
       <div class="in"><div class="gpu">
         <span>Same seed for both policies means the same initial states, so the comparison is paired. Rounds stop each task as soon as the referee has resolved it.</span>
@@ -360,8 +396,85 @@ python orbit_battle.py --from-eval-info runs/A/eval_info.json runs/B/eval_info.j
     if (act === 'explain'){ setMode('auto'); input.placeholder = 'Paste the readout from the release check here…'; input.focus(); }
     if (act === 'gpu'){ setMode('battle'); $('gpuBox').open = true; $('gpuBox').scrollIntoView({ behavior: 'smooth', block: 'start' }); }
   });
+  // ---------- live battle (the arena runtime runs the world; policies run where their owners run them)
+  var ARENA = (new URLSearchParams(location.search).get('arena') || 'https://orbiteval-arena-199802234044.us-central1.run.app').replace(/\/$/, '');
+  var live = { sid: null, timer: null, house: [] };
+  function lstatus(kind, text){ $('lStatus').className = 'status ' + kind; $('lStatusText').textContent = text; }
+  function fillLive(){
+    if (live.house.length) return;
+    fetch(ARENA + '/embodiments').then(function(r){ return r.json(); }).then(function(d){
+      live.house = d.house || [];
+      [$('lA'), $('lB')].forEach(function(sel, i){
+        sel.innerHTML = '';
+        live.house.forEach(function(h){ var o = document.createElement('option'); o.value = h.key; o.textContent = h.label + ' (house)'; sel.appendChild(o); });
+        var own = document.createElement('option'); own.value = 'own'; own.textContent = 'My own policy (I will run orbit_serve.py)'; sel.appendChild(own);
+        sel.selectedIndex = Math.min(i, sel.options.length - 1);
+      });
+      lstatus('ok', 'Arena ready. House policies run on the arena server; yours run on your machine.');
+    }).catch(function(){ lstatus('err', 'The arena runtime is waking up or unreachable. Try again in a few seconds.'); });
+  }
+  function ticks(results, running){
+    var h = results.map(function(r){ return '<span class="' + (r ? 'ok' : 'no') + '">' + (r ? '✓' : '✗') + '</span>'; }).join('');
+    if (running) h += '<span class="run">·</span>';
+    return h;
+  }
+  function renderLive(st){
+    var a = st.slots.a, b = st.slots.b, running = st.status === 'running';
+    $('lStage').hidden = false;
+    $('lNameA').textContent = a.name; $('lNameB').textContent = b.name;
+    if (a.frame) $('lFrameA').src = 'data:image/jpeg;base64,' + a.frame;
+    if (b.frame) $('lFrameB').src = 'data:image/jpeg;base64,' + b.frame;
+    function meta(s){ return (s.connected ? '' : 'waiting for policy · ') + 'episode ' + Math.min(st.n_episodes, s.episode + 1) + '/' + st.n_episodes + ' · step ' + s.step + ' · coverage ' + Math.round(100 * (s.progress || 0)) + '%' + (s.latency_ms != null ? ' · ' + s.latency_ms + ' ms/action' : ''); }
+    $('lMetaA').textContent = meta(a); $('lMetaB').textContent = meta(b);
+    $('lTicksA').innerHTML = ticks(a.results, running && a.results.length < st.n_episodes);
+    $('lTicksB').innerHTML = ticks(b.results, running && b.results.length < st.n_episodes);
+    var t = st.tally, txt = '';
+    if (t.a.n || t.b.n){
+      txt = '<strong>' + esc(a.name) + '</strong> ' + (t.a.n ? t.a.k + '/' + t.a.n + ' (' + f1(t.a.rate_pct) + '%, [' + f1(t.a.ci95[0]) + ', ' + f1(t.a.ci95[1]) + '])' : '0/0') +
+            ' · <strong>' + esc(b.name) + '</strong> ' + (t.b.n ? t.b.k + '/' + t.b.n + ' (' + f1(t.b.rate_pct) + '%, [' + f1(t.b.ci95[0]) + ', ' + f1(t.b.ci95[1]) + '])' : '0/0');
+      if (t.delta_pp !== undefined) txt += ' · difference ' + sg(t.delta_pp) + ' pp [' + sg(t.ci95_pp[0]) + ', ' + sg(t.ci95_pp[1]) + '] · <span class="call ' + (t.call.indexOf('AHEAD') >= 0 ? (t.call.indexOf(a.name) === 0 ? 'a' : 'b') : '') + '">' + esc(t.call.toLowerCase()) + '</span>' + (t.need ? ' · about ' + t.need + ' episodes per side would settle it' : '');
+    }
+    $('lTally').innerHTML = txt;
+    var msg = st.status === 'waiting for policies' ? 'Waiting for both policies to connect. Session ' + st.session + '.' : st.status === 'running' ? 'Live. Session ' + st.session + ' · ' + st.elapsed_s + ' s' : st.status === 'finished' ? 'Finished. Same seeds for both; the referee’s call is above.' : 'Error: ' + (st.error || 'unknown');
+    lstatus(st.status === 'running' ? 'busy' : st.status === 'error' ? 'err' : 'ok', msg);
+    if (st.status === 'finished' || st.status === 'error'){ clearInterval(live.timer); live.timer = null; }
+  }
+  function pollLive(){
+    if (!live.sid) return;
+    fetch(ARENA + '/s/' + live.sid + '/state').then(function(r){ return r.json(); }).then(function(st){ if (st.error && !st.slots){ lstatus('err', st.error); clearInterval(live.timer); return; } renderLive(st); }).catch(function(){});
+  }
+  function watchSession(sid){
+    live.sid = sid; $('lJoin').hidden = true; $('lStage').hidden = true; $('lTally').innerHTML = '';
+    try { window.history.replaceState(null, '', '#live=' + sid); } catch (e) {}
+    if (live.timer) clearInterval(live.timer);
+    pollLive(); live.timer = setInterval(pollLive, 500);
+  }
+  function startLive(){
+    var A = $('lA').value, B = $('lB').value, n = parseInt($('lEps').value, 10) || 3;
+    var house = {}; if (A !== 'own') house.a = A; if (B !== 'own') house.b = B;
+    lstatus('busy', 'Creating the session…');
+    fetch(ARENA + '/session', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ embodiment: $('lEmb').value, n_episodes: n, seed: 1000 + Math.floor(Math.random() * 9000), house: house, names: ['A', 'B'] }) })
+      .then(function(r){ return r.json(); }).then(function(d){
+        if (d.error){ lstatus('err', d.error); return; }
+        var own = ['a', 'b'].filter(function(s){ return !house[s]; });
+        if (own.length){
+          $('lJoin').hidden = false;
+          $('lJoin').innerHTML = '<span>Run this on the machine that holds each policy (Python with <code>lerobot[pusht]</code> installed):</span><pre>' +
+            own.map(function(s){ return 'curl -O https://raw.githubusercontent.com/Rahillasne/orbit-eval/main/tools/orbit_serve.py\npython orbit_serve.py --join ' + d.session + '/' + s + ' --policy <hub id or pretrained_model dir> --env pusht --name "my policy"'; }).join('\n\n') +
+            '</pre><span>The battle starts the moment both policies have joined. Session code <b>' + d.session + '</b>; anyone with it can watch.</span>';
+        }
+        watchSession(d.session);
+      }).catch(function(){ lstatus('err', 'Could not reach the arena runtime.'); });
+  }
+  $('lGo').addEventListener('click', startLive);
+  $('lWatch').addEventListener('click', function(){ var c = ($('lCode').value || '').trim(); if (c) watchSession(c); });
+  var mLive = location.hash.match(/^#live=([a-z0-9]+)$/);
+  if (mLive){ setMode('battle'); fillLive(); watchSession(mLive[1]); $('live').scrollIntoView({ behavior: 'smooth' }); }
+  else if (location.hash === '#live'){ setMode('battle'); fillLive(); $('live').scrollIntoView({ behavior: 'smooth' }); }
+  modeSel.addEventListener('change', function(){ if (modeSel.value === 'battle') fillLive(); });
+
   // hash entry points and the hand-off from the release check page
-  if (location.hash === '#battle'){ setMode('battle'); }
+  if (location.hash === '#battle'){ setMode('battle'); fillLive(); }
   try {
     var handed = sessionStorage.getItem('orbit_readout');
     if (handed && location.hash === '#readout'){ sessionStorage.removeItem('orbit_readout'); pending = [{ name: 'release_check_readout.txt', text: handed }]; input.value = 'Explain this release check readout and tell me what to do next.'; autosize(); send(); }
