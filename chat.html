@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chat — OrbitEval</title>
+<meta name="description" content="Ask the OrbitEval assistant which skills your new robot model broke. Drop an evaluation log, size an evaluation, or look a model up on the Capability Arena. Every number comes from the open-source orbit-eval statistics.">
+<link rel="canonical" href="https://orbiteval.com/chat.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="OrbitEval assistant">
+<meta property="og:description" content="Drop your evaluation log and ask which skills the new model broke. Numbers come from open-source statistics, not from the model.">
+<meta property="og:url" content="https://orbiteval.com/chat.html">
+<meta property="og:site_name" content="OrbitEval">
+<meta name="twitter:card" content="summary">
+<meta name="theme-color" content="#452455">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23452455'/%3E%3Ccircle cx='16' cy='16' r='5.5' fill='%23FBFAF6' stroke='%237A4E8C' stroke-width='3'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=DM+Mono:wght@400;500&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap">
+<style>
+  :root{--paper:#FBFAF6;--card:#FFFFFF;--ink:#1C1B19;--muted:#6A665F;--faint:#A19C93;--line:#E6E2D9;--line-soft:#F1EEE7;--hover:#F6F4EF;
+    --plum:#452455;--plum-mid:#7A4E8C;--plum-pale:#F3ECF5;--plum-soft:#E4D6EA;
+    --f-ui:Archivo,-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;--f-mono:"DM Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+    --f-serif:Newsreader,Georgia,"Times New Roman",serif;color-scheme:light}
+  *{box-sizing:border-box}html{-webkit-text-size-adjust:100%}html,body{margin:0;padding:0}
+  body{background:var(--paper);color:var(--ink);font-family:var(--f-ui);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:hidden;min-height:100vh;display:flex;flex-direction:column}
+  h1,h2,h3{margin:0;font-weight:500}p{margin:0}
+  a{color:var(--plum-mid);text-decoration:none}a:hover{text-decoration:underline;text-underline-offset:3px}
+  code{font-family:var(--f-mono);font-size:.88em;background:var(--paper);border:1px solid var(--line);border-radius:4px;padding:1px 6px;white-space:nowrap}
+  .wrap{width:min(100% - 32px, 1160px);margin-inline:auto}@media (min-width:720px){.wrap{width:min(100% - 48px, 1160px)}}
+  .label{font-family:var(--f-mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);display:block}
+  .topbar{border-bottom:1px solid var(--line);background:var(--paper)}
+  .topbar .wrap{display:flex;align-items:center;gap:12px 22px;padding:12px 0;flex-wrap:wrap}
+  .brand{display:flex;align-items:center;gap:9px;color:var(--ink);text-decoration:none}.brand:hover{text-decoration:none}
+  .brand .mark{width:26px;height:26px;border-radius:7px;background:var(--plum);display:grid;place-items:center;flex:none}
+  .brand .mark i{width:9px;height:9px;border-radius:50%;background:var(--paper);display:block;box-shadow:inset 0 0 0 2.5px var(--plum-mid)}
+  .brand .word{font-family:var(--f-serif);font-size:1.28rem;font-weight:500;letter-spacing:-.01em;line-height:1}
+  .brand .word small{display:block;font-family:var(--f-mono);font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--faint);margin-top:4px}
+  .links{display:flex;gap:4px;margin-left:8px;flex-wrap:wrap}
+  .links a{display:inline-flex;align-items:center;padding:7px 13px;border-radius:9px;font-size:.9rem;color:var(--muted);text-decoration:none}
+  .links a:hover{background:var(--hover);color:var(--ink)}
+  .links a[aria-current="page"]{background:var(--card);color:var(--ink);font-weight:500;box-shadow:0 0 0 1px var(--line)}
+  .topbar .btn{margin-left:auto}
+  @media (max-width:600px){.links{order:3;width:100%;margin-left:0;padding-top:4px;border-top:1px solid var(--line-soft)}}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:9px;padding:9px 14px;font-size:.88rem;font-weight:500;text-decoration:none;white-space:nowrap;border:1px solid transparent}
+  .btn:hover{text-decoration:none}.btn.primary{background:var(--plum);color:#fff}.btn.primary:hover{background:#36193F}.btn.ghost{background:var(--card);color:var(--ink);border-color:var(--line)}
+  .head{padding:22px 0 12px}
+  .head h1{font-family:var(--f-serif);font-size:clamp(1.6rem,1.2rem + 1.4vw,2.2rem);line-height:1.12;margin:6px 0 8px;letter-spacing:-.01em}
+  .head p{color:var(--muted);max-width:76ch}
+  .head p strong{color:var(--ink);font-weight:500}
+  .frame{flex:1;display:flex;flex-direction:column;padding-bottom:20px}
+  .frame .wrap{flex:1;display:flex;flex-direction:column}
+  iframe{width:100%;flex:1;min-height:640px;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+  .below{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;font-size:.84rem;color:var(--muted);padding-top:10px}
+  footer{border-top:1px solid var(--line);padding:18px 0 26px;font-size:.82rem;color:var(--muted)}
+  footer .wrap{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="index.html" aria-label="OrbitEval Capability Arena"><span class="mark"><i></i></span><span class="word">OrbitEval<small>Capability Arena</small></span></a>
+    <nav class="links" aria-label="Site">
+      <a href="index.html">Leaderboards</a>
+      <a href="chat.html" aria-current="page">Chat</a>
+      <a href="check.html">Release check</a>
+      <a href="about.html">About</a>
+    </nav>
+    <a class="btn primary" href="check.html#pricing">Pricing</a>
+  </div>
+</header>
+
+<section class="head">
+  <div class="wrap">
+    <span class="label">Assistant</span>
+    <h1>Ask which skills the new model broke</h1>
+    <p>Drop an evaluation log into the chat, ask how many episodes an evaluation needs, or look a model up on the boards. <strong>Every number the assistant gives comes from the open-source orbit-eval statistics or the arena data, not from the model.</strong> Files are processed for the reply and are not stored.</p>
+  </div>
+</section>
+
+<section class="frame">
+  <div class="wrap">
+    <iframe id="chat" src="https://orbiteval-assistant-199802234044.us-central1.run.app/" title="OrbitEval assistant" allow="clipboard-write"></iframe>
+    <div class="below">
+      <span>If the chat does not load, <a href="https://orbiteval-assistant-199802234044.us-central1.run.app/" rel="noopener">open it in its own tab</a>. The first reply after a quiet period can take a few seconds while the service wakes.</span>
+      <a href="check.html">Prefer no chat? The release check runs in your browser.</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 OrbitEval · Independent · not affiliated with any benchmark</span>
+    <a href="mailto:rahil@orbiteval.com">rahil@orbiteval.com</a>
+    <a href="about.html">About</a>
+  </div>
+</footer>
+</body>
+</html>

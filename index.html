@@ -551,8 +551,8 @@
         var cur=page==='board'&&domainOfKey(bkey)===d;
         return h('button',{key:d,className:'tab','aria-current':cur,onClick:function(){openBoard(first.key);}},
           DOMICON[d](), D.schema.domains[d].label); })),
-      h('a',{className:'btn ghost',href:'#',onClick:function(e){e.preventDefault();setPage('method');}},'Methodology'),
-      h('a',{className:'btn primary',href:'https://orbiteval.com/check.html#pricing'},'Get a private board'));
+      h('a',{className:'btn ghost',href:'https://orbiteval.com/check.html'},'Release check'),
+      h('a',{className:'btn primary',href:'https://orbiteval.com/chat.html'},'Chat'));
 
     var rail=null, content=null;
     if(page==='board'){
