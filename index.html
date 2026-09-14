@@ -618,8 +618,8 @@
     var wide = page!=='board' || !showRail;
     return h(F,null,
       announce? h('div',{className:'announce'},
-        h('span',null,h('b',null,'New analysis: '),'WBench’s Interaction axis is independent of its other four dimensions — and it’s the only one that separates world models.'),
-        h('a',{href:'#',onClick:function(e){e.preventDefault();setPage('method');}},'Read the methodology', I.arrow()),
+        h('span',null,h('b',null,'New note: '),'Same recipe, two retrains: the suite average went up 1.3 points and four skills went down 5 to 10. None is callable at 100 episodes.'),
+        h('a',{href:'https://orbiteval.com/notes/release-lottery.html'},'Read the note and the table', I.arrow()),
         h('button',{className:'x','aria-label':'Dismiss',onClick:function(){setAnnounce(false);}},'×')) : null,
       h('div',{className:'shell'}, sidebar,
         h('div',{className:'main'}, topbar,
