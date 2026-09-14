@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Chat — OrbitEval</title>
-<meta name="description" content="Ask the OrbitEval assistant which skills your new robot model broke. Drop an evaluation log, size an evaluation, or look a model up on the Capability Arena. Every number comes from the open-source orbit-eval statistics, not from the model.">
+<meta name="description" content="Battle two robot policies, check a release, or size an evaluation. The OrbitEval assistant answers with numbers from the open-source orbit-eval statistics and the Capability Arena data, never from the model.">
 <link rel="canonical" href="https://orbiteval.com/chat.html">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Chat — OrbitEval">
-<meta property="og:description" content="Ask the OrbitEval assistant which skills your new robot model broke. Drop an evaluation log, size an evaluation, or look a model up on the Capability Arena. Every number comes from the open-source orbit-eval statistics, not from the model.">
+<meta property="og:description" content="Battle two robot policies, check a release, or size an evaluation. The OrbitEval assistant answers with numbers from the open-source orbit-eval statistics and the Capability Arena data, never from the model.">
 <meta property="og:url" content="https://orbiteval.com/chat.html">
 <meta property="og:site_name" content="OrbitEval">
 <meta name="twitter:card" content="summary">
@@ -25,16 +25,16 @@
   <aside class="sidebar">
     <div class="brand"><span class="mark"><i></i></span><div class="word">OrbitEval<small>Capability Arena</small></div></div>
     <nav class="nav">
-      <a href="index.html"><svg class="ico" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Overview</a><a href="index.html"><svg class="ico" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13"/><circle cx="4" cy="6" r="1"/><circle cx="4" cy="12" r="1"/><circle cx="4" cy="18" r="1"/></svg>Leaderboards</a><a href="index.html"><svg class="ico" viewBox="0 0 24 24"><path d="M4 4h6a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H4zM20 4h-6a3 3 0 0 0-3 3v13a2 2 0 0 1 2-2h7z"/></svg>Methodology</a><div class="sep"></div><a href="chat.html" aria-current="page"><svg class="ico" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1.1-4.2A8 8 0 1 1 21 12z"/></svg>Chat</a><a href="check.html"><svg class="ico" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>Release check</a><a href="about.html"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 10v6M12 7h.01"/></svg>About</a>
+      <a href="index.html"><svg class="ico" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Overview</a><a href="index.html"><svg class="ico" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13"/><circle cx="4" cy="6" r="1"/><circle cx="4" cy="12" r="1"/><circle cx="4" cy="18" r="1"/></svg>Leaderboards</a><a href="chat.html" aria-current="page"><svg class="ico" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1.1-4.2A8 8 0 1 1 21 12z"/></svg>Chat</a>
     </nav>
     <div class="promo">
       <div class="thumb"><i style="width:78%"></i><i style="width:62%"></i><i style="width:44%"></i></div>
-      <h4>Check your last release</h4>
-      <p>Drop the evaluation CSV you already have. Runs in your browser; nothing is uploaded.</p>
-      <a class="btn primary block" href="check.html">Run the release check</a>
-      <a class="btn ghost block" href="https://pypi.org/project/orbit-eval/">pip install orbit-eval</a>
+      <h4>Battle two policies</h4>
+      <p>Same tasks, same seeds, a referee that prices the noise. On the boards now, on your GPU next.</p>
+      <a class="btn primary block" href="chat.html#battle">Try a battle</a>
+      <a class="btn ghost block" href="check.html">Check a release</a>
     </div>
-    <div class="legal"><a href="about.html">About OrbitEval</a><span>Independent · not affiliated with any benchmark</span></div>
+    <div class="legal"><a href="index.html#methodology">Methodology</a><a href="check.html">Release check</a><a href="about.html">About</a><span>Independent · not affiliated with any benchmark</span></div>
   </aside>
   <div class="main">
     <div class="topbar">
@@ -47,89 +47,169 @@
       <main class="content">
 
 <style>
-  .chatwrap{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;max-width:960px}
-  .chatbox{background:var(--card);border:1px solid var(--line);border-radius:12px;display:flex;flex-direction:column;min-height:560px;overflow:hidden}
-  .msgs{flex:1;overflow-y:auto;padding:18px 18px 8px;display:flex;flex-direction:column;gap:12px;scroll-behavior:smooth}
+  .cw{display:flex;flex-direction:column;gap:18px;min-height:calc(100vh - 140px)}
+  .hero{display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;padding:clamp(24px,6vh,64px) 0 6px}
+  .hero .brandline{display:inline-flex;align-items:center;gap:9px;font-family:Newsreader,Georgia,serif;font-size:1.35rem;font-weight:500}
+  .hero .brandline .mark{width:24px;height:24px;border-radius:7px;background:var(--plum);display:grid;place-items:center}
+  .hero .brandline .mark i{width:8px;height:8px;border-radius:50%;background:var(--paper);display:block;box-shadow:inset 0 0 0 2.3px var(--plum-mid)}
+  .hero h1{font-family:Newsreader,Georgia,serif;font-size:clamp(2rem,1.4rem + 2.6vw,3.2rem);line-height:1.08;letter-spacing:-.012em;font-weight:500;max-width:22ch}
+  .hero h1 em{font-style:italic;background:linear-gradient(transparent 12%,var(--plum-soft) 12%,var(--plum-soft) 88%,transparent 88%);padding:0 .12em;color:var(--plum)}
+  .hero .sub{color:var(--muted);font-size:1rem;max-width:62ch}
+  .composer{width:min(100%,860px);margin:0 auto;background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:0 1px 2px rgba(28,27,25,.05);display:flex;flex-direction:column;gap:6px;padding:12px 12px 10px}
+  .composer textarea{width:100%;min-height:58px;max-height:200px;resize:none;border:0;outline:0;font:inherit;font-size:1rem;line-height:1.5;background:transparent;color:var(--ink);padding:6px 6px 0}
+  .composer textarea::placeholder{color:var(--faint)}
+  .composer .bar{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+  .ib{width:36px;height:36px;border-radius:10px;border:1px solid var(--line);background:var(--card);display:grid;place-items:center;cursor:pointer;color:var(--muted);flex:none}
+  .ib:hover{background:var(--hover);color:var(--ink)}
+  .ib.send{background:var(--plum);color:#fff;border-color:transparent;margin-left:auto}
+  .ib.send:hover{background:#36193F}
+  .ib[disabled]{opacity:.5;cursor:wait}
+  .ib .ico{width:17px;height:17px}
+  .modewrap{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:10px;padding:0 8px 0 10px;height:36px;background:var(--card);color:var(--ink);font-size:.9rem}
+  .modewrap .ico{color:var(--plum)}
+  .modewrap select{border:0;background:transparent;font:inherit;font-size:.9rem;color:var(--ink);outline:0;cursor:pointer;padding-right:2px}
+  .modehint{font-size:.8rem;color:var(--muted);padding-left:4px}
+  .pending{display:flex;flex-wrap:wrap;gap:6px;padding:0 6px;font-size:.78rem;color:var(--muted)}
+  .pending span{font-family:"DM Mono",Menlo,monospace;background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:2px 8px;display:inline-flex;gap:8px;align-items:center}
+  .pending span b{cursor:pointer;color:var(--faint);font-weight:400}
+  .pending[hidden],.start[hidden],.battle[hidden],.thread[hidden],.hero[hidden]{display:none}
+  .start{width:min(100%,860px);margin:0 auto;display:flex;flex-direction:column;gap:10px}
+  .gsgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
+  .gs{display:flex;gap:12px;align-items:flex-start;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer;font:inherit;color:var(--ink)}
+  .gs:hover{background:var(--hover)}
+  .gs .gi{width:34px;height:34px;border-radius:9px;background:var(--paper);border:1px solid var(--line);display:grid;place-items:center;flex:none;color:var(--plum)}
+  .gs .gi .ico{width:16px;height:16px}
+  .gs b{display:block;font-weight:600;font-size:.94rem}
+  .gs span{display:block;color:var(--muted);font-size:.82rem;line-height:1.4}
+  .thread{width:min(100%,860px);margin:0 auto;display:flex;flex-direction:column;gap:12px;padding:4px 0}
   .msg{max-width:78ch;font-size:.95rem;line-height:1.55}
+  .msg.wide{max-width:100%}
   .msg .who{font-family:"DM Mono",Menlo,monospace;font-size:.64rem;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-bottom:4px}
-  .msg .bub{border-radius:12px;padding:11px 14px;border:1px solid var(--line);background:var(--paper)}
+  .msg .bub{border-radius:12px;padding:11px 14px;border:1px solid var(--line);background:var(--card)}
   .msg.user{align-self:flex-end}
   .msg.user .bub{background:var(--plum-pale);border-color:var(--plum-soft)}
   .msg.user .who{text-align:right}
-  .msg .bub p{margin:0 0 8px}
-  .msg .bub p:last-child{margin-bottom:0}
-  .msg .bub ul{margin:0 0 8px;padding-left:18px}
-  .msg .bub li{margin-bottom:3px}
+  .msg .bub p{margin:0 0 8px}.msg .bub p:last-child{margin-bottom:0}
+  .msg .bub ul{margin:0 0 8px;padding-left:18px}.msg .bub li{margin-bottom:3px}
   .msg .bub code{white-space:pre-wrap}
   .msg .files{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
-  .msg .files span{font-family:"DM Mono",Menlo,monospace;font-size:.72rem;background:var(--card);border:1px solid var(--line);border-radius:6px;padding:2px 8px}
+  .msg .files span{font-family:"DM Mono",Menlo,monospace;font-size:.72rem;background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:2px 8px}
   .typing{display:inline-flex;gap:4px;align-items:center;padding:12px 14px}
   .typing i{width:6px;height:6px;border-radius:50%;background:var(--plum-mid);animation:pulse 1s infinite}
   .typing i:nth-child(2){animation-delay:.2s}.typing i:nth-child(3){animation-delay:.4s}
-  .chips{display:flex;flex-wrap:wrap;gap:6px;padding:6px 18px 10px}
-  .chips[hidden],.pending[hidden]{display:none}
-  .chips button{font:inherit;font-size:.82rem;color:var(--muted);background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:5px 11px;cursor:pointer;text-align:left}
-  .chips button:hover{background:var(--hover);color:var(--ink)}
-  .composer{display:flex;gap:8px;align-items:flex-end;padding:12px 14px;border-top:1px solid var(--line);background:var(--card)}
-  .composer textarea{flex:1;min-height:44px;max-height:180px;resize:none;font:inherit;font-size:.94rem;line-height:1.45;border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--paper);color:var(--ink)}
-  .composer textarea:focus{outline:2px solid var(--plum);outline-offset:1px}
-  .iconbtn{width:40px;height:40px;border-radius:10px;border:1px solid var(--line);background:var(--card);display:grid;place-items:center;cursor:pointer;color:var(--muted);flex:none}
-  .iconbtn:hover{background:var(--hover);color:var(--ink)}
-  .iconbtn.send{background:var(--plum);color:#fff;border-color:transparent}
-  .iconbtn.send:hover{background:#36193F}
-  .iconbtn[disabled]{opacity:.5;cursor:wait}
-  .iconbtn .ico{width:17px;height:17px}
-  .pending{display:flex;flex-wrap:wrap;gap:6px;padding:0 14px 8px;font-size:.78rem;color:var(--muted)}
-  .pending span{font-family:"DM Mono",Menlo,monospace;background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:2px 8px;display:inline-flex;gap:8px;align-items:center}
-  .pending span b{cursor:pointer;color:var(--faint);font-weight:400}
-  .hint{font-size:.8rem;color:var(--muted);display:flex;flex-wrap:wrap;gap:6px 16px}
-  .hint a{text-decoration:none;font-weight:500}
+  .cw[data-state="thread"] .composer{position:sticky;bottom:12px;z-index:3}
+  .cw[data-state="thread"]{justify-content:flex-start}
+  .newchat{align-self:center;font-size:.82rem;color:var(--muted);background:none;border:1px solid var(--line);border-radius:999px;padding:5px 12px;cursor:pointer}
+  .newchat:hover{background:var(--hover);color:var(--ink)}
+  /* battle */
+  .battle{width:min(100%,860px);margin:0 auto;display:flex;flex-direction:column;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+  .battle h2{font-family:Newsreader,Georgia,serif;font-size:1.3rem;font-weight:500;line-height:1.2}
+  .brow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .brow select{font:inherit;font-size:.9rem;border:1px solid var(--line);border-radius:9px;padding:8px 10px;background:var(--paper);color:var(--ink);min-width:150px}
+  .brow .vs{font-family:"DM Mono",Menlo,monospace;font-size:.72rem;letter-spacing:.14em;color:var(--faint)}
+  .bsub{font-size:.84rem;color:var(--muted)}
+  .sb{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+  .sb table{border-collapse:collapse;width:100%;min-width:620px;font-size:.88rem}
+  .sb th{font-family:"DM Mono",Menlo,monospace;font-size:.64rem;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);font-weight:500;text-align:left;padding:9px 12px;border-bottom:1px solid var(--line)}
+  .sb td{padding:8px 12px;border-bottom:1px solid var(--line-soft);vertical-align:middle;font-variant-numeric:tabular-nums}
+  .sb tr:last-child td{border-bottom:0}
+  .sb td.n{font-family:"DM Mono",Menlo,monospace;font-size:.84rem;white-space:nowrap}
+  .sb td.t{font-weight:500}
+  .sb .ci{color:var(--faint);font-size:.76rem;margin-left:4px}
+  .sb tr.tot td{border-top:1px solid var(--line);font-weight:500}
+  .bar2{display:inline-block;height:7px;width:90px;border-radius:4px;background:var(--plum-soft);position:relative;vertical-align:middle;overflow:hidden}
+  .bar2 i{position:absolute;left:0;top:0;bottom:0;background:var(--plum);border-radius:4px}
+  .bar2.b i{background:var(--plum-mid)}
+  .call{display:inline-flex;font-family:"DM Mono",Menlo,monospace;font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;border-radius:6px;padding:3px 8px;border:1px solid var(--line);color:var(--muted);background:var(--paper);white-space:nowrap}
+  .call.a{color:var(--plum);background:var(--plum-pale);border-color:var(--plum-soft)}
+  .call.b{color:#2F6B3F;background:#EAF4EC;border-color:#C6DECB}
+  .call.r{color:#8C2F2F;background:#F8ECEC;border-color:#E4C4C4}
+  .call.s{color:#7A5A12;background:#FBF3E1;border-color:#EAD9AF}
+  .bsum{font-size:.9rem;color:var(--ink)}
+  .bsum strong{font-weight:600}
+  .gpu{border:1px dashed var(--line);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:8px;font-size:.88rem;color:var(--muted)}
+  .gpu pre{margin:0;font-family:"DM Mono",Menlo,monospace;font-size:.76rem;line-height:1.5;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:10px;overflow-x:auto;white-space:pre}
+  .gpu a{font-weight:500;text-decoration:none}
+  @media (max-width:600px){.hero{padding-top:16px}.ib.send{margin-left:0}}
 </style>
 
-<div class="pagehead">
-  <span class="label">Assistant</span>
-  <h1>Ask which skills the new model broke</h1>
-  <p class="lede">Drop an evaluation log into the chat, ask how many episodes an evaluation needs, or look a model up on the boards. <strong>Every number the assistant gives comes from the open-source orbit-eval statistics or the arena data, not from the model.</strong> Files are processed for the reply and not stored.</p>
-</div>
+<div class="cw" id="cw" data-state="landing">
+  <div class="hero" id="hero">
+    <div class="brandline"><span class="mark"><i></i></span>OrbitEval</div>
+    <h1>Which skills did the new model <em>break</em>?</h1>
+    <p class="sub">Battle two policies on the same tasks, check a release, or size an evaluation. The numbers come from the statistics; the assistant only explains them.</p>
+  </div>
 
-<div class="chatwrap">
-  <div class="chatbox" id="chatbox">
-    <div class="msgs" id="msgs" aria-live="polite"></div>
-    <div class="chips" id="chips">
-      <button type="button">A task went from 9/10 to 7/10 at 10 episodes. Is that a regression?</button>
-      <button type="button">How many episodes per task to catch a 10 point drop at about 80% success?</button>
-      <button type="button">How does pi0.5 do on RoboChallenge, and where is it weak?</button>
-      <button type="button">Our suite average went up but a customer says one station got worse. How do we check?</button>
-    </div>
+  <div class="thread" id="msgs" hidden></div>
+
+  <div class="composer" id="composer">
+    <textarea id="cin" rows="2" placeholder="Ask anything about your evaluation, or attach two versions to battle them…" aria-label="Message"></textarea>
     <div class="pending" id="pending" hidden></div>
-    <div class="composer">
-      <label class="iconbtn" for="cfile" title="Attach an evaluation CSV or eval_info.json files">
-        <svg class="ico" viewBox="0 0 24 24"><path d="M21 12.5 12.6 21a5 5 0 0 1-7.1-7.1L14 5.4a3.3 3.3 0 0 1 4.7 4.7L10.2 18.6a1.6 1.6 0 0 1-2.3-2.3L16 8.2"/></svg>
-        <input type="file" id="cfile" multiple accept=".csv,.tsv,.txt,.json,text/csv,text/plain,application/json" hidden>
-      </label>
-      <textarea id="cin" rows="1" placeholder="Ask a question, or attach your evaluation files…" aria-label="Message"></textarea>
-      <button class="iconbtn send" id="csend" type="button" title="Send" aria-label="Send">
-        <svg class="ico" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-      </button>
+    <div class="bar">
+      <label class="ib" for="cfile" title="Attach an evaluation CSV or eval_info.json files"><svg class="ico" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></label>
+      <input type="file" id="cfile" multiple accept=".csv,.tsv,.txt,.json,text/csv,text/plain,application/json" hidden>
+      <div class="modewrap"><svg class="ico" viewBox="0 0 24 24"><path d="M14 4l6 6-8 8-6-6zM4 20l4-4M14 14l2 2M4 6l2 2"/></svg>
+        <select id="mode" aria-label="Mode">
+          <option value="auto">Auto</option>
+          <option value="battle">Battle</option>
+          <option value="check">Check a release</option>
+          <option value="size">Size an evaluation</option>
+          <option value="boards">Boards</option>
+        </select>
+      </div>
+      <span class="modehint" id="modehint"></span>
+      <button class="ib send" id="csend" type="button" title="Send" aria-label="Send"><svg class="ico" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
     </div>
   </div>
-  <div class="hint">
-    <span>Accepts one CSV (version, skill, episode, success) or two or more eval_info.json files, one per version.</span>
-    <a href="check.html">Prefer no chat? The release check runs in your browser.</a>
-    <span>Usage is limited per visitor to keep the assistant free.</span>
+
+  <div class="battle" id="battlePanel" hidden>
+    <div><span class="label">Battle</span><h2>Two policies, same tasks, a referee that prices the noise</h2></div>
+    <div class="brow">
+      <select id="bBoard" aria-label="Board"></select>
+      <select id="bA" aria-label="Policy A"></select>
+      <span class="vs">VS</span>
+      <select id="bB" aria-label="Policy B"></select>
+      <button class="btn primary" id="bGo" type="button">Battle</button>
+    </div>
+    <p class="bsub">Real counts from the public boards. Or attach two of your own evaluation files above, one CSV with two versions or two eval_info.json files, and press send with Battle selected: the referee runs on your files.</p>
+    <div id="bOut"></div>
+    <details class="box" id="gpuBox"><summary>Battle two checkpoints on your own GPU</summary>
+      <div class="in"><div class="gpu">
+        <span>Same seed for both policies means the same initial states, so the comparison is paired. Rounds stop each task as soon as the referee has resolved it.</span>
+        <pre>pip install orbit-eval
+curl -O https://raw.githubusercontent.com/Rahillasne/orbit-eval/main/tools/orbit_battle.py
+python orbit_battle.py --run --a path/to/A/pretrained_model --b path/to/B/pretrained_model \
+    --env libero --episodes 50 --batch 10 --seed 1000 --extra --env.task=libero_object
+# already evaluated? referee only:
+python orbit_battle.py --from-eval-info runs/A/eval_info.json runs/B/eval_info.json --names A B</pre>
+        <span>Then drop the two eval_info.json files here for the same scoreboard with an explanation. <a href="https://github.com/Rahillasne/orbit-eval/blob/main/tools/orbit_battle.py">Script on GitHub</a>.</span>
+      </div></div>
+    </details>
+  </div>
+
+  <div class="start" id="start">
+    <span class="label">Get started</span>
+    <div class="gsgrid">
+      <button class="gs" type="button" data-act="battle"><span class="gi"><svg class="ico" viewBox="0 0 24 24"><path d="M14 4l6 6-8 8-6-6zM4 20l4-4M14 14l2 2M4 6l2 2"/></svg></span><span><b>Battle two models</b><span>Era0 vs pi0.5 on RoboChallenge, capability by capability, with intervals</span></span></button>
+      <button class="gs" type="button" data-act="check"><span class="gi"><svg class="ico" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></span><span><b>Check a release</b><span>Drop last release and this release; see which skills broke</span></span></button>
+      <button class="gs" type="button" data-act="size"><span class="gi"><svg class="ico" viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg></span><span><b>Size an evaluation</b><span>How many episodes per task to catch a 10-point drop</span></span></button>
+      <button class="gs" type="button" data-act="boards"><span class="gi"><svg class="ico" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13"/><circle cx="4" cy="6" r="1"/><circle cx="4" cy="12" r="1"/><circle cx="4" cy="18" r="1"/></svg></span><span><b>Look up a model</b><span>Where pi0.5 is strong and weak on the boards</span></span></button>
+      <button class="gs" type="button" data-act="explain"><span class="gi"><svg class="ico" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1.1-4.2A8 8 0 1 1 21 12z"/></svg></span><span><b>Explain a readout</b><span>Paste the output of the release check and get it in plain words</span></span></button>
+      <button class="gs" type="button" data-act="gpu"><span class="gi"><svg class="ico" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 9h4M7 13h6M15 9h2M15 13h2"/></svg></span><span><b>Battle on your GPU</b><span>Two checkpoints, same seeds, the referee stops when it is settled</span></span></button>
+    </div>
   </div>
 </div>
 
 <script>
 (function(){
-  var API = 'https://orbiteval-assistant-199802234044.us-central1.run.app/api/chat';
-  var GREETING = 'Hello. I am the OrbitEval assistant. Drop an evaluation log here, a CSV with version, skill, episode and success, or two or more LeRobot eval_info.json files, one per version, and I will tell you which skills the new model broke and what the run cannot see. I can also size an evaluation, compare two success counts on a task, or look a model or capability up on the Capability Arena with intervals. What are you working on?';
+  var API = 'https://orbiteval-assistant-199802234044.us-central1.run.app';
+  var GREETING = 'Hello. Drop an evaluation log here, a CSV with version, skill, episode and success, or two or more LeRobot eval_info.json files, and I will tell you which skills the new model broke and what the run cannot see. Pick Battle to put two policies side by side. I can also size an evaluation, compare two success counts on a task, or look a model up on the Capability Arena with intervals.';
   var $ = function(id){ return document.getElementById(id); };
-  var msgs = $('msgs'), input = $('cin'), sendBtn = $('csend'), fileIn = $('cfile'), pendingBox = $('pending'), chips = $('chips');
-  var history = [];
-  var pending = [];
-  var busy = false;
+  var cw = $('cw'), msgs = $('msgs'), input = $('cin'), sendBtn = $('csend'), fileIn = $('cfile'), pendingBox = $('pending'), modeSel = $('mode'), modeHint = $('modehint');
+  var history = [], pending = [], busy = false, arena = null;
+  var Z = 1.959964;
 
+  // ---------- helpers
   function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
   function md(text){
     var lines = esc(text).split('\n'), out = [], para = [], list = null;
@@ -144,72 +224,149 @@
     flushPara(); flushList();
     return out.join('').replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/`([^`]+)`/g, '<code>$1</code>');
   }
-  function add(role, text, files){
-    var d = document.createElement('div'); d.className = 'msg ' + role;
-    var who = role === 'user' ? 'You' : 'OrbitEval';
-    var fl = (files && files.length) ? '<div class="files">' + files.map(function(f){ return '<span>' + esc(f) + '</span>'; }).join('') + '</div>' : '';
-    d.innerHTML = '<div class="who">' + who + '</div><div class="bub">' + md(text) + fl + '</div>';
-    msgs.appendChild(d); msgs.scrollTop = msgs.scrollHeight; return d;
-  }
-  function typing(on){
-    var t = $('typing');
-    if (on && !t){ t = document.createElement('div'); t.id = 'typing'; t.className = 'msg'; t.innerHTML = '<div class="who">OrbitEval</div><div class="bub typing"><i></i><i></i><i></i></div>'; msgs.appendChild(t); msgs.scrollTop = msgs.scrollHeight; }
-    if (!on && t){ t.remove(); }
-  }
-  function renderPending(){
-    pendingBox.hidden = !pending.length;
-    pendingBox.innerHTML = pending.map(function(f, i){ return '<span>' + esc(f.name) + ' <b data-i="' + i + '" title="Remove">×</b></span>'; }).join('');
-  }
-  pendingBox.addEventListener('click', function(e){ var b = e.target.closest('b[data-i]'); if (b){ pending.splice(Number(b.dataset.i), 1); renderPending(); } });
-  fileIn.addEventListener('change', function(){
-    var list = Array.prototype.slice.call(fileIn.files || []);
-    list.forEach(function(f){
-      var r = new FileReader();
-      r.onload = function(){ pending.push({ name: f.name, text: String(r.result) }); renderPending(); };
-      r.readAsText(f);
-    });
-    fileIn.value = '';
-  });
-  function autosize(){ input.style.height = 'auto'; input.style.height = Math.min(180, input.scrollHeight) + 'px'; }
-  input.addEventListener('input', autosize);
-  input.addEventListener('keydown', function(e){ if (e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); send(); } });
-  sendBtn.addEventListener('click', send);
-  chips.addEventListener('click', function(e){ var b = e.target.closest('button'); if (b){ input.value = b.textContent; autosize(); send(); } });
+  function wilson(k, n){ if (!n) return [NaN, NaN]; var p = k / n, d = 1 + Z*Z/n, c = (p + Z*Z/(2*n))/d, h = Z*Math.sqrt(p*(1-p)/n + Z*Z/(4*n*n))/d; return [Math.max(0, c-h), Math.min(1, c+h)]; }
+  function newcombe(ka, na, kb, nb){ var pa = ka/na, pb = kb/nb, A = wilson(ka, na), B = wilson(kb, nb), d = pa - pb; return [d - Math.sqrt(Math.pow(pa-A[0],2) + Math.pow(B[1]-pb,2)), d + Math.sqrt(Math.pow(A[1]-pa,2) + Math.pow(pb-B[0],2))]; }
+  function f1(x){ return (x === null || x === undefined || isNaN(x)) ? '—' : Number(x).toFixed(1); }
+  function sg(x){ return (x > 0 ? '+' : '') + f1(x); }
 
+  function setState(st){ cw.dataset.state = st; var thread = st === 'thread'; $('hero').hidden = thread; $('start').hidden = thread; msgs.hidden = !thread; if (thread) $('battlePanel').hidden = true; }
+  function add(role, html, files, wide){
+    if (cw.dataset.state !== 'thread'){ setState('thread'); if (!msgs.children.length){ var g = document.createElement('div'); g.className = 'msg'; g.innerHTML = '<div class="who">OrbitEval</div><div class="bub">' + md(GREETING) + '</div>'; msgs.appendChild(g); } }
+    var d = document.createElement('div'); d.className = 'msg ' + role + (wide ? ' wide' : '');
+    var fl = (files && files.length) ? '<div class="files">' + files.map(function(f){ return '<span>' + esc(f) + '</span>'; }).join('') + '</div>' : '';
+    d.innerHTML = '<div class="who">' + (role === 'user' ? 'You' : 'OrbitEval') + '</div><div class="bub">' + html + fl + '</div>';
+    msgs.appendChild(d); d.scrollIntoView({ block: 'end', behavior: 'smooth' }); return d;
+  }
+  function typing(on){ var t = $('typing'); if (on && !t){ t = document.createElement('div'); t.id = 'typing'; t.className = 'msg'; t.innerHTML = '<div class="who">OrbitEval</div><div class="bub typing"><i></i><i></i><i></i></div>'; msgs.appendChild(t); t.scrollIntoView({ block: 'end' }); } if (!on && t) t.remove(); }
+  function renderPending(){ pendingBox.hidden = !pending.length; pendingBox.innerHTML = pending.map(function(f, i){ return '<span>' + esc(f.name) + ' <b data-i="' + i + '" title="Remove">×</b></span>'; }).join(''); }
+  function autosize(){ input.style.height = 'auto'; input.style.height = Math.min(200, input.scrollHeight) + 'px'; }
+  function setMode(m){ modeSel.value = m; var hints = { auto: '', battle: 'two versions attached, or pick two models below', check: 'attach last release and this release', size: 'say your success rate and the drop you care about', boards: 'ask about a model or a capability' }; modeHint.textContent = hints[m] || ''; $('battlePanel').hidden = (m !== 'battle'); if (m === 'battle') loadArena(); }
+
+  // ---------- arena battle (client side, from the boards' own counts)
+  function loadArena(){
+    if (arena) { fillBoards(); return; }
+    fetch('data/matrix.json').then(function(r){ return r.json(); }).then(function(d){ arena = d; fillBoards(); }).catch(function(){ $('bOut').innerHTML = '<p class="bsub">Could not load the board data.</p>'; });
+  }
+  function fillBoards(){
+    var sel = $('bBoard'); if (sel.options.length) return;
+    arena.boards.filter(function(b){ return b.kind === 'binomial'; }).forEach(function(b){ var o = document.createElement('option'); o.value = b.key; o.textContent = b.label; sel.appendChild(o); });
+    fillModels();
+  }
+  function board(){ return arena.boards.filter(function(b){ return b.key === $('bBoard').value; })[0]; }
+  function fillModels(){
+    var b = board(); if (!b) return;
+    [$('bA'), $('bB')].forEach(function(s, i){ s.innerHTML = ''; b.rows.forEach(function(r){ var o = document.createElement('option'); o.value = r.model; o.textContent = r.model; s.appendChild(o); }); s.selectedIndex = Math.min(i === 0 ? 0 : 6, b.rows.length - 1); });
+    if (b.key === 'robochallenge'){ var a = [].slice.call($('bA').options).map(function(o){ return o.value; }); if (a.indexOf('Era0') >= 0) $('bA').value = 'Era0'; if (a.indexOf('pi0.5') >= 0) $('bB').value = 'pi0.5'; }
+  }
+  function callFor(lo, hi, nameA, nameB){ if (lo > 0) return ['a', nameA + ' ahead']; if (hi < 0) return ['b', nameB + ' ahead']; return ['', 'unresolved']; }
+  function runArenaBattle(){
+    var b = board(); if (!b) return;
+    var A = b.rows.filter(function(r){ return r.model === $('bA').value; })[0], B = b.rows.filter(function(r){ return r.model === $('bB').value; })[0];
+    if (!A || !B || A === B){ $('bOut').innerHTML = '<p class="bsub">Pick two different policies.</p>'; return; }
+    var caps = b.capabilities, labels = {}; arena.schema.capabilities.forEach(function(c){ labels[c.key] = c.label; });
+    var rows = '', ka = 0, na = 0, kb = 0, nb = 0, resolved = 0, judged = 0, aheadA = [], aheadB = [];
+    caps.forEach(function(c){
+      var ca = A.cells[c], cb = B.cells[c]; if (!ca || !cb || !ca.n || !cb.n) return;
+      judged++; ka += ca.k; na += ca.n; kb += cb.k; nb += cb.n;
+      var d = 100 * (ca.k/ca.n - cb.k/cb.n), ci = newcombe(ca.k, ca.n, cb.k, cb.n).map(function(x){ return 100*x; }), cl = callFor(ci[0], ci[1], A.model, B.model);
+      if (cl[0]) { resolved++; (cl[0] === 'a' ? aheadA : aheadB).push(labels[c] || c); }
+      rows += '<tr><td class="t">' + esc(labels[c] || c) + '</td>' +
+        '<td class="n"><span class="bar2"><i style="width:' + ca.rate + '%"></i></span> ' + f1(ca.rate) + '%<span class="ci">' + ca.k + '/' + ca.n + '</span></td>' +
+        '<td class="n"><span class="bar2 b"><i style="width:' + cb.rate + '%"></i></span> ' + f1(cb.rate) + '%<span class="ci">' + cb.k + '/' + cb.n + '</span></td>' +
+        '<td class="n">' + sg(d) + ' <span class="ci">[' + sg(ci[0]) + ', ' + sg(ci[1]) + ']</span></td><td><span class="call ' + cl[0] + '">' + cl[1] + '</span></td></tr>';
+    });
+    var dt = 100 * (ka/na - kb/nb), cit = newcombe(ka, na, kb, nb).map(function(x){ return 100*x; }), clt = callFor(cit[0], cit[1], A.model, B.model);
+    rows += '<tr class="tot"><td class="t">Pooled</td><td class="n">' + f1(100*ka/na) + '%<span class="ci">' + ka + '/' + na + '</span></td><td class="n">' + f1(100*kb/nb) + '%<span class="ci">' + kb + '/' + nb + '</span></td><td class="n">' + sg(dt) + ' <span class="ci">[' + sg(cit[0]) + ', ' + sg(cit[1]) + ']</span></td><td><span class="call ' + clt[0] + '">' + clt[1] + '</span></td></tr>';
+    var summary = '<strong>' + esc(A.model) + ' vs ' + esc(B.model) + '</strong> on ' + esc(b.label) + ': ' + resolved + ' of ' + judged + ' capabilities resolved at these trial counts.' +
+      (aheadA.length ? ' ' + esc(A.model) + ' ahead on ' + esc(aheadA.join(', ')) + '.' : '') + (aheadB.length ? ' ' + esc(B.model) + ' ahead on ' + esc(aheadB.join(', ')) + '.' : '') +
+      (resolved < judged ? ' The rest is a tie at this evidence, not a draw: the boards’ ' + (b.unit || 'trials') + ' per cell are too few to separate them.' : '');
+    var html = '<p class="bsum">' + summary + '</p><div class="sb"><table><thead><tr><th>Capability</th><th>' + esc(A.model) + '</th><th>' + esc(B.model) + '</th><th>Difference (pp, 95%)</th><th>Call</th></tr></thead><tbody>' + rows + '</tbody></table></div>' +
+      '<p class="bsub">Cells are successes out of trials from the benchmark’s own published results; intervals are Wilson per cell and Newcombe on the difference. <button class="newchat" type="button" id="bAsk">Ask the assistant about this battle</button></p>';
+    $('bOut').innerHTML = html;
+    $('bAsk').addEventListener('click', function(){ input.value = 'Explain this battle between ' + A.model + ' and ' + B.model + ' on ' + b.label + ' and tell me what would resolve the unresolved capabilities.'; autosize(); send(); });
+  }
+
+  // ---------- files battle (server referee, no model)
+  function scoreboardHtml(rec, names){
+    var L = rec.latest, rows = (L.rows || []).slice().sort(function(a, b){ return (a.delta_pp || 0) - (b.delta_pp || 0); });
+    var A = L.incumbent, B = L.candidate, body = '';
+    rows.forEach(function(r){
+      var v = String(r.verdict || 'held').toUpperCase(), cls = v === 'REGRESSED' ? 'r' : v === 'SUSPECT' ? 's' : v === 'IMPROVED' ? 'b' : '';
+      body += '<tr><td class="t">' + esc(r.skill) + '</td>' +
+        '<td class="n"><span class="bar2"><i style="width:' + (r.incumbent_pct || 0) + '%"></i></span> ' + f1(r.incumbent_pct) + '%<span class="ci">n=' + r.n_incumbent + '</span></td>' +
+        '<td class="n"><span class="bar2 b"><i style="width:' + (r.candidate_pct || 0) + '%"></i></span> ' + f1(r.candidate_pct) + '%<span class="ci">n=' + r.n_candidate + '</span></td>' +
+        '<td class="n">' + sg(r.delta_pp) + ' <span class="ci">[' + sg(r.ci95[0]) + ', ' + sg(r.ci95[1]) + ']</span></td><td><span class="call ' + cls + '">' + esc(v.toLowerCase()) + '</span></td></tr>';
+    });
+    var head = L.n_regressed > 0 ? L.n_regressed + ' skill' + (L.n_regressed === 1 ? '' : 's') + ' regressed beyond the noise' : L.n_suspect > 0 ? 'No skill regressed beyond the noise, ' + L.n_suspect + ' suspect' : 'No skill regressed beyond the noise';
+    return '<p class="bsum"><strong>' + esc(A) + ' → ' + esc(B) + ':</strong> ' + head + '. Suite ' + f1(L.suite_incumbent_pct) + '% → ' + f1(L.suite_candidate_pct) + '% (' + sg(L.suite_delta_pp) + ' pp). Smallest drop this run could call real: about ' + f1(L.median_resolvable_drop_pp) + ' pp.</p>' +
+      '<div class="sb"><table><thead><tr><th>Skill</th><th>' + esc(A) + '</th><th>' + esc(B) + '</th><th>Change (pp, 95%)</th><th>Call</th></tr></thead><tbody>' + body + '</tbody></table></div>';
+  }
+
+  // ---------- sending
   async function send(){
-    var text = input.value.trim();
+    var text = input.value.trim(), mode = modeSel.value;
     if (busy || (!text && !pending.length)) return;
-    busy = true; sendBtn.disabled = true; chips.hidden = true;
+    busy = true; sendBtn.disabled = true;
     var files = pending.slice(); pending = []; renderPending();
-    var shown = text || (files.length ? 'Please check these files.' : '');
-    add('user', shown, files.map(function(f){ return f.name; }));
+    var shown = text || (files.length ? (mode === 'battle' ? 'Battle these two versions.' : 'Please check these files.') : '');
+    add('user', md(shown), files.map(function(f){ return f.name; }));
     history.push({ role: 'user', content: shown });
     input.value = ''; autosize(); typing(true);
     try {
-      var r = await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ messages: history, files: files }) });
-      var j = await r.json().catch(function(){ return { reply: 'The assistant returned something I could not read. Try again.' }; });
-      var reply = j.reply || 'No reply.';
-      typing(false); add('assistant', reply);
-      history.push({ role: 'assistant', content: reply });
+      if (mode === 'battle' && files.length){
+        var rb = await fetch(API + '/api/battle', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ messages: [], files: files }) });
+        var jb = await rb.json();
+        typing(false);
+        if (!rb.ok || jb.error){ add('assistant', md(jb.error || 'The referee could not read those files.')); history.push({ role: 'assistant', content: jb.error || 'error' }); }
+        else {
+          var node = add('assistant', scoreboardHtml(jb.record, jb.names) + '<p class="bsub" style="margin-top:8px"><button class="newchat" type="button" id="fbAsk">Explain this scoreboard</button></p>', null, true);
+          var L = jb.record.latest, brief = 'Scoreboard shown for ' + L.incumbent + ' -> ' + L.candidate + ': regressed ' + L.n_regressed + ', suspect ' + L.n_suspect + ', improved ' + L.n_improved + ', suite ' + f1(L.suite_incumbent_pct) + '% -> ' + f1(L.suite_candidate_pct) + '%, smallest callable drop ' + f1(L.median_resolvable_drop_pp) + ' pp. Flagged: ' + (L.rows || []).filter(function(r){ return String(r.verdict).toUpperCase() !== 'HELD'; }).map(function(r){ return r.skill + ' ' + sg(r.delta_pp) + ' (' + String(r.verdict).toLowerCase() + ')'; }).join('; ');
+          history.push({ role: 'assistant', content: brief });
+          $('fbAsk').addEventListener('click', function(){ pending = [{ name: 'release_check_readout.txt', text: jb.readout }]; input.value = 'Explain this scoreboard and tell me what to do next.'; autosize(); send(); });
+        }
+      } else {
+        var prefix = mode === 'size' ? 'Size an evaluation: ' : mode === 'boards' ? 'On the Capability Arena: ' : '';
+        var hist = history.slice(0, -1).concat([{ role: 'user', content: prefix + shown }]);
+        var r = await fetch(API + '/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ messages: hist, files: files }) });
+        var j = await r.json().catch(function(){ return { reply: 'The assistant returned something I could not read. Try again.' }; });
+        var reply = j.reply || 'No reply.';
+        typing(false); add('assistant', md(reply)); history.push({ role: 'assistant', content: reply });
+      }
     } catch (e) {
-      typing(false); add('assistant', 'I could not reach the assistant just now. The release check on this site runs in your browser without it: check.html');
+      typing(false); add('assistant', md('I could not reach the assistant just now. The release check on this site runs in your browser without it: check.html'));
     } finally { busy = false; sendBtn.disabled = false; input.focus(); }
   }
 
-  add('assistant', GREETING);
-  history.push({ role: 'assistant', content: GREETING });
-  input.focus();
-
-  // Hand-off from the release check page: "Explain this in the chat" stores the readout for one hop.
+  // ---------- wiring
+  pendingBox.addEventListener('click', function(e){ var b = e.target.closest('b[data-i]'); if (b){ pending.splice(Number(b.dataset.i), 1); renderPending(); } });
+  fileIn.addEventListener('change', function(){
+    var list = Array.prototype.slice.call(fileIn.files || []);
+    list.forEach(function(f){ var r = new FileReader(); r.onload = function(){ pending.push({ name: f.name, text: String(r.result) }); renderPending(); if (modeSel.value === 'auto' && pending.length >= 2) setMode('battle'); }; r.readAsText(f); });
+    fileIn.value = '';
+  });
+  input.addEventListener('input', autosize);
+  input.addEventListener('keydown', function(e){ if (e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); send(); } });
+  sendBtn.addEventListener('click', send);
+  modeSel.addEventListener('change', function(){ setMode(modeSel.value); });
+  $('bBoard').addEventListener('change', fillModels);
+  $('bGo').addEventListener('click', runArenaBattle);
+  $('start').addEventListener('click', function(e){
+    var b = e.target.closest('button[data-act]'); if (!b) return;
+    var act = b.dataset.act;
+    if (act === 'battle'){ setMode('battle'); $('battlePanel').scrollIntoView({ behavior: 'smooth', block: 'start' }); setTimeout(function(){ if (arena) runArenaBattle(); else { var t = setInterval(function(){ if (arena){ clearInterval(t); runArenaBattle(); } }, 150); } }, 250); }
+    if (act === 'check'){ setMode('check'); fileIn.click(); }
+    if (act === 'size'){ setMode('size'); input.value = 'Our success rate is about 80% and we care about a 10 point drop. How many episodes per task do we need?'; autosize(); send(); }
+    if (act === 'boards'){ setMode('boards'); input.value = 'How does pi0.5 do on RoboChallenge, and where is it weak?'; autosize(); send(); }
+    if (act === 'explain'){ setMode('auto'); input.placeholder = 'Paste the readout from the release check here…'; input.focus(); }
+    if (act === 'gpu'){ setMode('battle'); $('gpuBox').open = true; $('gpuBox').scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+  });
+  // hash entry points and the hand-off from the release check page
+  if (location.hash === '#battle'){ setMode('battle'); }
   try {
     var handed = sessionStorage.getItem('orbit_readout');
-    if (handed && location.hash === '#readout'){
-      sessionStorage.removeItem('orbit_readout');
-      pending = [{ name: 'release_check_readout.txt', text: handed }];
-      input.value = 'Explain this release check readout and tell me what to do next.';
-      autosize(); send();
-    }
+    if (handed && location.hash === '#readout'){ sessionStorage.removeItem('orbit_readout'); pending = [{ name: 'release_check_readout.txt', text: handed }]; input.value = 'Explain this release check readout and tell me what to do next.'; autosize(); send(); }
   } catch (e) {}
+  input.focus();
 })();
 </script>
 

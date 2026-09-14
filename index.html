@@ -276,6 +276,8 @@
   .ovfoot{display:flex;align-items:center;justify-content:space-between;padding:11px 18px;
     border-top:1px solid var(--line);font-size:.82rem;color:var(--muted)}
   .ovfoot a{font-weight:500;text-decoration:none}
+  .ovmeth{font-size:.86rem;color:var(--muted);padding-top:4px}
+  .ovmeth a{font-weight:500;text-decoration:none}
 
   .prose{display:flex;flex-direction:column;gap:12px;max-width:76ch}
   .prose h2{font-family:Newsreader,Georgia,serif;font-size:1.5rem}
@@ -503,7 +505,9 @@
               h('span',{className:'sc'}, f1(r.overall)+u, h('small',null,'±'+f1((ci[1]-ci[0])/2)))); })),
           h('div',{className:'ovfoot'},
             h('span',null, b.rows.length+' models · '+b.cells_resolved+'/'+b.cells_total+' cells resolved'),
-            h('a',{href:'#',onClick:function(e){e.preventDefault();p.open(b.key);}},'Open board →'))); })));
+            h('a',{href:'#',onClick:function(e){e.preventDefault();p.open(b.key);}},'Open board →'))); })),
+      h('p',{className:'ovmeth'},'How every interval and rank spread on these boards is computed: ',
+        h('a',{href:'#methodology',onClick:function(e){e.preventDefault();p.method();}},'Methodology →')));
   }
 
   function Methodology(){
@@ -537,7 +541,7 @@
   }
 
   function App(){
-    var s0=useState('overview'), page=s0[0], setPage=s0[1];
+    var s0=useState(location.hash==='#methodology'?'method':'overview'), page=s0[0], setPage=s0[1];
     var s1=useState(D.boards[0].key), bkey=s1[0], setBkey=s1[1];
     var s2=useState('matrix'), view=s2[0], setView=s2[1];
     var s3=useState({key:'overall',desc:true}), sort=s3[0], setSort=s3[1];
@@ -559,18 +563,18 @@
       h('nav',{className:'nav'},
         h('button',{'aria-current':page==='overview',onClick:function(){setPage('overview');}}, I.grid(),'Overview'),
         h('button',{'aria-current':page==='board',onClick:function(){setPage('board');}}, I.list(),'Leaderboards'),
-        h('button',{'aria-current':page==='method',onClick:function(){setPage('method');}}, I.book(),'Methodology'),
-        h('div',{className:'sep'}),
-        h('a',{href:'https://orbiteval.com/chat.html'}, I.chat(),'Chat'),
-        h('a',{href:'https://orbiteval.com/check.html'}, I.check(),'Release check'),
-        h('a',{href:'https://orbiteval.com/about.html'}, I.info(),'About')),
+        h('a',{href:'https://orbiteval.com/chat.html'}, I.chat(),'Chat')),
       h('div',{className:'promo'},
         h('div',{className:'thumb'}, h('i',{style:{width:'78%'}}), h('i',{style:{width:'62%'}}), h('i',{style:{width:'44%'}})),
-        h('h4',null,'Check your last release'),
-        h('p',null,'Drop the evaluation CSV you already have. Runs in your browser; nothing is uploaded.'),
-        h('a',{className:'btn primary block',href:'https://orbiteval.com/check.html'},'Run the release check'),
-        h('a',{className:'btn ghost block',href:'https://pypi.org/project/orbit-eval/'},'pip install orbit-eval')),
-      h('div',{className:'legal'}, h('a',{href:'about.html'},'About OrbitEval'), h('span',null,'Independent · not affiliated with any benchmark')));
+        h('h4',null,'Battle two policies'),
+        h('p',null,'Same tasks, same seeds, a referee that prices the noise. On the boards now, on your GPU next.'),
+        h('a',{className:'btn primary block',href:'https://orbiteval.com/chat.html#battle'},'Try a battle'),
+        h('a',{className:'btn ghost block',href:'https://orbiteval.com/check.html'},'Check a release')),
+      h('div',{className:'legal'},
+        h('a',{href:'#methodology',onClick:function(e){e.preventDefault();setPage('method');}},'Methodology'),
+        h('a',{href:'https://orbiteval.com/check.html'},'Release check'),
+        h('a',{href:'https://orbiteval.com/about.html'},'About'),
+        h('span',null,'Independent · not affiliated with any benchmark')));
 
     var topbar=h('div',{className:'topbar'},
       h('button',{className:'tab','aria-current':page==='overview',onClick:function(){setPage('overview');}}, I.grid(),'Overview'),
@@ -640,7 +644,7 @@
     } else if(page==='method'){
       content=h(Methodology);
     } else {
-      content=h(Overview,{open:openBoard});
+      content=h(Overview,{open:openBoard,method:function(){setPage('method');}});
     }
 
     var wide = page!=='board' || !showRail;

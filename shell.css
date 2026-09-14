@@ -249,6 +249,8 @@
   .ovfoot{display:flex;align-items:center;justify-content:space-between;padding:11px 18px;
     border-top:1px solid var(--line);font-size:.82rem;color:var(--muted)}
   .ovfoot a{font-weight:500;text-decoration:none}
+  .ovmeth{font-size:.86rem;color:var(--muted);padding-top:4px}
+  .ovmeth a{font-weight:500;text-decoration:none}
 
   .prose{display:flex;flex-direction:column;gap:12px;max-width:76ch}
   .prose h2{font-family:Newsreader,Georgia,serif;font-size:1.5rem}
