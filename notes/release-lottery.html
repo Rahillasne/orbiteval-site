@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Same recipe, two retrains — OrbitEval</title>
+<meta name="description" content="We trained the same robot policy recipe eight times. Between the two best retrains the suite average went up 1.3 points and four skills went down 5 to 10. At 100 episodes per skill none of those drops is callable. Here is what that means for shipping a model, and a check you can run on your own logs.">
+<link rel="canonical" href="https://orbiteval.com/notes/release-lottery.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Same recipe, two retrains: the suite went up 1.3 points and four skills went down">
+<meta property="og:description" content="Eight identical retrains of one robot policy. What the per-skill release check sees between the two best, why the average hides it, and a check you can run in your browser on your own evaluation logs.">
+<meta property="og:url" content="https://orbiteval.com/notes/release-lottery.html">
+<meta property="og:site_name" content="OrbitEval">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Same recipe, two retrains: the suite went up 1.3 points and four skills went down">
+<meta name="twitter:description" content="Eight identical retrains of one robot policy, and what a per-skill release check sees that the suite average hides.">
+<meta name="theme-color" content="#452455">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23452455'/%3E%3Ccircle cx='16' cy='16' r='5.5' fill='%23FBFAF6' stroke='%237A4E8C' stroke-width='3'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=DM+Mono:wght@400;500&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap">
+<style>
+  :root{--paper:#FBFAF6;--card:#FFFFFF;--ink:#1C1B19;--muted:#6A665F;--faint:#A19C93;--line:#E6E2D9;--line-soft:#F1EEE7;--hover:#F6F4EF;
+    --plum:#452455;--plum-mid:#7A4E8C;--plum-pale:#F3ECF5;--plum-soft:#E4D6EA;--amber:#7A5A12;--amber-pale:#FBF3E1;--green:#2F6B3F;--green-pale:#EAF4EC;
+    --f-ui:Archivo,-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;--f-mono:"DM Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+    --f-serif:Newsreader,Georgia,"Times New Roman",serif;color-scheme:light}
+  *{box-sizing:border-box}html{-webkit-text-size-adjust:100%}html,body{margin:0;padding:0}
+  body{background:var(--paper);color:var(--ink);font-family:var(--f-ui);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  h1,h2,h3{margin:0;font-weight:500}p{margin:0}
+  a{color:var(--plum-mid);text-decoration:none}a:hover{text-decoration:underline;text-underline-offset:3px}
+  code{font-family:var(--f-mono);font-size:.88em;background:var(--paper);border:1px solid var(--line);border-radius:4px;padding:1px 6px;white-space:nowrap}
+  .wrap{width:min(100% - 32px, 1060px);margin-inline:auto}@media (min-width:720px){.wrap{width:min(100% - 48px, 1060px)}}
+  .label{font-family:var(--f-mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);display:block}
+  .topbar{border-bottom:1px solid var(--line);background:var(--paper)}
+  .topbar .wrap{display:flex;align-items:center;gap:12px 22px;padding:12px 0;flex-wrap:wrap}
+  .brand{display:flex;align-items:center;gap:9px;color:var(--ink);text-decoration:none}.brand:hover{text-decoration:none}
+  .brand .mark{width:26px;height:26px;border-radius:7px;background:var(--plum);display:grid;place-items:center;flex:none}
+  .brand .mark i{width:9px;height:9px;border-radius:50%;background:var(--paper);display:block;box-shadow:inset 0 0 0 2.5px var(--plum-mid)}
+  .brand .word{font-family:var(--f-serif);font-size:1.28rem;font-weight:500;letter-spacing:-.01em;line-height:1}
+  .brand .word small{display:block;font-family:var(--f-mono);font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--faint);margin-top:4px}
+  .links{display:flex;gap:4px;margin-left:8px;flex-wrap:wrap}
+  .links a{display:inline-flex;align-items:center;padding:7px 13px;border-radius:9px;font-size:.9rem;color:var(--muted);text-decoration:none}
+  .links a:hover{background:var(--hover);color:var(--ink)}
+  .topbar .btn{margin-left:auto}
+  @media (max-width:600px){.links{order:3;width:100%;margin-left:0;padding-top:4px;border-top:1px solid var(--line-soft)}}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:9px;padding:9px 14px;font-size:.88rem;font-weight:500;text-decoration:none;white-space:nowrap;border:1px solid transparent}
+  .btn:hover{text-decoration:none}.btn.primary{background:var(--plum);color:#fff}.btn.primary:hover{background:#36193F}
+  article{padding:clamp(36px,6vw,64px) 0 clamp(40px,6vw,72px)}
+  .art{max-width:70ch}
+  .art h1{font-family:var(--f-serif);font-size:clamp(1.9rem,1.4rem + 2vw,2.7rem);line-height:1.12;letter-spacing:-.01em;margin:10px 0 14px}
+  .art .meta{font-family:var(--f-mono);font-size:.74rem;color:var(--faint);letter-spacing:.04em;margin-bottom:26px}
+  .art p{font-size:1.02rem;color:var(--ink);margin-bottom:16px}
+  .art p.lede{font-size:1.12rem;color:var(--muted)}
+  .art h2{font-family:var(--f-serif);font-size:1.45rem;line-height:1.2;margin:30px 0 10px}
+  .art ul{margin:0 0 16px;padding-left:20px;font-size:1rem}
+  .art li{margin-bottom:6px}
+  .tbl{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--card);margin:6px 0 18px}
+  table{border-collapse:collapse;width:100%;min-width:480px;font-size:.9rem}
+  th{font-family:var(--f-mono);font-size:.64rem;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);font-weight:500;text-align:left;padding:10px 12px;border-bottom:1px solid var(--line)}
+  td{padding:8px 12px;border-bottom:1px solid var(--line-soft);font-variant-numeric:tabular-nums}
+  tr:last-child td{border-bottom:0}
+  td.num,th.num{text-align:right;font-family:var(--f-mono);font-size:.86rem;white-space:nowrap}
+  .v{display:inline-flex;font-family:var(--f-mono);font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;border-radius:6px;padding:2px 7px;border:1px solid var(--line);color:var(--muted);background:var(--paper)}
+  .v.s{color:var(--amber);background:var(--amber-pale);border-color:#EAD9AF}.v.i{color:var(--green);background:var(--green-pale);border-color:#C6DECB}
+  .callout{border:1px solid var(--plum-soft);background:var(--plum-pale);border-radius:12px;padding:16px 18px;margin:8px 0 22px}
+  .callout p{margin:0;font-size:.98rem}
+  .callout .btn{margin-top:10px}
+  footer{border-top:1px solid var(--line);padding:22px 0 30px;font-size:.82rem;color:var(--muted)}
+  footer .wrap{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="../index.html" aria-label="OrbitEval Capability Arena"><span class="mark"><i></i></span><span class="word">OrbitEval<small>Capability Arena</small></span></a>
+    <nav class="links" aria-label="Site"><a href="../index.html">Leaderboards</a><a href="../check.html">Release check</a><a href="../about.html">About</a></nav>
+    <a class="btn primary" href="../check.html">Run the check</a>
+  </div>
+</header>
+
+<article>
+  <div class="wrap">
+    <div class="art">
+      <span class="label">Note · 14 September 2026</span>
+      <h1>Same recipe, two retrains: the suite went up 1.3 points and four skills went down</h1>
+      <p class="meta">Rahil Lasne · reproducible from the sample on the release check page</p>
+
+      <p class="lede">If you train a robot policy twice with the same data, the same config and a different seed, you get two different robots. Everyone who has done it knows this. What is less discussed is what it does to the number you use to decide whether the new model ships.</p>
+
+      <p>We trained π0.5 eight times on LIBERO-Object with identical data and settings, only the training seed changed, and evaluated each retrain on 1,000 episodes: ten tasks, 100 episodes each, the same initial states for every retrain. The suite means run from 56.4 to 69.2. That spread, 12.8 points, comes from nothing but the seed.</p>
+
+      <h2>Pretend the two best retrains are two releases</h2>
+      <p>Take the retrain with the second-highest suite mean as "last release" and the highest as "this release". On the average, this release is better: 67.9 to 69.2, up 1.3 points. Here is what a per-skill check says about the same two models.</p>
+
+      <div class="tbl"><table>
+        <thead><tr><th>Skill</th><th class="num">Last</th><th class="num">This</th><th class="num">Change</th><th class="num">95% interval</th><th>Call</th></tr></thead>
+        <tbody>
+          <tr><td>task4</td><td class="num">92.0%</td><td class="num">82.0%</td><td class="num">−10.0 pp</td><td class="num">[−19.0, −1.0]</td><td><span class="v s">suspect</span></td></tr>
+          <tr><td>task5</td><td class="num">63.0%</td><td class="num">53.0%</td><td class="num">−10.0 pp</td><td class="num">[−23.0, +3.0]</td><td><span class="v s">suspect</span></td></tr>
+          <tr><td>task2</td><td class="num">95.0%</td><td class="num">88.0%</td><td class="num">−7.0 pp</td><td class="num">[−14.0, 0.0]</td><td><span class="v s">suspect</span></td></tr>
+          <tr><td>task9</td><td class="num">23.0%</td><td class="num">18.0%</td><td class="num">−5.0 pp</td><td class="num">[−15.0, +5.0]</td><td><span class="v s">suspect</span></td></tr>
+          <tr><td>five others</td><td class="num"></td><td class="num"></td><td class="num">−4 to +10</td><td class="num"></td><td><span class="v">held</span></td></tr>
+          <tr><td>task1</td><td class="num">37.0%</td><td class="num">77.0%</td><td class="num">+40.0 pp</td><td class="num">[+28.0, +52.0]</td><td><span class="v i">improved</span></td></tr>
+        </tbody>
+      </table></div>
+
+      <p>Four skills fell by 5 to 10 points. One rose by 40. The average moved 1.3. If task4 is the one your customer runs all day, the release that looks like a small improvement is a ten-point regression on their line, and the dashboard would never show it.</p>
+
+      <h2>What the check can and cannot say</h2>
+      <p>None of the four drops is called a regression, and that is correct. At 100 episodes per skill, the smallest drop this file can call real is about 12 points; a 10-point drop with an interval from −19 to −1 is real-looking but not separable from noise. The check says "suspect" and tells you the number of episodes it would take to know, rather than either flagging everything or passing everything. On this battery an unpriced rule, any drop with p ≤ 0.05, fired on 81% of comparisons where nothing had changed; the priced rule fired on 2.5%.</p>
+
+      <p>The one thing no two-version comparison can tell you is whether a skill is down because the model is worse or because training is a lottery and you drew a different ticket. Those two look identical from the outside. Separating them needs the same recipe trained more than once; with three retrains and per-skill selection, the held-out gain on this battery was 6 points over the best single retrain, and the expected number of damaged skills went from 1.2 to 0.02.</p>
+
+      <h2>What to do with your own logs</h2>
+      <ul>
+        <li>Report success per skill, with the interval, not only the suite mean. Ten episodes per task gives an interval 40 to 50 points wide; say so next to the number.</li>
+        <li>Evaluate consecutive versions on the same initial states. The comparison becomes paired and the interval roughly halves for free.</li>
+        <li>Put the episodes where the decision is. Ten skills at 100 episodes resolves a 12-point drop; the same 1,000 episodes on the three skills that matter resolves 7.</li>
+        <li>If a release decision matters, train the recipe more than once and pick per skill. It is the only way to know which of the two stories you are in.</li>
+      </ul>
+
+      <div class="callout">
+        <p>The check that produced the table runs in your browser on a CSV with four columns: version, skill, episode, success. Nothing is uploaded. The sample above is one click.</p>
+        <a class="btn primary" href="../check.html?sample=1">Run it on the sample, or on your own log</a>
+      </div>
+
+      <h2>Scope</h2>
+      <p>One policy class, one simulated suite, ten tasks, 100 episodes each, eight seeds. The size of the effect is a property of this cell; on a different suite the same method read a gain of 1.7 points with an interval that crossed zero. What carries is the shape: a suite average shrinks with the number of tasks while every deployed skill keeps its full swing, so per-skill regressions are hidden by construction, not by bad luck. The statistics are ordinary, Wilson and Newcombe intervals with a stated floor, and the code is open source: <code>pip install orbit-eval</code>, then <code>orbit-eval release evals.csv</code>.</p>
+    </div>
+  </div>
+</article>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 OrbitEval · Independent · not affiliated with any benchmark</span>
+    <a href="mailto:rahil@orbiteval.com">rahil@orbiteval.com</a>
+    <a href="../about.html">About</a>
+  </div>
+</footer>
+</body>
+</html>
