@@ -201,9 +201,9 @@
     <div class="io">
       <div style="display:flex;flex-direction:column;gap:12px;min-width:0">
         <label class="drop" id="drop" for="file">
-          <input type="file" id="file" accept=".csv,.tsv,.txt,text/csv,text/plain">
+          <input type="file" id="file" multiple accept=".csv,.tsv,.txt,.json,text/csv,text/plain,application/json">
           <span class="big-t">Drop your evaluation CSV here</span>
-          <span class="small-t">or click to choose a file · CSV or TSV · two or more model versions</span>
+          <span class="small-t">or two or more <code>eval_info.json</code> files from lerobot-eval · click to choose · two or more model versions</span>
         </label>
         <div class="row">
           <button class="btn primary big" id="sampleBtn" type="button">Try it on sample data</button>
@@ -249,7 +249,7 @@ v2,pick_bin,1,1"></textarea>
           <div><strong>episode</strong> also <code>ep</code> <code>trial</code> <code>rollout</code></div>
           <div><strong>success</strong> also <code>ok</code> <code>outcome</code> <code>pass</code> <code>passed</code> <code>result</code> · 1/0, true/false, pass/fail</div>
         </div>
-        <p>LeRobot users: <code>eval_info.json</code> already has per-episode successes per task; flatten one file per version into these rows.</p>
+        <p>LeRobot users: drop two or more <code>eval_info.json</code> files straight in. Each file becomes one version, in the order you pick them; the last one is the release you are about to ship.</p>
         <p>Prefer the terminal, or have a large file? <code>pip install orbit-eval</code> then <code>orbit-eval release evals.csv</code>. Same code, exit 1 on a regression so it drops into CI.</p>
       </div>
     </div>
@@ -271,6 +271,22 @@ v2,pick_bin,1,1"></textarea>
         <span class="status ok mono" id="sha" style="font-size:.72rem"></span>
       </div>
       <details id="fullBox"><summary>Full readout, exactly what the command prints</summary><div class="in"><pre class="readout" id="full"></pre></div></details>
+      <details id="aiBox">
+        <summary>Write it up for your team (optional, uses your own OpenAI key)</summary>
+        <div class="in">
+          <p style="font-size:.88rem;color:var(--muted)">Turns the readout into a plain-English explanation or a short release note for the people who decide. Only the readout text above is sent to OpenAI, never your file. Your key is used from this page only and is stored in this browser only if you tick the box.</p>
+          <div class="row">
+            <input class="txt" id="oaKey" type="password" placeholder="sk-... (your OpenAI API key)" style="max-width:420px" autocomplete="off">
+            <label style="font-size:.84rem;color:var(--muted);display:inline-flex;gap:6px;align-items:center"><input type="checkbox" id="oaRemember"> remember in this browser</label>
+          </div>
+          <div class="row">
+            <button class="btn ghost" id="aiExplain" type="button">Explain in plain English</button>
+            <button class="btn ghost" id="aiMemo" type="button">Draft the release note</button>
+            <span class="status" id="aiStatus"><span class="dot"></span><span id="aiStatusText"></span></span>
+          </div>
+          <pre class="readout" id="aiOut" style="white-space:pre-wrap;display:none"></pre>
+        </div>
+      </details>
     </div>
   </div>
 </section>
@@ -490,18 +506,95 @@ v2,pick_bin,1,1"></textarea>
     }
   }
 
-  function readFile(f){
-    if (!f) return;
-    var reader = new FileReader();
-    reader.onload = function(){ run(String(reader.result), f.name); };
-    reader.readAsText(f);
+  function showErr(msg){ var err = $('err'); err.textContent = msg; err.className = 'errbox show'; setStatus('err', 'Could not run.'); }
+  function readText(f){ return new Promise(function(res, rej){ var r = new FileReader(); r.onload = function(){ res(String(r.result)); }; r.onerror = rej; r.readAsText(f); }); }
+
+  // Two or more eval_info.json files from lerobot-eval become one four-column CSV: one version per file,
+  // in the order the files were chosen, so the last file is the release about to ship.
+  function evalInfosToCsv(files, texts){
+    var rows = ['version,skill,episode,success'];
+    var seen = {};
+    var names = [];
+    texts.forEach(function(t, i){
+      var info = JSON.parse(t);
+      var name = files[i].name.replace(/\.json$/i, '');
+      if (seen[name]) name = name + '#' + (i + 1);
+      seen[name] = true; names.push(name);
+      var tasks = [];
+      if (info.per_task) {
+        info.per_task.forEach(function(e){
+          var s = (e.metrics && e.metrics.successes) || e.successes;
+          if (!s) throw new Error(files[i].name + ': a per_task entry has no successes list');
+          tasks.push([String(e.task_group) + '/' + String(e.task_id), s]);
+        });
+      } else if (info.per_episode) {
+        tasks.push(['all', info.per_episode.map(function(ep){ return ep.success; })]);
+      } else {
+        throw new Error(files[i].name + ' is not an eval_info.json (no per_task or per_episode)');
+      }
+      tasks.forEach(function(ts){ ts[1].forEach(function(s, k){ rows.push([name, ts[0], k, s ? 1 : 0].join(',')); }); });
+    });
+    return { csv: rows.join('\n') + '\n', names: names };
+  }
+
+  function readFiles(fileList){
+    var list = Array.prototype.slice.call(fileList || []);
+    if (!list.length) return;
+    var jsons = list.filter(function(f){ return /\.json$/i.test(f.name); });
+    if (jsons.length && jsons.length !== list.length){ showErr('Drop either one CSV/TSV, or only eval_info.json files, not a mix.'); return; }
+    if (jsons.length === 1){ showErr('One eval_info.json is one version. Drop two or more: the release you run now and the one you are about to ship.'); return; }
+    if (jsons.length >= 2){
+      Promise.all(jsons.map(readText)).then(function(texts){
+        var out = evalInfosToCsv(jsons, texts);
+        run(out.csv, jsons.length + ' eval_info.json files (' + out.names.join(' → ') + ')');
+      }).catch(function(e){ showErr('Could not read the JSON files: ' + (e && e.message ? e.message : e)); });
+      return;
+    }
+    if (list.length > 1){ showErr('Drop one CSV or TSV at a time (or several eval_info.json files).'); return; }
+    readText(list[0]).then(function(t){ run(t, list[0].name); });
   }
 
   var drop = $('drop');
-  $('file').addEventListener('change', function(e){ readFile(e.target.files[0]); });
+  $('file').addEventListener('change', function(e){ readFiles(e.target.files); e.target.value = ''; });
   ['dragenter','dragover'].forEach(function(ev){ drop.addEventListener(ev, function(e){ e.preventDefault(); drop.classList.add('over'); }); });
   ['dragleave','drop'].forEach(function(ev){ drop.addEventListener(ev, function(e){ e.preventDefault(); drop.classList.remove('over'); }); });
-  drop.addEventListener('drop', function(e){ var f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]; readFile(f); });
+  drop.addEventListener('drop', function(e){ readFiles(e.dataTransfer && e.dataTransfer.files); });
+
+  // Optional write-up with the visitor's own OpenAI key. Only the readout text is sent.
+  function loadKey(){ try { var k = localStorage.getItem('orbit_oa_key'); if (k){ $('oaKey').value = k; $('oaRemember').checked = true; } } catch(e){} }
+  function currentKey(){
+    var k = ($('oaKey').value || '').trim();
+    try { if ($('oaRemember').checked && k) localStorage.setItem('orbit_oa_key', k); else if (!$('oaRemember').checked) localStorage.removeItem('orbit_oa_key'); } catch(e){}
+    return k;
+  }
+  var PROMPTS = {
+    explain: 'You are explaining a robot-policy release check to an engineer who did not run it. Use only the numbers in the readout; do not invent any. In plain English, under 200 words: what was compared, which skills are flagged and why, what "suspect" means at this episode count, what the smallest callable drop implies for the skills marked held, and what to do next. No marketing, no headings, short paragraphs.',
+    memo: 'Write a short internal release note, under 250 words, for a robotics team lead, based only on the readout. Structure: one-line recommendation (ship, hold, or collect more episodes on named skills); the evidence per flagged skill with its interval; what this evaluation could not resolve and the episode count that would; one caveat that a drop may come from the training seed rather than the model. Plain and specific. No marketing, no headings beyond the recommendation line.'
+  };
+  async function askModel(mode){
+    var out = $('aiOut'), st = $('aiStatus'), stt = $('aiStatusText');
+    if (!lastText){ stt.textContent = 'Run a check first.'; st.className = 'status err'; return; }
+    var key = currentKey();
+    if (!key){ stt.textContent = 'Paste your OpenAI key first.'; st.className = 'status err'; return; }
+    st.className = 'status busy'; stt.textContent = 'Asking the model (only the readout text is sent)…'; out.style.display = 'none';
+    try {
+      var r = await fetch('https://api.openai.com/v1/responses', {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer ' + key, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ model: 'gpt-5-mini', instructions: PROMPTS[mode], input: 'READOUT:\n\n' + lastText, max_output_tokens: 700 })
+      });
+      var j = await r.json();
+      if (!r.ok){ throw new Error((j.error && j.error.message) || ('HTTP ' + r.status)); }
+      var text = (j.output || []).map(function(it){ return (it.content || []).map(function(c){ return c.type === 'output_text' ? c.text : ''; }).join(''); }).join('\n').trim();
+      out.textContent = text || '(empty reply)'; out.style.display = 'block';
+      st.className = 'status ok'; stt.textContent = 'Done. Read it as a draft; the numbers come from the readout above.';
+    } catch (e) {
+      st.className = 'status err'; stt.textContent = 'The model call failed: ' + (e && e.message ? e.message : e);
+    }
+  }
+  $('aiExplain').addEventListener('click', function(){ askModel('explain'); });
+  $('aiMemo').addEventListener('click', function(){ askModel('memo'); });
+  loadKey();
   $('pasteBtn').addEventListener('click', function(){ run($('paste').value, 'pasted rows'); });
   $('sampleBtn').addEventListener('click', async function(){
     var b = $('sampleBtn'); b.disabled = true;
