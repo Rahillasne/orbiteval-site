@@ -4,339 +4,126 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>About — OrbitEval</title>
-<meta name="description" content="OrbitEval is the statistical release layer for robot policies. It takes the evaluation logs a robotics team already produces and says, with priced uncertainty, which skills the new model broke and what the run cannot tell them. Founded in 2026 by Rahil Lasne. Contact rahil@orbiteval.com.">
+<meta name="description" content="OrbitEval is the statistical release layer for robot policies. It takes the evaluation logs a robotics team already produces and says, with priced uncertainty, which skills the new model broke and what the run cannot tell them. Founded in 2026 by Rahil Lasne.">
 <link rel="canonical" href="https://orbiteval.com/about.html">
 <meta property="og:type" content="website">
-<meta property="og:title" content="About OrbitEval">
-<meta property="og:description" content="OrbitEval is the statistical release layer for robot policies: orbit-eval (open source), the Capability Arena (public leaderboards with uncertainty attached) and private capability boards on a team's own evaluation logs.">
+<meta property="og:title" content="About — OrbitEval">
+<meta property="og:description" content="OrbitEval is the statistical release layer for robot policies. It takes the evaluation logs a robotics team already produces and says, with priced uncertainty, which skills the new model broke and what the run cannot tell them. Founded in 2026 by Rahil Lasne.">
 <meta property="og:url" content="https://orbiteval.com/about.html">
 <meta property="og:site_name" content="OrbitEval">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="About OrbitEval">
-<meta name="twitter:description" content="OrbitEval is the statistical release layer for robot policies: orbit-eval (open source), the Capability Arena (public leaderboards with uncertainty attached) and private capability boards on a team's own evaluation logs.">
 <meta name="theme-color" content="#452455">
-<script type="application/ld+json">
-{"@context":"https://schema.org","@type":"AboutPage","url":"https://orbiteval.com/about.html","mainEntity":{"@type":"Organization","name":"OrbitEval","url":"https://orbiteval.com","email":"rahil@orbiteval.com","description":"OrbitEval is the statistical release layer for robot policies. It takes the evaluation logs a robotics team already produces and says, with priced uncertainty, which skills the new model broke and what the run cannot tell them.","founder":{"@type":"Person","name":"Rahil Lasne"},"foundingDate":"2026","sameAs":["https://github.com/Rahillasne/orbiteval-site","https://github.com/Rahillasne/orbit-eval","https://pypi.org/project/orbit-eval/"]}}
-</script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23452455'/%3E%3Ccircle cx='16' cy='16' r='5.5' fill='%23FBFAF6' stroke='%237A4E8C' stroke-width='3'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=DM+Mono:wght@400;500&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap">
-
-<style>
-  /* Same tokens as the Capability Arena homepage (index.html). */
-  :root{
-    --paper:#FBFAF6; --card:#FFFFFF; --ink:#1C1B19; --muted:#6A665F; --faint:#A19C93;
-    --line:#E6E2D9; --line-soft:#F1EEE7; --hover:#F6F4EF;
-    --plum:#452455; --plum-mid:#7A4E8C; --plum-pale:#F3ECF5; --plum-soft:#E4D6EA;
-    --f-ui:Archivo,-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
-    --f-mono:"DM Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
-    --f-serif:Newsreader,Georgia,"Times New Roman",serif;
-    color-scheme:light;
-  }
-  *{box-sizing:border-box}
-  html{-webkit-text-size-adjust:100%}
-  html,body{margin:0;padding:0}
-  body{background:var(--paper);color:var(--ink);font-family:var(--f-ui);
-    font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:hidden}
-  h1,h2,h3,h4{margin:0;font-weight:500}
-  p{margin:0}
-  a{color:var(--plum-mid);text-decoration:none}
-  a:hover{text-decoration:underline;text-underline-offset:3px}
-  a:focus-visible{outline:2px solid var(--plum);outline-offset:2px;border-radius:6px}
-  code{font-family:var(--f-mono);font-size:.88em;background:var(--paper);border:1px solid var(--line);
-    border-radius:4px;padding:1px 6px;white-space:nowrap}
-  .mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
-  .serif{font-family:var(--f-serif);font-weight:500;letter-spacing:-.005em}
-
-  /* One outer wrapper carries the side gutter (never below 16px). */
-  .wrap{width:min(100% - 32px, 1060px);margin-inline:auto}
-  @media (min-width:720px){.wrap{width:min(100% - 48px, 1060px)}}
-
-  .label{font-family:var(--f-mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;
-    color:var(--faint);display:block}
-
-  /* Top bar: brand, two links, one plum action. */
-  .topbar{border-bottom:1px solid var(--line);background:var(--paper)}
-  .topbar .wrap{display:flex;align-items:center;gap:12px 22px;padding:12px 0;flex-wrap:wrap}
-  .brand{display:flex;align-items:center;gap:9px;color:var(--ink);text-decoration:none}
-  .brand:hover{text-decoration:none}
-  .brand .mark{width:26px;height:26px;border-radius:7px;background:var(--plum);
-    display:grid;place-items:center;flex:none}
-  .brand .mark i{width:9px;height:9px;border-radius:50%;background:var(--paper);
-    display:block;box-shadow:inset 0 0 0 2.5px var(--plum-mid)}
-  .brand .word{font-family:var(--f-serif);font-size:1.28rem;font-weight:500;letter-spacing:-.01em;line-height:1}
-  .brand .word small{display:block;font-family:var(--f-mono);font-size:.6rem;letter-spacing:.18em;
-    text-transform:uppercase;color:var(--faint);margin-top:4px}
-  .links{display:flex;gap:4px;margin-left:8px}
-  .links a{display:inline-flex;align-items:center;padding:7px 13px;border-radius:9px;
-    font-size:.9rem;color:var(--muted);text-decoration:none}
-  .links a:hover{background:var(--hover);color:var(--ink)}
-  .links a[aria-current="page"]{background:var(--card);color:var(--ink);font-weight:500;
-    box-shadow:0 0 0 1px var(--line)}
-  .topbar .btn{margin-left:auto}
-  @media (max-width:540px){
-    .links{order:3;width:100%;margin-left:0;padding-top:4px;border-top:1px solid var(--line-soft)}
-    .links a{padding:7px 11px}
-  }
-
-  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;
-    border-radius:9px;padding:9px 14px;font-size:.88rem;font-weight:500;text-decoration:none;
-    white-space:nowrap;border:1px solid transparent}
-  .btn:hover{text-decoration:none}
-  .btn.primary{background:var(--plum);color:#fff}
-  .btn.primary:hover{background:#36193F}
-  .btn.ghost{background:var(--card);color:var(--ink);border-color:var(--line)}
-  .btn.ghost:hover{background:var(--hover)}
-
-  /* Hero */
-  .hero{padding:clamp(40px,7vw,72px) 0 clamp(28px,5vw,48px)}
-  .hero h1{font-family:var(--f-serif);font-size:clamp(2rem,1.5rem + 2.2vw,2.9rem);line-height:1.1;
-    margin:10px 0 18px;letter-spacing:-.01em}
-  .hero .lede{font-size:clamp(1rem,.95rem + .35vw,1.2rem);line-height:1.55;color:var(--muted);max-width:64ch}
-  .hero .lede strong{color:var(--ink);font-weight:500}
-
-  /* Sections */
-  section.block{padding:clamp(32px,5vw,56px) 0;border-top:1px solid var(--line)}
-  .sect-head{display:flex;flex-direction:column;gap:8px;margin-bottom:22px}
-  .sect-head h2{font-family:var(--f-serif);font-size:1.55rem;line-height:1.15}
-  .sect-head .desc{color:var(--muted);max-width:70ch}
-  .prose{max-width:72ch;display:flex;flex-direction:column;gap:12px}
-  .prose p{color:var(--muted);font-size:.98rem}
-  .prose strong{color:var(--ink);font-weight:500}
-  .prose a{font-weight:500}
-
-  .two{display:grid;grid-template-columns:1fr;gap:20px 40px;align-items:start}
-  @media (min-width:860px){.two{grid-template-columns:minmax(0,.7fr) minmax(0,1.3fr)}}
-  .two .sect-head{margin-bottom:0}
-
-  /* Cards */
-  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:14px}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;
-    padding:18px 20px 20px;display:flex;flex-direction:column;gap:12px;min-width:0}
-  .card .top{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
-  .card h3{font-size:1.05rem;font-weight:600;line-height:1.25}
-  .card h3.mono{font-weight:500}
-  .pill{display:inline-flex;align-items:center;gap:6px;font-family:var(--f-mono);font-size:.66rem;
-    letter-spacing:.12em;text-transform:uppercase;color:var(--plum);background:var(--plum-pale);
-    border:1px solid var(--plum-soft);border-radius:6px;padding:3px 8px;white-space:nowrap}
-  .pill.paid{color:var(--ink);background:var(--paper);border-color:var(--line)}
-  .card p{font-size:.9rem;color:var(--muted)}
-  .card p strong{color:var(--ink);font-weight:500}
-  .card pre{margin:0;font-family:var(--f-mono);font-size:.84rem;line-height:1.5;color:var(--ink);
-    background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:9px 12px;
-    overflow-x:auto;white-space:pre}
-  .card pre .p{color:var(--faint);user-select:none}
-  .card .cmds{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:.9rem;color:var(--muted)}
-  .card .cmds span{margin-right:4px}
-  .card .cmds code{white-space:nowrap}
-  .card .foot{margin-top:auto;padding-top:6px;display:flex;flex-wrap:wrap;gap:8px 16px;font-size:.86rem}
-  .card .foot a{font-weight:500}
-  .card .foot .btn{font-size:.86rem;padding:8px 13px}
-
-  /* Company record */
-  .kv{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
-  .kv-row{display:grid;grid-template-columns:8.5rem minmax(0,1fr);gap:4px 16px;padding:10px 16px;
-    border-bottom:1px solid var(--line-soft);align-items:baseline}
-  .kv-row:last-child{border-bottom:0}
-  .kv-row .k{font-size:.8rem;color:var(--muted)}
-  .kv-row .v{font-family:var(--f-mono);font-size:.84rem;color:var(--ink);overflow-wrap:anywhere;
-    display:flex;flex-direction:column;gap:2px}
-  .kv-row .v a{color:var(--plum-mid)}
-  @media (max-width:520px){.kv-row{grid-template-columns:1fr;padding:9px 14px}}
-  .record{margin-top:12px;font-family:var(--f-mono);font-size:.7rem;line-height:1.7;color:var(--faint);
-    overflow-wrap:anywhere}
-  .record a{color:var(--plum-mid)}
-
-  /* Footer */
-  footer{border-top:1px solid var(--line);padding:22px 0 34px;font-size:.78rem;color:var(--faint)}
-  footer .wrap{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center}
-  footer a{color:var(--muted)}
-</style>
+<link rel="stylesheet" href="shell.css">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"AboutPage","url":"https://orbiteval.com/about.html","mainEntity":{"@type":"Organization","name":"OrbitEval","url":"https://orbiteval.com","email":"rahil@orbiteval.com","description":"OrbitEval is the statistical release layer for robot policies.","founder":{"@type":"Person","name":"Rahil Lasne"},"foundingDate":"2026","sameAs":["https://github.com/Rahillasne/orbiteval-site","https://github.com/Rahillasne/orbit-eval","https://pypi.org/project/orbit-eval/"]}}</script>
 </head>
 <body>
-
-<header class="topbar">
-  <div class="wrap">
-    <a class="brand" href="index.html" aria-label="OrbitEval Capability Arena, home">
-      <span class="mark"><i></i></span>
-      <span class="word">OrbitEval<small>Capability Arena</small></span>
-    </a>
-    <nav class="links" aria-label="Site">
-      <a href="index.html">Leaderboards</a>
-      <a href="chat.html">Chat</a>
-      <a href="check.html">Release check</a>
-      <a href="about.html" aria-current="page">About</a>
+<div class="shell">
+  <aside class="sidebar">
+    <div class="brand"><span class="mark"><i></i></span><div class="word">OrbitEval<small>Capability Arena</small></div></div>
+    <nav class="nav">
+      <a href="index.html"><svg class="ico" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Overview</a><a href="index.html"><svg class="ico" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13"/><circle cx="4" cy="6" r="1"/><circle cx="4" cy="12" r="1"/><circle cx="4" cy="18" r="1"/></svg>Leaderboards</a><a href="index.html"><svg class="ico" viewBox="0 0 24 24"><path d="M4 4h6a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H4zM20 4h-6a3 3 0 0 0-3 3v13a2 2 0 0 1 2-2h7z"/></svg>Methodology</a><div class="sep"></div><a href="chat.html"><svg class="ico" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1.1-4.2A8 8 0 1 1 21 12z"/></svg>Chat</a><a href="check.html"><svg class="ico" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>Release check</a><a href="about.html" aria-current="page"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 10v6M12 7h.01"/></svg>About</a>
     </nav>
-    <a class="btn primary" href="mailto:rahil@orbiteval.com">Contact</a>
+    <div class="promo">
+      <div class="thumb"><i style="width:78%"></i><i style="width:62%"></i><i style="width:44%"></i></div>
+      <h4>Check your last release</h4>
+      <p>Drop the evaluation CSV you already have. Runs in your browser; nothing is uploaded.</p>
+      <a class="btn primary block" href="check.html">Run the release check</a>
+      <a class="btn ghost block" href="https://pypi.org/project/orbit-eval/">pip install orbit-eval</a>
+    </div>
+    <div class="legal"><a href="about.html">About OrbitEval</a><span>Independent · not affiliated with any benchmark</span></div>
+  </aside>
+  <div class="main">
+    <div class="topbar">
+      <a class="tab" href="index.html"><svg class="ico" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Overview</a>
+      <div class="tabs-center"></div>
+      <a class="btn ghost" href="check.html">Release check</a>
+      <a class="btn primary" href="chat.html">Chat</a>
+    </div>
+    <div class="body wide">
+      <main class="content">
+
+<style>
+  .record{margin-top:10px;font-family:"DM Mono",Menlo,monospace;font-size:.7rem;line-height:1.7;color:var(--faint);overflow-wrap:anywhere}
+  .record a{color:var(--plum-mid)}
+  .cmds{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:.9rem;color:var(--muted)}
+  .pcard pre{margin:0;font-family:"DM Mono",Menlo,monospace;font-size:.84rem;line-height:1.5;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:9px 12px;overflow-x:auto;white-space:pre}
+  .pcard pre .p{color:var(--faint);user-select:none}
+</style>
+
+<div class="pagehead">
+  <span class="label">About</span>
+  <h1>About OrbitEval</h1>
+  <p class="lede">OrbitEval is the statistical release layer for robot policies. It takes the evaluation logs a robotics team already produces and says, with priced uncertainty, which skills the new model broke and what the run cannot tell them.</p>
+</div>
+
+<section class="sect">
+  <div class="sect-head"><span class="label">What exists today</span><h2>Four things, three of them free</h2><p class="desc">The same statistics run underneath all of them. What differs is whose evaluation logs they run on, and how much of the work is done for you.</p></div>
+  <div class="pcards">
+    <article class="pcard">
+      <div class="top"><h3>Chat</h3><span class="pill">Free</span></div>
+      <p>Ask which skills the new model broke, how many episodes an evaluation needs, or how a model does on the boards. Drop your files into the chat. Every number it gives comes from the statistics below, not from the model.</p>
+      <div class="foot"><a class="btn primary" href="chat.html">Open the chat</a></div>
+    </article>
+    <article class="pcard">
+      <div class="top"><h3>Release check and orbit-eval</h3><span class="pill">Free · Apache-2.0</span></div>
+      <pre><span class="p">$ </span>pip install orbit-eval</pre>
+      <p>The per-skill check runs in your browser on <a href="check.html">the release check page</a>, or as <code>orbit-eval release evals.csv</code> in a terminal or CI. Zero dependencies.</p>
+      <div class="cmds"><span>Also</span><code>regress</code><code>power</code><code>audit</code><code>route</code></div>
+      <div class="foot"><a href="https://pypi.org/project/orbit-eval/">PyPI</a><a href="https://github.com/Rahillasne/orbit-eval">GitHub</a></div>
+    </article>
+    <article class="pcard">
+      <div class="top"><h3>Capability Arena</h3><span class="pill">Free · Public</span></div>
+      <p>Embodied-AI leaderboards re-cut along the capabilities they test, with every cell's uncertainty attached. <strong>Robot manipulation:</strong> RoboChallenge Table 30 and RoboDojo Sim. <strong>Video world models:</strong> WBench.</p>
+      <div class="foot"><a href="index.html">Open the leaderboards</a></div>
+    </article>
+    <article class="pcard">
+      <div class="top"><h3>Release audit and certified policy</h3><span class="pill paid">Paid · fixed price</span></div>
+      <p><strong>Release audit, $2,000:</strong> one CSV of evaluations you already ran, two or more versions; back in five business days with the per-skill regression history, the smallest regression your episode counts can detect, a private board and a signed record.</p>
+      <p><strong>Certified policy, $25,000:</strong> the same recipe trained three times, evaluated per skill with intervals, selected per skill with abstention, delivered as one checkpoint set with a signed capability record.</p>
+      <div class="foot"><a class="btn primary" href="check.html#pricing">See pricing</a><a href="check.html">Run the free check first</a></div>
+    </article>
   </div>
-</header>
+</section>
 
-<main>
-
-  <section class="hero">
-    <div class="wrap">
-      <span class="label">About</span>
-      <h1>About OrbitEval</h1>
-      <p class="lede">
-        OrbitEval is the statistical release layer for robot policies. It takes the evaluation
-        logs a robotics team already produces and says, with priced uncertainty, which skills
-        the new model broke and what the run cannot tell them.
-      </p>
-    </div>
-  </section>
-
-  <section class="block" id="today">
-    <div class="wrap">
-      <div class="sect-head">
-        <span class="label">What exists today</span>
-        <h2>Three things, two of them free</h2>
-        <p class="desc">The same statistics run underneath all three. What differs is whose evaluation logs they run on.</p>
-      </div>
-      <div class="cards">
-
-        <article class="card">
-          <div class="top">
-            <h3 class="mono">orbit-eval</h3>
-            <span class="pill">Free · Apache-2.0</span>
-          </div>
-          <pre><span class="p">$ </span>pip install orbit-eval</pre>
-          <p>
-            A command-line tool with zero dependencies. <code>orbit-eval release evals.csv</code>
-            reports which skills regressed between two releases, priced against noise, and exits 1
-            on a regression so it drops into CI.
-          </p>
-          <div class="cmds">
-            <span>Also</span>
-            <code>regress</code><code>power</code><code>audit</code><code>route</code>
-          </div>
-          <div class="foot">
-            <a href="https://pypi.org/project/orbit-eval/" rel="noopener">PyPI</a>
-            <a href="https://github.com/Rahillasne/orbit-eval" rel="noopener">GitHub</a>
-          </div>
-        </article>
-
-        <article class="card">
-          <div class="top">
-            <h3>Capability Arena</h3>
-            <span class="pill">Free · Public</span>
-          </div>
-          <p>
-            Embodied-AI leaderboards re-cut along the capabilities they test, with every cell's
-            uncertainty attached.
-          </p>
-          <p>
-            <strong>Robot manipulation:</strong> RoboChallenge Table 30 and RoboDojo Sim.<br>
-            <strong>Video world models:</strong> WBench.
-          </p>
-          <div class="foot">
-            <a href="index.html">Open the leaderboards</a>
-          </div>
-        </article>
-
-        <article class="card">
-          <div class="top">
-            <h3>Release audit and certified policy</h3>
-            <span class="pill paid">Paid · fixed price</span>
-          </div>
-          <p>
-            <strong>Release audit, $2,000:</strong> one CSV of evaluations you already ran, two or more
-            versions; back in five business days with the per-skill regression history, the smallest
-            regression your episode counts can detect, a private board and a signed record.
-          </p>
-          <p>
-            <strong>Certified policy, $25,000:</strong> the same recipe trained three times, evaluated per
-            skill with intervals, selected per skill with abstention, delivered as one checkpoint set
-            with a signed capability record.
-          </p>
-          <div class="foot">
-            <a class="btn primary" href="check.html#pricing">See pricing</a>
-            <a href="check.html">Run the free check first</a>
-          </div>
-        </article>
-
-      </div>
-    </div>
-  </section>
-
-  <section class="block" id="measurement">
-    <div class="wrap two">
-      <div class="sect-head">
-        <span class="label">The measurement behind it</span>
-        <h2>Calibrated on replicate retrainings</h2>
-      </div>
-      <div class="prose">
-        <p>
-          The statistics are calibrated on the only published replicate-retraining corpus in
-          robot imitation learning: 701 controlled retrainings across ACT, Diffusion Policy,
-          SmolVLA and π0.5, every wave pre-registered before scoring. The measured noise floors
-          are published as <a href="atlas.html">the Variance Atlas</a>, and the method is written
-          up in <a href="noisefloor.html">how the noise floor is measured</a>.
-        </p>
-      </div>
-    </div>
-  </section>
-
-  <section class="block" id="independence">
-    <div class="wrap two">
-      <div class="sect-head">
-        <span class="label">Independence</span>
-        <h2>Not affiliated with any benchmark</h2>
-      </div>
-      <div class="prose">
-        <p>
-          OrbitEval is not affiliated with RoboChallenge, RoboDojo, WBench, LeRobot or any
-          benchmark. Scores on the arena are the benchmarks' own. What is added is the
-          capability cut and the uncertainty they do not publish, and every figure that can be
-          checked against a benchmark's published number is.
-        </p>
-      </div>
-    </div>
-  </section>
-
-  <section class="block" id="contact">
-    <div class="wrap two">
-      <div class="sect-head">
-        <span class="label">Company and contact</span>
-        <h2>Who is behind it</h2>
-        <p class="desc">
-          OrbitEval was founded in 2026 by Rahil Lasne. The fastest way to reach us is email:
-          <a href="mailto:rahil@orbiteval.com">rahil@orbiteval.com</a>.
-        </p>
-      </div>
-      <div>
-        <div class="kv">
-          <div class="kv-row"><span class="k">Company</span><span class="v">OrbitEval</span></div>
-          <div class="kv-row"><span class="k">Founder</span><span class="v">Rahil Lasne</span></div>
-          <div class="kv-row"><span class="k">Founded</span><span class="v">2026</span></div>
-          <div class="kv-row"><span class="k">Email</span><span class="v"><a href="mailto:rahil@orbiteval.com">rahil@orbiteval.com</a></span></div>
-          <div class="kv-row"><span class="k">Web</span><span class="v"><a href="index.html">orbiteval.com</a></span></div>
-          <div class="kv-row"><span class="k">GitHub</span><span class="v">
-            <a href="https://github.com/Rahillasne/orbiteval-site" rel="noopener">github.com/Rahillasne/orbiteval-site</a>
-            <a href="https://github.com/Rahillasne/orbit-eval" rel="noopener">github.com/Rahillasne/orbit-eval</a>
-          </span></div>
-          <div class="kv-row"><span class="k">PyPI</span><span class="v"><a href="https://pypi.org/project/orbit-eval/" rel="noopener">pypi.org/project/orbit-eval/</a></span></div>
-        </div>
-        <p class="record">
-          Company · OrbitEval &nbsp;·&nbsp; Founder · Rahil Lasne &nbsp;·&nbsp; Founded · 2026
-          &nbsp;·&nbsp; Email · <a href="mailto:rahil@orbiteval.com">rahil@orbiteval.com</a>
-          &nbsp;·&nbsp; Web · orbiteval.com
-          &nbsp;·&nbsp; GitHub · <a href="https://github.com/Rahillasne/orbiteval-site" rel="noopener">github.com/Rahillasne/orbiteval-site</a>
-          and <a href="https://github.com/Rahillasne/orbit-eval" rel="noopener">github.com/Rahillasne/orbit-eval</a>
-          &nbsp;·&nbsp; PyPI · <a href="https://pypi.org/project/orbit-eval/" rel="noopener">pypi.org/project/orbit-eval/</a>
-        </p>
-      </div>
-    </div>
-  </section>
-
-</main>
-
-<footer>
-  <div class="wrap">
-    <span>© 2026 OrbitEval · Independent · not affiliated with any benchmark</span>
-    <a href="mailto:rahil@orbiteval.com">rahil@orbiteval.com</a>
+<section class="sect two">
+  <div class="sect-head"><span class="label">The measurement behind it</span><h2>Calibrated on replicate retrainings</h2></div>
+  <div class="text">
+    <p>The statistics are calibrated on the only published replicate-retraining corpus in robot imitation learning: 701 controlled retrainings across ACT, Diffusion Policy, SmolVLA and π0.5, every wave pre-registered before scoring. The measured noise floors are published as <a href="atlas.html">the Variance Atlas</a>, and the method is written up in <a href="noisefloor.html">how the noise floor is measured</a>. The finding that started the company is in <a href="notes/release-lottery.html">the note on the release lottery</a>.</p>
   </div>
-</footer>
+</section>
 
+<section class="sect two">
+  <div class="sect-head"><span class="label">Independence</span><h2>Not affiliated with any benchmark</h2></div>
+  <div class="text">
+    <p>OrbitEval is not affiliated with RoboChallenge, RoboDojo, WBench, LeRobot or any benchmark. Scores on the arena are the benchmarks' own. What is added is the capability cut and the uncertainty they do not publish, and every figure that can be checked against a benchmark's published number is.</p>
+  </div>
+</section>
+
+<section class="sect two">
+  <div class="sect-head"><span class="label">Company and contact</span><h2>Who is behind it</h2><p class="desc">OrbitEval was founded in 2026 by Rahil Lasne. The fastest way to reach us is email: <a href="mailto:rahil@orbiteval.com">rahil@orbiteval.com</a>.</p></div>
+  <div>
+    <div class="kv">
+      <div class="kv-row"><span class="k">Company</span><span class="v2">OrbitEval</span></div>
+      <div class="kv-row"><span class="k">Founder</span><span class="v2">Rahil Lasne</span></div>
+      <div class="kv-row"><span class="k">Founded</span><span class="v2">2026</span></div>
+      <div class="kv-row"><span class="k">Email</span><span class="v2"><a href="mailto:rahil@orbiteval.com">rahil@orbiteval.com</a></span></div>
+      <div class="kv-row"><span class="k">Web</span><span class="v2"><a href="https://orbiteval.com">orbiteval.com</a></span></div>
+      <div class="kv-row"><span class="k">GitHub</span><span class="v2"><a href="https://github.com/Rahillasne/orbiteval-site">github.com/Rahillasne/orbiteval-site</a><a href="https://github.com/Rahillasne/orbit-eval">github.com/Rahillasne/orbit-eval</a></span></div>
+      <div class="kv-row"><span class="k">PyPI</span><span class="v2"><a href="https://pypi.org/project/orbit-eval/">pypi.org/project/orbit-eval/</a></span></div>
+    </div>
+    <p class="record">Company · OrbitEval · Founder · Rahil Lasne · Founded · 2026 · Email · <a href="mailto:rahil@orbiteval.com">rahil@orbiteval.com</a> · Web · orbiteval.com · GitHub · <a href="https://github.com/Rahillasne/orbiteval-site">github.com/Rahillasne/orbiteval-site</a> and <a href="https://github.com/Rahillasne/orbit-eval">github.com/Rahillasne/orbit-eval</a> · PyPI · <a href="https://pypi.org/project/orbit-eval/">pypi.org/project/orbit-eval/</a></p>
+  </div>
+</section>
+
+<div class="pagefoot"><span>© 2026 OrbitEval · Independent · not affiliated with any benchmark</span><a href="mailto:rahil@orbiteval.com">rahil@orbiteval.com</a></div>
+
+      </main>
+    </div>
+  </div>
+</div>
 </body>
 </html>

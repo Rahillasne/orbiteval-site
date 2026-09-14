@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Chat — OrbitEval</title>
-<meta name="description" content="Ask the OrbitEval assistant which skills your new robot model broke. Drop an evaluation log, size an evaluation, or look a model up on the Capability Arena. Every number comes from the open-source orbit-eval statistics.">
+<meta name="description" content="Ask the OrbitEval assistant which skills your new robot model broke. Drop an evaluation log, size an evaluation, or look a model up on the Capability Arena. Every number comes from the open-source orbit-eval statistics, not from the model.">
 <link rel="canonical" href="https://orbiteval.com/chat.html">
 <meta property="og:type" content="website">
-<meta property="og:title" content="OrbitEval assistant">
-<meta property="og:description" content="Drop your evaluation log and ask which skills the new model broke. Numbers come from open-source statistics, not from the model.">
+<meta property="og:title" content="Chat — OrbitEval">
+<meta property="og:description" content="Ask the OrbitEval assistant which skills your new robot model broke. Drop an evaluation log, size an evaluation, or look a model up on the Capability Arena. Every number comes from the open-source orbit-eval statistics, not from the model.">
 <meta property="og:url" content="https://orbiteval.com/chat.html">
 <meta property="og:site_name" content="OrbitEval">
 <meta name="twitter:card" content="summary">
@@ -17,83 +17,205 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=DM+Mono:wght@400;500&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap">
-<style>
-  :root{--paper:#FBFAF6;--card:#FFFFFF;--ink:#1C1B19;--muted:#6A665F;--faint:#A19C93;--line:#E6E2D9;--line-soft:#F1EEE7;--hover:#F6F4EF;
-    --plum:#452455;--plum-mid:#7A4E8C;--plum-pale:#F3ECF5;--plum-soft:#E4D6EA;
-    --f-ui:Archivo,-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;--f-mono:"DM Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
-    --f-serif:Newsreader,Georgia,"Times New Roman",serif;color-scheme:light}
-  *{box-sizing:border-box}html{-webkit-text-size-adjust:100%}html,body{margin:0;padding:0}
-  body{background:var(--paper);color:var(--ink);font-family:var(--f-ui);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:hidden;min-height:100vh;display:flex;flex-direction:column}
-  h1,h2,h3{margin:0;font-weight:500}p{margin:0}
-  a{color:var(--plum-mid);text-decoration:none}a:hover{text-decoration:underline;text-underline-offset:3px}
-  code{font-family:var(--f-mono);font-size:.88em;background:var(--paper);border:1px solid var(--line);border-radius:4px;padding:1px 6px;white-space:nowrap}
-  .wrap{width:min(100% - 32px, 1160px);margin-inline:auto}@media (min-width:720px){.wrap{width:min(100% - 48px, 1160px)}}
-  .label{font-family:var(--f-mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);display:block}
-  .topbar{border-bottom:1px solid var(--line);background:var(--paper)}
-  .topbar .wrap{display:flex;align-items:center;gap:12px 22px;padding:12px 0;flex-wrap:wrap}
-  .brand{display:flex;align-items:center;gap:9px;color:var(--ink);text-decoration:none}.brand:hover{text-decoration:none}
-  .brand .mark{width:26px;height:26px;border-radius:7px;background:var(--plum);display:grid;place-items:center;flex:none}
-  .brand .mark i{width:9px;height:9px;border-radius:50%;background:var(--paper);display:block;box-shadow:inset 0 0 0 2.5px var(--plum-mid)}
-  .brand .word{font-family:var(--f-serif);font-size:1.28rem;font-weight:500;letter-spacing:-.01em;line-height:1}
-  .brand .word small{display:block;font-family:var(--f-mono);font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--faint);margin-top:4px}
-  .links{display:flex;gap:4px;margin-left:8px;flex-wrap:wrap}
-  .links a{display:inline-flex;align-items:center;padding:7px 13px;border-radius:9px;font-size:.9rem;color:var(--muted);text-decoration:none}
-  .links a:hover{background:var(--hover);color:var(--ink)}
-  .links a[aria-current="page"]{background:var(--card);color:var(--ink);font-weight:500;box-shadow:0 0 0 1px var(--line)}
-  .topbar .btn{margin-left:auto}
-  @media (max-width:600px){.links{order:3;width:100%;margin-left:0;padding-top:4px;border-top:1px solid var(--line-soft)}}
-  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:9px;padding:9px 14px;font-size:.88rem;font-weight:500;text-decoration:none;white-space:nowrap;border:1px solid transparent}
-  .btn:hover{text-decoration:none}.btn.primary{background:var(--plum);color:#fff}.btn.primary:hover{background:#36193F}.btn.ghost{background:var(--card);color:var(--ink);border-color:var(--line)}
-  .head{padding:22px 0 12px}
-  .head h1{font-family:var(--f-serif);font-size:clamp(1.6rem,1.2rem + 1.4vw,2.2rem);line-height:1.12;margin:6px 0 8px;letter-spacing:-.01em}
-  .head p{color:var(--muted);max-width:76ch}
-  .head p strong{color:var(--ink);font-weight:500}
-  .frame{flex:1;display:flex;flex-direction:column;padding-bottom:20px}
-  .frame .wrap{flex:1;display:flex;flex-direction:column}
-  iframe{width:100%;flex:1;min-height:640px;border:1px solid var(--line);border-radius:12px;background:var(--card)}
-  .below{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;font-size:.84rem;color:var(--muted);padding-top:10px}
-  footer{border-top:1px solid var(--line);padding:18px 0 26px;font-size:.82rem;color:var(--muted)}
-  footer .wrap{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center}
-</style>
+<link rel="stylesheet" href="shell.css">
+
 </head>
 <body>
-<header class="topbar">
-  <div class="wrap">
-    <a class="brand" href="index.html" aria-label="OrbitEval Capability Arena"><span class="mark"><i></i></span><span class="word">OrbitEval<small>Capability Arena</small></span></a>
-    <nav class="links" aria-label="Site">
-      <a href="index.html">Leaderboards</a>
-      <a href="chat.html" aria-current="page">Chat</a>
-      <a href="check.html">Release check</a>
-      <a href="about.html">About</a>
+<div class="shell">
+  <aside class="sidebar">
+    <div class="brand"><span class="mark"><i></i></span><div class="word">OrbitEval<small>Capability Arena</small></div></div>
+    <nav class="nav">
+      <a href="index.html"><svg class="ico" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Overview</a><a href="index.html"><svg class="ico" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13"/><circle cx="4" cy="6" r="1"/><circle cx="4" cy="12" r="1"/><circle cx="4" cy="18" r="1"/></svg>Leaderboards</a><a href="index.html"><svg class="ico" viewBox="0 0 24 24"><path d="M4 4h6a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H4zM20 4h-6a3 3 0 0 0-3 3v13a2 2 0 0 1 2-2h7z"/></svg>Methodology</a><div class="sep"></div><a href="chat.html" aria-current="page"><svg class="ico" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1.1-4.2A8 8 0 1 1 21 12z"/></svg>Chat</a><a href="check.html"><svg class="ico" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>Release check</a><a href="about.html"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 10v6M12 7h.01"/></svg>About</a>
     </nav>
-    <a class="btn primary" href="check.html#pricing">Pricing</a>
-  </div>
-</header>
+    <div class="promo">
+      <div class="thumb"><i style="width:78%"></i><i style="width:62%"></i><i style="width:44%"></i></div>
+      <h4>Check your last release</h4>
+      <p>Drop the evaluation CSV you already have. Runs in your browser; nothing is uploaded.</p>
+      <a class="btn primary block" href="check.html">Run the release check</a>
+      <a class="btn ghost block" href="https://pypi.org/project/orbit-eval/">pip install orbit-eval</a>
+    </div>
+    <div class="legal"><a href="about.html">About OrbitEval</a><span>Independent · not affiliated with any benchmark</span></div>
+  </aside>
+  <div class="main">
+    <div class="topbar">
+      <a class="tab" href="index.html"><svg class="ico" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Overview</a>
+      <div class="tabs-center"></div>
+      <a class="btn ghost" href="check.html">Release check</a>
+      <a class="btn primary" href="chat.html">Chat</a>
+    </div>
+    <div class="body wide">
+      <main class="content">
 
-<section class="head">
-  <div class="wrap">
-    <span class="label">Assistant</span>
-    <h1>Ask which skills the new model broke</h1>
-    <p>Drop an evaluation log into the chat, ask how many episodes an evaluation needs, or look a model up on the boards. <strong>Every number the assistant gives comes from the open-source orbit-eval statistics or the arena data, not from the model.</strong> Files are processed for the reply and are not stored.</p>
-  </div>
-</section>
+<style>
+  .chatwrap{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;max-width:960px}
+  .chatbox{background:var(--card);border:1px solid var(--line);border-radius:12px;display:flex;flex-direction:column;min-height:560px;overflow:hidden}
+  .msgs{flex:1;overflow-y:auto;padding:18px 18px 8px;display:flex;flex-direction:column;gap:12px;scroll-behavior:smooth}
+  .msg{max-width:78ch;font-size:.95rem;line-height:1.55}
+  .msg .who{font-family:"DM Mono",Menlo,monospace;font-size:.64rem;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-bottom:4px}
+  .msg .bub{border-radius:12px;padding:11px 14px;border:1px solid var(--line);background:var(--paper)}
+  .msg.user{align-self:flex-end}
+  .msg.user .bub{background:var(--plum-pale);border-color:var(--plum-soft)}
+  .msg.user .who{text-align:right}
+  .msg .bub p{margin:0 0 8px}
+  .msg .bub p:last-child{margin-bottom:0}
+  .msg .bub ul{margin:0 0 8px;padding-left:18px}
+  .msg .bub li{margin-bottom:3px}
+  .msg .bub code{white-space:pre-wrap}
+  .msg .files{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+  .msg .files span{font-family:"DM Mono",Menlo,monospace;font-size:.72rem;background:var(--card);border:1px solid var(--line);border-radius:6px;padding:2px 8px}
+  .typing{display:inline-flex;gap:4px;align-items:center;padding:12px 14px}
+  .typing i{width:6px;height:6px;border-radius:50%;background:var(--plum-mid);animation:pulse 1s infinite}
+  .typing i:nth-child(2){animation-delay:.2s}.typing i:nth-child(3){animation-delay:.4s}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;padding:6px 18px 10px}
+  .chips[hidden],.pending[hidden]{display:none}
+  .chips button{font:inherit;font-size:.82rem;color:var(--muted);background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:5px 11px;cursor:pointer;text-align:left}
+  .chips button:hover{background:var(--hover);color:var(--ink)}
+  .composer{display:flex;gap:8px;align-items:flex-end;padding:12px 14px;border-top:1px solid var(--line);background:var(--card)}
+  .composer textarea{flex:1;min-height:44px;max-height:180px;resize:none;font:inherit;font-size:.94rem;line-height:1.45;border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--paper);color:var(--ink)}
+  .composer textarea:focus{outline:2px solid var(--plum);outline-offset:1px}
+  .iconbtn{width:40px;height:40px;border-radius:10px;border:1px solid var(--line);background:var(--card);display:grid;place-items:center;cursor:pointer;color:var(--muted);flex:none}
+  .iconbtn:hover{background:var(--hover);color:var(--ink)}
+  .iconbtn.send{background:var(--plum);color:#fff;border-color:transparent}
+  .iconbtn.send:hover{background:#36193F}
+  .iconbtn[disabled]{opacity:.5;cursor:wait}
+  .iconbtn .ico{width:17px;height:17px}
+  .pending{display:flex;flex-wrap:wrap;gap:6px;padding:0 14px 8px;font-size:.78rem;color:var(--muted)}
+  .pending span{font-family:"DM Mono",Menlo,monospace;background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:2px 8px;display:inline-flex;gap:8px;align-items:center}
+  .pending span b{cursor:pointer;color:var(--faint);font-weight:400}
+  .hint{font-size:.8rem;color:var(--muted);display:flex;flex-wrap:wrap;gap:6px 16px}
+  .hint a{text-decoration:none;font-weight:500}
+</style>
 
-<section class="frame">
-  <div class="wrap">
-    <iframe id="chat" src="https://orbiteval-assistant-199802234044.us-central1.run.app/" title="OrbitEval assistant" allow="clipboard-write"></iframe>
-    <div class="below">
-      <span>If the chat does not load, <a href="https://orbiteval-assistant-199802234044.us-central1.run.app/" rel="noopener">open it in its own tab</a>. The first reply after a quiet period can take a few seconds while the service wakes.</span>
-      <a href="check.html">Prefer no chat? The release check runs in your browser.</a>
+<div class="pagehead">
+  <span class="label">Assistant</span>
+  <h1>Ask which skills the new model broke</h1>
+  <p class="lede">Drop an evaluation log into the chat, ask how many episodes an evaluation needs, or look a model up on the boards. <strong>Every number the assistant gives comes from the open-source orbit-eval statistics or the arena data, not from the model.</strong> Files are processed for the reply and not stored.</p>
+</div>
+
+<div class="chatwrap">
+  <div class="chatbox" id="chatbox">
+    <div class="msgs" id="msgs" aria-live="polite"></div>
+    <div class="chips" id="chips">
+      <button type="button">A task went from 9/10 to 7/10 at 10 episodes. Is that a regression?</button>
+      <button type="button">How many episodes per task to catch a 10 point drop at about 80% success?</button>
+      <button type="button">How does pi0.5 do on RoboChallenge, and where is it weak?</button>
+      <button type="button">Our suite average went up but a customer says one station got worse. How do we check?</button>
+    </div>
+    <div class="pending" id="pending" hidden></div>
+    <div class="composer">
+      <label class="iconbtn" for="cfile" title="Attach an evaluation CSV or eval_info.json files">
+        <svg class="ico" viewBox="0 0 24 24"><path d="M21 12.5 12.6 21a5 5 0 0 1-7.1-7.1L14 5.4a3.3 3.3 0 0 1 4.7 4.7L10.2 18.6a1.6 1.6 0 0 1-2.3-2.3L16 8.2"/></svg>
+        <input type="file" id="cfile" multiple accept=".csv,.tsv,.txt,.json,text/csv,text/plain,application/json" hidden>
+      </label>
+      <textarea id="cin" rows="1" placeholder="Ask a question, or attach your evaluation files…" aria-label="Message"></textarea>
+      <button class="iconbtn send" id="csend" type="button" title="Send" aria-label="Send">
+        <svg class="ico" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </button>
     </div>
   </div>
-</section>
-
-<footer>
-  <div class="wrap">
-    <span>© 2026 OrbitEval · Independent · not affiliated with any benchmark</span>
-    <a href="mailto:rahil@orbiteval.com">rahil@orbiteval.com</a>
-    <a href="about.html">About</a>
+  <div class="hint">
+    <span>Accepts one CSV (version, skill, episode, success) or two or more eval_info.json files, one per version.</span>
+    <a href="check.html">Prefer no chat? The release check runs in your browser.</a>
+    <span>Usage is limited per visitor to keep the assistant free.</span>
   </div>
-</footer>
+</div>
+
+<script>
+(function(){
+  var API = 'https://orbiteval-assistant-199802234044.us-central1.run.app/api/chat';
+  var GREETING = 'Hello. I am the OrbitEval assistant. Drop an evaluation log here, a CSV with version, skill, episode and success, or two or more LeRobot eval_info.json files, one per version, and I will tell you which skills the new model broke and what the run cannot see. I can also size an evaluation, compare two success counts on a task, or look a model or capability up on the Capability Arena with intervals. What are you working on?';
+  var $ = function(id){ return document.getElementById(id); };
+  var msgs = $('msgs'), input = $('cin'), sendBtn = $('csend'), fileIn = $('cfile'), pendingBox = $('pending'), chips = $('chips');
+  var history = [];
+  var pending = [];
+  var busy = false;
+
+  function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+  function md(text){
+    var lines = esc(text).split('\n'), out = [], para = [], list = null;
+    function flushPara(){ if (para.length){ out.push('<p>' + para.join('<br>') + '</p>'); para = []; } }
+    function flushList(){ if (list){ out.push('<ul>' + list.map(function(l){ return '<li>' + l + '</li>'; }).join('') + '</ul>'); list = null; } }
+    lines.forEach(function(l){
+      var m = l.match(/^\s*[-*•]\s+(.*)$/);
+      if (m){ flushPara(); list = list || []; list.push(m[1]); return; }
+      if (!l.trim()){ flushPara(); flushList(); return; }
+      flushList(); para.push(l.replace(/^#+\s*/, ''));
+    });
+    flushPara(); flushList();
+    return out.join('').replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/`([^`]+)`/g, '<code>$1</code>');
+  }
+  function add(role, text, files){
+    var d = document.createElement('div'); d.className = 'msg ' + role;
+    var who = role === 'user' ? 'You' : 'OrbitEval';
+    var fl = (files && files.length) ? '<div class="files">' + files.map(function(f){ return '<span>' + esc(f) + '</span>'; }).join('') + '</div>' : '';
+    d.innerHTML = '<div class="who">' + who + '</div><div class="bub">' + md(text) + fl + '</div>';
+    msgs.appendChild(d); msgs.scrollTop = msgs.scrollHeight; return d;
+  }
+  function typing(on){
+    var t = $('typing');
+    if (on && !t){ t = document.createElement('div'); t.id = 'typing'; t.className = 'msg'; t.innerHTML = '<div class="who">OrbitEval</div><div class="bub typing"><i></i><i></i><i></i></div>'; msgs.appendChild(t); msgs.scrollTop = msgs.scrollHeight; }
+    if (!on && t){ t.remove(); }
+  }
+  function renderPending(){
+    pendingBox.hidden = !pending.length;
+    pendingBox.innerHTML = pending.map(function(f, i){ return '<span>' + esc(f.name) + ' <b data-i="' + i + '" title="Remove">×</b></span>'; }).join('');
+  }
+  pendingBox.addEventListener('click', function(e){ var b = e.target.closest('b[data-i]'); if (b){ pending.splice(Number(b.dataset.i), 1); renderPending(); } });
+  fileIn.addEventListener('change', function(){
+    var list = Array.prototype.slice.call(fileIn.files || []);
+    list.forEach(function(f){
+      var r = new FileReader();
+      r.onload = function(){ pending.push({ name: f.name, text: String(r.result) }); renderPending(); };
+      r.readAsText(f);
+    });
+    fileIn.value = '';
+  });
+  function autosize(){ input.style.height = 'auto'; input.style.height = Math.min(180, input.scrollHeight) + 'px'; }
+  input.addEventListener('input', autosize);
+  input.addEventListener('keydown', function(e){ if (e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); send(); } });
+  sendBtn.addEventListener('click', send);
+  chips.addEventListener('click', function(e){ var b = e.target.closest('button'); if (b){ input.value = b.textContent; autosize(); send(); } });
+
+  async function send(){
+    var text = input.value.trim();
+    if (busy || (!text && !pending.length)) return;
+    busy = true; sendBtn.disabled = true; chips.hidden = true;
+    var files = pending.slice(); pending = []; renderPending();
+    var shown = text || (files.length ? 'Please check these files.' : '');
+    add('user', shown, files.map(function(f){ return f.name; }));
+    history.push({ role: 'user', content: shown });
+    input.value = ''; autosize(); typing(true);
+    try {
+      var r = await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ messages: history, files: files }) });
+      var j = await r.json().catch(function(){ return { reply: 'The assistant returned something I could not read. Try again.' }; });
+      var reply = j.reply || 'No reply.';
+      typing(false); add('assistant', reply);
+      history.push({ role: 'assistant', content: reply });
+    } catch (e) {
+      typing(false); add('assistant', 'I could not reach the assistant just now. The release check on this site runs in your browser without it: check.html');
+    } finally { busy = false; sendBtn.disabled = false; input.focus(); }
+  }
+
+  add('assistant', GREETING);
+  history.push({ role: 'assistant', content: GREETING });
+  input.focus();
+
+  // Hand-off from the release check page: "Explain this in the chat" stores the readout for one hop.
+  try {
+    var handed = sessionStorage.getItem('orbit_readout');
+    if (handed && location.hash === '#readout'){
+      sessionStorage.removeItem('orbit_readout');
+      pending = [{ name: 'release_check_readout.txt', text: handed }];
+      input.value = 'Explain this release check readout and tell me what to do next.';
+      autosize(); send();
+    }
+  } catch (e) {}
+})();
+</script>
+
+      </main>
+    </div>
+  </div>
+</div>
 </body>
 </html>

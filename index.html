@@ -80,6 +80,28 @@
     box-shadow:0 1px 2px rgba(28,27,25,.06),0 0 0 1px var(--line)}
   .nav .ico{color:var(--faint)}
   .nav button[aria-current="true"] .ico{color:var(--plum)}
+  .nav a{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;
+    font-size:.93rem;color:var(--muted);text-decoration:none}
+  .nav a:hover{background:var(--hover)}
+  .nav a[aria-current="page"]{background:var(--card);color:var(--ink);font-weight:500;
+    box-shadow:0 1px 2px rgba(28,27,25,.06),0 0 0 1px var(--line)}
+  .nav a[aria-current="page"] .ico{color:var(--plum)}
+  .nav .sep{height:1px;background:var(--line-soft);margin:6px 8px}
+  .topbar a.tab{text-decoration:none}
+  @media (max-width:900px){
+    .shell{grid-template-columns:1fr}
+    .sidebar{position:static;height:auto;flex-direction:row;flex-wrap:wrap;align-items:center;gap:6px 10px;
+      padding:10px 12px;border-right:0;border-bottom:1px solid var(--line)}
+    .sidebar .brand{padding:4px 4px;margin-right:6px}
+    .sidebar .nav{flex-direction:row;flex-wrap:wrap;gap:2px}
+    .sidebar .nav button,.sidebar .nav a{padding:6px 9px;font-size:.86rem}
+    .sidebar .nav .sep{display:none}
+    .sidebar .promo,.sidebar .legal{display:none}
+    .topbar{padding:8px 12px;position:static}
+    .body{grid-template-columns:1fr}
+    .rail{position:static;max-height:none;border-right:0;border-bottom:1px solid var(--line)}
+    .content{padding:16px 14px 60px}
+  }
   .promo{margin-top:auto;border:1px solid var(--line);background:var(--card);border-radius:12px;
     padding:14px;display:flex;flex-direction:column;gap:8px}
   .promo .thumb{height:78px;border-radius:8px;background:var(--paper);border:1px solid var(--line-soft);
@@ -312,6 +334,8 @@
       h('path',{d:'M4 4h6a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H4zM20 4h-6a3 3 0 0 0-3 3v13a2 2 0 0 1 2-2h7z'})); },
     info: function(){ return h('svg',{className:'ico',viewBox:'0 0 24 24'},
       h('circle',{cx:12,cy:12,r:9}),h('path',{d:'M12 11v5M12 8h.01'})); },
+    chat: function(){ return h('svg',{className:'ico',viewBox:'0 0 24 24'},
+      h('path',{d:'M21 12a8 8 0 0 1-11.6 7.1L4 20l1.1-4.2A8 8 0 1 1 21 12z'})); },
     clock: function(){ return h('svg',{className:'ico',viewBox:'0 0 24 24'},
       h('circle',{cx:12,cy:12,r:9}),h('path',{d:'M12 7v5l3 2'})); },
     db: function(){ return h('svg',{className:'ico',viewBox:'0 0 24 24'},
@@ -535,7 +559,11 @@
       h('nav',{className:'nav'},
         h('button',{'aria-current':page==='overview',onClick:function(){setPage('overview');}}, I.grid(),'Overview'),
         h('button',{'aria-current':page==='board',onClick:function(){setPage('board');}}, I.list(),'Leaderboards'),
-        h('button',{'aria-current':page==='method',onClick:function(){setPage('method');}}, I.book(),'Methodology')),
+        h('button',{'aria-current':page==='method',onClick:function(){setPage('method');}}, I.book(),'Methodology'),
+        h('div',{className:'sep'}),
+        h('a',{href:'https://orbiteval.com/chat.html'}, I.chat(),'Chat'),
+        h('a',{href:'https://orbiteval.com/check.html'}, I.check(),'Release check'),
+        h('a',{href:'https://orbiteval.com/about.html'}, I.info(),'About')),
       h('div',{className:'promo'},
         h('div',{className:'thumb'}, h('i',{style:{width:'78%'}}), h('i',{style:{width:'62%'}}), h('i',{style:{width:'44%'}})),
         h('h4',null,'Check your last release'),
