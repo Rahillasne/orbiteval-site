@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Release check — OrbitEval</title>
+<meta name="description" content="Which skills did the new model break? Drop the evaluation CSV you already have and get a per-skill answer with the noise priced in. Runs in your browser; nothing is uploaded.">
+<link rel="canonical" href="https://orbiteval.com/check.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Release check — which skills did the new model break?">
+<meta property="og:description" content="Drop the evaluation CSV you already have. Per-skill regressions with the measurement noise priced in, computed in your browser. Nothing is uploaded.">
+<meta property="og:url" content="https://orbiteval.com/check.html">
+<meta property="og:site_name" content="OrbitEval">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Release check — which skills did the new model break?">
+<meta name="twitter:description" content="Drop the evaluation CSV you already have. Per-skill regressions with the measurement noise priced in, computed in your browser.">
+<meta name="theme-color" content="#452455">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23452455'/%3E%3Ccircle cx='16' cy='16' r='5.5' fill='%23FBFAF6' stroke='%237A4E8C' stroke-width='3'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=DM+Mono:wght@400;500&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap">
+<style>
+  :root{
+    --paper:#FBFAF6; --card:#FFFFFF; --ink:#1C1B19; --muted:#6A665F; --faint:#A19C93;
+    --line:#E6E2D9; --line-soft:#F1EEE7; --hover:#F6F4EF;
+    --plum:#452455; --plum-mid:#7A4E8C; --plum-pale:#F3ECF5; --plum-soft:#E4D6EA;
+    --red:#8C2F2F; --red-pale:#F8ECEC; --amber:#7A5A12; --amber-pale:#FBF3E1; --green:#2F6B3F; --green-pale:#EAF4EC;
+    --f-ui:Archivo,-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+    --f-mono:"DM Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+    --f-serif:Newsreader,Georgia,"Times New Roman",serif;
+    color-scheme:light;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+  html,body{margin:0;padding:0}
+  body{background:var(--paper);color:var(--ink);font-family:var(--f-ui);font-size:15px;line-height:1.55;
+    -webkit-font-smoothing:antialiased;overflow-x:hidden}
+  h1,h2,h3,h4{margin:0;font-weight:500}
+  p{margin:0}
+  a{color:var(--plum-mid);text-decoration:none}
+  a:hover{text-decoration:underline;text-underline-offset:3px}
+  a:focus-visible,button:focus-visible{outline:2px solid var(--plum);outline-offset:2px;border-radius:6px}
+  code{font-family:var(--f-mono);font-size:.88em;background:var(--paper);border:1px solid var(--line);border-radius:4px;padding:1px 6px;white-space:nowrap}
+  .mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+  .wrap{width:min(100% - 32px, 1060px);margin-inline:auto}
+  @media (min-width:720px){.wrap{width:min(100% - 48px, 1060px)}}
+  .label{font-family:var(--f-mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);display:block}
+  .topbar{border-bottom:1px solid var(--line);background:var(--paper)}
+  .topbar .wrap{display:flex;align-items:center;gap:12px 22px;padding:12px 0;flex-wrap:wrap}
+  .brand{display:flex;align-items:center;gap:9px;color:var(--ink);text-decoration:none}
+  .brand:hover{text-decoration:none}
+  .brand .mark{width:26px;height:26px;border-radius:7px;background:var(--plum);display:grid;place-items:center;flex:none}
+  .brand .mark i{width:9px;height:9px;border-radius:50%;background:var(--paper);display:block;box-shadow:inset 0 0 0 2.5px var(--plum-mid)}
+  .brand .word{font-family:var(--f-serif);font-size:1.28rem;font-weight:500;letter-spacing:-.01em;line-height:1}
+  .brand .word small{display:block;font-family:var(--f-mono);font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--faint);margin-top:4px}
+  .links{display:flex;gap:4px;margin-left:8px;flex-wrap:wrap}
+  .links a{display:inline-flex;align-items:center;padding:7px 13px;border-radius:9px;font-size:.9rem;color:var(--muted);text-decoration:none}
+  .links a:hover{background:var(--hover);color:var(--ink)}
+  .links a[aria-current="page"]{background:var(--card);color:var(--ink);font-weight:500;box-shadow:0 0 0 1px var(--line)}
+  .topbar .btn{margin-left:auto}
+  @media (max-width:600px){.links{order:3;width:100%;margin-left:0;padding-top:4px;border-top:1px solid var(--line-soft)}.links a{padding:7px 11px}}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:9px;padding:9px 14px;font-size:.88rem;font-weight:500;
+    text-decoration:none;white-space:nowrap;border:1px solid transparent;cursor:pointer;font-family:inherit;line-height:1.2}
+  .btn:hover{text-decoration:none}
+  .btn.primary{background:var(--plum);color:#fff}
+  .btn.primary:hover{background:#36193F}
+  .btn.ghost{background:var(--card);color:var(--ink);border-color:var(--line)}
+  .btn.ghost:hover{background:var(--hover)}
+  .btn.big{padding:12px 18px;font-size:.95rem}
+  .btn[disabled]{opacity:.55;cursor:wait}
+  .hero{padding:clamp(36px,6vw,64px) 0 clamp(20px,4vw,36px)}
+  .hero h1{font-family:var(--f-serif);font-size:clamp(2rem,1.5rem + 2.2vw,2.9rem);line-height:1.1;margin:10px 0 16px;letter-spacing:-.01em}
+  .hero .lede{font-size:clamp(1rem,.95rem + .35vw,1.18rem);line-height:1.55;color:var(--muted);max-width:66ch}
+  .hero .lede strong{color:var(--ink);font-weight:500}
+  .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:22px}
+  .step{display:flex;gap:12px;align-items:flex-start;font-size:.92rem;color:var(--muted)}
+  .step b{flex:none;width:26px;height:26px;border-radius:50%;background:var(--plum-pale);color:var(--plum);border:1px solid var(--plum-soft);
+    display:grid;place-items:center;font-family:var(--f-mono);font-size:.78rem;font-weight:500}
+  .step strong{color:var(--ink);font-weight:500}
+  section.block{padding:clamp(28px,5vw,52px) 0;border-top:1px solid var(--line)}
+  .sect-head{display:flex;flex-direction:column;gap:8px;margin-bottom:20px}
+  .sect-head h2{font-family:var(--f-serif);font-size:1.55rem;line-height:1.15}
+  .sect-head .desc{color:var(--muted);max-width:70ch}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 20px 20px;display:flex;flex-direction:column;gap:12px;min-width:0}
+  .card h3{font-size:1.05rem;font-weight:600;line-height:1.25}
+  .card p{font-size:.9rem;color:var(--muted)}
+  .card p strong{color:var(--ink);font-weight:500}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:14px}
+  .pill{display:inline-flex;align-items:center;gap:6px;font-family:var(--f-mono);font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--plum);background:var(--plum-pale);border:1px solid var(--plum-soft);border-radius:6px;padding:3px 8px;white-space:nowrap}
+  .pill.paid{color:var(--ink);background:var(--paper);border-color:var(--line)}
+  /* Input */
+  .io{display:grid;grid-template-columns:1fr;gap:14px}
+  @media (min-width:900px){.io{grid-template-columns:minmax(0,1.35fr) minmax(0,1fr)}}
+  .drop{border:1.5px dashed var(--plum-soft);border-radius:12px;background:var(--card);padding:26px 20px;text-align:center;
+    display:flex;flex-direction:column;align-items:center;gap:10px;cursor:pointer;transition:background .12s,border-color .12s}
+  .drop:hover,.drop.over{background:var(--plum-pale);border-color:var(--plum-mid)}
+  .drop .big-t{font-family:var(--f-serif);font-size:1.25rem;color:var(--ink)}
+  .drop .small-t{font-size:.86rem;color:var(--muted)}
+  .drop input{display:none}
+  .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .status{font-family:var(--f-mono);font-size:.78rem;color:var(--muted);display:flex;align-items:center;gap:8px;min-height:22px}
+  .status .dot{width:8px;height:8px;border-radius:50%;background:var(--faint);flex:none}
+  .status.busy .dot{background:var(--plum-mid);animation:pulse 1s infinite}
+  .status.ok .dot{background:var(--green)}
+  .status.err .dot{background:var(--red)}
+  @keyframes pulse{0%,100%{opacity:.35}50%{opacity:1}}
+  details{border:1px solid var(--line);border-radius:10px;background:var(--card);padding:0}
+  details summary{cursor:pointer;padding:10px 14px;font-size:.9rem;font-weight:500;color:var(--ink);list-style:none;display:flex;align-items:center;gap:8px}
+  details summary::-webkit-details-marker{display:none}
+  details summary::before{content:"";width:7px;height:7px;border-right:1.5px solid var(--muted);border-bottom:1.5px solid var(--muted);transform:rotate(-45deg);transition:transform .12s}
+  details[open] summary::before{transform:rotate(45deg)}
+  details .in{padding:2px 14px 14px;display:flex;flex-direction:column;gap:10px}
+  textarea{width:100%;min-height:150px;font-family:var(--f-mono);font-size:.8rem;line-height:1.5;border:1px solid var(--line);border-radius:8px;padding:10px;background:var(--paper);color:var(--ink);resize:vertical}
+  input.txt{font-family:var(--f-mono);font-size:.82rem;border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:var(--paper);color:var(--ink);width:100%}
+  .fmt table{border-collapse:collapse;width:100%;font-family:var(--f-mono);font-size:.78rem}
+  .fmt th,.fmt td{text-align:left;padding:5px 8px;border-bottom:1px solid var(--line-soft)}
+  .fmt th{color:var(--faint);font-weight:500;letter-spacing:.06em;text-transform:uppercase;font-size:.66rem}
+  .fmt .al{font-size:.82rem;color:var(--muted);line-height:1.6}
+  .fmt .al code{font-size:.78rem}
+  /* Results */
+  #result{display:none;flex-direction:column;gap:14px}
+  #result.show{display:flex}
+  .verdict{border-radius:12px;padding:18px 20px;border:1px solid var(--line);background:var(--card);display:flex;flex-direction:column;gap:6px}
+  .verdict.bad{border-color:#E4C4C4;background:var(--red-pale)}
+  .verdict.warn{border-color:#EAD9AF;background:var(--amber-pale)}
+  .verdict.good{border-color:#C6DECB;background:var(--green-pale)}
+  .verdict.grey{background:var(--paper)}
+  .verdict h3{font-family:var(--f-serif);font-size:1.45rem;line-height:1.15;font-weight:500}
+  .verdict p{font-size:.92rem;color:var(--muted)}
+  .verdict p strong{color:var(--ink);font-weight:500}
+  .tbl{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+  .tbl table{border-collapse:collapse;width:100%;min-width:640px;font-size:.88rem}
+  .tbl th{font-family:var(--f-mono);font-size:.64rem;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);font-weight:500;text-align:left;padding:10px 12px;border-bottom:1px solid var(--line)}
+  .tbl td{padding:9px 12px;border-bottom:1px solid var(--line-soft);vertical-align:middle;font-variant-numeric:tabular-nums}
+  .tbl tr:last-child td{border-bottom:0}
+  .tbl td.num{font-family:var(--f-mono);font-size:.84rem;text-align:right;white-space:nowrap}
+  .tbl th.num{text-align:right}
+  .tbl td.sk{font-family:var(--f-mono);font-size:.86rem;font-weight:500}
+  .bar{display:inline-block;height:8px;border-radius:4px;background:var(--plum-soft);vertical-align:middle;position:relative;width:120px;overflow:hidden}
+  .bar i{position:absolute;left:0;top:0;bottom:0;background:var(--plum);border-radius:4px}
+  .v{display:inline-flex;align-items:center;font-family:var(--f-mono);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;border-radius:6px;padding:3px 8px;border:1px solid var(--line);color:var(--muted);background:var(--paper);white-space:nowrap}
+  .v.REGRESSED{color:var(--red);background:var(--red-pale);border-color:#E4C4C4}
+  .v.SUSPECT{color:var(--amber);background:var(--amber-pale);border-color:#EAD9AF}
+  .v.IMPROVED{color:var(--green);background:var(--green-pale);border-color:#C6DECB}
+  .v.UNDERPOWERED{font-style:italic}
+  .notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+  .note{border:1px solid var(--line);border-radius:12px;background:var(--card);padding:14px 16px;display:flex;flex-direction:column;gap:6px}
+  .note .label{margin-bottom:2px}
+  .note p{font-size:.88rem;color:var(--muted)}
+  .note p strong{color:var(--ink);font-weight:500}
+  pre.readout{margin:0;font-family:var(--f-mono);font-size:.76rem;line-height:1.5;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:12px;overflow-x:auto;white-space:pre}
+  .errbox{border:1px solid #E4C4C4;background:var(--red-pale);border-radius:12px;padding:14px 16px;font-size:.9rem;color:var(--ink);display:none;white-space:pre-wrap;font-family:var(--f-mono);font-size:.8rem}
+  .errbox.show{display:block}
+  /* Pricing */
+  .price{font-family:var(--f-serif);font-size:2rem;line-height:1;letter-spacing:-.01em}
+  .price small{font-family:var(--f-ui);font-size:.82rem;color:var(--muted);letter-spacing:0;margin-left:6px}
+  .card ul{margin:0;padding-left:18px;font-size:.9rem;color:var(--muted);display:flex;flex-direction:column;gap:5px}
+  .card ul strong{color:var(--ink);font-weight:500}
+  .card .foot{margin-top:auto;padding-top:6px;display:flex;flex-wrap:wrap;gap:8px 16px;font-size:.86rem;align-items:center}
+  .faq{display:grid;grid-template-columns:1fr;gap:10px;max-width:78ch}
+  .faq details summary{font-size:.95rem}
+  .faq details .in p{font-size:.9rem;color:var(--muted)}
+  footer{border-top:1px solid var(--line);padding:22px 0 30px;font-size:.82rem;color:var(--muted)}
+  footer .wrap{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center}
+  .sr{position:absolute;left:-9999px}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="index.html" aria-label="OrbitEval Capability Arena">
+      <span class="mark"><i></i></span>
+      <span class="word">OrbitEval<small>Capability Arena</small></span>
+    </a>
+    <nav class="links" aria-label="Site">
+      <a href="index.html">Leaderboards</a>
+      <a href="check.html" aria-current="page">Release check</a>
+      <a href="about.html">About</a>
+    </nav>
+    <a class="btn primary" href="#pricing">Pricing</a>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <span class="label">Release check</span>
+    <h1>Which skills did the new model break?</h1>
+    <p class="lede">A suite average that went up can hide one skill that fell twenty points. Drop the evaluation log you already have, one row per episode, and get the answer per skill with the measurement noise priced in. <strong>Everything runs in your browser. Nothing is uploaded.</strong></p>
+    <div class="steps">
+      <div class="step"><b>1</b><span><strong>Drop a CSV</strong> with version, skill, episode, success. Any column names close to those work.</span></div>
+      <div class="step"><b>2</b><span><strong>Read the calls.</strong> Regressed, suspect, held, improved, or too few episodes to judge.</span></div>
+      <div class="step"><b>3</b><span><strong>Keep the record.</strong> A signed JSON of the run, and the one command that reproduces it.</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="run">
+  <div class="wrap">
+    <div class="io">
+      <div style="display:flex;flex-direction:column;gap:12px;min-width:0">
+        <label class="drop" id="drop" for="file">
+          <input type="file" id="file" accept=".csv,.tsv,.txt,text/csv,text/plain">
+          <span class="big-t">Drop your evaluation CSV here</span>
+          <span class="small-t">or click to choose a file · CSV or TSV · two or more model versions</span>
+        </label>
+        <div class="row">
+          <button class="btn primary big" id="sampleBtn" type="button">Try it on sample data</button>
+          <a class="btn ghost" id="tmplBtn" download="evals_template.csv" href="#">Download a template</a>
+          <span class="status" id="status"><span class="dot"></span><span id="statusText">Loading the statistics engine (about 12 MB, once)…</span></span>
+        </div>
+        <details id="pasteBox">
+          <summary>Paste rows instead</summary>
+          <div class="in">
+            <textarea id="paste" spellcheck="false" placeholder="version,skill,episode,success
+v1,pick_bin,0,1
+v1,pick_bin,1,0
+v2,pick_bin,0,1
+v2,pick_bin,1,1"></textarea>
+            <div class="row"><button class="btn primary" id="pasteBtn" type="button">Run on pasted rows</button></div>
+          </div>
+        </details>
+        <details>
+          <summary>Options</summary>
+          <div class="in">
+            <p style="font-size:.86rem;color:var(--muted)">By default the file order is the version order, oldest first: the second newest is the release you run now, the newest is the one you are about to ship. If your export is newest first, give the order here.</p>
+            <input class="txt" id="order" placeholder="version order, oldest first, comma-separated (optional)">
+          </div>
+        </details>
+        <div class="errbox" id="err"></div>
+      </div>
+
+      <div class="card fmt">
+        <h3>What the file needs</h3>
+        <p>One row per evaluated episode. Four columns; names are matched loosely.</p>
+        <table>
+          <thead><tr><th>version</th><th>skill</th><th>episode</th><th>success</th></tr></thead>
+          <tbody>
+            <tr><td>v12</td><td>pick_bin</td><td>0</td><td>1</td></tr>
+            <tr><td>v12</td><td>pick_bin</td><td>1</td><td>0</td></tr>
+            <tr><td>v13</td><td>pick_bin</td><td>0</td><td>1</td></tr>
+            <tr><td>v13</td><td>pick_bin</td><td>1</td><td>1</td></tr>
+          </tbody>
+        </table>
+        <div class="al">
+          <div><strong>version</strong> also <code>model</code> <code>checkpoint</code> <code>policy</code> <code>run</code> <code>release</code></div>
+          <div><strong>skill</strong> also <code>task</code> <code>sku</code> <code>task_id</code></div>
+          <div><strong>episode</strong> also <code>ep</code> <code>trial</code> <code>rollout</code></div>
+          <div><strong>success</strong> also <code>ok</code> <code>outcome</code> <code>pass</code> <code>passed</code> <code>result</code> · 1/0, true/false, pass/fail</div>
+        </div>
+        <p>LeRobot users: <code>eval_info.json</code> already has per-episode successes per task; flatten one file per version into these rows.</p>
+        <p>Prefer the terminal, or have a large file? <code>pip install orbit-eval</code> then <code>orbit-eval release evals.csv</code>. Same code, exit 1 on a regression so it drops into CI.</p>
+      </div>
+    </div>
+
+    <div id="result" style="margin-top:18px">
+      <div class="verdict" id="verdict"><h3 id="vTitle"></h3><p id="vLine"></p></div>
+      <div class="tbl"><table>
+        <thead><tr><th>Skill</th><th class="num">Episodes</th><th class="num">Last</th><th class="num">This</th><th class="num">Change</th><th class="num">95% interval</th><th></th><th>Call</th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table></div>
+      <div class="notes">
+        <div class="note"><span class="label">What this run could see</span><p id="nRes"></p></div>
+        <div class="note"><span class="label">Suite average</span><p id="nSuite"></p></div>
+        <div class="note"><span class="label">What it cannot tell you</span><p>Whether a skill is down because the new model is worse, or because training is a lottery and you drew a different ticket. Separating those needs the same recipe trained more than once. That is the <a href="#pricing">certified policy</a> engagement.</p></div>
+      </div>
+      <div class="row">
+        <button class="btn ghost" id="dlBtn" type="button">Download the signed record (JSON)</button>
+        <button class="btn ghost" id="copyBtn" type="button">Copy the full readout</button>
+        <span class="status ok mono" id="sha" style="font-size:.72rem"></span>
+      </div>
+      <details id="fullBox"><summary>Full readout, exactly what the command prints</summary><div class="in"><pre class="readout" id="full"></pre></div></details>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="read">
+  <div class="wrap">
+    <div class="sect-head"><h2>How to read the calls</h2><p class="desc">A skill counts as regressed only when the drop clears both an absolute floor and the noise at that skill's episode count. The rule is stated rather than hidden, and it is the same rule the command line tool uses.</p></div>
+    <div class="cards">
+      <div class="card"><span class="v REGRESSED">Regressed</span><p>The whole 95% interval of the change sits at or below <strong>−5 points</strong>. Real, and large enough to matter. Exit code 1 in the CLI.</p></div>
+      <div class="card"><span class="v SUSPECT">Suspect</span><p>The skill fell at least 5 points but the interval still reaches above the floor. At this episode count the drop is not distinguishable from noise. Run more episodes on this skill before deciding.</p></div>
+      <div class="card"><span class="v">Held</span><p>No drop beyond the floor. Not "unchanged": the resolution line says how large a drop could hide here.</p></div>
+      <div class="card"><span class="v IMPROVED">Improved</span><p>The whole interval is above zero. Reported, never used to excuse a regression elsewhere.</p></div>
+      <div class="card"><span class="v UNDERPOWERED">Underpowered</span><p>Fewer than ten episodes on this skill. No call can be made at all, so none is.</p></div>
+      <div class="card"><h3>No multiplicity correction</h3><p>Ten skills tested at once will produce some false flags even when nothing changed. The readout states the expected number instead of silently correcting for it, because on this objective the correction removed the flags that were doing the work.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="pricing">
+  <div class="wrap">
+    <div class="sect-head"><span class="label">Pricing</span><h2>Free to run. Paid when you want it done on your stack, and signed.</h2><p class="desc">Fixed prices, no subscription. Every engagement starts from files you already have and ends with a signed record you can hand to a customer, an auditor or your own release meeting.</p></div>
+    <div class="cards">
+      <article class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><h3>This page and the CLI</h3><span class="pill">Free · Apache-2.0</span></div>
+        <div class="price">$0</div>
+        <ul>
+          <li>The release check, in the browser or as <code>orbit-eval release</code></li>
+          <li>Per-skill calls with the noise priced in, and the signed JSON record</li>
+          <li>Exit codes for CI, power and sizing commands, zero dependencies</li>
+        </ul>
+        <div class="foot"><a href="https://pypi.org/project/orbit-eval/">PyPI</a><a href="https://github.com/Rahillasne/orbit-eval">GitHub</a></div>
+      </article>
+      <article class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><h3>Release audit</h3><span class="pill paid">Paid · 5 business days</span></div>
+        <div class="price">$2,000<small>fixed</small></div>
+        <ul>
+          <li><strong>You send</strong> one CSV of evaluations you already ran, two or more model versions.</li>
+          <li><strong>You get</strong> the per-skill regression history across every version, how many releases broke a skill while the average held, and the smallest regression your episode counts can detect.</li>
+          <li>A private capability board for your team, the signed record, and a 30-minute walkthrough.</li>
+          <li>If the log has no per-skill structure, we say so and refund.</li>
+        </ul>
+        <div class="foot"><a class="btn primary" href="mailto:rahil@orbiteval.com?subject=Release%20audit&body=Hi%20Rahil%2C%0A%0AWe%20have%20evaluation%20logs%20for%20%5Bnumber%5D%20model%20versions%20across%20%5Bnumber%5D%20skills%2C%20about%20%5Bnumber%5D%20episodes%20per%20skill.%20We%27d%20like%20a%20release%20audit.%0A%0ARobot%20%2F%20setting%3A%20%0AWhen%20we%20need%20it%20by%3A%20%0A">Start a release audit</a></div>
+      </article>
+      <article class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><h3>Certified policy</h3><span class="pill paid">Paid · per policy</span></div>
+        <div class="price">$25,000<small>fixed</small></div>
+        <ul>
+          <li><strong>You send</strong> your demonstrations in LeRobot format and your training recipe, or the evaluations of retrains you already have.</li>
+          <li><strong>We train the same recipe three times</strong> on rented compute or yours, evaluate every retrain per skill with intervals, and select per skill with an abstention rule that refuses to swap on thin evidence.</li>
+          <li><strong>You get</strong> one checkpoint set, a signed capability record per skill, the release check wired into your CI, and the episode budget your next evaluation needs.</li>
+          <li>Real-robot evaluation stays on your robot; we size it and refuse to over-read it.</li>
+        </ul>
+        <div class="foot"><a class="btn primary" href="mailto:rahil@orbiteval.com?subject=Certified%20policy&body=Hi%20Rahil%2C%0A%0AWe%20want%20a%20certified%20policy%20for%20%5Brobot%20%2F%20task%20family%5D.%20We%20have%20%5Bnumber%5D%20demonstrations%20across%20%5Bnumber%5D%20skills%20and%20train%20with%20%5Brecipe%20%2F%20base%20model%5D.%0A%0AEvaluation%20today%3A%20%5Bsim%20%2F%20real%2C%20episodes%20per%20skill%5D%0AWhen%20we%20need%20it%20by%3A%20%0A">Ask about a certified policy</a></div>
+      </article>
+    </div>
+    <p style="margin-top:14px;font-size:.86rem;color:var(--muted)">Not sure which? Run the check above on your last two versions and email the readout to <a href="mailto:rahil@orbiteval.com">rahil@orbiteval.com</a>. The reply says which one fits, or that neither does.</p>
+  </div>
+</section>
+
+<section class="block" id="faq">
+  <div class="wrap">
+    <div class="sect-head"><h2>Questions people ask first</h2></div>
+    <div class="faq">
+      <details><summary>Does my data leave my computer?</summary><div class="in"><p>No. The page loads a Python runtime into your browser (Pyodide) and runs the same open-source package you would install with pip. There is no server behind this page; it is static files. You can confirm it in your browser's network panel: after the runtime loads, nothing is sent.</p></div></details>
+      <details><summary>Why 5 points and 2 standard errors?</summary><div class="in"><p>On a banked battery of identical-recipe retrains, an unpriced rule (any drop with p ≤ 0.05) fired on 81% of releases where nothing had changed; the priced rule fired on 2.5%. A rule that always rings is a rule people switch off. Both thresholds are printed in every readout and can be changed in the CLI.</p></div></details>
+      <details><summary>My two versions were not evaluated on the same episodes.</summary><div class="in"><p>Then the comparison is unpaired and the intervals are wider; the readout says which it used. If you can, evaluate both versions with the same evaluation seed and the same initial states. The interval roughly halves.</p></div></details>
+      <details><summary>What does "smallest drop this file can call real" mean?</summary><div class="in"><p>With 100 episodes per skill, a real drop of 8 points usually cannot be separated from noise; with 10 episodes, a drop of 30 points often cannot. The readout computes that number for your file so you know what "held" is worth. More episodes on the skills you care about is the fix, and the CLI's <code>power</code> command sizes it.</p></div></details>
+      <details><summary>Where does the method come from?</summary><div class="in"><p>From a corpus of 701 controlled retrainings of robot policies across four policy classes, every wave pre-registered before scoring, and from the public benchmarks re-cut on the <a href="index.html">Capability Arena</a>. The statistics are ordinary: Wilson and Newcombe intervals, paired comparison when episodes align, a stated floor. What is unusual is refusing to print a number the data cannot support.</p></div></details>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 OrbitEval · Independent · not affiliated with any benchmark</span>
+    <a href="mailto:rahil@orbiteval.com">rahil@orbiteval.com</a>
+    <a href="about.html">About</a>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/pyodide/v0.28.3/full/pyodide.js"></script>
+<script>
+(function(){
+  var WHEEL = new URL('wheels/orbit_eval-0.8.3-py3-none-any.whl', location.href).href;
+  var SAMPLE = new URL('sample/release_log.csv', location.href).href;
+  var $ = function(id){ return document.getElementById(id); };
+  var status = $('status'), statusText = $('statusText');
+  var pyodide = null, ready = null, lastRecord = null, lastText = '';
+
+  function setStatus(kind, text){ status.className = 'status ' + kind; statusText.textContent = text; }
+
+  // Template download
+  $('tmplBtn').href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(
+    'version,skill,episode,success\nv12,pick_bin,0,1\nv12,pick_bin,1,0\nv12,place_shelf,0,1\nv12,place_shelf,1,1\nv13,pick_bin,0,1\nv13,pick_bin,1,1\nv13,place_shelf,0,0\nv13,place_shelf,1,1\n');
+
+  var GLUE = [
+    'import io, json, contextlib',
+    'from orbit_eval import cli',
+    'def run_release(csv_text, order):',
+    '    with open("evals.csv", "w") as f:',
+    '        f.write(csv_text)',
+    '    args = ["release", "evals.csv"]',
+    '    if order:',
+    '        args += ["--order", order]',
+    '    out_json = io.StringIO()',
+    '    with contextlib.redirect_stdout(out_json), contextlib.redirect_stderr(io.StringIO()):',
+    '        code_json = cli.main(args + ["--json"])',
+    '    out_txt = io.StringIO()',
+    '    with contextlib.redirect_stdout(out_txt), contextlib.redirect_stderr(io.StringIO()):',
+    '        code = cli.main(args)',
+    '    rec = None',
+    '    try:',
+    '        rec = json.loads(out_json.getvalue())',
+    '    except Exception:',
+    '        rec = None',
+    '    return json.dumps({"code": code, "text": out_txt.getvalue(), "record": rec, "json_text": out_json.getvalue()})'
+  ].join('\n');
+
+  function boot(){
+    if (ready) return ready;
+    setStatus('busy', 'Loading the statistics engine (about 12 MB, once)…');
+    ready = (async function(){
+      pyodide = await loadPyodide({ indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.28.3/full/' });
+      setStatus('busy', 'Installing orbit-eval 0.8.3 into the browser…');
+      await pyodide.loadPackage('micropip');
+      var micropip = pyodide.pyimport('micropip');
+      await micropip.install(WHEEL);
+      pyodide.runPython(GLUE);
+      setStatus('ok', 'Ready. Drop a file, paste rows, or try the sample.');
+    })().catch(function(e){
+      setStatus('err', 'Could not load the engine: ' + (e && e.message ? e.message : e) + '. The CLI works offline: pip install orbit-eval.');
+      throw e;
+    });
+    return ready;
+  }
+
+  function fmt(x, d){ return (x === null || x === undefined || isNaN(x)) ? '—' : Number(x).toFixed(d === undefined ? 1 : d); }
+  function signed(x){ if (x === null || x === undefined || isNaN(x)) return '—'; var s = Number(x).toFixed(1); return (x > 0 ? '+' : '') + s; }
+  function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+
+  function render(res){
+    var err = $('err'); err.className = 'errbox'; err.textContent = '';
+    var result = $('result');
+    var rec = res.record, latest = rec && rec.latest;
+    if (!latest){
+      result.className = '';
+      err.textContent = (res.text || '').trim() || 'The file could not be read. It needs version, skill, episode and success columns and at least two versions.';
+      err.className = 'errbox show';
+      setStatus('err', 'Could not run on this file.');
+      return;
+    }
+    lastRecord = res.json_text; lastText = res.text;
+    var v = $('verdict'), t = $('vTitle'), l = $('vLine');
+    var inc = latest.incumbent, cand = latest.candidate;
+    var cls = 'grey', title, line;
+    if (latest.all_underpowered){
+      title = 'Too few episodes per skill to judge';
+      line = 'Every skill has fewer than ' + latest.min_episodes + ' episodes. No call can be made; run more episodes and come back.';
+    } else if (latest.n_regressed > 0){
+      cls = 'bad';
+      title = latest.n_regressed + (latest.n_regressed === 1 ? ' skill regressed' : ' skills regressed') + ' beyond your measurement noise';
+      line = inc + ' → ' + cand + '. ' + (latest.n_suspect ? latest.n_suspect + ' more suspect. ' : '') + 'Exit code 1 in the CLI.';
+    } else if (latest.n_suspect > 0){
+      cls = 'warn';
+      title = 'No skill regressed beyond your measurement noise, ' + latest.n_suspect + ' suspect';
+      line = inc + ' → ' + cand + '. The suspect skills fell at least 5 points, but at their episode counts the drop is not separable from noise.';
+    } else {
+      cls = 'good';
+      title = 'No skill regressed beyond your measurement noise';
+      line = inc + ' → ' + cand + '. Read the resolution line before calling it clean.';
+    }
+    v.className = 'verdict ' + cls; t.textContent = title; l.textContent = line;
+
+    var rows = (latest.rows || []).slice().sort(function(a, b){ return (a.delta_pp || 0) - (b.delta_pp || 0); });
+    var tb = $('rows'); tb.innerHTML = '';
+    rows.forEach(function(r){
+      var verdict = String(r.verdict || 'held').toUpperCase();
+      var label = verdict === 'HELD' ? 'held' : verdict.toLowerCase();
+      var n = (r.n_incumbent === r.n_candidate) ? r.n_candidate : (r.n_incumbent + ' / ' + r.n_candidate);
+      var ci = (r.ci95 && r.ci95.length === 2) ? '[' + signed(r.ci95[0]) + ', ' + signed(r.ci95[1]) + ']' : '—';
+      var pct = Math.max(0, Math.min(100, r.candidate_pct || 0));
+      var tr = document.createElement('tr');
+      tr.innerHTML = '<td class="sk">' + esc(r.skill) + '</td>' +
+        '<td class="num">' + esc(n) + '</td>' +
+        '<td class="num">' + fmt(r.incumbent_pct) + '%</td>' +
+        '<td class="num">' + fmt(r.candidate_pct) + '%</td>' +
+        '<td class="num">' + signed(r.delta_pp) + ' pp</td>' +
+        '<td class="num">' + ci + '</td>' +
+        '<td><span class="bar"><i style="width:' + pct + '%"></i></span></td>' +
+        '<td><span class="v ' + esc(verdict) + '">' + esc(label) + '</span></td>';
+      tb.appendChild(tr);
+    });
+
+    var res1 = latest.median_resolvable_drop_pp;
+    $('nRes').innerHTML = 'Smallest drop this file can call real: <strong>' + fmt(res1) + ' pp</strong> (median across skills). Anything smaller is invisible here, however real. Comparison: <strong>' + (latest.paired ? 'paired' : 'unpaired') + '</strong> episodes. Expected false flags across ' + latest.n_skills + ' skills under no change: ' + fmt(latest.expected_false_flags, 2) + '.';
+    $('nSuite').innerHTML = '<strong>' + fmt(latest.suite_incumbent_pct) + '% → ' + fmt(latest.suite_candidate_pct) + '%</strong> (' + signed(latest.suite_delta_pp) + ' pp). ' + (latest.n_improved ? latest.n_improved + ' skill' + (latest.n_improved === 1 ? '' : 's') + ' improved. ' : '') + 'An average that holds is consistent with one skill dropping twenty points.';
+    $('full').textContent = res.text;
+    $('sha').textContent = rec.record_sha256 ? 'record sha256 ' + rec.record_sha256.slice(0, 16) + '…' : '';
+    result.className = 'show';
+    setStatus('ok', 'Done. Nothing was uploaded.');
+    result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  async function run(text, label){
+    if (!text || !text.trim()){ return; }
+    try {
+      await boot();
+    } catch (e) { return; }
+    setStatus('busy', 'Running the check on ' + label + '…');
+    try {
+      var order = ($('order').value || '').trim();
+      var out = pyodide.globals.get('run_release')(text, order);
+      render(JSON.parse(out));
+    } catch (e) {
+      var err = $('err'); err.textContent = 'The check failed: ' + (e && e.message ? e.message : e); err.className = 'errbox show';
+      setStatus('err', 'Failed.');
+    }
+  }
+
+  function readFile(f){
+    if (!f) return;
+    var reader = new FileReader();
+    reader.onload = function(){ run(String(reader.result), f.name); };
+    reader.readAsText(f);
+  }
+
+  var drop = $('drop');
+  $('file').addEventListener('change', function(e){ readFile(e.target.files[0]); });
+  ['dragenter','dragover'].forEach(function(ev){ drop.addEventListener(ev, function(e){ e.preventDefault(); drop.classList.add('over'); }); });
+  ['dragleave','drop'].forEach(function(ev){ drop.addEventListener(ev, function(e){ e.preventDefault(); drop.classList.remove('over'); }); });
+  drop.addEventListener('drop', function(e){ var f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]; readFile(f); });
+  $('pasteBtn').addEventListener('click', function(){ run($('paste').value, 'pasted rows'); });
+  $('sampleBtn').addEventListener('click', async function(){
+    var b = $('sampleBtn'); b.disabled = true;
+    try {
+      var r = await fetch(SAMPLE); var text = await r.text();
+      await run(text, 'the sample (two retrains of the same recipe, 10 skills, 100 episodes each)');
+    } finally { b.disabled = false; }
+  });
+  $('dlBtn').addEventListener('click', function(){
+    if (!lastRecord) return;
+    var blob = new Blob([lastRecord], { type: 'application/json' });
+    var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'release_check.json'; a.click();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); }, 2000);
+  });
+  $('copyBtn').addEventListener('click', function(){
+    if (!lastText) return;
+    navigator.clipboard.writeText(lastText).then(function(){ setStatus('ok', 'Readout copied.'); });
+  });
+
+  boot();
+  if (/[?&]sample=1/.test(location.search)) { $('sampleBtn').click(); }
+})();
+</script>
+</body>
+</html>
