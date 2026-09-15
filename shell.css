@@ -265,6 +265,43 @@
   .prose th{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);font-weight:600}
   .prose ul{margin:0;padding-left:18px}
 
+  /* the job band: what the site does for a robotics team, above the boards */
+  .jb{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:22px;align-items:stretch}
+  .jb-pitch{display:flex;flex-direction:column;gap:14px;justify-content:center;padding:6px 0}
+  .jb-kicker{font-family:"DM Mono",Menlo,monospace;font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;color:var(--faint)}
+  .jb-h1{font-family:Newsreader,Georgia,serif;font-size:clamp(2rem,1.3rem + 2.2vw,3rem);line-height:1.06;letter-spacing:-.012em;font-weight:500;max-width:20ch}
+  .jb-h1 em{font-style:italic;color:var(--plum);background:linear-gradient(transparent 12%,var(--plum-soft) 12%,var(--plum-soft) 88%,transparent 88%);padding:0 .12em}
+  .jb-lede{color:var(--muted);font-size:1rem;max-width:54ch;line-height:1.55}
+  .jb-lede strong{color:var(--ink);font-weight:500}
+  .jb-ctas{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+  .jb-ctas .btn{padding:11px 16px;font-size:.92rem}
+  .jb-free{font-size:.8rem;color:var(--faint)}
+  .jb-proof{display:flex;flex-direction:column}
+  .jb-ph{padding:13px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+  .jb-ph h3{font-family:Newsreader,Georgia,serif;font-size:1.08rem}
+  .jb-ph .chip{font-size:.78rem;padding:4px 9px}
+  .jb-stats{display:grid;grid-template-columns:repeat(3,1fr);flex:1}
+  .jb-stat{padding:16px 18px;border-right:1px solid var(--line-soft);display:flex;flex-direction:column;gap:5px;justify-content:center}
+  .jb-stat:last-child{border-right:0}
+  .jb-stat b{font-family:Newsreader,Georgia,serif;font-size:2rem;line-height:1;font-weight:500;letter-spacing:-.01em;white-space:nowrap}
+  .jb-stat b small{font-family:"DM Mono",Menlo,monospace;font-size:.68rem;color:var(--faint);letter-spacing:.04em;margin-left:5px}
+  .jb-stat span{font-size:.8rem;color:var(--muted);line-height:1.4}
+  .jb-pf{padding:11px 18px;border-top:1px solid var(--line);font-size:.82rem;color:var(--muted);display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+  .jb-pf a{font-weight:500;text-decoration:none;white-space:nowrap}
+  .jb-tiers{display:flex;flex-wrap:wrap;border:1px solid var(--line);border-radius:12px;background:var(--card);overflow:hidden}
+  .jb-tier{flex:1 1 190px;padding:13px 18px;border-right:1px solid var(--line-soft);display:flex;flex-direction:column;gap:3px;min-width:0;text-decoration:none;color:inherit}
+  .jb-tier:last-child{border-right:0}
+  .jb-tier .tag{font-family:"DM Mono",Menlo,monospace;font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--plum)}
+  .jb-tier b{font-family:Newsreader,Georgia,serif;font-size:1.35rem;font-weight:500;line-height:1.1}
+  .jb-tier b small{font-family:Archivo,sans-serif;font-size:.76rem;color:var(--muted);margin-left:6px;font-weight:400}
+  .jb-tier span{font-size:.8rem;color:var(--muted);line-height:1.4}
+  .jb-tier.link{justify-content:center;font-weight:500;color:var(--plum-mid);flex:0 1 auto;background:var(--paper)}
+  .jb-tier.link:hover{background:var(--hover)}
+  .jb-h2{font-family:Newsreader,Georgia,serif;font-size:1.6rem;line-height:1.12;margin-top:8px}
+  @media (max-width:980px){.jb{grid-template-columns:1fr}}
+  @media (max-width:560px){.jb-stats{grid-template-columns:1fr}.jb-stat{border-right:0;border-bottom:1px solid var(--line-soft)}.jb-stat:last-child{border-bottom:0}
+    .jb-tier{flex-basis:100%;border-right:0;border-bottom:1px solid var(--line-soft)}.jb-tier:last-child{border-bottom:0}}
+
   @media (max-width:1080px){
     .shell{grid-template-columns:1fr}
     .sidebar{position:static;height:auto;flex-direction:row;align-items:center;flex-wrap:wrap;

@@ -1391,14 +1391,610 @@
         "name": "Table 30",
         "version": "v1.0",
         "tasks": 30,
+        "basis_tasks": 30,
         "episodes": 25627,
         "updated": "2025-09-24",
         "submissions": 507,
         "complete": 22,
+        "core": null,
         "trials_per_task": 10
       },
       "cells_total": 88,
       "cells_resolved": 53
+    },
+    {
+      "key": "robochallenge-v2",
+      "label": "RoboChallenge Table 30 V2",
+      "blurb": "The live v2 board: 48 submissions attempt different task subsets and 1 cover all 30, so models are compared on the largest common core, 8 models on the same 20 tasks at 10 rollouts each, pooled by the benchmark's own task tags.",
+      "domain": "manipulation",
+      "kind": "binomial",
+      "unit": "rollouts",
+      "capabilities": [
+        "precision",
+        "long_horizon",
+        "deformable",
+        "perception"
+      ],
+      "column_rate": {
+        "precision": 16.25,
+        "long_horizon": 25.104166666666668,
+        "deformable": 18.75,
+        "perception": 38.75
+      },
+      "rows": [
+        {
+          "model": "my16",
+          "org": "Tymtbo",
+          "overall": 50.689655172413794,
+          "pooled_ci": [
+            44.96426319104119,
+            56.39701510372633
+          ],
+          "cells": {
+            "precision": {
+              "k": 46,
+              "n": 110,
+              "rate": 41.81818181818181,
+              "ci": [
+                33.02910608842126,
+                51.15943103510489
+              ],
+              "width": 18.13032494668363,
+              "verdict": "above"
+            },
+            "long_horizon": {
+              "k": 74,
+              "n": 120,
+              "rate": 61.66666666666667,
+              "ci": [
+                52.73408053448703,
+                69.87547224846496
+              ],
+              "width": 17.141391713977928,
+              "verdict": "above"
+            },
+            "deformable": {
+              "k": 8,
+              "n": 30,
+              "rate": 26.666666666666668,
+              "ci": [
+                14.182663315615379,
+                44.44796170326503
+              ],
+              "width": 30.265298387649654,
+              "verdict": "undetermined"
+            },
+            "perception": {
+              "k": 19,
+              "n": 30,
+              "rate": 63.33333333333333,
+              "ci": [
+                45.51356364726752,
+                78.12607919908653
+              ],
+              "width": 32.61251555181901,
+              "verdict": "above"
+            }
+          },
+          "spread": 21.515151515151516,
+          "resolved": 3,
+          "n": 290,
+          "order": 1,
+          "best_rank": 1,
+          "worst_rank": 1
+        },
+        {
+          "model": "JV0",
+          "org": "JIIOV",
+          "overall": 26.551724137931036,
+          "pooled_ci": [
+            21.799700787504523,
+            31.91683719039923
+          ],
+          "cells": {
+            "precision": {
+              "k": 25,
+              "n": 110,
+              "rate": 22.727272727272727,
+              "ci": [
+                15.894628520813066,
+                31.400495224274106
+              ],
+              "width": 15.505866703461038,
+              "verdict": "undetermined"
+            },
+            "long_horizon": {
+              "k": 37,
+              "n": 120,
+              "rate": 30.833333333333336,
+              "ci": [
+                23.27273698595476,
+                39.582997727766994
+              ],
+              "width": 16.310260741812233,
+              "verdict": "undetermined"
+            },
+            "deformable": {
+              "k": 1,
+              "n": 30,
+              "rate": 3.3333333333333335,
+              "ci": [
+                0.5908590377996403,
+                16.670390999961203
+              ],
+              "width": 16.07953196216156,
+              "verdict": "below"
+            },
+            "perception": {
+              "k": 14,
+              "n": 30,
+              "rate": 46.666666666666664,
+              "ci": [
+                30.232388901490246,
+                63.857700386921245
+              ],
+              "width": 33.625311485431,
+              "verdict": "undetermined"
+            }
+          },
+          "spread": null,
+          "resolved": 1,
+          "n": 290,
+          "order": 2,
+          "best_rank": 2,
+          "worst_rank": 5
+        },
+        {
+          "model": "MagicBot",
+          "org": "MagicBot",
+          "overall": 22.413793103448278,
+          "pooled_ci": [
+            17.99275705667985,
+            27.5561111526187
+          ],
+          "cells": {
+            "precision": {
+              "k": 9,
+              "n": 110,
+              "rate": 8.181818181818182,
+              "ci": [
+                4.3640646266911025,
+                14.821791782442567
+              ],
+              "width": 10.457727155751465,
+              "verdict": "below"
+            },
+            "long_horizon": {
+              "k": 30,
+              "n": 120,
+              "rate": 25.0,
+              "ci": [
+                18.10982165419291,
+                33.441136668052856
+              ],
+              "width": 15.331315013859948,
+              "verdict": "undetermined"
+            },
+            "deformable": {
+              "k": 10,
+              "n": 30,
+              "rate": 33.33333333333333,
+              "ci": [
+                19.230498078869633,
+                51.2199483631878
+              ],
+              "width": 31.98945028431816,
+              "verdict": "above"
+            },
+            "perception": {
+              "k": 16,
+              "n": 30,
+              "rate": 53.333333333333336,
+              "ci": [
+                36.142299613078755,
+                69.76761109850975
+              ],
+              "width": 33.625311485431,
+              "verdict": "undetermined"
+            }
+          },
+          "spread": 25.15151515151515,
+          "resolved": 2,
+          "n": 290,
+          "order": 3,
+          "best_rank": 2,
+          "worst_rank": 7
+        },
+        {
+          "model": "Baseline Model",
+          "org": "RoboChallenge",
+          "overall": 20.689655172413794,
+          "pooled_ci": [
+            16.425390771119876,
+            25.720281701259832
+          ],
+          "cells": {
+            "precision": {
+              "k": 18,
+              "n": 110,
+              "rate": 16.363636363636363,
+              "ci": [
+                10.608807655501343,
+                24.388511630106176
+              ],
+              "width": 13.779703974604834,
+              "verdict": "undetermined"
+            },
+            "long_horizon": {
+              "k": 28,
+              "n": 120,
+              "rate": 23.333333333333332,
+              "ci": [
+                16.66557513067665,
+                31.655447079718833
+              ],
+              "width": 14.989871949042186,
+              "verdict": "undetermined"
+            },
+            "deformable": {
+              "k": 4,
+              "n": 30,
+              "rate": 13.333333333333334,
+              "ci": [
+                5.30965548201261,
+                29.681326690513764
+              ],
+              "width": 24.371671208501155,
+              "verdict": "undetermined"
+            },
+            "perception": {
+              "k": 10,
+              "n": 30,
+              "rate": 33.33333333333333,
+              "ci": [
+                19.230498078869633,
+                51.2199483631878
+              ],
+              "width": 31.98945028431816,
+              "verdict": "undetermined"
+            }
+          },
+          "spread": null,
+          "resolved": 0,
+          "n": 290,
+          "order": 4,
+          "best_rank": 2,
+          "worst_rank": 7
+        },
+        {
+          "model": "holobrain",
+          "org": "HRL",
+          "overall": 20.344827586206897,
+          "pooled_ci": [
+            16.113381770187495,
+            25.35165155480844
+          ],
+          "cells": {
+            "precision": {
+              "k": 14,
+              "n": 110,
+              "rate": 12.727272727272727,
+              "ci": [
+                7.734981387166914,
+                20.235021064452226
+              ],
+              "width": 12.500039677285313,
+              "verdict": "undetermined"
+            },
+            "long_horizon": {
+              "k": 25,
+              "n": 120,
+              "rate": 20.833333333333336,
+              "ci": [
+                14.528439605780108,
+                28.94767843683995
+              ],
+              "width": 14.419238831059843,
+              "verdict": "undetermined"
+            },
+            "deformable": {
+              "k": 9,
+              "n": 30,
+              "rate": 30.0,
+              "ci": [
+                16.66474826383909,
+                47.87578746662984
+              ],
+              "width": 31.211039202790747,
+              "verdict": "undetermined"
+            },
+            "perception": {
+              "k": 11,
+              "n": 30,
+              "rate": 36.666666666666664,
+              "ci": [
+                21.87392080091347,
+                54.48643635273247
+              ],
+              "width": 32.612515551819,
+              "verdict": "undetermined"
+            }
+          },
+          "spread": null,
+          "resolved": 0,
+          "n": 290,
+          "order": 5,
+          "best_rank": 2,
+          "worst_rank": 7
+        },
+        {
+          "model": "debuggers_vla",
+          "org": "debuggers",
+          "overall": 15.862068965517242,
+          "pooled_ci": [
+            12.10755983170166,
+            20.5091645773053
+          ],
+          "cells": {
+            "precision": {
+              "k": 9,
+              "n": 110,
+              "rate": 8.181818181818182,
+              "ci": [
+                4.3640646266911025,
+                14.821791782442567
+              ],
+              "width": 10.457727155751465,
+              "verdict": "below"
+            },
+            "long_horizon": {
+              "k": 19,
+              "n": 120,
+              "rate": 15.833333333333332,
+              "ci": [
+                10.376977357479648,
+                23.40933234958956
+              ],
+              "width": 13.032354992109912,
+              "verdict": "below"
+            },
+            "deformable": {
+              "k": 8,
+              "n": 30,
+              "rate": 26.666666666666668,
+              "ci": [
+                14.182663315615379,
+                44.44796170326503
+              ],
+              "width": 30.265298387649654,
+              "verdict": "undetermined"
+            },
+            "perception": {
+              "k": 10,
+              "n": 30,
+              "rate": 33.33333333333333,
+              "ci": [
+                19.230498078869633,
+                51.2199483631878
+              ],
+              "width": 31.98945028431816,
+              "verdict": "undetermined"
+            }
+          },
+          "spread": 7.6515151515151505,
+          "resolved": 2,
+          "n": 290,
+          "order": 6,
+          "best_rank": 3,
+          "worst_rank": 7
+        },
+        {
+          "model": "hcp-e",
+          "org": "HCP-E",
+          "overall": 15.172413793103448,
+          "pooled_ci": [
+            11.500608494084815,
+            19.7548376201546
+          ],
+          "cells": {
+            "precision": {
+              "k": 14,
+              "n": 110,
+              "rate": 12.727272727272727,
+              "ci": [
+                7.734981387166914,
+                20.235021064452226
+              ],
+              "width": 12.500039677285313,
+              "verdict": "undetermined"
+            },
+            "long_horizon": {
+              "k": 16,
+              "n": 120,
+              "rate": 13.333333333333334,
+              "ci": [
+                8.376608960983912,
+                20.564796578309874
+              ],
+              "width": 12.188187617325962,
+              "verdict": "below"
+            },
+            "deformable": {
+              "k": 4,
+              "n": 30,
+              "rate": 13.333333333333334,
+              "ci": [
+                5.30965548201261,
+                29.681326690513764
+              ],
+              "width": 24.371671208501155,
+              "verdict": "undetermined"
+            },
+            "perception": {
+              "k": 10,
+              "n": 30,
+              "rate": 33.33333333333333,
+              "ci": [
+                19.230498078869633,
+                51.2199483631878
+              ],
+              "width": 31.98945028431816,
+              "verdict": "undetermined"
+            }
+          },
+          "spread": null,
+          "resolved": 1,
+          "n": 290,
+          "order": 7,
+          "best_rank": 3,
+          "worst_rank": 8
+        },
+        {
+          "model": "metrics",
+          "org": "Metrics",
+          "overall": 8.275862068965518,
+          "pooled_ci": [
+            5.624241895398254,
+            12.018421271165804
+          ],
+          "cells": {
+            "precision": {
+              "k": 8,
+              "n": 110,
+              "rate": 7.2727272727272725,
+              "ci": [
+                3.731042069598997,
+                13.697985131037576
+              ],
+              "width": 9.96694306143858,
+              "verdict": "below"
+            },
+            "long_horizon": {
+              "k": 12,
+              "n": 120,
+              "rate": 10.0,
+              "ci": [
+                5.813359201236574,
+                16.668174114356642
+              ],
+              "width": 10.854814913120068,
+              "verdict": "below"
+            },
+            "deformable": {
+              "k": 1,
+              "n": 30,
+              "rate": 3.3333333333333335,
+              "ci": [
+                0.5908590377996403,
+                16.670390999961203
+              ],
+              "width": 16.07953196216156,
+              "verdict": "below"
+            },
+            "perception": {
+              "k": 3,
+              "n": 30,
+              "rate": 10.0,
+              "ci": [
+                3.4599888732413526,
+                25.621082587696513
+              ],
+              "width": 22.16109371445516,
+              "verdict": "below"
+            }
+          },
+          "spread": 6.666666666666666,
+          "resolved": 4,
+          "n": 290,
+          "order": 8,
+          "best_rank": 7,
+          "worst_rank": 8
+        }
+      ],
+      "meta": {
+        "orgs": {
+          "Baseline Model": "RoboChallenge",
+          "JV0": "JIIOV",
+          "MagicBot": "MagicBot",
+          "debuggers_vla": "debuggers",
+          "hcp-e": "HCP-E",
+          "holobrain": "HRL",
+          "metrics": "Metrics",
+          "my16": "Tymtbo"
+        },
+        "name": "Table 30 V2",
+        "version": "v2.0",
+        "tasks": 30,
+        "basis_tasks": 20,
+        "episodes": 32980,
+        "updated": "2026-05-28",
+        "submissions": 48,
+        "complete": 1,
+        "core": {
+          "tasks_available": 30,
+          "models_available": 48,
+          "core_tasks": 20,
+          "core_models": 8,
+          "cells": 160,
+          "frontier": [
+            {
+              "tasks": 20,
+              "models": 8,
+              "cells": 160
+            },
+            {
+              "tasks": 19,
+              "models": 8,
+              "cells": 152
+            },
+            {
+              "tasks": 18,
+              "models": 8,
+              "cells": 144
+            },
+            {
+              "tasks": 17,
+              "models": 8,
+              "cells": 136
+            },
+            {
+              "tasks": 16,
+              "models": 8,
+              "cells": 128
+            },
+            {
+              "tasks": 7,
+              "models": 18,
+              "cells": 126
+            }
+          ],
+          "tasks": [
+            "2b13",
+            "2945",
+            "3809",
+            "6ab4",
+            "8fc9",
+            "e358",
+            "3232",
+            "bf87",
+            "43ea",
+            "44df",
+            "6dcb",
+            "cb19",
+            "f5b4",
+            "3624",
+            "9d9d",
+            "bec8",
+            "d96c",
+            "90e1",
+            "2acf",
+            "ae1f"
+          ]
+        },
+        "trials_per_task": 10
+      },
+      "cells_total": 32,
+      "cells_resolved": 13
     },
     {
       "key": "robodojo",
@@ -4318,7 +4914,7 @@
     {
       "key": "wbench-navi",
       "label": "WBench \u00b7 Navigation split",
-      "blurb": "35 video world models scored on the 158 navigation cases. Five published dimensions.",
+      "blurb": "37 video world models scored on the 158 navigation cases. Five published dimensions.",
       "domain": "world_model",
       "kind": "mean",
       "unit": "cases",
@@ -4330,13 +4926,167 @@
         "physical"
       ],
       "column_rate": {
-        "quality": 77.29142857142857,
-        "setting": 76.44857142857143,
-        "interaction": 74.64571428571428,
-        "consistency": 82.81428571428572,
-        "physical": 66.14857142857143
+        "quality": 77.55405405405405,
+        "setting": 76.97567567567567,
+        "interaction": 74.92162162162163,
+        "consistency": 83.1,
+        "physical": 66.55405405405405
       },
       "rows": [
+        {
+          "model": "Alaya-EVOKE-Turbo",
+          "org": "Alaya Lab \u00b7 Open Source",
+          "overall": 82.0,
+          "pooled_ci": [
+            74.2036818734859,
+            89.7963181265141
+          ],
+          "cells": {
+            "quality": {
+              "mean": 81.9,
+              "n": 158,
+              "rate": 81.9,
+              "ci": [
+                74.10368187348591,
+                89.6963181265141
+              ],
+              "width": 15.59263625302819,
+              "verdict": "undetermined",
+              "bound": true
+            },
+            "setting": {
+              "mean": 82.1,
+              "n": 158,
+              "rate": 82.1,
+              "ci": [
+                74.3036818734859,
+                89.89631812651409
+              ],
+              "width": 15.59263625302819,
+              "verdict": "undetermined",
+              "bound": true
+            },
+            "interaction": {
+              "mean": 83.9,
+              "n": 158,
+              "rate": 83.9,
+              "ci": [
+                76.10368187348591,
+                91.6963181265141
+              ],
+              "width": 15.59263625302819,
+              "verdict": "above",
+              "bound": true
+            },
+            "consistency": {
+              "mean": 88.1,
+              "n": 158,
+              "rate": 88.1,
+              "ci": [
+                80.3036818734859,
+                95.89631812651409
+              ],
+              "width": 15.59263625302819,
+              "verdict": "undetermined",
+              "bound": true
+            },
+            "physical": {
+              "mean": 74.0,
+              "n": 158,
+              "rate": 74.0,
+              "ci": [
+                66.2036818734859,
+                81.7963181265141
+              ],
+              "width": 15.59263625302819,
+              "verdict": "undetermined",
+              "bound": true
+            }
+          },
+          "spread": null,
+          "resolved": 1,
+          "n": 790,
+          "order": 1,
+          "best_rank": 1,
+          "worst_rank": 36
+        },
+        {
+          "model": "XGEN-Jing",
+          "org": "XGEN Labs \u00b7 Unreleased",
+          "overall": 81.94,
+          "pooled_ci": [
+            74.1436818734859,
+            89.73631812651409
+          ],
+          "cells": {
+            "quality": {
+              "mean": 82.4,
+              "n": 158,
+              "rate": 82.4,
+              "ci": [
+                74.60368187348591,
+                90.1963181265141
+              ],
+              "width": 15.59263625302819,
+              "verdict": "undetermined",
+              "bound": true
+            },
+            "setting": {
+              "mean": 90.3,
+              "n": 158,
+              "rate": 90.3,
+              "ci": [
+                82.5036818734859,
+                98.09631812651409
+              ],
+              "width": 15.59263625302819,
+              "verdict": "above",
+              "bound": true
+            },
+            "interaction": {
+              "mean": 75.6,
+              "n": 158,
+              "rate": 75.6,
+              "ci": [
+                67.8036818734859,
+                83.39631812651409
+              ],
+              "width": 15.59263625302819,
+              "verdict": "undetermined",
+              "bound": true
+            },
+            "consistency": {
+              "mean": 88.1,
+              "n": 158,
+              "rate": 88.1,
+              "ci": [
+                80.3036818734859,
+                95.89631812651409
+              ],
+              "width": 15.59263625302819,
+              "verdict": "undetermined",
+              "bound": true
+            },
+            "physical": {
+              "mean": 73.3,
+              "n": 158,
+              "rate": 73.3,
+              "ci": [
+                65.5036818734859,
+                81.09631812651409
+              ],
+              "width": 15.59263625302819,
+              "verdict": "undetermined",
+              "bound": true
+            }
+          },
+          "spread": null,
+          "resolved": 1,
+          "n": 790,
+          "order": 2,
+          "best_rank": 1,
+          "worst_rank": 36
+        },
         {
           "model": "JoyAI-Echo-1.5 (WM) | bidirection",
           "org": "JD Future Academy \u00b7 Open Source",
@@ -4410,9 +5160,9 @@
           "spread": null,
           "resolved": 1,
           "n": 790,
-          "order": 1,
+          "order": 3,
           "best_rank": 1,
-          "worst_rank": 34
+          "worst_rank": 36
         },
         {
           "model": "JoyAI-Echo-1.5 (WM) | flash, 4-step",
@@ -4487,9 +5237,9 @@
           "spread": null,
           "resolved": 1,
           "n": 790,
-          "order": 2,
+          "order": 4,
           "best_rank": 1,
-          "worst_rank": 34
+          "worst_rank": 36
         },
         {
           "model": "Zing-0.5",
@@ -4564,9 +5314,9 @@
           "spread": null,
           "resolved": 1,
           "n": 790,
-          "order": 3,
+          "order": 5,
           "best_rank": 1,
-          "worst_rank": 34
+          "worst_rank": 36
         },
         {
           "model": "HiDream-O1-World",
@@ -4641,9 +5391,9 @@
           "spread": null,
           "resolved": 0,
           "n": 790,
-          "order": 4,
+          "order": 6,
           "best_rank": 1,
-          "worst_rank": 34
+          "worst_rank": 36
         },
         {
           "model": "Alaya-EVOKE",
@@ -4718,9 +5468,9 @@
           "spread": null,
           "resolved": 0,
           "n": 790,
-          "order": 5,
+          "order": 7,
           "best_rank": 1,
-          "worst_rank": 34
+          "worst_rank": 36
         },
         {
           "model": "LingBot-World v2",
@@ -4795,9 +5545,9 @@
           "spread": null,
           "resolved": 1,
           "n": 790,
-          "order": 6,
+          "order": 8,
           "best_rank": 1,
-          "worst_rank": 34
+          "worst_rank": 36
         },
         {
           "model": "Kling 3.0",
@@ -4872,9 +5622,9 @@
           "spread": null,
           "resolved": 1,
           "n": 790,
-          "order": 7,
+          "order": 9,
           "best_rank": 1,
-          "worst_rank": 35
+          "worst_rank": 37
         },
         {
           "model": "LingBot-World | base-camera",
@@ -4949,9 +5699,9 @@
           "spread": null,
           "resolved": 0,
           "n": 790,
-          "order": 8,
+          "order": 10,
           "best_rank": 1,
-          "worst_rank": 35
+          "worst_rank": 37
         },
         {
           "model": "Wan 2.7",
@@ -5026,9 +5776,9 @@
           "spread": 27.0,
           "resolved": 2,
           "n": 790,
-          "order": 9,
+          "order": 11,
           "best_rank": 1,
-          "worst_rank": 35
+          "worst_rank": 37
         },
         {
           "model": "HY-World 1.5",
@@ -5103,9 +5853,9 @@
           "spread": null,
           "resolved": 1,
           "n": 790,
-          "order": 10,
+          "order": 12,
           "best_rank": 1,
-          "worst_rank": 35
+          "worst_rank": 37
         },
         {
           "model": "HY-Video 1.5",
@@ -5180,9 +5930,9 @@
           "spread": null,
           "resolved": 1,
           "n": 790,
-          "order": 11,
+          "order": 13,
           "best_rank": 1,
-          "worst_rank": 35
+          "worst_rank": 37
         },
         {
           "model": "LingBot-World | fast",
@@ -5257,9 +6007,9 @@
           "spread": null,
           "resolved": 0,
           "n": 790,
-          "order": 12,
+          "order": 14,
           "best_rank": 1,
-          "worst_rank": 35
+          "worst_rank": 37
         },
         {
           "model": "Happy Oyster",
@@ -5334,9 +6084,9 @@
           "spread": null,
           "resolved": 1,
           "n": 790,
-          "order": 13,
+          "order": 15,
           "best_rank": 1,
-          "worst_rank": 35
+          "worst_rank": 37
         },
         {
           "model": "Lyra 2.0",
@@ -5411,9 +6161,9 @@
           "spread": null,
           "resolved": 1,
           "n": 790,
-          "order": 14,
+          "order": 16,
           "best_rank": 1,
-          "worst_rank": 35
+          "worst_rank": 37
         },
         {
           "model": "AlayaWorld",
@@ -5488,9 +6238,9 @@
           "spread": null,
           "resolved": 0,
           "n": 790,
-          "order": 15,
+          "order": 17,
           "best_rank": 1,
-          "worst_rank": 35
+          "worst_rank": 37
         },
         {
           "model": "Seedance 1.5",
@@ -5565,9 +6315,9 @@
           "spread": null,
           "resolved": 1,
           "n": 790,
-          "order": 16,
+          "order": 18,
           "best_rank": 1,
-          "worst_rank": 35
+          "worst_rank": 37
         },
         {
           "model": "Cosmos3-Super",
@@ -5642,9 +6392,9 @@
           "spread": 33.599999999999994,
           "resolved": 2,
           "n": 790,
-          "order": 17,
+          "order": 19,
           "best_rank": 1,
-          "worst_rank": 35
+          "worst_rank": 37
         },
         {
           "model": "SANA-WM",
@@ -5719,9 +6469,9 @@
           "spread": null,
           "resolved": 0,
           "n": 790,
-          "order": 18,
+          "order": 20,
           "best_rank": 1,
-          "worst_rank": 35
+          "worst_rank": 37
         },
         {
           "model": "DreamX-World",
@@ -5796,9 +6546,9 @@
           "spread": null,
           "resolved": 1,
           "n": 790,
-          "order": 19,
+          "order": 21,
           "best_rank": 1,
-          "worst_rank": 35
+          "worst_rank": 37
         },
         {
           "model": "ABot-World",
@@ -5873,9 +6623,9 @@
           "spread": null,
           "resolved": 1,
           "n": 790,
-          "order": 20,
+          "order": 22,
           "best_rank": 1,
-          "worst_rank": 35
+          "worst_rank": 37
         },
         {
           "model": "Cosmos 2.5",
@@ -5950,9 +6700,9 @@
           "spread": null,
           "resolved": 1,
           "n": 790,
-          "order": 21,
+          "order": 23,
           "best_rank": 1,
-          "worst_rank": 35
+          "worst_rank": 37
         },
         {
           "model": "Helios",
@@ -6027,9 +6777,9 @@
           "spread": 11.799999999999997,
           "resolved": 2,
           "n": 790,
-          "order": 22,
+          "order": 24,
           "best_rank": 1,
-          "worst_rank": 35
+          "worst_rank": 37
         },
         {
           "model": "Cosmos3-Nano",
@@ -6104,9 +6854,9 @@
           "spread": 28.199999999999996,
           "resolved": 2,
           "n": 790,
-          "order": 23,
+          "order": 25,
           "best_rank": 1,
-          "worst_rank": 35
+          "worst_rank": 37
         },
         {
           "model": "LTX 2.3",
@@ -6181,9 +6931,9 @@
           "spread": 18.799999999999997,
           "resolved": 2,
           "n": 790,
-          "order": 24,
+          "order": 26,
           "best_rank": 1,
-          "worst_rank": 35
+          "worst_rank": 37
         },
         {
           "model": "InSpatio-World",
@@ -6258,9 +7008,9 @@
           "spread": null,
           "resolved": 0,
           "n": 790,
-          "order": 25,
+          "order": 27,
           "best_rank": 1,
-          "worst_rank": 35
+          "worst_rank": 37
         },
         {
           "model": "Genie 3",
@@ -6335,9 +7085,9 @@
           "spread": null,
           "resolved": 0,
           "n": 790,
-          "order": 26,
+          "order": 28,
           "best_rank": 1,
-          "worst_rank": 35
+          "worst_rank": 37
         },
         {
           "model": "Fantasy-World",
@@ -6412,9 +7162,9 @@
           "spread": null,
           "resolved": 0,
           "n": 790,
-          "order": 27,
+          "order": 29,
           "best_rank": 1,
-          "worst_rank": 35
+          "worst_rank": 37
         },
         {
           "model": "YUME 1.5",
@@ -6489,9 +7239,9 @@
           "spread": null,
           "resolved": 0,
           "n": 790,
-          "order": 28,
+          "order": 30,
           "best_rank": 1,
-          "worst_rank": 35
+          "worst_rank": 37
         },
         {
           "model": "LongCat-Video",
@@ -6566,9 +7316,9 @@
           "spread": null,
           "resolved": 1,
           "n": 790,
-          "order": 29,
+          "order": 31,
           "best_rank": 1,
-          "worst_rank": 35
+          "worst_rank": 37
         },
         {
           "model": "Infinite-World",
@@ -6643,9 +7393,9 @@
           "spread": null,
           "resolved": 0,
           "n": 790,
-          "order": 30,
+          "order": 32,
           "best_rank": 1,
-          "worst_rank": 35
+          "worst_rank": 37
         },
         {
           "model": "MatrixGame3",
@@ -6720,9 +7470,9 @@
           "spread": 19.999999999999993,
           "resolved": 3,
           "n": 790,
-          "order": 31,
+          "order": 33,
           "best_rank": 1,
-          "worst_rank": 35
+          "worst_rank": 37
         },
         {
           "model": "Kairos 3.0",
@@ -6797,9 +7547,9 @@
           "spread": null,
           "resolved": 1,
           "n": 790,
-          "order": 32,
+          "order": 34,
           "best_rank": 1,
-          "worst_rank": 35
+          "worst_rank": 37
         },
         {
           "model": "MatrixGame2",
@@ -6874,9 +7624,9 @@
           "spread": 9.899999999999991,
           "resolved": 3,
           "n": 790,
-          "order": 33,
+          "order": 35,
           "best_rank": 1,
-          "worst_rank": 35
+          "worst_rank": 37
         },
         {
           "model": "HY-GameCraft",
@@ -6951,9 +7701,9 @@
           "spread": 6.299999999999997,
           "resolved": 3,
           "n": 790,
-          "order": 34,
+          "order": 36,
           "best_rank": 1,
-          "worst_rank": 35
+          "worst_rank": 37
         },
         {
           "model": "Astra",
@@ -6997,7 +7747,7 @@
                 74.6963181265141
               ],
               "width": 15.592636253028196,
-              "verdict": "undetermined",
+              "verdict": "below",
               "bound": true
             },
             "consistency": {
@@ -7026,11 +7776,11 @@
             }
           },
           "spread": 21.9,
-          "resolved": 4,
+          "resolved": 5,
           "n": 790,
-          "order": 35,
-          "best_rank": 7,
-          "worst_rank": 35
+          "order": 37,
+          "best_rank": 9,
+          "worst_rank": 37
         }
       ],
       "meta": {
@@ -7041,7 +7791,7 @@
         "navigation_subset": 158,
         "metrics": 22,
         "dimensions": 5,
-        "base_models": 33,
+        "base_models": 35,
         "url": "https://meituan-longcat.github.io/WBench/",
         "paper": "https://arxiv.org/abs/2605.25874",
         "licence": "MIT",
@@ -7049,8 +7799,8 @@
         "split_label": "navigation split",
         "split_cases": "158 navigation cases",
         "assumed_n": 158,
-        "submissions": 35,
-        "complete": 35,
+        "submissions": 37,
+        "complete": 37,
         "types": {
           "text": 0,
           "camera": 0,
@@ -7060,13 +7810,13 @@
           "name": "full",
           "label": "full split",
           "cases": "all 289 cases",
-          "models": 12
+          "models": 13
         }
       },
-      "cells_total": 175,
-      "cells_resolved": 38,
+      "cells_total": 185,
+      "cells_resolved": 41,
       "crosscheck": {
-        "published_entries": 35,
+        "published_entries": 37,
         "max_deviation": 0.04000000000000625,
         "what": "mean of the five published dimensions vs the site's Average"
       },
@@ -7103,7 +7853,7 @@
     {
       "key": "wbench-full",
       "label": "WBench \u00b7 Full split",
-      "blurb": "12 video world models scored on the all 289 cases. Five published dimensions.",
+      "blurb": "13 video world models scored on the all 289 cases. Five published dimensions.",
       "domain": "world_model",
       "kind": "mean",
       "unit": "cases",
@@ -7115,13 +7865,90 @@
         "physical"
       ],
       "column_rate": {
-        "quality": 76.59166666666667,
-        "setting": 82.14166666666667,
-        "interaction": 51.65,
-        "consistency": 82.75833333333334,
-        "physical": 67.61666666666666
+        "quality": 76.92307692307692,
+        "setting": 82.63076923076923,
+        "interaction": 53.57692307692308,
+        "consistency": 82.98461538461538,
+        "physical": 68.05384615384615
       },
       "rows": [
+        {
+          "model": "XGEN-Jing",
+          "org": "XGEN Labs \u00b7 Unreleased",
+          "overall": 81.02000000000001,
+          "pooled_ci": [
+            75.25540004295688,
+            86.78459995704314
+          ],
+          "cells": {
+            "quality": {
+              "mean": 80.9,
+              "n": 289,
+              "rate": 80.9,
+              "ci": [
+                75.13540004295687,
+                86.66459995704314
+              ],
+              "width": 11.529199914086263,
+              "verdict": "undetermined",
+              "bound": true
+            },
+            "setting": {
+              "mean": 88.5,
+              "n": 289,
+              "rate": 88.5,
+              "ci": [
+                82.73540004295687,
+                94.26459995704313
+              ],
+              "width": 11.529199914086263,
+              "verdict": "above",
+              "bound": true
+            },
+            "interaction": {
+              "mean": 76.7,
+              "n": 289,
+              "rate": 76.7,
+              "ci": [
+                70.93540004295687,
+                82.46459995704313
+              ],
+              "width": 11.529199914086263,
+              "verdict": "above",
+              "bound": true
+            },
+            "consistency": {
+              "mean": 85.7,
+              "n": 289,
+              "rate": 85.7,
+              "ci": [
+                79.93540004295687,
+                91.46459995704313
+              ],
+              "width": 11.529199914086263,
+              "verdict": "undetermined",
+              "bound": true
+            },
+            "physical": {
+              "mean": 73.3,
+              "n": 289,
+              "rate": 73.3,
+              "ci": [
+                67.53540004295687,
+                79.06459995704313
+              ],
+              "width": 11.529199914086263,
+              "verdict": "undetermined",
+              "bound": true
+            }
+          },
+          "spread": 11.799999999999997,
+          "resolved": 2,
+          "n": 1445,
+          "order": 1,
+          "best_rank": 1,
+          "worst_rank": 10
+        },
         {
           "model": "Kling 3.0",
           "org": "Kling AI \u00b7 API",
@@ -7195,9 +8022,9 @@
           "spread": 17.900000000000006,
           "resolved": 2,
           "n": 1445,
-          "order": 1,
+          "order": 2,
           "best_rank": 1,
-          "worst_rank": 11
+          "worst_rank": 12
         },
         {
           "model": "Wan 2.7",
@@ -7272,9 +8099,9 @@
           "spread": 19.30000000000001,
           "resolved": 3,
           "n": 1445,
-          "order": 2,
+          "order": 3,
           "best_rank": 1,
-          "worst_rank": 11
+          "worst_rank": 12
         },
         {
           "model": "Seedance 1.5",
@@ -7349,9 +8176,9 @@
           "spread": null,
           "resolved": 1,
           "n": 1445,
-          "order": 3,
+          "order": 4,
           "best_rank": 1,
-          "worst_rank": 12
+          "worst_rank": 13
         },
         {
           "model": "HY-Video 1.5",
@@ -7426,9 +8253,9 @@
           "spread": null,
           "resolved": 0,
           "n": 1445,
-          "order": 4,
+          "order": 5,
           "best_rank": 1,
-          "worst_rank": 12
+          "worst_rank": 13
         },
         {
           "model": "Cosmos3-Super",
@@ -7503,9 +8330,9 @@
           "spread": 44.2,
           "resolved": 2,
           "n": 1445,
-          "order": 5,
+          "order": 6,
           "best_rank": 1,
-          "worst_rank": 12
+          "worst_rank": 13
         },
         {
           "model": "LTX 2.3",
@@ -7580,9 +8407,9 @@
           "spread": null,
           "resolved": 0,
           "n": 1445,
-          "order": 6,
+          "order": 7,
           "best_rank": 1,
-          "worst_rank": 12
+          "worst_rank": 13
         },
         {
           "model": "Cosmos 2.5",
@@ -7657,9 +8484,9 @@
           "spread": null,
           "resolved": 1,
           "n": 1445,
-          "order": 7,
+          "order": 8,
           "best_rank": 1,
-          "worst_rank": 12
+          "worst_rank": 13
         },
         {
           "model": "LongCat-Video",
@@ -7734,9 +8561,9 @@
           "spread": 27.199999999999996,
           "resolved": 2,
           "n": 1445,
-          "order": 8,
+          "order": 9,
           "best_rank": 1,
-          "worst_rank": 12
+          "worst_rank": 13
         },
         {
           "model": "Helios",
@@ -7811,9 +8638,9 @@
           "spread": 34.49999999999999,
           "resolved": 3,
           "n": 1445,
-          "order": 9,
+          "order": 10,
           "best_rank": 1,
-          "worst_rank": 12
+          "worst_rank": 13
         },
         {
           "model": "Cosmos3-Nano",
@@ -7888,9 +8715,9 @@
           "spread": null,
           "resolved": 1,
           "n": 1445,
-          "order": 10,
-          "best_rank": 1,
-          "worst_rank": 12
+          "order": 11,
+          "best_rank": 2,
+          "worst_rank": 13
         },
         {
           "model": "YUME 1.5",
@@ -7965,9 +8792,9 @@
           "spread": null,
           "resolved": 1,
           "n": 1445,
-          "order": 11,
-          "best_rank": 1,
-          "worst_rank": 12
+          "order": 12,
+          "best_rank": 2,
+          "worst_rank": 13
         },
         {
           "model": "Kairos 3.0",
@@ -8042,9 +8869,9 @@
           "spread": 28.699999999999996,
           "resolved": 3,
           "n": 1445,
-          "order": 12,
-          "best_rank": 3,
-          "worst_rank": 12
+          "order": 13,
+          "best_rank": 4,
+          "worst_rank": 13
         }
       ],
       "meta": {
@@ -8055,7 +8882,7 @@
         "navigation_subset": 158,
         "metrics": 22,
         "dimensions": 5,
-        "base_models": 12,
+        "base_models": 13,
         "url": "https://meituan-longcat.github.io/WBench/",
         "paper": "https://arxiv.org/abs/2605.25874",
         "licence": "MIT",
@@ -8063,8 +8890,8 @@
         "split_label": "full split",
         "split_cases": "all 289 cases",
         "assumed_n": 289,
-        "submissions": 12,
-        "complete": 12,
+        "submissions": 13,
+        "complete": 13,
         "types": {
           "text": 0,
           "camera": 0,
@@ -8074,13 +8901,13 @@
           "name": "navi",
           "label": "navigation split",
           "cases": "158 navigation cases",
-          "models": 35
+          "models": 37
         }
       },
-      "cells_total": 60,
-      "cells_resolved": 19,
+      "cells_total": 65,
+      "cells_resolved": 21,
       "crosscheck": {
-        "published_entries": 12,
+        "published_entries": 13,
         "max_deviation": 0.04000000000000625,
         "what": "mean of the five published dimensions vs the site's Average"
       },
@@ -8269,5 +9096,5 @@
     "rows_a": 22,
     "rows_b": 40
   },
-  "built": "2026-09-13"
+  "built": "2026-09-14"
 }

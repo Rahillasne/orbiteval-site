@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Battle — OrbitEval</title>
+<meta name="description" content="Two robot policies, same world, same seeds, side by side and live. The arena runs the world and the referee; each policy runs where its owner runs it. Or battle two models on the public boards&#x27; own counts, with intervals on the difference.">
+<link rel="canonical" href="https://orbiteval.com/battle.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Battle — OrbitEval">
+<meta property="og:description" content="Two robot policies, same world, same seeds, side by side and live. The arena runs the world and the referee; each policy runs where its owner runs it. Or battle two models on the public boards&#x27; own counts, with intervals on the difference.">
+<meta property="og:url" content="https://orbiteval.com/battle.html">
+<meta property="og:site_name" content="OrbitEval">
+<meta name="twitter:card" content="summary">
+<meta name="theme-color" content="#452455">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23452455'/%3E%3Ccircle cx='16' cy='16' r='5.5' fill='%23FBFAF6' stroke='%237A4E8C' stroke-width='3'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=DM+Mono:wght@400;500&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap">
+<link rel="stylesheet" href="shell.css">
+
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar">
+    <div class="brand"><span class="mark"><i></i></span><div class="word">OrbitEval<small>Capability Arena</small></div></div>
+    <nav class="nav">
+      <a href="index.html"><svg class="ico" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Overview</a><a href="index.html"><svg class="ico" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13"/><circle cx="4" cy="6" r="1"/><circle cx="4" cy="12" r="1"/><circle cx="4" cy="18" r="1"/></svg>Leaderboards</a><a href="check.html"><svg class="ico" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>Release check</a><a href="battle.html" aria-current="page"><svg class="ico" viewBox="0 0 24 24"><path d="M14 4l6 6-8 8-6-6zM4 20l4-4M14 14l2 2M4 6l2 2"/></svg>Battle</a><a href="chat.html"><svg class="ico" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1.1-4.2A8 8 0 1 1 21 12z"/></svg>Chat</a>
+    </nav>
+    <div class="promo">
+      <div class="thumb"><i style="width:78%"></i><i style="width:62%"></i><i style="width:44%"></i></div>
+      <h4>Watch a live battle</h4>
+      <p>Two real policies, same seeds, every frame streamed as it happens. The referee calls it when it is settled.</p>
+      <a class="btn primary block" href="battle.html">Open the arena</a>
+      <a class="btn ghost block" href="check.html">Check a release</a>
+    </div>
+    <div class="legal"><a href="index.html#methodology">Methodology</a><a href="about.html">About</a><span>Independent · not affiliated with any benchmark</span></div>
+  </aside>
+  <div class="main">
+    <div class="topbar">
+      <a class="tab" href="index.html"><svg class="ico" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Overview</a>
+      <div class="tabs-center"></div>
+      <a class="btn ghost" href="chat.html">Chat</a>
+      <a class="btn primary" href="check.html">Check a release</a>
+    </div>
+    <div class="body wide">
+      <main class="content">
+
+<style>
+  .bcard{padding:16px 18px;display:flex;flex-direction:column;gap:14px}
+  .matchup{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:12px;align-items:end}
+  .matchup .side{display:flex;flex-direction:column;gap:6px;min-width:0}
+  .matchup .side .dd,.matchup .side select{width:100%}
+  .matchup .vs{font-family:"DM Mono",Menlo,monospace;font-size:.72rem;letter-spacing:.14em;color:var(--faint);padding-bottom:12px}
+  @media (max-width:600px){.matchup{grid-template-columns:1fr}.matchup .vs{display:none}}
+  .brow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .brow select{font:inherit;font-size:.9rem;border:1px solid var(--line);border-radius:9px;padding:8px 10px;background:var(--paper);color:var(--ink);min-width:150px}
+  .brow .status{margin-left:auto}
+  .bsub{font-size:.84rem;color:var(--muted)}
+  .bsub a{font-weight:500;text-decoration:none}
+  .sb{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+  .sb table{border-collapse:collapse;width:100%;min-width:620px;font-size:.88rem}
+  .sb th{font-family:"DM Mono",Menlo,monospace;font-size:.64rem;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);font-weight:500;text-align:left;padding:9px 12px;border-bottom:1px solid var(--line)}
+  .sb td{padding:8px 12px;border-bottom:1px solid var(--line-soft);vertical-align:middle;font-variant-numeric:tabular-nums}
+  .sb tr:last-child td{border-bottom:0}
+  .sb td.n{font-family:"DM Mono",Menlo,monospace;font-size:.84rem;white-space:nowrap}
+  .sb td.t{font-weight:500}
+  .sb .ci{color:var(--faint);font-size:.76rem;margin-left:4px}
+  .sb tr.tot td{border-top:1px solid var(--line);font-weight:500}
+  .bar2{display:inline-block;height:7px;width:90px;border-radius:4px;background:var(--plum-soft);position:relative;vertical-align:middle;overflow:hidden}
+  .bar2 i{position:absolute;left:0;top:0;bottom:0;background:var(--plum);border-radius:4px}
+  .bar2.b i{background:var(--plum-mid)}
+  .call{display:inline-flex;font-family:"DM Mono",Menlo,monospace;font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;border-radius:6px;padding:3px 8px;border:1px solid var(--line);color:var(--muted);background:var(--paper);white-space:nowrap}
+  .call.a{color:var(--plum);background:var(--plum-pale);border-color:var(--plum-soft)}
+  .call.b{color:#2F6B3F;background:#EAF4EC;border-color:#C6DECB}
+  .bsum{font-size:.9rem;color:var(--ink)}
+  .bsum strong{font-weight:600}
+  .gpu{border:1px dashed var(--line);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:8px;font-size:.88rem;color:var(--muted);background:var(--paper)}
+  .gpu pre,.pcard pre{margin:0;font-family:"DM Mono",Menlo,monospace;font-size:.76rem;line-height:1.5;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:10px;overflow-x:auto;white-space:pre}
+  .lstage{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media (max-width:640px){.lstage{grid-template-columns:1fr}}
+  .lcol{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:10px;display:flex;flex-direction:column;gap:8px;align-items:center}
+  .lcol img{width:100%;max-width:340px;aspect-ratio:1;border-radius:8px;background:#fff;border:1px solid var(--line)}
+  .lname{font-weight:600;font-size:.95rem;align-self:flex-start}
+  .lmeta{font-family:"DM Mono",Menlo,monospace;font-size:.72rem;color:var(--muted);align-self:flex-start}
+  .ticks{display:flex;flex-wrap:wrap;gap:4px;align-self:flex-start;min-height:18px}
+  .ticks span{width:18px;height:18px;border-radius:5px;display:grid;place-items:center;font-size:.7rem;font-family:"DM Mono",Menlo,monospace;border:1px solid var(--line);background:var(--card);color:var(--faint)}
+  .ticks span.ok{background:#EAF4EC;border-color:#C6DECB;color:#2F6B3F}
+  .ticks span.no{background:#F8ECEC;border-color:#E4C4C4;color:#8C2F2F}
+  .ticks span.run{background:var(--plum-pale);border-color:var(--plum-soft);color:var(--plum);animation:pulse 1s infinite}
+  .ask{font-size:.82rem;color:var(--muted);background:none;border:1px solid var(--line);border-radius:999px;padding:5px 12px;cursor:pointer;text-decoration:none}
+  .ask:hover{background:var(--hover);color:var(--ink)}
+  /* custom dropdown: the native select keeps the state, the button + menu are what people see */
+  select.dd-native{display:none}
+  .dd{position:relative;display:inline-block;min-width:150px;max-width:100%}
+  .dd-btn{display:inline-flex;align-items:center;gap:8px;width:100%;font:inherit;font-size:.9rem;border:1px solid var(--line);border-radius:9px;padding:8px 10px 8px 12px;background:var(--card);color:var(--ink);cursor:pointer;text-align:left;box-shadow:0 1px 2px rgba(28,27,25,.04);transition:border-color .12s,background .12s}
+  .dd-btn:hover{background:var(--hover)}
+  .dd-btn:focus-visible{outline:2px solid var(--plum-soft);outline-offset:1px}
+  .dd.open .dd-btn{border-color:var(--plum-mid)}
+  .dd-btn .dd-label{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .dd-btn .dd-tag{font-family:"DM Mono",Menlo,monospace;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--plum);background:var(--plum-pale);border:1px solid var(--plum-soft);border-radius:5px;padding:2px 6px;flex:none}
+  .dd-btn .dd-chev{width:14px;height:14px;color:var(--faint);flex:none;transition:transform .15s}
+  .dd.open .dd-chev{transform:rotate(180deg)}
+  .dd-menu{position:absolute;left:0;top:calc(100% + 6px);z-index:30;min-width:100%;max-width:min(92vw,420px);max-height:300px;overflow:auto;margin:0;padding:6px;list-style:none;background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 32px rgba(28,27,25,.14),0 2px 6px rgba(28,27,25,.06)}
+  .dd-menu[hidden]{display:none}
+  .dd-menu li{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;font-size:.9rem;color:var(--ink);cursor:pointer;white-space:nowrap}
+  .dd-menu li .dd-lab{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis}
+  .dd-menu li .dd-tag{font-family:"DM Mono",Menlo,monospace;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);background:var(--paper);border:1px solid var(--line);border-radius:5px;padding:2px 6px}
+  .dd-menu li:hover,.dd-menu li.hi{background:var(--hover)}
+  .dd-menu li.on{color:var(--plum);font-weight:500}
+  .dd-menu li .dd-check{width:14px;height:14px;flex:none;visibility:hidden;color:var(--plum)}
+  .dd-menu li.on .dd-check{visibility:visible}
+  [hidden]{display:none!important}
+</style>
+
+<div class="pagehead">
+  <span class="label">Battle</span>
+  <h1>Two policies, same seeds, a referee that prices the noise</h1>
+  <p class="lede">Pick two policies. The arena runs the world and the referee; each policy runs where its owner runs it, and every frame is rendered as it happens. The referee reports both success rates with intervals and <strong>only calls a winner when the data settles it</strong>.</p>
+</div>
+
+<section class="sect" id="live">
+  <div class="card bcard">
+    <div class="matchup">
+      <div class="side"><span class="label">Policy A</span><select id="lA" aria-label="Policy A"></select></div>
+      <span class="vs">VS</span>
+      <div class="side"><span class="label">Policy B</span><select id="lB" aria-label="Policy B"></select></div>
+    </div>
+    <div class="brow">
+      <select id="lEmb" aria-label="World"><option value="pusht">PushT · push the T onto the goal</option></select>
+      <select id="lEps" aria-label="Episodes"><option value="1">1 episode</option><option value="3" selected>3 episodes</option><option value="5">5 episodes</option><option value="10">10 episodes</option></select>
+      <button class="btn primary" id="lGo" type="button">Start live battle</button>
+      <span class="status" id="lStatus"><span class="dot"></span><span id="lStatusText">Waking the arena…</span></span>
+    </div>
+    <div id="lJoin" class="gpu" hidden></div>
+    <div class="lstage" id="lStage" hidden>
+      <div class="lcol"><div class="lname" id="lNameA"></div><img id="lFrameA" alt="policy A rollout"><div class="lmeta" id="lMetaA"></div><div class="ticks" id="lTicksA"></div></div>
+      <div class="lcol"><div class="lname" id="lNameB"></div><img id="lFrameB" alt="policy B rollout"><div class="lmeta" id="lMetaB"></div><div class="ticks" id="lTicksB"></div></div>
+    </div>
+    <div id="lTally" class="bsum"></div>
+    <details class="box"><summary>Watching a battle someone else started? Enter the session code</summary><div class="in"><div class="row"><input class="txt" id="lCode" placeholder="session code" style="max-width:220px"><button class="btn ghost" id="lWatch" type="button">Watch</button></div><p>Anyone with the code sees the same frames and the same tally.</p></div></details>
+  </div>
+  <p class="bsub">House policies are public checkpoints running on the arena server, on CPU, so one episode takes a few minutes. Pick <em>My own policy</em> to run yours from your machine; the checkpoint never leaves it. The DDIM-10 and DDIM-25 entries are the same weights at two inference budgets, so battling them asks whether more denoising steps buy anything.</p>
+</section>
+
+<section class="sect" id="boards">
+  <div class="sect-head"><h2>On the boards</h2><p class="desc">The same referee on the public benchmarks’ own published counts: two models, capability by capability, with a Newcombe interval on every difference. Most pairs are unresolved at the benchmarks’ trial counts — that is the finding, not a bug.</p></div>
+  <div class="card bcard">
+    <div class="brow">
+      <select id="bBoard" aria-label="Board"></select>
+      <select id="bA" aria-label="Model A"></select>
+      <span class="vs" style="font-family:'DM Mono',Menlo,monospace;font-size:.72rem;letter-spacing:.14em;color:var(--faint)">VS</span>
+      <select id="bB" aria-label="Model B"></select>
+      <button class="btn primary" id="bGo" type="button">Battle</button>
+    </div>
+    <div id="bOut"></div>
+  </div>
+</section>
+
+<section class="sect" id="own">
+  <div class="sect-head"><h2>Your own checkpoints</h2><p class="desc">Two ways in. Your weights never leave your machine either way.</p></div>
+  <div class="pcards">
+    <div class="pcard">
+      <h3>Live, from your machine</h3>
+      <p>Pick <strong>My own policy</strong> above, press Start, and run the one-line command the page prints next to your checkpoint. The arena streams the rollout here and anyone with the session code can watch.</p>
+      <pre>pip install 'lerobot[pusht]'
+curl -O https://raw.githubusercontent.com/Rahillasne/orbit-eval/main/tools/orbit_serve.py
+python orbit_serve.py --join &lt;session&gt;/b --policy path/to/pretrained_model --env pusht --name "my policy"</pre>
+    </div>
+    <div class="pcard">
+      <h3>Offline, on your GPU</h3>
+      <p>Same seeds for both policies, so the comparison is paired; rounds stop on each task as soon as the referee has resolved it. Then drop the two <code>eval_info.json</code> files in the <a href="chat.html">chat</a> for the same scoreboard with an explanation.</p>
+      <pre>pip install orbit-eval
+curl -O https://raw.githubusercontent.com/Rahillasne/orbit-eval/main/tools/orbit_battle.py
+python orbit_battle.py --run --a path/to/A/pretrained_model --b path/to/B/pretrained_model \
+    --env libero --episodes 50 --batch 10 --seed 1000 --extra --env.task=libero_object</pre>
+      <div class="foot"><a href="https://github.com/Rahillasne/orbit-eval/tree/main/tools">Scripts on GitHub</a></div>
+    </div>
+  </div>
+</section>
+
+<script>
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+  var Z = 1.959964, arena = null;
+
+  // ---------- custom dropdowns (the native <select> keeps the state; this is what people see)
+  var DD_OPEN = null;
+  function ddSplit(text){ var m = text.match(/^(.*?)\s*\((house)\)\s*$/); return m ? { lab: m[1], tag: m[2] } : { lab: text, tag: '' }; }
+  function ddSync(sel){
+    var dd = sel._dd; if (!dd) return;
+    var menu = dd.querySelector('.dd-menu'), btn = dd.querySelector('.dd-btn');
+    menu.innerHTML = '';
+    Array.prototype.forEach.call(sel.options, function(o, i){
+      var li = document.createElement('li'); var sp = ddSplit(o.textContent);
+      li.setAttribute('role', 'option'); li.dataset.i = i; li.className = o.selected ? 'on' : '';
+      li.innerHTML = '<svg class="dd-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span class="dd-lab"></span>' + (sp.tag ? '<span class="dd-tag">' + sp.tag + '</span>' : '');
+      li.querySelector('.dd-lab').textContent = sp.lab;
+      menu.appendChild(li);
+    });
+    var cur = sel.options[sel.selectedIndex]; var cs = ddSplit(cur ? cur.textContent : '');
+    btn.querySelector('.dd-label').textContent = cs.lab || sel.getAttribute('aria-label') || '';
+    var tag = btn.querySelector('.dd-tag'); tag.textContent = cs.tag; tag.hidden = !cs.tag;
+  }
+  function ddClose(){ if (DD_OPEN){ DD_OPEN.classList.remove('open'); DD_OPEN.querySelector('.dd-menu').hidden = true; DD_OPEN.querySelector('.dd-btn').setAttribute('aria-expanded', 'false'); DD_OPEN = null; } }
+  function ddOpen(dd){ ddClose(); dd.classList.add('open'); var m = dd.querySelector('.dd-menu'); m.hidden = false; dd.querySelector('.dd-btn').setAttribute('aria-expanded', 'true'); DD_OPEN = dd; var on = m.querySelector('li.on'); if (on) on.scrollIntoView({ block: 'nearest' }); }
+  function ddPick(sel, i){ if (sel.selectedIndex !== i){ sel.selectedIndex = i; sel.dispatchEvent(new Event('change', { bubbles: true })); } ddSync(sel); ddClose(); }
+  function enhanceSelect(sel){
+    if (sel._dd) return;
+    var dd = document.createElement('div'); dd.className = 'dd';
+    dd.innerHTML = '<button type="button" class="dd-btn" aria-haspopup="listbox" aria-expanded="false"><span class="dd-label"></span><span class="dd-tag" hidden></span><svg class="dd-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></button><ul class="dd-menu" role="listbox" hidden></ul>';
+    var btn = dd.querySelector('.dd-btn'), menu = dd.querySelector('.dd-menu');
+    btn.setAttribute('aria-label', sel.getAttribute('aria-label') || '');
+    sel.classList.add('dd-native'); sel.parentNode.insertBefore(dd, sel.nextSibling); sel._dd = dd;
+    btn.addEventListener('click', function(e){ e.stopPropagation(); if (DD_OPEN === dd) ddClose(); else ddOpen(dd); });
+    menu.addEventListener('click', function(e){ var li = e.target.closest('li[data-i]'); if (li) ddPick(sel, +li.dataset.i); e.stopPropagation(); });
+    btn.addEventListener('keydown', function(e){
+      var items = menu.querySelectorAll('li[data-i]'); var hi = menu.querySelector('li.hi') || menu.querySelector('li.on'); var idx = hi ? Array.prototype.indexOf.call(items, hi) : -1;
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp'){ e.preventDefault(); if (DD_OPEN !== dd) ddOpen(dd); idx = Math.max(0, Math.min(items.length - 1, idx + (e.key === 'ArrowDown' ? 1 : -1))); items.forEach(function(li){ li.classList.remove('hi'); }); if (items[idx]){ items[idx].classList.add('hi'); items[idx].scrollIntoView({ block: 'nearest' }); } }
+      else if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); if (DD_OPEN === dd){ var h = menu.querySelector('li.hi'); if (h) ddPick(sel, +h.dataset.i); else ddClose(); } else ddOpen(dd); }
+      else if (e.key === 'Escape'){ ddClose(); }
+    });
+    new MutationObserver(function(){ ddSync(sel); }).observe(sel, { childList: true, subtree: true, attributes: true });
+    ddSync(sel);
+  }
+  document.addEventListener('click', ddClose);
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape') ddClose(); });
+  Array.prototype.forEach.call(document.querySelectorAll('select'), enhanceSelect);
+
+  // ---------- helpers
+  function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+  function wilson(k, n){ if (!n) return [NaN, NaN]; var p = k / n, d = 1 + Z*Z/n, c = (p + Z*Z/(2*n))/d, h = Z*Math.sqrt(p*(1-p)/n + Z*Z/(4*n*n))/d; return [Math.max(0, c-h), Math.min(1, c+h)]; }
+  function newcombe(ka, na, kb, nb){ var pa = ka/na, pb = kb/nb, A = wilson(ka, na), B = wilson(kb, nb), d = pa - pb; return [d - Math.sqrt(Math.pow(pa-A[0],2) + Math.pow(B[1]-pb,2)), d + Math.sqrt(Math.pow(A[1]-pa,2) + Math.pow(pb-B[0],2))]; }
+  function f1(x){ return (x === null || x === undefined || isNaN(x)) ? '—' : Number(x).toFixed(1); }
+  function sg(x){ return (x > 0 ? '+' : '') + f1(x); }
+  function askLink(q){ return 'chat.html#q=' + encodeURIComponent(q); }
+
+  // ---------- on the boards (client side, from the boards' own counts)
+  function loadArena(){
+    fetch('data/matrix.json').then(function(r){ return r.json(); }).then(function(d){ arena = d; fillBoards(); }).catch(function(){ $('bOut').innerHTML = '<p class="bsub">Could not load the board data.</p>'; });
+  }
+  function fillBoards(){
+    var sel = $('bBoard'); if (sel.options.length) return;
+    arena.boards.filter(function(b){ return b.kind === 'binomial'; }).forEach(function(b){ var o = document.createElement('option'); o.value = b.key; o.textContent = b.label; sel.appendChild(o); });
+    fillModels();
+  }
+  function board(){ return arena.boards.filter(function(b){ return b.key === $('bBoard').value; })[0]; }
+  function fillModels(){
+    var b = board(); if (!b) return;
+    [$('bA'), $('bB')].forEach(function(s, i){ s.innerHTML = ''; b.rows.forEach(function(r){ var o = document.createElement('option'); o.value = r.model; o.textContent = r.model; s.appendChild(o); }); s.selectedIndex = Math.min(i === 0 ? 0 : 6, b.rows.length - 1); });
+    if (b.key === 'robochallenge'){ var a = [].slice.call($('bA').options).map(function(o){ return o.value; }); if (a.indexOf('Era0') >= 0) $('bA').value = 'Era0'; if (a.indexOf('pi0.5') >= 0) $('bB').value = 'pi0.5'; }
+    ddSync($('bA')); ddSync($('bB'));
+  }
+  function callFor(lo, hi, nameA, nameB){ if (lo > 0) return ['a', nameA + ' ahead']; if (hi < 0) return ['b', nameB + ' ahead']; return ['', 'unresolved']; }
+  function runArenaBattle(){
+    var b = board(); if (!b) return;
+    var A = b.rows.filter(function(r){ return r.model === $('bA').value; })[0], B = b.rows.filter(function(r){ return r.model === $('bB').value; })[0];
+    if (!A || !B || A === B){ $('bOut').innerHTML = '<p class="bsub">Pick two different models.</p>'; return; }
+    var caps = b.capabilities, labels = {}; arena.schema.capabilities.forEach(function(c){ labels[c.key] = c.label; });
+    var rows = '', ka = 0, na = 0, kb = 0, nb = 0, resolved = 0, judged = 0, aheadA = [], aheadB = [];
+    caps.forEach(function(c){
+      var ca = A.cells[c], cb = B.cells[c]; if (!ca || !cb || !ca.n || !cb.n) return;
+      judged++; ka += ca.k; na += ca.n; kb += cb.k; nb += cb.n;
+      var d = 100 * (ca.k/ca.n - cb.k/cb.n), ci = newcombe(ca.k, ca.n, cb.k, cb.n).map(function(x){ return 100*x; }), cl = callFor(ci[0], ci[1], A.model, B.model);
+      if (cl[0]) { resolved++; (cl[0] === 'a' ? aheadA : aheadB).push(labels[c] || c); }
+      rows += '<tr><td class="t">' + esc(labels[c] || c) + '</td>' +
+        '<td class="n"><span class="bar2"><i style="width:' + ca.rate + '%"></i></span> ' + f1(ca.rate) + '%<span class="ci">' + ca.k + '/' + ca.n + '</span></td>' +
+        '<td class="n"><span class="bar2 b"><i style="width:' + cb.rate + '%"></i></span> ' + f1(cb.rate) + '%<span class="ci">' + cb.k + '/' + cb.n + '</span></td>' +
+        '<td class="n">' + sg(d) + ' <span class="ci">[' + sg(ci[0]) + ', ' + sg(ci[1]) + ']</span></td><td><span class="call ' + cl[0] + '">' + cl[1] + '</span></td></tr>';
+    });
+    var dt = 100 * (ka/na - kb/nb), cit = newcombe(ka, na, kb, nb).map(function(x){ return 100*x; }), clt = callFor(cit[0], cit[1], A.model, B.model);
+    rows += '<tr class="tot"><td class="t">Pooled</td><td class="n">' + f1(100*ka/na) + '%<span class="ci">' + ka + '/' + na + '</span></td><td class="n">' + f1(100*kb/nb) + '%<span class="ci">' + kb + '/' + nb + '</span></td><td class="n">' + sg(dt) + ' <span class="ci">[' + sg(cit[0]) + ', ' + sg(cit[1]) + ']</span></td><td><span class="call ' + clt[0] + '">' + clt[1] + '</span></td></tr>';
+    var summary = '<strong>' + esc(A.model) + ' vs ' + esc(B.model) + '</strong> on ' + esc(b.label) + ': ' + resolved + ' of ' + judged + ' capabilities resolved at these trial counts.' +
+      (aheadA.length ? ' ' + esc(A.model) + ' ahead on ' + esc(aheadA.join(', ')) + '.' : '') + (aheadB.length ? ' ' + esc(B.model) + ' ahead on ' + esc(aheadB.join(', ')) + '.' : '') +
+      (resolved < judged ? ' The rest is a tie at this evidence, not a draw: the boards’ ' + (b.unit || 'trials') + ' per cell are too few to separate them.' : '');
+    var q = 'Explain this battle between ' + A.model + ' and ' + B.model + ' on ' + b.label + ' and tell me what would resolve the unresolved capabilities.';
+    $('bOut').innerHTML = '<p class="bsum">' + summary + '</p><div class="sb"><table><thead><tr><th>Capability</th><th>' + esc(A.model) + '</th><th>' + esc(B.model) + '</th><th>Difference (pp, 95%)</th><th>Call</th></tr></thead><tbody>' + rows + '</tbody></table></div>' +
+      '<p class="bsub">Cells are successes out of trials from the benchmark’s own published results; intervals are Wilson per cell and Newcombe on the difference. <a class="ask" href="' + askLink(q) + '">Ask the assistant about this battle</a></p>';
+  }
+  $('bBoard').addEventListener('change', fillModels);
+  $('bGo').addEventListener('click', runArenaBattle);
+  loadArena();
+
+  // ---------- live battle (the arena runtime runs the world; policies run where their owners run them)
+  var ARENA = (new URLSearchParams(location.search).get('arena') || 'https://orbiteval-arena-199802234044.us-central1.run.app').replace(/\/$/, '');
+  var live = { sid: null, timer: null, house: [] };
+  function lstatus(kind, text){ $('lStatus').className = 'status ' + kind; $('lStatusText').textContent = text; }
+  function fillLive(){
+    if (live.house.length) return;
+    lstatus('busy', 'Waking the arena…');
+    fetch(ARENA + '/embodiments').then(function(r){ return r.json(); }).then(function(d){
+      live.house = d.house || [];
+      [$('lA'), $('lB')].forEach(function(sel, i){
+        sel.innerHTML = '';
+        live.house.forEach(function(h){ var o = document.createElement('option'); o.value = h.key; o.textContent = h.label + ' (house)'; sel.appendChild(o); });
+        var own = document.createElement('option'); own.value = 'own'; own.textContent = 'My own policy (I will run orbit_serve.py)'; sel.appendChild(own);
+        sel.selectedIndex = Math.min(i, sel.options.length - 1);
+        ddSync(sel);
+      });
+      lstatus('ok', 'Arena ready.');
+    }).catch(function(){ lstatus('err', 'The arena is waking up or unreachable. Try again in a few seconds.'); });
+  }
+  function ticks(results, running){
+    var h = results.map(function(r){ return '<span class="' + (r ? 'ok' : 'no') + '">' + (r ? '✓' : '✗') + '</span>'; }).join('');
+    if (running) h += '<span class="run">·</span>';
+    return h;
+  }
+  function renderLive(st){
+    var a = st.slots.a, b = st.slots.b, running = st.status === 'running';
+    $('lStage').hidden = false;
+    $('lNameA').textContent = a.name; $('lNameB').textContent = b.name;
+    if (a.frame) $('lFrameA').src = 'data:image/jpeg;base64,' + a.frame;
+    if (b.frame) $('lFrameB').src = 'data:image/jpeg;base64,' + b.frame;
+    function meta(s){ return (s.connected ? '' : 'waiting for policy · ') + 'episode ' + Math.min(st.n_episodes, s.episode + 1) + '/' + st.n_episodes + ' · step ' + s.step + ' · coverage ' + Math.round(100 * (s.progress || 0)) + '%' + (s.latency_ms != null ? ' · ' + s.latency_ms + ' ms/action' : ''); }
+    $('lMetaA').textContent = meta(a); $('lMetaB').textContent = meta(b);
+    $('lTicksA').innerHTML = ticks(a.results, running && a.results.length < st.n_episodes);
+    $('lTicksB').innerHTML = ticks(b.results, running && b.results.length < st.n_episodes);
+    var t = st.tally, txt = '';
+    if (t.a.n || t.b.n){
+      txt = '<strong>' + esc(a.name) + '</strong> ' + (t.a.n ? t.a.k + '/' + t.a.n + ' (' + f1(t.a.rate_pct) + '%, [' + f1(t.a.ci95[0]) + ', ' + f1(t.a.ci95[1]) + '])' : '0/0') +
+            ' · <strong>' + esc(b.name) + '</strong> ' + (t.b.n ? t.b.k + '/' + t.b.n + ' (' + f1(t.b.rate_pct) + '%, [' + f1(t.b.ci95[0]) + ', ' + f1(t.b.ci95[1]) + '])' : '0/0');
+      if (t.delta_pp !== undefined) txt += ' · difference ' + sg(t.delta_pp) + ' pp [' + sg(t.ci95_pp[0]) + ', ' + sg(t.ci95_pp[1]) + '] · <span class="call ' + (t.call.indexOf('AHEAD') >= 0 ? (t.call.indexOf(a.name) === 0 ? 'a' : 'b') : '') + '">' + esc(t.call.toLowerCase()) + '</span>' + (t.need ? ' · about ' + t.need + ' episodes per side would settle it' : '');
+    }
+    $('lTally').innerHTML = txt;
+    var msg = st.status === 'waiting for policies' ? 'Waiting for both policies to connect. Session ' + st.session + '.' : st.status === 'running' ? 'Live. Session ' + st.session + ' · ' + st.elapsed_s + ' s' : st.status === 'finished' ? 'Finished. Same seeds for both; the referee’s call is above.' : 'Error: ' + (st.error || 'unknown');
+    lstatus(st.status === 'running' ? 'busy' : st.status === 'error' ? 'err' : 'ok', msg);
+    if (st.status === 'finished' || st.status === 'error'){ clearInterval(live.timer); live.timer = null; }
+  }
+  function pollLive(){
+    if (!live.sid) return;
+    fetch(ARENA + '/s/' + live.sid + '/state').then(function(r){ return r.json(); }).then(function(st){ if (st.error && !st.slots){ lstatus('err', st.error); clearInterval(live.timer); return; } renderLive(st); }).catch(function(){});
+  }
+  function watchSession(sid){
+    live.sid = sid; $('lJoin').hidden = true; $('lStage').hidden = true; $('lTally').innerHTML = '';
+    try { window.history.replaceState(null, '', '#live=' + sid); } catch (e) {}
+    if (live.timer) clearInterval(live.timer);
+    pollLive(); live.timer = setInterval(pollLive, 500);
+  }
+  function startLive(){
+    var A = $('lA').value, B = $('lB').value, n = parseInt($('lEps').value, 10) || 3;
+    if (!A || !B){ lstatus('err', 'The arena has not answered yet. Try again in a few seconds.'); return; }
+    var house = {}; if (A !== 'own') house.a = A; if (B !== 'own') house.b = B;
+    lstatus('busy', 'Creating the session…');
+    fetch(ARENA + '/session', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ embodiment: $('lEmb').value, n_episodes: n, seed: 1000 + Math.floor(Math.random() * 9000), house: house, names: ['A', 'B'] }) })
+      .then(function(r){ return r.json(); }).then(function(d){
+        if (d.error){ lstatus('err', d.error); return; }
+        var own = ['a', 'b'].filter(function(s){ return !house[s]; });
+        if (own.length){
+          $('lJoin').hidden = false;
+          $('lJoin').innerHTML = '<span>Run this on the machine that holds each policy (Python with <code>lerobot[pusht]</code> installed):</span><pre>' +
+            own.map(function(s){ return 'curl -O https://raw.githubusercontent.com/Rahillasne/orbit-eval/main/tools/orbit_serve.py\npython orbit_serve.py --join ' + d.session + '/' + s + ' --policy <hub id or pretrained_model dir> --env pusht --name "my policy"'; }).join('\n\n') +
+            '</pre><span>The battle starts the moment both policies have joined. Session code <b>' + d.session + '</b>; anyone with it can watch.</span>';
+        }
+        watchSession(d.session);
+      }).catch(function(){ lstatus('err', 'Could not reach the arena.'); });
+  }
+  $('lGo').addEventListener('click', startLive);
+  $('lWatch').addEventListener('click', function(){ var c = ($('lCode').value || '').trim(); if (c) watchSession(c); });
+  fillLive();
+  var mLive = location.hash.match(/^#live=([a-z0-9]+)$/);
+  if (mLive){ watchSession(mLive[1]); }
+})();
+</script>
+
+      </main>
+    </div>
+  </div>
+</div>
+</body>
+</html>
