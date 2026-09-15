@@ -94,8 +94,9 @@
       padding:10px 12px;border-right:0;border-bottom:1px solid var(--line)}
     .sidebar .brand{padding:4px 4px;margin-right:6px}
     .sidebar .nav{flex-direction:row;flex-wrap:wrap;gap:2px}
-    .sidebar .nav button,.sidebar .nav a{padding:6px 9px;font-size:.86rem}
+    .sidebar .nav button,.sidebar .nav a{padding:6px 9px;font-size:.86rem;width:auto}
     .sidebar .nav .sep{display:none}
+    .topbar > .tab{display:none}
     .sidebar .promo,.sidebar .legal{display:none}
     .topbar{padding:8px 12px;position:static}
     .body{grid-template-columns:1fr}
@@ -118,7 +119,7 @@
   .btn.ghost{background:var(--card);color:var(--ink);border-color:var(--line)}
   .btn.ghost:hover{background:var(--hover)}
   .btn.block{width:100%}
-  .legal{display:flex;gap:14px;flex-wrap:wrap;padding:12px 8px 2px;font-size:.72rem;
+  .legal{margin-top:auto;display:flex;gap:14px;flex-wrap:wrap;padding:12px 8px 2px;font-size:.72rem;
     color:var(--faint)}
   .legal a{color:inherit;text-decoration:none}
 
@@ -292,42 +293,37 @@
   .prose th{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);font-weight:600}
   .prose ul{margin:0;padding-left:18px}
 
-  /* the job band: what the site does for a robotics team, above the boards */
-  .jb{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:22px;align-items:stretch}
-  .jb-pitch{display:flex;flex-direction:column;gap:14px;justify-content:center;padding:6px 0}
-  .jb-kicker{font-family:"DM Mono",Menlo,monospace;font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;color:var(--faint)}
-  .jb-h1{font-family:Newsreader,Georgia,serif;font-size:clamp(2rem,1.3rem + 2.2vw,3rem);line-height:1.06;letter-spacing:-.012em;font-weight:500;max-width:20ch}
-  .jb-h1 em{font-style:italic;color:var(--plum);background:linear-gradient(transparent 12%,var(--plum-soft) 12%,var(--plum-soft) 88%,transparent 88%);padding:0 .12em}
-  .jb-lede{color:var(--muted);font-size:1rem;max-width:54ch;line-height:1.55}
-  .jb-lede strong{color:var(--ink);font-weight:500}
-  .jb-ctas{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
-  .jb-ctas .btn{padding:11px 16px;font-size:.92rem}
-  .jb-free{font-size:.8rem;color:var(--faint)}
-  .jb-proof{display:flex;flex-direction:column}
-  .jb-ph{padding:13px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
-  .jb-ph h3{font-family:Newsreader,Georgia,serif;font-size:1.08rem}
-  .jb-ph .chip{font-size:.78rem;padding:4px 9px}
-  .jb-stats{display:grid;grid-template-columns:repeat(3,1fr);flex:1}
-  .jb-stat{padding:16px 18px;border-right:1px solid var(--line-soft);display:flex;flex-direction:column;gap:5px;justify-content:center}
-  .jb-stat:last-child{border-right:0}
-  .jb-stat b{font-family:Newsreader,Georgia,serif;font-size:2rem;line-height:1;font-weight:500;letter-spacing:-.01em;white-space:nowrap}
-  .jb-stat b small{font-family:"DM Mono",Menlo,monospace;font-size:.68rem;color:var(--faint);letter-spacing:.04em;margin-left:5px}
-  .jb-stat span{font-size:.8rem;color:var(--muted);line-height:1.4}
-  .jb-pf{padding:11px 18px;border-top:1px solid var(--line);font-size:.82rem;color:var(--muted);display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
-  .jb-pf a{font-weight:500;text-decoration:none;white-space:nowrap}
-  .jb-tiers{display:flex;flex-wrap:wrap;border:1px solid var(--line);border-radius:12px;background:var(--card);overflow:hidden}
-  .jb-tier{flex:1 1 190px;padding:13px 18px;border-right:1px solid var(--line-soft);display:flex;flex-direction:column;gap:3px;min-width:0;text-decoration:none;color:inherit}
-  .jb-tier:last-child{border-right:0}
-  .jb-tier .tag{font-family:"DM Mono",Menlo,monospace;font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--plum)}
-  .jb-tier b{font-family:Newsreader,Georgia,serif;font-size:1.35rem;font-weight:500;line-height:1.1}
-  .jb-tier b small{font-family:Archivo,sans-serif;font-size:.76rem;color:var(--muted);margin-left:6px;font-weight:400}
-  .jb-tier span{font-size:.8rem;color:var(--muted);line-height:1.4}
-  .jb-tier.link{justify-content:center;font-weight:500;color:var(--plum-mid);flex:0 1 auto;background:var(--paper)}
-  .jb-tier.link:hover{background:var(--hover)}
-  .jb-h2{font-family:Newsreader,Georgia,serif;font-size:1.6rem;line-height:1.12;margin-top:8px}
-  @media (max-width:980px){.jb{grid-template-columns:1fr}}
-  @media (max-width:560px){.jb-stats{grid-template-columns:1fr}.jb-stat{border-right:0;border-bottom:1px solid var(--line-soft)}.jb-stat:last-child{border-bottom:0}
-    .jb-tier{flex-basis:100%;border-right:0;border-bottom:1px solid var(--line-soft)}.jb-tier:last-child{border-bottom:0}}
+  /* front door: one message, one action, one supporting line, then the boards in one glance */
+  .fd{display:flex;flex-direction:column;gap:14px;padding:10px 0 4px;max-width:72ch}
+  .fd h1{font-family:Newsreader,Georgia,serif;font-size:clamp(2rem,1.3rem + 2.2vw,3rem);line-height:1.06;letter-spacing:-.012em;font-weight:500;max-width:20ch}
+  .fd h1 em{font-style:italic;color:var(--plum);background:linear-gradient(transparent 12%,var(--plum-soft) 12%,var(--plum-soft) 88%,transparent 88%);padding:0 .12em}
+  .fd .lede{color:var(--muted);font-size:1.02rem;line-height:1.55;max-width:56ch}
+  .fd .lede strong{color:var(--ink);font-weight:500}
+  .fd .act{display:flex;flex-wrap:wrap;gap:14px;align-items:center;padding-top:2px}
+  .fd .act .btn{padding:11px 18px;font-size:.95rem}
+  .fd .act span{font-size:.84rem;color:var(--muted)}
+  .fd .act span a{font-weight:500;text-decoration:none}
+  .fd-line{font-size:.92rem;color:var(--muted);line-height:1.55;max-width:72ch;padding:10px 16px;border-left:3px solid var(--plum-soft)}
+  .fd-line strong{color:var(--ink);font-weight:500}
+  .fd-line a{font-weight:500;text-decoration:none;white-space:nowrap}
+  .bl-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:12px}
+  .bl-head h2{font-family:Newsreader,Georgia,serif;font-size:1.5rem;line-height:1.15}
+  .bl-head p{color:var(--muted);font-size:.9rem}
+  .bl-row{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1.4fr) 9rem 4.5rem;gap:14px;align-items:center;padding:13px 18px;border-bottom:1px solid var(--line-soft)}
+  .bl-row:last-child{border-bottom:0}
+  .bl-row .nm{display:flex;flex-direction:column;gap:2px;min-width:0}
+  .bl-row .nm b{font-family:Newsreader,Georgia,serif;font-size:1.05rem;font-weight:500;display:flex;gap:8px;align-items:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .bl-row .nm b .ico{color:var(--plum-mid)}
+  .bl-row .nm small{font-size:.76rem;color:var(--faint)}
+  .bl-row .lead{display:flex;flex-direction:column;gap:2px;min-width:0}
+  .bl-row .lead .who{font-family:"DM Mono",Menlo,monospace;font-size:.84rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .bl-row .lead small{font-size:.76rem;color:var(--faint)}
+  .bl-row .fixed{font-family:"DM Mono",Menlo,monospace;font-size:.8rem;color:var(--muted);white-space:nowrap}
+  .bl-row .open{text-align:right}
+  .bl-row .open a{font-weight:500;text-decoration:none;white-space:nowrap}
+  .bl-foot{font-size:.84rem;color:var(--muted)}
+  .bl-foot a{font-weight:500;text-decoration:none}
+  @media (max-width:760px){.bl-row{grid-template-columns:1fr 1fr}.bl-row .fixed{display:none}.bl-row .nm b{white-space:normal}}
 
   @media (max-width:1080px){
     .shell{grid-template-columns:1fr}
@@ -514,68 +510,27 @@
           : h('p',null,'No model on this board has two resolved cells yet, so no profile can be called spiky.'))));
   }
 
-  // The front door says what the site does for a robotics team before it shows anyone else's
-  // leaderboard. The three figures are from the retrain note (notes/release-lottery.html) and
-  // the prices match check.html#pricing; change them there first.
-  function JobBand(){
-    return h(F,null,
-      h('div',{className:'jb'},
-        h('div',{className:'jb-pitch'},
-          h('span',{className:'jb-kicker'},'OrbitEval · the release layer for robot policies'),
-          h('h1',{className:'jb-h1'},'Which skills did the new model ',h('em',null,'break'),'?'),
-          h('p',{className:'jb-lede'},'A suite average that went up can hide a skill that fell twenty points. Drop the evaluation log you already have and get the answer per skill, with the measurement noise priced in. ',h('strong',null,'Runs in your browser. Nothing is uploaded.')),
-          h('div',{className:'jb-ctas'},
-            h('a',{className:'btn primary',href:'https://orbiteval.com/check.html'},'Check a release',I.arrow()),
-            h('a',{className:'btn ghost',href:'https://orbiteval.com/battle.html'},I.swords(),'Battle two policies'),
-            h('span',{className:'jb-free'},'Free · open source · signed record'))),
-        h('div',{className:'card jb-proof'},
-          h('div',{className:'jb-ph'},h('h3',null,'Same recipe, trained twice'),h('span',{className:'chip'},h('span',{className:'dot'}),'Measured, not modelled')),
-          h('div',{className:'jb-stats'},
-            h('div',{className:'jb-stat'},h('b',null,'+1.3',h('small',null,'points')),h('span',null,'the suite average went up')),
-            h('div',{className:'jb-stat'},h('b',null,'4',h('small',null,'skills')),h('span',null,'went down 5 to 10 points underneath it')),
-            h('div',{className:'jb-stat'},h('b',null,'0',h('small',null,'callable')),h('span',null,'of those drops at 100 episodes per skill, the usual budget'))),
-          h('div',{className:'jb-pf'},h('span',null,'Nothing changed but the random seed. The check tells you what your run could and could not have seen.'),h('a',{href:'https://orbiteval.com/notes/release-lottery.html'},'Read the note →')))),
-      h('div',{className:'jb-tiers'},
-        h('div',{className:'jb-tier'},h('span',{className:'tag'},'Free'),h('b',null,'$0'),h('span',null,'The check in your browser, the chat and the CLI. Apache-2.0.')),
-        h('div',{className:'jb-tier'},h('span',{className:'tag'},'Release audit'),h('b',null,'$2,000',h('small',null,'fixed')),h('span',null,'Your logs, every version, the per-skill regression history, signed. Five business days.')),
-        h('div',{className:'jb-tier'},h('span',{className:'tag'},'Certified policy'),h('b',null,'$25,000',h('small',null,'per policy')),h('span',null,'The same recipe trained three times, selected per skill, the check wired into your CI.')),
-        h('a',{className:'jb-tier link',href:'https://orbiteval.com/check.html#pricing'},'What each one includes →')));
-  }
-
+  // The front door: one message, one action, one supporting line, then the boards in one
+  // glance. The figures are from notes/release-lottery.html and check.html#pricing.
   function Overview(p){
+    function fixed(b){ return b.rows.filter(function(r){ return r.best_rank!=null && r.best_rank===r.worst_rank; }).length; }
     return h(F,null,
-      h(JobBand),
-      h('div',{className:'head'},
-        h('h2',{className:'jb-h2'},'The public boards, with the noise priced in'),
-        h('p',{className:'desc'},'Robot-manipulation and video-world-model leaderboards re-cut by capability. The scores are the benchmarks’ own; what is added is the uncertainty they do not publish. Every bar carries its interval: solid to the lower bound, pale to the upper. Open a board for the full capability matrix.'),
-        h('div',{className:'meta'},
-          h('span',null,I.clock(),'Built '+D.built),
-          h('span',null,I.db(), D.boards.length+' boards'),
-          h('span',null,I.layers(), D.boards.reduce(function(a,b){return a+b.rows.length;},0)+' model entries'))),
-      h('div',{className:'ovgrid'}, D.boards.map(function(b){
-        var top=b.rows.slice(0,8), u=unitOf(b);
-        var hi=Math.max.apply(null,top.map(function(r){return r.pooled_ci?r.pooled_ci[1]:r.overall;}));
-        var lo=Math.min.apply(null,top.map(function(r){return r.pooled_ci?r.pooled_ci[0]:r.overall;}));
-        var x0=Math.max(0,lo-(hi-lo)*0.35), span=(hi-x0)||1, pos=function(v){return Math.max(0,Math.min(100,(v-x0)/span*100));};
-        return h('div',{className:'card ov',key:b.key},
-          h('div',{className:'ovhead'},
-            h('h3',null, DOMICON[b.domain](), b.label),
-            h('span',{className:'chip'},h('span',{className:'dot'}), domainOf(b).label)),
-          h('div',{className:'ovrows'}, top.map(function(r){
-            var ci=r.pooled_ci||[r.overall,r.overall];
-            return h('div',{className:'ovrow',key:r.model},
-              h('span',{className:'badge'}, r.order),
-              h('span',{className:'nm',title:r.model}, r.model),
-              h('span',{className:'trk',title:f1(ci[0])+' – '+f1(ci[1])+u},
-                h('span',{className:'lo',style:{width:pos(ci[0])+'%'}}),
-                h('span',{className:'ci',style:{left:pos(ci[0])+'%',width:(pos(ci[1])-pos(ci[0]))+'%'}}),
-                h('span',{className:'pt',style:{left:pos(r.overall)+'%'}})),
-              h('span',{className:'sc'}, f1(r.overall)+u, h('small',null,'±'+f1((ci[1]-ci[0])/2)))); })),
-          h('div',{className:'ovfoot'},
-            h('span',null, b.rows.length+' models · '+b.cells_resolved+'/'+b.cells_total+' cells resolved'),
-            h('a',{href:'#',onClick:function(e){e.preventDefault();p.open(b.key);}},'Open board →'))); })),
-      h('p',{className:'ovmeth'},'How every interval and rank spread on these boards is computed: ',
-        h('a',{href:'#methodology',onClick:function(e){e.preventDefault();p.method();}},'Methodology →')));
+      h('div',{className:'fd'},
+        h('h1',null,'Which skills did the new model ',h('em',null,'break'),'?'),
+        h('p',{className:'lede'},'Drop the evaluation log you already have. You get the answer per skill, with the measurement noise priced in. ',h('strong',null,'Free, in your browser, nothing uploaded.')),
+        h('div',{className:'act'},
+          h('a',{className:'btn primary',href:'https://orbiteval.com/check.html'},'Check a release',I.arrow()),
+          h('span',null,'Want it done for you and signed? ',h('a',{href:'https://orbiteval.com/check.html#pricing'},'Pricing')))),
+      h('p',{className:'fd-line'},h('strong',null,'Why it matters. '),'We trained the same recipe twice and changed only the seed. The average went up 1.3 points; four skills fell 5 to 10. At 100 episodes per skill, none of those drops is callable. ',h('a',{href:'https://orbiteval.com/notes/release-lottery.html'},'Read the note →')),
+      h('div',{className:'bl-head'},h('h2',null,'The public boards'),h('p',null,'Their scores, our intervals. Most ranks are not fixed by the data.')),
+      h('div',{className:'card'}, D.boards.map(function(b){
+        var top=b.rows[0], u=unitOf(b), half=top&&top.pooled_ci?(top.pooled_ci[1]-top.pooled_ci[0])/2:null;
+        return h('div',{className:'bl-row',key:b.key},
+          h('div',{className:'nm'}, h('b',null,DOMICON[b.domain](),b.label), h('small',null,b.rows.length+' models · '+domainOf(b).label)),
+          top? h('div',{className:'lead'}, h('span',{className:'who',title:top.model},top.model), h('small',null,'leads at '+f1(top.overall)+u+(half!=null?' ±'+f1(half):''))) : h('div',{className:'lead'}),
+          h('span',{className:'fixed'}, fixed(b)+' of '+b.rows.length+' ranks fixed'),
+          h('span',{className:'open'}, h('a',{href:'#',onClick:function(e){e.preventDefault();p.open(b.key);}},'Open →'))); })),
+      h('p',{className:'bl-foot'},'Built '+D.built+'. How the intervals and rank spreads are computed: ',h('a',{href:'#methodology',onClick:function(e){e.preventDefault();p.method();}},'Methodology →')));
   }
 
   function Methodology(){
@@ -616,7 +571,6 @@
     var s4=useState(''), query=s4[0], setQuery=s4[1];
     var s5=useState({}), hidden=s5[0], setHidden=s5[1];
     var s6=useState(false), onlyRes=s6[0], setOnlyRes=s6[1];
-    var s7=useState(true), announce=s7[0], setAnnounce=s7[1];
     var s8=useState(true), showRail=s8[0], setShowRail=s8[1];
     var board=D.boards.filter(function(b){return b.key===bkey;})[0];
     var domains=Object.keys(D.schema.domains);
@@ -634,12 +588,6 @@
         h('a',{href:'https://orbiteval.com/check.html'}, I.tick(),'Release check'),
         h('a',{href:'https://orbiteval.com/battle.html'}, I.swords(),'Battle'),
         h('a',{href:'https://orbiteval.com/chat.html'}, I.chat(),'Chat')),
-      h('div',{className:'promo'},
-        h('div',{className:'thumb'}, h('i',{style:{width:'78%'}}), h('i',{style:{width:'62%'}}), h('i',{style:{width:'44%'}})),
-        h('h4',null,'Watch a live battle'),
-        h('p',null,'Two real policies, same seeds, every frame streamed as it happens. The referee calls it when it is settled.'),
-        h('a',{className:'btn primary block',href:'https://orbiteval.com/battle.html'},'Open the arena'),
-        h('a',{className:'btn ghost block',href:'https://orbiteval.com/check.html'},'Check a release')),
       h('div',{className:'legal'},
         h('a',{href:'#methodology',onClick:function(e){e.preventDefault();setPage('method');}},'Methodology'),
         h('a',{href:'https://orbiteval.com/about.html'},'About'),
@@ -647,12 +595,11 @@
 
     var topbar=h('div',{className:'topbar'},
       h('button',{className:'tab','aria-current':page==='overview',onClick:function(){setPage('overview');}}, I.grid(),'Overview'),
-      h('div',{className:'tabs-center'}, domains.map(function(d){
+      h('div',{className:'tabs-center'}, page==='board'? domains.map(function(d){
         var first=D.boards.filter(function(b){return b.domain===d;})[0];
-        var cur=page==='board'&&domainOfKey(bkey)===d;
+        var cur=domainOfKey(bkey)===d;
         return h('button',{key:d,className:'tab','aria-current':cur,onClick:function(){openBoard(first.key);}},
-          DOMICON[d](), D.schema.domains[d].label); })),
-      h('a',{className:'btn ghost',href:'https://orbiteval.com/chat.html'},'Chat'),
+          DOMICON[d](), D.schema.domains[d].label); }) : null),
       h('a',{className:'btn primary',href:'https://orbiteval.com/check.html'},'Check a release'));
 
     var rail=null, content=null;
@@ -718,10 +665,6 @@
 
     var wide = page!=='board' || !showRail;
     return h(F,null,
-      announce? h('div',{className:'announce'},
-        h('span',null,h('b',null,'Live now: '),'two real policies run on the same seeds, every frame rendered as it happens, and the referee only calls it once the data settles.'),
-        h('a',{href:'https://orbiteval.com/battle.html'},'Watch a battle', I.arrow()),
-        h('button',{className:'x','aria-label':'Dismiss',onClick:function(){setAnnounce(false);}},'×')) : null,
       h('div',{className:'shell'}, sidebar,
         h('div',{className:'main'}, topbar,
           h('div',{className:'body'+(wide?' wide':'')}, wide?null:rail, h('main',{className:'content'}, content)))));

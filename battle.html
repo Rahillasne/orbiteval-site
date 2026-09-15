@@ -27,20 +27,12 @@
     <nav class="nav">
       <a href="index.html"><svg class="ico" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Overview</a><a href="index.html"><svg class="ico" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13"/><circle cx="4" cy="6" r="1"/><circle cx="4" cy="12" r="1"/><circle cx="4" cy="18" r="1"/></svg>Leaderboards</a><a href="check.html"><svg class="ico" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>Release check</a><a href="battle.html" aria-current="page"><svg class="ico" viewBox="0 0 24 24"><path d="M14 4l6 6-8 8-6-6zM4 20l4-4M14 14l2 2M4 6l2 2"/></svg>Battle</a><a href="chat.html"><svg class="ico" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1.1-4.2A8 8 0 1 1 21 12z"/></svg>Chat</a>
     </nav>
-    <div class="promo">
-      <div class="thumb"><i style="width:78%"></i><i style="width:62%"></i><i style="width:44%"></i></div>
-      <h4>Watch a live battle</h4>
-      <p>Two real policies, same seeds, every frame streamed as it happens. The referee calls it when it is settled.</p>
-      <a class="btn primary block" href="battle.html">Open the arena</a>
-      <a class="btn ghost block" href="check.html">Check a release</a>
-    </div>
     <div class="legal"><a href="index.html#methodology">Methodology</a><a href="about.html">About</a><span>Independent · not affiliated with any benchmark</span></div>
   </aside>
   <div class="main">
     <div class="topbar">
       <a class="tab" href="index.html"><svg class="ico" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Overview</a>
       <div class="tabs-center"></div>
-      <a class="btn ghost" href="chat.html">Chat</a>
       <a class="btn primary" href="check.html">Check a release</a>
     </div>
     <div class="body wide">
@@ -140,7 +132,7 @@
     <div id="lTally" class="bsum"></div>
     <details class="box"><summary>Watching a battle someone else started? Enter the session code</summary><div class="in"><div class="row"><input class="txt" id="lCode" placeholder="session code" style="max-width:220px"><button class="btn ghost" id="lWatch" type="button">Watch</button></div><p>Anyone with the code sees the same frames and the same tally.</p></div></details>
   </div>
-  <p class="bsub">House policies are public checkpoints running on the arena server, on CPU, so one episode takes a few minutes. Pick <em>My own policy</em> to run yours from your machine; the checkpoint never leaves it. The DDIM-10 and DDIM-25 entries are the same weights at two inference budgets, so battling them asks whether more denoising steps buy anything.</p>
+  <p class="bsub">House policies run on the arena server on CPU, so an episode takes a few minutes. Pick <em>My own policy</em> to run yours from your machine; the checkpoint never leaves it.</p>
 </section>
 
 <section class="sect" id="boards">
