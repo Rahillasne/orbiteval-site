@@ -3,26 +3,25 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#161311">
+<meta name="theme-color" content="#0e1311">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Mona+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600&family=Figtree:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="site.css">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23161311'/%3E%3Ccircle cx='16' cy='16' r='9' stroke='%23f3efe7' stroke-width='2.2' fill='none'/%3E%3Ccircle cx='23' cy='9' r='3' fill='%2371b89a'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230e1311'/%3E%3Ccircle cx='16' cy='16' r='9' stroke='%23eef2ef' stroke-width='2.2' fill='none'/%3E%3Ccircle cx='23' cy='9' r='3' fill='%234fc98a'/%3E%3C/svg%3E">
 <title>Specimen report — Orbit</title>
 <meta name="description" content="A full example of an Orbit verification report, with illustrative data, showing the reading, the breakdowns, the scorer's error and the sample.">
 </head>
 <body>
 <header class="topbar" id="top">
   <div class="pill">
+    <a class="brand" href="index.html" aria-label="Orbit home"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.6"/><circle cx="15.5" cy="4.5" r="2.3" fill="#4fc98a"/></svg>Orbit</a>
     <nav class="pill__links" aria-label="Primary">
       <a href="method.html">Method</a>
       <a href="registry.html">Registry</a>
-    </nav>
-    <a class="brand" href="index.html" aria-label="Orbit home"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.6"/><circle cx="15.5" cy="4.5" r="2.3" fill="#71b89a"/></svg>Orbit</a>
-    <nav class="pill__links" aria-label="Secondary">
       <a href="calibration.html">Calibration</a>
       <a href="specimen-report.html">Specimen report</a>
+      <a href="app.html">Workspace</a>
     </nav>
     <a class="btn btn--primary btn--sm pill__cta" href="demo.html" data-demo>Book a demo <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
     <button class="pill__menu" type="button" aria-expanded="false" aria-controls="mnav" aria-label="Menu"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
@@ -32,6 +31,7 @@
     <a href="registry.html">Registry</a>
     <a href="calibration.html">Calibration</a>
     <a href="specimen-report.html">Specimen report</a>
+    <a href="app.html">Workspace</a>
     <a href="demo.html" data-demo>Book a demo</a>
   </nav>
 </header>
@@ -40,7 +40,7 @@
 <main class="wrap">
   <article class="report">
     <header class="report__head">
-      <p class="eyebrow"><span class="dot"></span>Verification report · ORB-0000-SPEC · method v1</p>
+      <p class="eyebrow"><span class="dot"></span>Verification report · ORB-0000-SPEC · method v1 · <a href="app.html#/d/ORB-0000-SPEC" style="color:var(--accent)">open in the workspace</a></p>
       <div class="report__title"><h1>Specimen site A</h1><span class="placard placard--current">Current</span></div>
       <div class="table-wrap mt"><table>
         <tbody>
@@ -69,7 +69,7 @@
       </div>
       <div class="reading__meta"><span>seed a91f3c</span><span>n = 812 of 41,206</span><span>scorer κ 0.86 (160 double-scored)</span></div>
     </figure>
-    <div class="verdict"><strong>The claim is not supported.</strong> 99.0% lies outside the interval. The measured rate is 5.6 points below the claim. Against the pre-registered threshold of 90.0% for this site, the deployment passes and the grade is Current.</div>
+    <div class="verdict verdict--ok"><strong>The claim is not supported.</strong> 99.0% lies outside the interval. The measured rate is 5.6 points below the claim. Against the pre-registered threshold of 90.0% for this site, the deployment passes and the grade is Current.</div>
 
     <h2>2. Where the failures are</h2>
     <p>Breakdown by item class. Bars show the measured success rate per class; these are descriptive, not pre-registered tests.</p>
@@ -150,30 +150,19 @@
 <div class="banner banner--foot"><div class="wrap"><span class="placard placard--specimen">Specimen</span><span>Illustrative data. Every figure on this page was chosen to show the format, not measured from a deployment.</span></div></div>
 
 <footer class="footer">
-  <div class="wrap">
-    <div class="footer__grid">
-      <div>
-        <a class="brand" href="index.html" aria-label="Orbit home"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.6"/><circle cx="15.5" cy="4.5" r="2.3" fill="#71b89a"/></svg>Orbit</a>
-        <p class="footer__tag">Independent verification of what deployed robots actually do.</p>
-        <a class="link-arrow" href="demo.html" data-demo>Book a demo <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
-      </div>
-      <div>
-        <h5>Product</h5>
-        <ul><li><a href="method.html">Method</a></li><li><a href="registry.html">Registry</a></li><li><a href="calibration.html">Calibration</a></li><li><a href="specimen-report.html">Specimen report</a></li></ul>
-      </div>
-      <div>
-        <h5>Policy</h5>
-        <ul><li><a href="index.html#independence">Conflict policy</a></li><li><a href="calibration.html">Our error rate</a></li><li><a href="registry.html">Verify a grade</a></li></ul>
-      </div>
-      <div>
-        <h5>Company</h5>
-        <ul><li><a href="demo.html" data-demo>Book a demo</a></li><li><a href="mailto:rahil@orbiteval.com">Contact</a></li><li><a href="https://github.com/Rahillasne/orbit-eval">Open code</a></li></ul>
-      </div>
-    </div>
-    <div class="footer__bottom">
-      <span>© 2026 Orbit · orbiteval.com</span>
-      <span><a href="mailto:rahil@orbiteval.com">rahil@orbiteval.com</a> &nbsp;·&nbsp; <a href="#top">Back to top ↑</a></span>
-    </div>
+  <div class="wrap footer__row">
+    <a class="brand" href="index.html" aria-label="Orbit home"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.6"/><circle cx="15.5" cy="4.5" r="2.3" fill="#4fc98a"/></svg>Orbit</a>
+    <nav class="footer__links" aria-label="Footer">
+      <a href="method.html">Method</a>
+      <a href="registry.html">Registry</a>
+      <a href="calibration.html">Calibration</a>
+      <a href="specimen-report.html">Specimen report</a>
+      <a href="app.html">Workspace</a>
+      <a href="index.html#independence">Conflict policy</a>
+      <a href="https://github.com/Rahillasne/orbit-eval">Open code</a>
+      <a href="demo.html" data-demo>Book a demo</a>
+    </nav>
+    <div class="footer__meta"><span>© 2026 Orbit · Independent verification of deployed robots</span><span><a href="mailto:rahil@orbiteval.com">rahil@orbiteval.com</a> · <a href="#top">Back to top ↑</a></span></div>
   </div>
 </footer>
 <script src="site.js"></script>

@@ -3,26 +3,25 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#161311">
+<meta name="theme-color" content="#0e1311">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Mona+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600&family=Figtree:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="site.css">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23161311'/%3E%3Ccircle cx='16' cy='16' r='9' stroke='%23f3efe7' stroke-width='2.2' fill='none'/%3E%3Ccircle cx='23' cy='9' r='3' fill='%2371b89a'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230e1311'/%3E%3Ccircle cx='16' cy='16' r='9' stroke='%23eef2ef' stroke-width='2.2' fill='none'/%3E%3Ccircle cx='23' cy='9' r='3' fill='%234fc98a'/%3E%3C/svg%3E">
 <title>Method — Orbit</title>
 <meta name="description" content="The full procedure Orbit uses to verify deployed robot performance: pre-registration, sampling, the rubric, calibration, statistics, verdicts, and revocation.">
 </head>
 <body>
 <header class="topbar" id="top">
   <div class="pill">
+    <a class="brand" href="index.html" aria-label="Orbit home"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.6"/><circle cx="15.5" cy="4.5" r="2.3" fill="#4fc98a"/></svg>Orbit</a>
     <nav class="pill__links" aria-label="Primary">
       <a href="method.html">Method</a>
       <a href="registry.html">Registry</a>
-    </nav>
-    <a class="brand" href="index.html" aria-label="Orbit home"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.6"/><circle cx="15.5" cy="4.5" r="2.3" fill="#71b89a"/></svg>Orbit</a>
-    <nav class="pill__links" aria-label="Secondary">
       <a href="calibration.html">Calibration</a>
       <a href="specimen-report.html">Specimen report</a>
+      <a href="app.html">Workspace</a>
     </nav>
     <a class="btn btn--primary btn--sm pill__cta" href="demo.html" data-demo>Book a demo <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
     <button class="pill__menu" type="button" aria-expanded="false" aria-controls="mnav" aria-label="Menu"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
@@ -32,6 +31,7 @@
     <a href="registry.html">Registry</a>
     <a href="calibration.html">Calibration</a>
     <a href="specimen-report.html">Specimen report</a>
+    <a href="app.html">Workspace</a>
     <a href="demo.html" data-demo>Book a demo</a>
   </nav>
 </header>
@@ -40,94 +40,90 @@
   <section class="page-head">
     <p class="eyebrow"><span class="dot"></span>Method · version 1 · piece picking</p>
     <h1>The procedure, in full.</h1>
-    <p class="lede">Everything below is fixed before we look at a single pick, and every number on a report can be re-derived from it. If you can't reproduce our sample and our arithmetic, you shouldn't trust our number.</p>
+    <p class="lede">Fixed before we look at a single pick. Every number on a report can be re-derived from it.</p>
   </section>
-  <div class="kvs">
-    <div class="kv" id="scope"><span class="lbl">Scope</span><div>
-      <p>Version 1 covers robotic piece picking: single items moved from a source container to a target container. The <strong>in-scope SKU list</strong> is declared by the vendor and operator together, in writing, before the audit window opens. Changes to scope during the window are logged with a date and shown on the report. A pick on an item that was added to scope after the window opened is excluded from the sample and counted in a separate line.</p>
-    </div></div>
-    <div class="kv" id="preregistration"><span class="lbl">Pre-registration</span><div>
-      <p>Before any data is pulled we write a protocol document containing: the rubric version, the sampling rule and seed, the sample size and how it was chosen, the stratification, the calibration fraction, the interval method, and the threshold that the claim will be tested against. The document is hashed (SHA-256) and the hash and timestamp are printed on the report and the grade page. The document itself is released with the report.</p>
-    </div></div>
-    <div class="kv" id="sampling"><span class="lbl">Sampling</span><div>
-      <p>The population is every logged pick attempt on in-scope SKUs during the window. <strong>We choose the site and the window</strong>, from the vendor's active fleet, by a rule published on this page: the site is drawn at random from those the vendor has operated for at least eight weeks; the window is the four most recent complete weeks at the time of pre-registration.</p>
-      <p>Picks are drawn by a seeded pseudo-random sampler, stratified by item class so that rare classes are represented. The seed is published. Anyone with the vendor's log can regenerate exactly the picks we scored.</p>
-      <p>Sample size is set from the decision, not from convention: the operator or vendor states the smallest gap worth detecting and the precision required (for example, ±2 points at 95%), and we size the sample to deliver it after adjusting for clustering by SKU. A typical version 1 audit scores 600–1,200 picks.</p>
-    </div></div>
-    <div class="kv" id="rubric"><span class="lbl">Rubric</span><div>
-      <p>Each sampled pick is assigned exactly one outcome.</p>
-      <div class="table-wrap"><table>
-        <thead><tr><th>Outcome</th><th>Definition</th></tr></thead>
-        <tbody>
-          <tr><td class="mono">Success</td><td>One correct item, placed in the target container, undamaged, without a human touching the item or the robot.</td></tr>
-          <tr><td class="mono">Miss</td><td>Attempt made, no item grasped.</td></tr>
-          <tr><td class="mono">Drop</td><td>Item grasped, then released before placement.</td></tr>
-          <tr><td class="mono">Double-pick</td><td>More than one item moved.</td></tr>
-          <tr><td class="mono">Damage</td><td>Item or packaging visibly damaged by the pick, regardless of placement.</td></tr>
-          <tr><td class="mono">No attempt</td><td>Item presented and in scope; robot did not attempt it within the cycle.</td></tr>
-        </tbody>
-      </table></div>
-      <p class="mt">The <strong>denominator</strong> is all six outcomes together: every presented, in-scope item. The success rate is <span class="mono">Success ÷ (all outcomes)</span>. A vendor's dashboard often uses attempted picks as the denominator and excludes "no attempt"; where it does, the report shows both figures side by side and says which one the claim referred to.</p>
-    </div></div>
-    <div class="kv" id="scoring"><span class="lbl">Scoring and calibration</span><div>
-      <p>Every sampled pick is scored twice: once by an automatic scorer, a vision-language model given the rubric and the pick's video and log record with a fixed, versioned prompt, and, for a stratified fraction of at least 20% of the sample, once by a human scorer who does not see the automatic result.</p>
-      <p>We report the agreement between the two (Cohen's κ) and the full confusion matrix by outcome. The scorer's measured misclassification rates are used to correct the estimate and are carried into the interval, so a less reliable scorer produces a wider interval rather than a wrong point. Scorer prompt versions are numbered and never edited in place.</p>
-      <p>Our agreement figures across all audits are published on the <a href="calibration.html">calibration page</a> and updated as they change.</p>
-    </div></div>
-    <div class="kv" id="statistics"><span class="lbl">Statistics</span><div>
-      <p><strong>Unit of inference.</strong> Picks of the same SKU are not independent: a robot that struggles with one transparent bag struggles with all of them. Treating picks as independent gives an interval that is too narrow. We compute the interval on the success rate with a design effect for clustering by SKU, estimated from the sample itself.</p>
-      <p><strong>Interval.</strong> Wilson score interval at 95%, cluster-adjusted, then widened for scorer misclassification. The claim is judged against the interval: outside it, the claim is not supported; inside it, the claim is consistent with the data at this sample size.</p>
-      <p><strong>Breakdowns</strong> by item class and failure mode are descriptive unless they were pre-registered as tests. We say which.</p>
-      <p><strong>Trend.</strong> A drift between re-checks is only called when a pre-registered test on the sequence of re-checks rejects "no change". A single month that looks worse is reported as what it is: one month.</p>
-      <p>The interval and sizing code is open and installable: <a href="https://github.com/Rahillasne/orbit-eval">github.com/Rahillasne/orbit-eval</a>.</p>
-    </div></div>
-    <div class="kv" id="verdicts"><span class="lbl">Verdicts</span><div>
-      <p>A grade page carries exactly one status.</p>
-      <p><span class="placard placard--current">Current</span> &nbsp;The most recent re-check is within its validity window and the pre-registered protocol was followed in full.</p>
-      <p><span class="placard placard--caution">Insufficient data</span> &nbsp;The sample could not deliver the pre-registered precision, usually because too few in-scope picks were logged in the window. The report says what was measured and what sample would resolve it. We do not round this up to a verdict.</p>
-      <p><span class="placard placard--revoked">Revoked</span> &nbsp;A re-check found the measured rate below the published threshold; or the vendor withheld or altered logs; or scope changed without being logged. The reason is stated on the grade page.</p>
-    </div></div>
-    <div class="kv" id="rechecking"><span class="lbl">Re-checking</span><div>
-      <p>Every current grade is re-checked monthly with the same protocol and a fresh published seed. The grade page shows every re-check in sequence. Nothing is removed.</p>
-    </div></div>
-    <div class="kv" id="publish"><span class="lbl">What we publish</span><div>
-      <p>The protocol document and its hash, the seed, the sample size, the agreement figures, the interval, the breakdowns, the status, and an index of every scored pick by log identifier and timestamp.</p>
-      <p>We do not publish pick video without the operator's written permission; the index lets the operator or vendor find each pick in their own records. We never hold model weights or training data; the method does not need them.</p>
-    </div></div>
-    <div class="kv" id="independence"><span class="lbl">Independence</span><div>
-      <p>The conflict policy on the <a href="index.html#independence">front page</a> is part of this method and is versioned with it.</p>
-    </div></div>
-  </div>
+  <section>
+    <p class="lbl" style="margin-bottom:14px">In one minute</p>
+    <ul class="brief">
+      <li><span class="lbl">Scope</span><span>Piece picking. The in-scope SKU list is declared in writing before the window opens.</span></li>
+      <li><span class="lbl">Pre-register</span><span>Rubric, sampling rule, sample size, threshold: written, hashed, timestamped, then released with the report.</span></li>
+      <li><span class="lbl">Sample</span><span>We choose the site and the window. Picks are drawn by a published seed, stratified by item class.</span></li>
+      <li><span class="lbl">Score</span><span>A model scores every pick. A human re-scores at least a fifth, blind. Disagreement widens the interval.</span></li>
+      <li><span class="lbl">Statistics</span><span>Wilson interval at 95%, adjusted for clustering by SKU and for scorer error. The claim is judged against it.</span></li>
+      <li><span class="lbl">Verdict</span><span>One status per grade page: Current, Insufficient data, or Revoked. Re-checked monthly. Nothing deleted.</span></li>
+    </ul>
+  </section>
   <section class="section section--tight">
-    <p class="small">Method version 1, September 2026. Changes are versioned; a report always names the version it was produced under.</p>
+    <p class="lbl" style="margin-bottom:6px">The detail</p>
+    <div class="acc">
+      <details id="scope"><summary><span class="lbl">Scope</span><span class="sum">Single items, source container to target container. Scope changes are logged and shown.</span></summary><div>
+        <p>Version 1 covers robotic piece picking: single items moved from a source container to a target container. The <strong>in-scope SKU list</strong> is declared by the vendor and operator together, in writing, before the audit window opens. Changes to scope during the window are logged with a date and shown on the report. A pick on an item added to scope after the window opened is excluded from the sample and counted on a separate line.</p>
+      </div></details>
+      <details id="preregistration"><summary><span class="lbl">Pre-registration</span><span class="sum">The protocol is hashed (SHA-256) and the hash and timestamp are printed on the grade page.</span></summary><div>
+        <p>Before any data is pulled we write a protocol document containing: the rubric version, the sampling rule and seed, the sample size and how it was chosen, the stratification, the calibration fraction, the interval method, and the threshold the claim will be tested against. The document is hashed and the hash and timestamp are printed on the report and the grade page. The document itself is released with the report.</p>
+      </div></details>
+      <details id="sampling"><summary><span class="lbl">Sampling</span><span class="sum">Site drawn at random from the vendor's fleet; window is the four most recent complete weeks; 600–1,200 picks.</span></summary><div>
+        <p>The population is every logged pick attempt on in-scope SKUs during the window. <strong>We choose the site and the window</strong>: the site is drawn at random from those the vendor has operated for at least eight weeks; the window is the four most recent complete weeks at pre-registration.</p>
+        <p>Picks are drawn by a seeded pseudo-random sampler, stratified by item class so rare classes are represented. The seed is published. Anyone with the vendor's log can regenerate exactly the picks we scored.</p>
+        <p>Sample size is set from the decision: the operator or vendor states the smallest gap worth detecting and the precision required (for example ±2 points at 95%), and we size the sample to deliver it after adjusting for clustering by SKU. A typical audit scores 600–1,200 picks.</p>
+      </div></details>
+      <details id="rubric"><summary><span class="lbl">Rubric</span><span class="sum">Six outcomes, exactly one per pick. The denominator is every presented, in-scope item.</span></summary><div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Outcome</th><th>Definition</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">Success</td><td>One correct item, placed in the target container, undamaged, without a human touching the item or the robot.</td></tr>
+            <tr><td class="mono">Miss</td><td>Attempt made, no item grasped.</td></tr>
+            <tr><td class="mono">Drop</td><td>Item grasped, then released before placement.</td></tr>
+            <tr><td class="mono">Double-pick</td><td>More than one item moved.</td></tr>
+            <tr><td class="mono">Damage</td><td>Item or packaging visibly damaged by the pick, regardless of placement.</td></tr>
+            <tr><td class="mono">No attempt</td><td>Item presented and in scope; the robot did not attempt it within the cycle.</td></tr>
+          </tbody>
+        </table></div>
+        <p class="mt">The success rate is <span class="mono">Success ÷ (all six outcomes)</span>. A vendor dashboard often excludes "no attempt"; where it does, the report shows both figures and says which one the claim referred to.</p>
+      </div></details>
+      <details id="scoring"><summary><span class="lbl">Scoring and calibration</span><span class="sum">Every pick scored by a versioned model; at least 20% re-scored by a human who never sees the model's answer.</span></summary><div>
+        <p>Every sampled pick is scored by an automatic scorer: a vision-language model given the rubric and the pick's video and log record, with a fixed, versioned prompt. A stratified fraction of at least 20% is also scored by a human who does not see the automatic result.</p>
+        <p>We report the agreement between the two (Cohen's κ) and the full confusion matrix by outcome. The scorer's measured misclassification rates correct the estimate and are carried into the interval, so a weaker scorer produces a wider interval rather than a wrong point. Prompt versions are numbered and never edited in place. Agreement figures across all audits are on the <a href="calibration.html">calibration page</a>.</p>
+      </div></details>
+      <details id="statistics"><summary><span class="lbl">Statistics</span><span class="sum">Picks of one SKU are not independent. Cluster-adjusted Wilson interval, widened for scorer error.</span></summary><div>
+        <p><strong>Unit of inference.</strong> A robot that struggles with one transparent bag struggles with all of them, so picks are not independent and a naive interval is too narrow. We use a design effect for clustering by SKU, estimated from the sample itself.</p>
+        <p><strong>Interval.</strong> Wilson score interval at 95%, cluster-adjusted, then widened for scorer misclassification. Outside the interval, the claim is not supported; inside it, the claim is consistent with the data at this sample size.</p>
+        <p><strong>Breakdowns</strong> by item class and failure mode are descriptive unless pre-registered as tests. We say which. <strong>Trend</strong> is only called when a pre-registered test across re-checks rejects "no change".</p>
+        <p>The interval and sizing code is open: <a href="https://github.com/Rahillasne/orbit-eval">github.com/Rahillasne/orbit-eval</a>.</p>
+      </div></details>
+      <details id="verdicts"><summary><span class="lbl">Verdicts</span><span class="sum">Exactly one status per grade page.</span></summary><div>
+        <p><span class="placard placard--current">Current</span> &nbsp;The latest re-check is within its validity window and the protocol was followed in full.</p>
+        <p><span class="placard placard--caution">Insufficient data</span> &nbsp;The sample could not deliver the pre-registered precision. The report says what would resolve it. We do not round this up to a verdict.</p>
+        <p><span class="placard placard--revoked">Revoked</span> &nbsp;A re-check found the rate below the threshold; or logs were withheld or altered; or scope changed without being logged. The reason is on the grade page.</p>
+      </div></details>
+      <details id="rechecking"><summary><span class="lbl">Re-checking</span><span class="sum">Monthly, same protocol, fresh seed. Every re-check stays on the page.</span></summary><div>
+        <p>Every current grade is re-checked monthly with the same protocol and a fresh published seed. The grade page shows every re-check in sequence. Nothing is removed.</p>
+      </div></details>
+      <details id="publish"><summary><span class="lbl">What we publish</span><span class="sum">Protocol and hash, seed, sample size, agreement, interval, breakdowns, status, and an index of every scored pick.</span></summary><div>
+        <p>We do not publish pick video without the operator's written permission; the index lets the operator or vendor find each pick in their own records. We never hold model weights or training data; the method does not need them.</p>
+      </div></details>
+      <details id="independence"><summary><span class="lbl">Independence</span><span class="sum">The conflict policy is part of this method and versioned with it.</span></summary><div>
+        <p>Read it on the <a href="index.html#independence">front page</a>.</p>
+      </div></details>
+    </div>
+    <p class="small mt">Method version 1, September 2026. Changes are versioned; a report always names the version it was produced under.</p>
   </section>
 </main>
 
 <footer class="footer">
-  <div class="wrap">
-    <div class="footer__grid">
-      <div>
-        <a class="brand" href="index.html" aria-label="Orbit home"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.6"/><circle cx="15.5" cy="4.5" r="2.3" fill="#71b89a"/></svg>Orbit</a>
-        <p class="footer__tag">Independent verification of what deployed robots actually do.</p>
-        <a class="link-arrow" href="demo.html" data-demo>Book a demo <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
-      </div>
-      <div>
-        <h5>Product</h5>
-        <ul><li><a href="method.html">Method</a></li><li><a href="registry.html">Registry</a></li><li><a href="calibration.html">Calibration</a></li><li><a href="specimen-report.html">Specimen report</a></li></ul>
-      </div>
-      <div>
-        <h5>Policy</h5>
-        <ul><li><a href="index.html#independence">Conflict policy</a></li><li><a href="calibration.html">Our error rate</a></li><li><a href="registry.html">Verify a grade</a></li></ul>
-      </div>
-      <div>
-        <h5>Company</h5>
-        <ul><li><a href="demo.html" data-demo>Book a demo</a></li><li><a href="mailto:rahil@orbiteval.com">Contact</a></li><li><a href="https://github.com/Rahillasne/orbit-eval">Open code</a></li></ul>
-      </div>
-    </div>
-    <div class="footer__bottom">
-      <span>© 2026 Orbit · orbiteval.com</span>
-      <span><a href="mailto:rahil@orbiteval.com">rahil@orbiteval.com</a> &nbsp;·&nbsp; <a href="#top">Back to top ↑</a></span>
-    </div>
+  <div class="wrap footer__row">
+    <a class="brand" href="index.html" aria-label="Orbit home"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.6"/><circle cx="15.5" cy="4.5" r="2.3" fill="#4fc98a"/></svg>Orbit</a>
+    <nav class="footer__links" aria-label="Footer">
+      <a href="method.html">Method</a>
+      <a href="registry.html">Registry</a>
+      <a href="calibration.html">Calibration</a>
+      <a href="specimen-report.html">Specimen report</a>
+      <a href="app.html">Workspace</a>
+      <a href="index.html#independence">Conflict policy</a>
+      <a href="https://github.com/Rahillasne/orbit-eval">Open code</a>
+      <a href="demo.html" data-demo>Book a demo</a>
+    </nav>
+    <div class="footer__meta"><span>© 2026 Orbit · Independent verification of deployed robots</span><span><a href="mailto:rahil@orbiteval.com">rahil@orbiteval.com</a> · <a href="#top">Back to top ↑</a></span></div>
   </div>
 </footer>
 <script src="site.js"></script>

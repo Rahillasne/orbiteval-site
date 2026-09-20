@@ -19,11 +19,7 @@ document.querySelectorAll(".pill__links a, .mnav a").forEach((a) => {
 const menuBtn = document.querySelector(".pill__menu");
 const mnav = document.getElementById("mnav");
 if (menuBtn && mnav) {
-  const set = (open) => {
-    menuBtn.setAttribute("aria-expanded", String(open));
-    mnav.hidden = !open;
-    document.body.classList.toggle("menu-open", open);
-  };
+  const set = (open) => { menuBtn.setAttribute("aria-expanded", String(open)); mnav.hidden = !open; document.body.classList.toggle("menu-open", open); };
   menuBtn.addEventListener("click", () => set(menuBtn.getAttribute("aria-expanded") !== "true"));
   mnav.querySelectorAll("a").forEach((a) => a.addEventListener("click", () => set(false)));
   document.addEventListener("keydown", (e) => { if (e.key === "Escape") set(false); });
@@ -41,23 +37,9 @@ if (reduce || !("IntersectionObserver" in window)) {
   toReveal.forEach((el) => io.observe(el));
 }
 
-// The four steps: click to choose one; otherwise they advance on their own.
-document.querySelectorAll("[data-steps]").forEach((root) => {
-  const items = [...root.querySelectorAll(".feat__item")];
-  const panels = [...root.querySelectorAll(".panel")];
-  const dwell = parseInt(root.dataset.dwell || "5200", 10);
-  let i = 0, timer = null;
-  const show = (n) => {
-    i = n;
-    items.forEach((it, k) => { it.classList.toggle("is-on", k === n); it.querySelector("button").setAttribute("aria-expanded", String(k === n)); });
-    panels.forEach((p, k) => p.classList.toggle("is-on", k === n));
-  };
-  items.forEach((it, k) => it.querySelector("button").addEventListener("click", () => {
-    clearInterval(timer); root.classList.add("feat--manual"); show(k);
-  }));
-  show(0);
-  if (!reduce) timer = setInterval(() => show((i + 1) % items.length), dwell);
-});
+// Open a collapsed section when a link points at it.
+const openHash = () => { const el = location.hash && document.getElementById(location.hash.slice(1)); if (el && el.tagName === "DETAILS") el.open = true; };
+openHash(); addEventListener("hashchange", openHash);
 
 // Copy an address on click for people whose browser has no mail app.
 document.querySelectorAll("[data-copy]").forEach((el) => {

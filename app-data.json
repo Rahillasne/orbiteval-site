@@ -1,0 +1,96 @@
+{
+  "generated": "2026-09-20",
+  "method_version": 1,
+  "real_deployments": 0,
+  "notice": "Illustrative data. Four specimen deployments show the format and the three statuses. No real audit has been issued yet.",
+  "deployments": [
+    {
+      "id": "ORB-0000-SPEC", "specimen": true,
+      "vendor": "Specimen vendor", "site": "Specimen site A",
+      "task": "Each-pick from source totes into order containers",
+      "policy_version": "vendor build 4.2.1 (unchanged during window)",
+      "scope": "63 in-scope SKUs, declared 2026-W08",
+      "claim": 99.0, "threshold": 90.0, "precision": "±2.5 points at 95%",
+      "status": "current",
+      "checks": [
+        {
+          "n": 1, "window": "weeks 9–12", "issued": "week 13", "next_due": "week 16",
+          "preregistered": "week 8, day 6", "protocol_hash": "3f9c…a1e2", "rubric": "v1",
+          "seed": "a91f3c", "population": 41206, "sampled": 812, "successes": 758,
+          "measured": 93.4, "ci": [91.0, 95.4], "design_effect": 1.8,
+          "kappa": 0.86, "double_scored": 160, "disagreements": 9, "weakest_class": "Transparent or reflective", "weakest_kappa": 0.79,
+          "status": "current",
+          "verdict": "The claim is not supported: 99.0% lies outside the interval, 5.6 points above the measured rate. Against the pre-registered threshold of 90.0% the deployment passes, so the grade is Current.",
+          "classes": [
+            {"name": "Rigid, boxed", "sampled": 301, "rate": 97.8},
+            {"name": "Bagged, polybag", "sampled": 222, "rate": 94.6},
+            {"name": "Deformable, soft", "sampled": 150, "rate": 90.7},
+            {"name": "Transparent or reflective", "sampled": 139, "rate": 84.2}
+          ],
+          "modes": [
+            {"name": "Miss", "picks": 19}, {"name": "Drop", "picks": 17}, {"name": "Double-pick", "picks": 11}, {"name": "Damage", "picks": 4}, {"name": "No attempt", "picks": 3}
+          ],
+          "weekly": [
+            {"label": "9", "sampled": 203, "rate": 94.6}, {"label": "10", "sampled": 205, "rate": 94.1}, {"label": "11", "sampled": 201, "rate": 93.7}, {"label": "12", "sampled": 203, "rate": 93.4}
+          ],
+          "trend_note": "The weekly figures drift down 1.2 points, inside week-to-week noise at about 200 picks a week. Not called. The pre-registered trend test runs across re-checks.",
+          "lever": "If transparent and reflective items performed at the bagged-item rate, the overall rate would rise by about 1.8 points. Drops on bagged items are the second-largest source of failure.",
+          "disagreement_rows": [
+            {"pair": "scorer: success · human: drop", "count": 4, "effect": "Scorer optimistic. Corrected downward."},
+            {"pair": "scorer: miss · human: no attempt", "count": 3, "effect": "No effect on the success rate."},
+            {"pair": "scorer: drop · human: success", "count": 2, "effect": "Scorer pessimistic. Corrected upward."}
+          ],
+          "site_rule": "Drawn at random by Orbit from the vendor's four sites operated for at least eight weeks. The vendor learned which site after the draw.",
+          "evidence": [
+            {"t": "2026-W09-D2 08:14:03", "pick": "0000418822", "class": "rigid", "outcome": "success", "double": "agree"},
+            {"t": "2026-W09-D2 08:14:41", "pick": "0000418829", "class": "bagged", "outcome": "drop", "double": ""},
+            {"t": "2026-W09-D2 08:15:17", "pick": "0000418834", "class": "transparent", "outcome": "miss", "double": "agree"},
+            {"t": "2026-W09-D2 08:16:02", "pick": "0000418851", "class": "rigid", "outcome": "success", "double": ""},
+            {"t": "2026-W09-D2 08:16:39", "pick": "0000418857", "class": "deformable", "outcome": "success", "double": "disagree (scorer: success, human: drop)"},
+            {"t": "2026-W09-D2 08:17:20", "pick": "0000418863", "class": "bagged", "outcome": "success", "double": ""},
+            {"t": "2026-W09-D2 08:18:05", "pick": "0000418870", "class": "rigid", "outcome": "success", "double": "agree"},
+            {"t": "2026-W09-D2 08:18:49", "pick": "0000418878", "class": "transparent", "outcome": "success", "double": ""}
+          ],
+          "evidence_total": 812
+        }
+      ]
+    },
+    {
+      "id": "ORB-0000-SPEC-D", "specimen": true,
+      "vendor": "Second specimen vendor", "site": "Specimen site D",
+      "task": "Each-pick from totes into shipping cartons",
+      "policy_version": "vendor build 2.9.0", "scope": "48 in-scope SKUs, declared 2026-W01",
+      "claim": 98.0, "threshold": 95.0, "precision": "±2 points at 95%",
+      "status": "current",
+      "checks": [
+        {"n": 1, "window": "weeks 1–4", "issued": "week 5", "next_due": "week 8", "preregistered": "week 0, day 5", "protocol_hash": "8b21…7c40", "rubric": "v1", "seed": "51e0aa", "population": 38910, "sampled": 840, "successes": 810, "measured": 96.4, "ci": [94.8, 97.7], "design_effect": 1.6, "kappa": 0.88, "double_scored": 168, "disagreements": 7, "status": "current", "verdict": "The claim (98.0%) lies inside the interval. Above the 95.0% threshold. Grade Current."},
+        {"n": 2, "window": "weeks 5–8", "issued": "week 9", "next_due": "week 12", "preregistered": "week 4, day 6", "protocol_hash": "8b21…7c40", "rubric": "v1", "seed": "c2d915", "population": 40122, "sampled": 832, "successes": 798, "measured": 95.9, "ci": [94.2, 97.3], "design_effect": 1.6, "kappa": 0.87, "double_scored": 166, "disagreements": 8, "status": "current", "verdict": "The claim lies inside the interval. Above the threshold. Grade stays Current."},
+        {"n": 3, "window": "weeks 9–12", "issued": "week 13", "next_due": "week 16", "preregistered": "week 8, day 6", "protocol_hash": "8b21…7c40", "rubric": "v1", "seed": "7f03be", "population": 39875, "sampled": 828, "successes": 796, "measured": 96.1, "ci": [94.4, 97.5], "design_effect": 1.7, "kappa": 0.87, "double_scored": 166, "disagreements": 8, "status": "current", "verdict": "The claim lies inside the interval. Above the threshold. Grade stays Current. No trend called across three checks."}
+      ]
+    },
+    {
+      "id": "ORB-0000-SPEC-C", "specimen": true,
+      "vendor": "Specimen vendor", "site": "Specimen site C",
+      "task": "Each-pick, returns processing",
+      "policy_version": "vendor build 4.2.1", "scope": "112 in-scope SKUs, declared 2026-W08",
+      "claim": 98.5, "threshold": 92.0, "precision": "±2.5 points at 95%",
+      "status": "insufficient",
+      "checks": [
+        {"n": 1, "window": "weeks 9–12", "issued": "week 13", "next_due": "week 16", "preregistered": "week 8, day 6", "protocol_hash": "a77e…0d19", "rubric": "v1", "seed": "e41b02", "population": 214, "sampled": 214, "successes": 204, "measured": 95.3, "ci": [91.6, 97.6], "design_effect": 1.9, "kappa": 0.85, "double_scored": 44, "disagreements": 3, "status": "insufficient", "needed": 400, "verdict": "Only 214 in-scope picks were logged in the window, against the 400 the pre-registered precision needs. What was measured is shown; no verdict is issued."}
+      ]
+    },
+    {
+      "id": "ORB-0000-SPEC-B", "specimen": true,
+      "vendor": "Specimen vendor", "site": "Specimen site B",
+      "task": "Each-pick from source totes into order containers",
+      "policy_version": "vendor build 4.1.7 → 4.2.1 in week 10 (logged)", "scope": "71 in-scope SKUs, declared 2026-W04",
+      "claim": 97.0, "threshold": 90.0, "precision": "±2.5 points at 95%",
+      "status": "revoked", "revoked_reason": "Re-check 2 measured 88.2% (85.9–90.3), below the 90.0% threshold.",
+      "checks": [
+        {"n": 1, "window": "weeks 5–8", "issued": "week 9", "next_due": "week 12", "preregistered": "week 4, day 5", "protocol_hash": "d05c…b3e8", "rubric": "v1", "seed": "9a6f21", "population": 36210, "sampled": 780, "successes": 718, "measured": 92.1, "ci": [89.8, 94.2], "design_effect": 1.8, "kappa": 0.85, "double_scored": 156, "disagreements": 10, "status": "current", "verdict": "The claim (97.0%) lies outside the interval. Above the 90.0% threshold. Grade Current."},
+        {"n": 2, "window": "weeks 9–12", "issued": "week 13", "next_due": "—", "preregistered": "week 8, day 6", "protocol_hash": "d05c…b3e8", "rubric": "v1", "seed": "2c88d4", "population": 37544, "sampled": 796, "successes": 702, "measured": 88.2, "ci": [85.9, 90.3], "design_effect": 1.8, "kappa": 0.84, "double_scored": 160, "disagreements": 11, "status": "revoked", "verdict": "Measured rate below the 90.0% threshold. Grade revoked. The vendor's build change in week 10 was logged and is shown; it does not change the verdict."}
+      ]
+    }
+  ],
+  "calibration": { "studies": [] }
+}

@@ -5,10 +5,19 @@ Public site for Orbit, an independent verification body for deployed robots.
 Static HTML, no build step. Pages: `index.html`, `method.html`, `registry.html`,
 `calibration.html`, `specimen-report.html`, `demo.html`. Shared `site.css` and `site.js`.
 
-Look (2026-09-20, founder's choice): dark, warm near-black paper with warm off-white ink,
-modelled on tryclean.ai's landing page. Inter for headlines, Mona Sans for text, JetBrains
-Mono for every number. One floating pill nav, a product view under the hero, rounded cards,
-and a single action everywhere: book a demo. Tokens live at the top of `site.css`.
+Look (2026-09-20): dark green-black paper, cool off-white ink, mint links; Manrope for
+headlines and big figures, Figtree for text, IBM Plex Mono for IDs and columns. One floating
+pill nav, the live workspace framed under the hero, rounded cards, one action: book a demo.
+Tokens live at the top of `site.css`. `DESIGN_ORIGINALITY.md` records what was inspired by
+another site and what was changed so the design is ours.
+
+## Workspace
+
+`app.html` + `app.css` + `app.js` is a static, no-login workspace: deployments, grade pages
+(the Reading, breakdown, trend, scorer error, sample, history, evidence index), reports,
+registry lookup, calibration, protocols. It reads `app-data.json`; add a deployment there and
+it appears everywhere. `python3 build/badges.py` regenerates the static badges in `badge/`.
+The homepage embeds `app.html?embed=1#/d/ORB-0000-SPEC` under the hero.
 
 The header, `<head>` block, and footer are identical on every page; canonical copies live in
 `build/partials/` so an edit can be applied to all six files with a find-and-replace.
