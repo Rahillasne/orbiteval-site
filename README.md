@@ -5,6 +5,11 @@ Public site for Orbit, an independent verification body for deployed robots.
 Static HTML, no build step. Pages: `index.html`, `method.html`, `registry.html`,
 `calibration.html`, `specimen-report.html`, `demo.html`. Shared `site.css` and `site.js`.
 
+Look (2026-09-20, founder's choice): dark, warm near-black paper with warm off-white ink,
+modelled on tryclean.ai's landing page. Inter for headlines, Mona Sans for text, JetBrains
+Mono for every number. One floating pill nav, a product view under the hero, rounded cards,
+and a single action everywhere: book a demo. Tokens live at the top of `site.css`.
+
 The header, `<head>` block, and footer are identical on every page; canonical copies live in
 `build/partials/` so an edit can be applied to all six files with a find-and-replace.
 

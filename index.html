@@ -3,100 +3,270 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#161311">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@800;900&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Mona+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="site.css">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='4' fill='%230F6E4A'/%3E%3Crect x='6' y='14' width='14' height='5' fill='%23fff'/%3E%3Cpath d='M25 9l3 5h-6z' fill='%23fff'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23161311'/%3E%3Ccircle cx='16' cy='16' r='9' stroke='%23f3efe7' stroke-width='2.2' fill='none'/%3E%3Ccircle cx='23' cy='9' r='3' fill='%2371b89a'/%3E%3C/svg%3E">
 <title>Orbit — Independent verification of deployed robots</title>
-<meta name="description" content="Orbit is an independent verification body for deployed robots. We count what your robot actually did, publish how often we're wrong, and keep checking after everyone else stops.">
+<meta name="description" content="Orbit is an independent verification body for deployed robots. We re-score a sample of what your robot actually did, publish how often our own scorer is wrong, and keep checking every month, in public.">
 </head>
 <body>
-<header class="wrap nav">
-  <a class="brand" href="index.html" aria-label="Orbit home"><span class="brand__mark">Orbit</span><span class="brand__sub">Independent verification</span></a>
-  <nav class="nav__links" aria-label="Primary">
+<header class="topbar" id="top">
+  <div class="pill">
+    <nav class="pill__links" aria-label="Primary">
+      <a href="method.html">Method</a>
+      <a href="registry.html">Registry</a>
+    </nav>
+    <a class="brand" href="index.html" aria-label="Orbit home"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.6"/><circle cx="15.5" cy="4.5" r="2.3" fill="#71b89a"/></svg>Orbit</a>
+    <nav class="pill__links" aria-label="Secondary">
+      <a href="calibration.html">Calibration</a>
+      <a href="specimen-report.html">Specimen report</a>
+    </nav>
+    <a class="btn btn--primary btn--sm pill__cta" href="demo.html" data-demo>Book a demo <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    <button class="pill__menu" type="button" aria-expanded="false" aria-controls="mnav" aria-label="Menu"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+  </div>
+  <nav class="mnav" id="mnav" hidden aria-label="Menu">
     <a href="method.html">Method</a>
     <a href="registry.html">Registry</a>
     <a href="calibration.html">Calibration</a>
-    <a href="specimen-report.html"><span class="nav__full">Specimen report</span><span class="nav__short">Specimen</span></a>
+    <a href="specimen-report.html">Specimen report</a>
+    <a href="demo.html" data-demo>Book a demo</a>
   </nav>
-  <a class="btn btn--fill nav__cta" href="demo.html">Book a demo</a>
 </header>
 
 <main>
 <section class="hero">
-  <div class="wrap hero__grid">
-    <div>
-      <p class="eyebrow">Independent verification body · piece-picking robots first</p>
-      <h1 style="margin-top:14px">Independent verification of what deployed robots actually do.</h1>
-      <p class="lede">A robot is sold on a number. After installation nobody checks it again. We re-count a sample of what your robot actually did, publish how often our own scorer is wrong, and keep checking every month — in public.</p>
+  <div class="wrap">
+    <div class="hero__copy">
+      <p class="eyebrow"><span class="dot"></span>Independent verification body · piece-picking robots first</p>
+      <h1>What your robot actually did, verified.</h1>
+      <p class="lede">Orbit re-scores a sample of your deployed robot's picks every month, publishes how often its own scorer is wrong, and keeps a public grade you can link to.</p>
       <div class="hero__ctas">
-        <a class="btn btn--fill" href="specimen-report.html">Read a specimen report</a>
-        <a class="btn btn--line" href="demo.html">Book a demo</a>
+        <a class="btn btn--primary" href="demo.html" data-demo>Book a demo <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a class="btn btn--ghost" href="#how">See how it works</a>
       </div>
     </div>
 
-    <figure class="reading reading--live" aria-label="Specimen reading: claimed 99.0 percent, measured 93.4 percent with a 95 percent interval of 91.0 to 95.4">
-      <figcaption class="reading__cap"><span>Specimen reading</span><span>site A · week 12</span></figcaption>
-      <div class="reading__row"><span class="lbl">Claimed</span><span class="num">99.0<small>%</small></span></div>
-      <div class="reading__row"><span class="lbl">Measured</span><span><span class="num num--big">93.4<small>%</small></span><span class="ci">95% interval 91.0 – 95.4 · 758 of 812 sampled picks</span></span></div>
-      <div class="axis" style="--min:80; --max-v:100" aria-hidden="true">
-        <div class="axis__track"></div>
-        <div class="axis__bar" style="--lo:91.0; --hi:95.4"></div>
-        <div class="axis__point" style="--x:93.4"></div>
-        <div class="axis__claim" style="--x:99.0"><span>claim</span></div>
-        <div class="axis__ticks"><span style="--x:80">80</span><span style="--x:85">85</span><span style="--x:90">90</span><span style="--x:95">95</span><span style="--x:100">100</span></div>
+    <div class="plate">
+      <div class="app" role="img" aria-label="Orbit's report view for a specimen deployment: claimed 99.0 percent, measured 93.4 percent with a 95 percent interval of 91.0 to 95.4, status current, illustrative data">
+        <aside class="app__side" aria-hidden="true">
+          <div class="app__brand"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.6"/><circle cx="15.5" cy="4.5" r="2.3" fill="#71b89a"/></svg><div>Orbit<small>Verification</small></div></div>
+          <div class="app__search"><span>Search</span><kbd>⌘K</kbd></div>
+          <div class="app__grp">Workspace</div>
+          <div class="app__nav">
+            <span class="is-on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M9 21V9"/></svg>Deployments</span>
+            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/></svg>Reports</span>
+            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg>Registry</span>
+            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Calibration</span>
+            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="m9 12 2 2 4-4"/></svg>Protocols</span>
+          </div>
+          <div class="app__grp">History</div>
+          <div class="app__nav">
+            <span>ORB-0000-SPEC · week 12</span>
+            <span>ORB-0000-SPEC · week 8</span>
+            <span>Calibration study 1</span>
+          </div>
+        </aside>
+        <div class="app__main" aria-hidden="true">
+          <div class="app__top">
+            <div class="app__crumb">Deployments<i>/</i><b>Specimen site A</b><i>/</i>Weeks 9–12</div>
+            <div style="display:flex;gap:8px;align-items:center"><span class="placard placard--specimen">Illustrative</span><span class="placard placard--current">Current</span></div>
+          </div>
+          <div class="app__grid">
+            <figure class="reading reading--live">
+              <figcaption class="reading__cap"><span>The reading</span><span>n = 812 of 41,206</span></figcaption>
+              <div class="reading__row"><span class="lbl">Claimed</span><span class="num">99.0<small>%</small></span></div>
+              <div class="reading__row"><span class="lbl">Measured</span><span><span class="num num--big">93.4<small>%</small></span><span class="ci">95% interval 91.0 – 95.4 · 758 of 812 sampled picks</span></span></div>
+              <div class="axis" style="--min:80; --max-v:100">
+                <div class="axis__track"></div>
+                <div class="axis__bar" style="--lo:91.0; --hi:95.4"></div>
+                <div class="axis__point" style="--x:93.4"></div>
+                <div class="axis__claim" style="--x:99.0"><span>claim</span></div>
+                <div class="axis__ticks"><span style="--x:80">80</span><span style="--x:85">85</span><span style="--x:90">90</span><span style="--x:95">95</span><span style="--x:100">100</span></div>
+              </div>
+              <div class="reading__meta"><span>seed a91f3c</span><span>scorer κ 0.86</span><span>re-check due week 16</span></div>
+            </figure>
+            <div style="display:grid;gap:14px">
+              <div class="app__tile">
+                <h4>Where the failures are</h4>
+                <table>
+                  <tbody>
+                    <tr><td>Rigid, boxed</td><td class="n mono">97.8%</td><td style="width:38%"><span class="bar" style="width:97.8%"></span></td></tr>
+                    <tr><td>Bagged, polybag</td><td class="n mono">94.6%</td><td><span class="bar" style="width:94.6%"></span></td></tr>
+                    <tr><td>Deformable, soft</td><td class="n mono">90.7%</td><td><span class="bar" style="width:90.7%"></span></td></tr>
+                    <tr><td>Transparent, reflective</td><td class="n mono">84.2%</td><td><span class="bar bar--low" style="width:84.2%"></span></td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="app__tile">
+                <h4>Our error on this report</h4>
+                <table>
+                  <tbody>
+                    <tr><td>Double-scored</td><td class="n mono">160 of 812</td></tr>
+                    <tr><td>Agreement</td><td class="n mono">κ 0.86</td></tr>
+                    <tr><td>Disagreements</td><td class="n mono">9</td></tr>
+                    <tr><td>Weakest class</td><td class="n mono">transparent, κ 0.79</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="reading__meta">
-        <span class="placard placard--specimen">Specimen</span>
-        <span>seed a91f3c</span>
-        <span>scorer κ 0.86</span>
-        <span>re-check due week 16</span>
+    </div>
+  </div>
+</section>
+
+<section class="trust" data-reveal>
+  <div class="wrap">
+    <p>Nothing to take on trust. Everything the number rests on is public.</p>
+    <div class="chips">
+      <a class="chip" href="method.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>Open method</a>
+      <a class="chip" href="registry.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg>Public registry</a>
+      <a class="chip" href="calibration.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Published error rate</a>
+      <a class="chip" href="method.html#verdicts"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 3v6h6"/></svg>Revocable grades</a>
+      <a class="chip" href="https://github.com/Rahillasne/orbit-eval"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M14 4l-4 16"/></svg>Open code</a>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="how">
+  <div class="wrap">
+    <div class="sec-head" data-reveal><h2>Four steps, in this order, every time.</h2><p>Independence comes from the procedure, not from a sensor. Nothing is installed at your site, and nothing is decided after the data has been seen.</p></div>
+    <div class="feat" data-steps data-dwell="5200">
+      <ul class="feat__list" data-reveal>
+        <li class="feat__item"><button class="feat__btn" type="button" aria-expanded="false"><span class="feat__title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 15l2 2 4-4"/></svg>Pre-register</span><span class="feat__body">The rubric, sampling rule, sample size and threshold are written, hashed and timestamped before any data is pulled. The hash is on the grade page.</span></button></li>
+        <li class="feat__item"><button class="feat__btn" type="button" aria-expanded="false"><span class="feat__title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg>Sample</span><span class="feat__body">We choose the site and the window. Picks are drawn from the logs by a published seed, stratified by item class, so anyone can regenerate exactly the sample we scored.</span></button></li>
+        <li class="feat__item"><button class="feat__btn" type="button" aria-expanded="false"><span class="feat__title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>Score and calibrate</span><span class="feat__body">An automatic scorer reads each pick. A human double-scores at least a fifth of them. Their disagreement goes into the interval, not into a footnote.</span></button></li>
+        <li class="feat__item"><button class="feat__btn" type="button" aria-expanded="false"><span class="feat__title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>Publish and re-check</span><span class="feat__body">The grade goes on a public page you can link to. It is re-checked monthly with a fresh seed, and revoked if it stops holding.</span></button></li>
+      </ul>
+      <div class="feat__card" data-reveal aria-hidden="true">
+        <div class="panel">
+          <h4>Protocol · pre-registered week 8, day 6</h4>
+          <div class="panel__row"><div><b>Rubric v1</b><span>Six outcomes, exactly one per pick</span></div><span class="tag">Fixed</span></div>
+          <div class="panel__row"><div><b>Sample of 812</b><span>Stratified by item class, ±2.5 points at 95%</span></div><span class="tag">Fixed</span></div>
+          <div class="panel__row"><div><b>Threshold 90.0%</b><span>On in-scope SKUs, agreed by vendor and operator</span></div><span class="tag">Fixed</span></div>
+          <div class="panel__row"><div><b>sha256 3f9c…a1e2</b><span>Hash and timestamp on the grade page</span></div><span class="tag">Published</span></div>
+        </div>
+        <div class="panel">
+          <h4>Sample · drawn by Orbit, not the vendor</h4>
+          <div class="panel__row"><div><b>Specimen site A</b><span>Drawn at random from four eligible sites</span></div><span class="tag">Drawn</span></div>
+          <div class="panel__row"><div><b>Weeks 9–12</b><span>The four most recent complete weeks</span></div><span class="tag">Set</span></div>
+          <div class="panel__row"><div><b>Seed a91f3c</b><span>Anyone with the log can regenerate the sample</span></div><span class="tag">Published</span></div>
+          <div class="panel__row"><div><b>812 of 41,206 picks</b><span>Every logged in-scope attempt was eligible</span></div><span class="tag">Drawn</span></div>
+        </div>
+        <div class="panel">
+          <h4>Scoring · every pick once, a fifth of them twice</h4>
+          <div class="panel__row"><div><b>Automatic scorer</b><span>Rubric, video and log record, versioned prompt</span></div><span class="tag">812 scored</span></div>
+          <div class="panel__row"><div><b>Human scorer</b><span>160 picks, blind to the automatic result</span></div><span class="tag">160 scored</span></div>
+          <div class="panel__row"><div><b>Agreement κ 0.86</b><span>9 disagreements, carried into the interval</span></div><span class="tag">In interval</span></div>
+          <div class="panel__row"><div><b>Weakest class</b><span>Transparent or reflective items, κ 0.79</span></div><span class="tag tag--wait">Reported</span></div>
+        </div>
+        <div class="panel">
+          <h4>Grade · ORB-0000-SPEC</h4>
+          <div class="panel__row"><div><b>Measured 93.4%</b><span>95% interval 91.0 – 95.4, above the 90.0% threshold</span></div><span class="tag">Current</span></div>
+          <div class="panel__row"><div><b>Claim 99.0%</b><span>Outside the interval by 3.6 points</span></div><span class="tag tag--no">Not supported</span></div>
+          <div class="panel__row"><div><b>Next re-check week 16</b><span>Same protocol, fresh seed</span></div><span class="tag tag--grey">Scheduled</span></div>
+          <div class="panel__row"><div><b>History</b><span>One check so far. Nothing is ever removed</span></div><span class="tag tag--grey">Public</span></div>
+        </div>
       </div>
-    </figure>
-  </div>
-</section>
-
-<section class="section">
-  <div class="wrap">
-    <div class="section__head"><p class="eyebrow">What we do</p><h2>What nobody else in the loop can do.</h2></div>
-    <div class="threeup">
-      <div><span class="lbl">Count</span><h3>We re-score what the robot already recorded.</h3><p>A robot's dashboard reports its own success. We draw a sample of its picks from the video and logs it already keeps, score them against a rubric written down before we look, and report the rate with an honest interval. No cameras to install, no model to hand over.</p></div>
-      <div><span class="lbl">Publish our error</span><h3>Every report says how often we're wrong.</h3><p>A human re-scores a fixed fraction of every sample. The disagreement rate is printed on the report and folded into the interval. If you can't see a verifier's error rate, you can't use their number.</p></div>
-      <div><span class="lbl">Keep checking</span><h3>An acceptance test happens once. We don't stop.</h3><p>Item mixes drift, models get updated, and the contract number is never measured again. We re-check monthly. A grade that stops being true is revoked, in public, and the history stays up.</p></div>
     </div>
   </div>
 </section>
 
-<section class="section">
+<section class="section" style="padding-top:0">
   <div class="wrap">
-    <div class="section__head"><p class="eyebrow">How an audit works</p><h2>Four steps, in this order, every time.</h2></div>
-    <div class="steps">
-      <div class="step"><h3>Pre-register</h3><p>The rubric, sampling rule, sample size, and threshold are written, hashed, and timestamped before any data is pulled. The hash is on the grade page.</p></div>
-      <div class="step"><h3>Sample</h3><p>We choose the site and the window. Picks are drawn from the logs by a published seed, stratified by item class, so anyone can regenerate exactly the sample we scored.</p></div>
-      <div class="step"><h3>Score and calibrate</h3><p>An automatic scorer reads each pick. A human double-scores at least a fifth of them. Their disagreement goes into the interval, not into a footnote.</p></div>
-      <div class="step"><h3>Publish and re-check</h3><p>The grade goes on a public page you can link to. It is re-checked monthly with a fresh seed, and revoked if it stops holding.</p></div>
+    <div class="bento" data-reveal>
+      <div class="bento__copy">
+        <h2>A report, not a dashboard.</h2>
+        <p>The deliverable is a document. It opens with the gap between the claimed rate and the measured one, breaks the failures down by item class so you know what to fix, and prints our own error rate beside every number.</p>
+        <a class="link-arrow" href="specimen-report.html">Read the specimen report <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </div>
+      <div class="shot" aria-hidden="true">
+        <div class="mock">
+          <div class="mock__head"><b>Where the failures are<small>Specimen site A · weeks 9–12</small></b><span>Illustrative data</span></div>
+          <table>
+            <thead><tr><th>Item class</th><th class="n">Sampled</th><th class="n">Success</th><th style="width:34%">Rate</th></tr></thead>
+            <tbody>
+              <tr><td>Rigid, boxed</td><td class="n mono">301</td><td class="n mono">97.8%</td><td><span class="bar" style="width:97.8%"></span></td></tr>
+              <tr><td>Bagged, polybag</td><td class="n mono">222</td><td class="n mono">94.6%</td><td><span class="bar" style="width:94.6%"></span></td></tr>
+              <tr><td>Deformable, soft</td><td class="n mono">150</td><td class="n mono">90.7%</td><td><span class="bar" style="width:90.7%"></span></td></tr>
+              <tr><td>Transparent or reflective</td><td class="n mono">139</td><td class="n mono">84.2%</td><td><span class="bar bar--low" style="width:84.2%"></span></td></tr>
+            </tbody>
+          </table>
+          <div class="mock__head" style="border-top:1px solid var(--line-soft)"><b>By failure mode<small>54 failed picks</small></b></div>
+          <table>
+            <tbody>
+              <tr><td class="mono">Miss</td><td class="n mono">19</td><td class="n mono">2.3%</td><td><span class="bar" style="width:23%;background:var(--ink-mute)"></span></td></tr>
+              <tr><td class="mono">Drop</td><td class="n mono">17</td><td class="n mono">2.1%</td><td><span class="bar" style="width:21%;background:var(--ink-mute)"></span></td></tr>
+              <tr><td class="mono">Double-pick</td><td class="n mono">11</td><td class="n mono">1.4%</td><td><span class="bar" style="width:14%;background:var(--ink-mute)"></span></td></tr>
+              <tr><td class="mono">Damage</td><td class="n mono">4</td><td class="n mono">0.5%</td><td><span class="bar" style="width:5%;background:var(--ink-mute)"></span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
-    <p class="small mt">The full procedure, including the rubric and the statistics, is on the <a href="method.html">method page</a>. The interval and sizing code is <a href="https://github.com/Rahillasne/orbit-eval">open</a>.</p>
+
+    <div class="bento bento--flip" data-reveal>
+      <div class="bento__copy">
+        <h2>One public grade per deployment.</h2>
+        <p>If a vendor says a deployment is Orbit-verified, look it up. If it isn't listed, it isn't verified. A vendor chooses whether to be audited, never which results are shown.</p>
+        <a class="link-arrow" href="registry.html">Open the registry <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </div>
+      <div class="shot" aria-hidden="true">
+        <div class="mock">
+          <div class="mock__head"><b>Registry<small>Every audited deployment</small></b><span>Illustrative data</span></div>
+          <table>
+            <thead><tr><th>ID</th><th>Site</th><th class="n">Measured</th><th>Status</th><th>Last check</th></tr></thead>
+            <tbody>
+              <tr><td class="mono">ORB-0000-SPEC</td><td>Site A</td><td class="n mono">93.4% <span style="color:var(--ink-mute)">(91.0–95.4)</span></td><td><span class="placard placard--current">Current</span></td><td class="mono">week 12</td></tr>
+              <tr><td class="mono">ORB-0000-SPEC-D</td><td>Site D</td><td class="n mono">96.1% <span style="color:var(--ink-mute)">(94.4–97.5)</span></td><td><span class="placard placard--current">Current</span></td><td class="mono">week 12</td></tr>
+              <tr><td class="mono">ORB-0000-SPEC-C</td><td>Site C</td><td class="n mono">—</td><td><span class="placard placard--caution">Insufficient data</span></td><td class="mono">week 12</td></tr>
+              <tr><td class="mono">ORB-0000-SPEC-B</td><td>Site B</td><td class="n mono">88.2% <span style="color:var(--ink-mute)">(85.9–90.3)</span></td><td><span class="placard placard--revoked">Revoked</span></td><td class="mono">week 11</td></tr>
+              <tr><td class="mono">ORB-0000-SPEC-E</td><td>Site E</td><td class="n mono">91.7% <span style="color:var(--ink-mute)">(89.2–93.8)</span></td><td><span class="placard placard--current">Current</span></td><td class="mono">week 10</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="bento" data-reveal>
+      <div class="bento__copy">
+        <h2>An acceptance test happens once. We don't stop.</h2>
+        <p>Item mixes drift, models get updated, and the contract number is never measured again. We re-check every month. A grade that stops being true is revoked, in public, and the history stays up.</p>
+        <a class="link-arrow" href="method.html#rechecking">See how re-checks work <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </div>
+      <div class="shot" aria-hidden="true">
+        <div class="mock feed">
+          <div class="mock__head"><b>Re-checks<small>Monthly · fresh seed each time</small></b><span>Illustrative data</span></div>
+          <div class="feed__status"><i></i>Re-checking Specimen site A</div>
+          <div class="feed__sub">Drawing 800 picks from weeks 13–16 by seed c04d7e</div>
+          <div class="feed__item"><header>Specimen site D · re-check 3 <time>2h ago</time></header><p>96.1% (94.4–97.5) against a 95.0% threshold. Grade stays current.</p></div>
+          <div class="feed__item"><header>Specimen site C · insufficient data <time>3d ago</time></header><p>214 in-scope picks logged in the window; 400 needed for the pre-registered precision. No verdict issued.</p></div>
+          <div class="feed__item"><header>Specimen site B · grade revoked <time>12d ago</time></header><p>88.2% (85.9–90.3), below the 90.0% threshold. Reason published. History kept.</p></div>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 
-<section class="section">
+<section class="section" style="padding-top:0">
   <div class="wrap">
-    <div class="section__head"><p class="eyebrow">Who it's for</p><h2>The people with money on the number.</h2></div>
-    <div class="threeup">
-      <div><span class="lbl">Robot makers</span><h3>A number your competitor can't put in a deck.</h3><p>You claim 99% on in-scope SKUs. So does everyone you bid against, and your buyer's only way to tell you apart is a reference-site visit. A verified rate with our error beside it is the one claim they can check.</p></div>
-      <div><span class="lbl">Operators</span><h3>An independent number before renewal.</h3><p>Your contract has a rate in it. Your only way to check it is the vendor's own dashboard. We give you a second one, from the same logs, scored by someone who doesn't sell robots.</p></div>
-      <div><span class="lbl">Insurers and lenders</span><h3>Performance risk, priced on evidence.</h3><p>Robots-as-a-service needs underwriting, and today the performance risk is priced on reputation. We're building the record — measured, re-checked, revocable — that lets it be priced on data.</p></div>
+    <div class="sec-head" data-reveal><h2>The people with money on the number.</h2></div>
+    <div class="cards" data-reveal>
+      <div class="card"><span class="lbl">Robot makers</span><h3>A number your competitor can't put in a deck.</h3><p>You claim 99% on in-scope SKUs. So does everyone you bid against, and your buyer's only way to tell you apart is a reference-site visit. A verified rate with our error beside it is the one claim they can check.</p></div>
+      <div class="card"><span class="lbl">Operators</span><h3>An independent number before renewal.</h3><p>Your contract has a rate in it. Your only way to check it is the vendor's own dashboard. We give you a second one, from the same logs, scored by someone who doesn't sell robots.</p></div>
+      <div class="card"><span class="lbl">Insurers and lenders</span><h3>Performance risk, priced on evidence.</h3><p>Robots-as-a-service needs underwriting, and today the performance risk is priced on reputation. We're building the record, measured, re-checked and revocable, that lets it be priced on data.</p></div>
     </div>
   </div>
 </section>
 
-<section class="section">
+<section class="section" style="padding-top:0" id="independence">
   <div class="wrap">
-    <div class="section__head"><p class="eyebrow">Independence</p><h2>How we stay independent.</h2></div>
-    <div class="policy">
-      <p class="eyebrow">Conflict policy · in force from the first audit</p>
+    <div class="policy" data-reveal>
+      <div class="sec-head"><h2>How we stay independent.</h2><p>The conflict policy, in force from the first audit. It is versioned with the method.</p></div>
       <ol>
         <li>We take no equity, options, or warrants from any robot vendor.</li>
         <li>We choose the site and the time window. A vendor never picks the sample.</li>
@@ -108,28 +278,58 @@
   </div>
 </section>
 
-<section class="section">
+<section class="section" style="padding-top:0" id="faq">
   <div class="wrap">
-    <div class="section__head"><p class="eyebrow">What you receive</p><h2>A report, not a dashboard.</h2></div>
-    <p class="lede">The deliverable is a document. It opens with the gap between the claimed rate and the measured one, breaks the failures down by item class so you know what to fix, states our own error rate, and links every pick we scored so you can check us.</p>
-    <p><a class="btn btn--line" href="specimen-report.html">Read the specimen report</a></p>
+    <div class="faq" data-reveal>
+      <h2>Questions &amp; answers</h2>
+      <div>
+        <details><summary>Do you install cameras or sensors?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></summary><p>No. We score the pick video and logs the deployment already keeps. Independence comes from the procedure: pre-registration, a published seed, a published error rate and a revocable grade, not from owning the sensor.</p></details>
+        <details><summary>Who pays for an audit?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></summary><p>The party making the claim, first: the robot vendor. Like a safety mark, the maker pays for the test and the buyer gets a result they didn't have to run themselves. Operators and insurers can commission an audit too.</p></details>
+        <details><summary>Can a vendor hide a bad result?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></summary><p>No. A vendor chooses whether to be audited, never which results are shown. Every audited deployment is listed in the registry, and a revoked grade stays visible, marked revoked, with the reason in one sentence.</p></details>
+        <details><summary>Is this a leaderboard?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></summary><p>No. One page per deployment, one status, its own history. Deployments are never ranked against each other, because the item mix, the scope and the threshold differ at every site.</p></details>
+        <details><summary>What if there isn't enough data?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></summary><p>The report says so. If the window can't deliver the pre-registered precision, the status is Insufficient data and the report states what sample would resolve it. We don't round that up to a verdict.</p></details>
+        <details><summary>Do you need our model or training data?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></summary><p>Never. The method needs the pick log, the video the operator already holds, and the in-scope SKU list. We hold no weights and no training data.</p></details>
+        <details><summary>How fast is this live?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></summary><p>One thirty-minute call. Pre-registration inside a week. The first report follows the first four complete weeks of the window, and re-checks are monthly after that.</p></details>
+        <details><summary>How do we get started?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></summary><p><a href="demo.html" data-demo>Book a demo</a>. We walk through the specimen report, then your deployment: what's claimed, what's logged, and what a first audit of it would look like.</p></details>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta" data-reveal>
+  <div class="wrap">
+    <h2>Stop claiming. Start proving.</h2>
+    <p>Thirty minutes. Your deployment, not a slide deck. We walk through the specimen report, then your site.</p>
+    <a class="btn btn--primary" href="demo.html" data-demo>Book a demo <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
   </div>
 </section>
 </main>
 
-<section class="band" id="demo">
-  <div class="wrap">
-    <p class="eyebrow" style="color:inherit;opacity:.7">Book a demo</p>
-    <h2 style="margin-top:10px">Thirty minutes. Your deployment, not a slide deck.</h2>
-    <p class="lede" style="margin:18px 0 26px">We walk through the specimen report, then your site: what's claimed, what's logged, and what an audit of it would look like.</p>
-    <p><a class="btn btn--fill" href="demo.html">Book a demo</a> <span class="mono" style="margin-left:14px">or email <a href="mailto:rahil@orbiteval.com">rahil@orbiteval.com</a></span></p>
-  </div>
-</section>
-
 <footer class="footer">
   <div class="wrap">
-    <span>Orbit — independent performance verification for deployed robots</span>
-    <span><a href="mailto:rahil@orbiteval.com">rahil@orbiteval.com</a> · <a href="https://github.com/Rahillasne/orbit-eval">Open code</a> · <a href="method.html">Method</a></span>
+    <div class="footer__grid">
+      <div>
+        <a class="brand" href="index.html" aria-label="Orbit home"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.6"/><circle cx="15.5" cy="4.5" r="2.3" fill="#71b89a"/></svg>Orbit</a>
+        <p class="footer__tag">Independent verification of what deployed robots actually do.</p>
+        <a class="link-arrow" href="demo.html" data-demo>Book a demo <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </div>
+      <div>
+        <h5>Product</h5>
+        <ul><li><a href="method.html">Method</a></li><li><a href="registry.html">Registry</a></li><li><a href="calibration.html">Calibration</a></li><li><a href="specimen-report.html">Specimen report</a></li></ul>
+      </div>
+      <div>
+        <h5>Policy</h5>
+        <ul><li><a href="index.html#independence">Conflict policy</a></li><li><a href="calibration.html">Our error rate</a></li><li><a href="registry.html">Verify a grade</a></li></ul>
+      </div>
+      <div>
+        <h5>Company</h5>
+        <ul><li><a href="demo.html" data-demo>Book a demo</a></li><li><a href="mailto:rahil@orbiteval.com">Contact</a></li><li><a href="https://github.com/Rahillasne/orbit-eval">Open code</a></li></ul>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <span>© 2026 Orbit · orbiteval.com</span>
+      <span><a href="mailto:rahil@orbiteval.com">rahil@orbiteval.com</a> &nbsp;·&nbsp; <a href="#top">Back to top ↑</a></span>
+    </div>
   </div>
 </footer>
 <script src="site.js"></script>

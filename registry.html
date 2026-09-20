@@ -3,38 +3,48 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#161311">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@800;900&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Mona+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="site.css">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='4' fill='%230F6E4A'/%3E%3Crect x='6' y='14' width='14' height='5' fill='%23fff'/%3E%3Cpath d='M25 9l3 5h-6z' fill='%23fff'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23161311'/%3E%3Ccircle cx='16' cy='16' r='9' stroke='%23f3efe7' stroke-width='2.2' fill='none'/%3E%3Ccircle cx='23' cy='9' r='3' fill='%2371b89a'/%3E%3C/svg%3E">
 <title>Registry — Orbit</title>
-<meta name="description" content="Every deployment Orbit has audited, with its current grade and status. A vendor chooses whether to be audited, never which results are shown.">
+<meta name="description" content="Every deployment Orbit has audited, with its verification ID, measured rate, status and last re-check. If it isn't listed, it isn't verified.">
 </head>
 <body>
-<header class="wrap nav">
-  <a class="brand" href="index.html" aria-label="Orbit home"><span class="brand__mark">Orbit</span><span class="brand__sub">Independent verification</span></a>
-  <nav class="nav__links" aria-label="Primary">
+<header class="topbar" id="top">
+  <div class="pill">
+    <nav class="pill__links" aria-label="Primary">
+      <a href="method.html">Method</a>
+      <a href="registry.html">Registry</a>
+    </nav>
+    <a class="brand" href="index.html" aria-label="Orbit home"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.6"/><circle cx="15.5" cy="4.5" r="2.3" fill="#71b89a"/></svg>Orbit</a>
+    <nav class="pill__links" aria-label="Secondary">
+      <a href="calibration.html">Calibration</a>
+      <a href="specimen-report.html">Specimen report</a>
+    </nav>
+    <a class="btn btn--primary btn--sm pill__cta" href="demo.html" data-demo>Book a demo <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    <button class="pill__menu" type="button" aria-expanded="false" aria-controls="mnav" aria-label="Menu"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+  </div>
+  <nav class="mnav" id="mnav" hidden aria-label="Menu">
     <a href="method.html">Method</a>
     <a href="registry.html">Registry</a>
     <a href="calibration.html">Calibration</a>
-    <a href="specimen-report.html"><span class="nav__full">Specimen report</span><span class="nav__short">Specimen</span></a>
+    <a href="specimen-report.html">Specimen report</a>
+    <a href="demo.html" data-demo>Book a demo</a>
   </nav>
-  <a class="btn btn--fill nav__cta" href="demo.html">Book a demo</a>
 </header>
-<main class="wrap">
-  <section class="section" style="padding-top:40px">
-    <p class="eyebrow">Registry</p>
-    <h1 style="margin-top:14px;max-width:12em">Every audited deployment, and its grade.</h1>
-    <p class="lede" style="margin-top:22px">If a vendor tells you their deployment is Orbit-verified, look it up here. If it isn't listed, it isn't verified. A vendor chooses whether to be audited, never which results are shown.</p>
-  </section>
 
-  <section class="section" style="padding-top:0">
-    <label class="eyebrow" for="lookup">Verify a grade</label>
-    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;max-width:40em">
-      <input id="lookup" type="search" placeholder="Verification ID, vendor, or site" style="flex:1;min-width:220px;font:inherit;font-family:var(--mono);font-size:.95rem;padding:11px 14px;border:1.5px solid var(--ink);border-radius:4px;background:var(--ground);color:var(--ink)">
-    </div>
-    <div class="table-wrap mt">
+<main class="wrap">
+  <section class="page-head">
+    <p class="eyebrow"><span class="dot"></span>Registry</p>
+    <h1>Every audited deployment, and its grade.</h1>
+    <p class="lede">If a vendor tells you their deployment is Orbit-verified, look it up here. If it isn't listed, it isn't verified. A vendor chooses whether to be audited, never which results are shown.</p>
+  </section>
+  <section>
+    <div class="field" style="max-width:40em"><label for="lookup">Verify a grade</label><input id="lookup" type="search" placeholder="Verification ID, vendor, or site" autocomplete="off"></div>
+    <div class="table-wrap">
       <table id="registry">
         <thead><tr><th>ID</th><th>Vendor</th><th>Site</th><th>Task</th><th class="n">Measured</th><th>Status</th><th>Last checked</th></tr></thead>
         <tbody>
@@ -50,20 +60,18 @@
         </tbody>
       </table>
     </div>
-    <p id="nomatch" class="small mt" hidden>No grade matches that. If a vendor gave you an ID that isn't here, <a href="mailto:rahil@orbiteval.com?subject=Registry%20lookup">tell us</a> — that's exactly the case the registry exists for.</p>
-
+    <p id="nomatch" class="small mt" hidden>No grade matches that. If a vendor gave you an ID that isn't here, <a href="mailto:rahil@orbiteval.com?subject=Registry%20lookup">tell us</a>. That is exactly the case the registry exists for.</p>
     <div class="empty mt">
-      <p class="eyebrow" style="margin-bottom:10px">No real deployments listed yet</p>
+      <p class="lbl" style="margin-bottom:10px">No real deployments listed yet</p>
       <p>The first audits are being scheduled for the fourth quarter of 2026. Each one will appear here the day its report is issued, with its verification ID, measured rate, status, and the date of its last re-check. The row above is a specimen so you can see the format; it is not a real deployment.</p>
     </div>
   </section>
-
   <section class="section">
-    <div class="section__head"><p class="eyebrow">What a grade page shows</p><h2>One deployment, one page, the whole history.</h2></div>
-    <div class="threeup">
-      <div><span class="lbl">The reading</span><h3>Claimed, measured, interval.</h3><p>The same block that opens every report: the claimed rate, the measured one, and the 95% interval drawn on an axis so the gap is visible at a glance.</p></div>
-      <div><span class="lbl">The status</span><h3>Current, insufficient data, or revoked.</h3><p>With the date of the last re-check, the date the next one is due, and — for a revocation — the reason, in one sentence.</p></div>
-      <div><span class="lbl">The record</span><h3>Every re-check, in order.</h3><p>Protocol hash, seed, sample size, agreement, and the interval for each month the grade has existed. Nothing is ever removed from this list.</p></div>
+    <div class="sec-head"><h2>One deployment, one page, the whole history.</h2><p>What a grade page shows.</p></div>
+    <div class="cards">
+      <div class="card"><span class="lbl">The reading</span><h3>Claimed, measured, interval.</h3><p>The same block that opens every report: the claimed rate, the measured one, and the 95% interval drawn on an axis so the gap is visible at a glance.</p></div>
+      <div class="card"><span class="lbl">The status</span><h3>Current, insufficient data, or revoked.</h3><p>With the date of the last re-check, the date the next one is due, and, for a revocation, the reason in one sentence.</p></div>
+      <div class="card"><span class="lbl">The record</span><h3>Every re-check, in order.</h3><p>Protocol hash, seed, sample size, agreement, and the interval for each month the grade has existed. Nothing is ever removed from this list.</p></div>
     </div>
   </section>
 </main>
@@ -72,10 +80,32 @@
   const q = document.getElementById('lookup'), rows = [...document.querySelectorAll('#registry tbody tr')], nm = document.getElementById('nomatch');
   q.addEventListener('input', () => { const v = q.value.trim().toLowerCase(); let n = 0; rows.forEach(r => { const hit = !v || r.textContent.toLowerCase().includes(v); r.hidden = !hit; if (hit) n++; }); nm.hidden = n > 0; });
 </script>
+
 <footer class="footer">
   <div class="wrap">
-    <span>Orbit — independent performance verification for deployed robots</span>
-    <span><a href="mailto:rahil@orbiteval.com">rahil@orbiteval.com</a> · <a href="https://github.com/Rahillasne/orbit-eval">Open code</a> · <a href="method.html">Method</a></span>
+    <div class="footer__grid">
+      <div>
+        <a class="brand" href="index.html" aria-label="Orbit home"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.6"/><circle cx="15.5" cy="4.5" r="2.3" fill="#71b89a"/></svg>Orbit</a>
+        <p class="footer__tag">Independent verification of what deployed robots actually do.</p>
+        <a class="link-arrow" href="demo.html" data-demo>Book a demo <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </div>
+      <div>
+        <h5>Product</h5>
+        <ul><li><a href="method.html">Method</a></li><li><a href="registry.html">Registry</a></li><li><a href="calibration.html">Calibration</a></li><li><a href="specimen-report.html">Specimen report</a></li></ul>
+      </div>
+      <div>
+        <h5>Policy</h5>
+        <ul><li><a href="index.html#independence">Conflict policy</a></li><li><a href="calibration.html">Our error rate</a></li><li><a href="registry.html">Verify a grade</a></li></ul>
+      </div>
+      <div>
+        <h5>Company</h5>
+        <ul><li><a href="demo.html" data-demo>Book a demo</a></li><li><a href="mailto:rahil@orbiteval.com">Contact</a></li><li><a href="https://github.com/Rahillasne/orbit-eval">Open code</a></li></ul>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <span>© 2026 Orbit · orbiteval.com</span>
+      <span><a href="mailto:rahil@orbiteval.com">rahil@orbiteval.com</a> &nbsp;·&nbsp; <a href="#top">Back to top ↑</a></span>
+    </div>
   </div>
 </footer>
 <script src="site.js"></script>
