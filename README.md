@@ -5,7 +5,7 @@ Public site for Orbit, an independent verification body for deployed robots.
 Static HTML, no build step. Pages: `index.html`, `method.html`, `registry.html`,
 `calibration.html`, `specimen-report.html`, `demo.html`. Shared `site.css` and `site.js`.
 
-Look (2026-09-20): dark green-black paper, cool off-white ink, mint links; Manrope for
+Look (2026-09-20): warm cream paper, near-black ink, terracotta brand and links; Manrope for
 headlines and big figures, Figtree for text, IBM Plex Mono for IDs and columns. One floating
 pill nav, the live workspace framed under the hero, rounded cards, one action: book a demo.
 Tokens live at the top of `site.css`. `DESIGN_ORIGINALITY.md` records what was inspired by

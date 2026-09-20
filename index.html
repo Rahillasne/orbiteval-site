@@ -3,19 +3,19 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#0e1311">
+<meta name="theme-color" content="#FAF9F5">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600&family=Figtree:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="site.css">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230e1311'/%3E%3Ccircle cx='16' cy='16' r='9' stroke='%23eef2ef' stroke-width='2.2' fill='none'/%3E%3Ccircle cx='23' cy='9' r='3' fill='%234fc98a'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23D4744F'/%3E%3Ccircle cx='16' cy='16' r='9' stroke='%23FAF9F5' stroke-width='2.2' fill='none'/%3E%3Ccircle cx='23' cy='9' r='3' fill='%23141413'/%3E%3C/svg%3E">
 <title>Orbit — Independent verification of deployed robots</title>
 <meta name="description" content="Orbit is an independent verification body for deployed robots. We re-score a sample of what your robot actually did, publish how often our own scorer is wrong, and keep checking every month, in public.">
 </head>
 <body>
 <header class="topbar" id="top">
   <div class="pill">
-    <a class="brand" href="index.html" aria-label="Orbit home"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.6"/><circle cx="15.5" cy="4.5" r="2.3" fill="#4fc98a"/></svg>Orbit</a>
+    <a class="brand" href="index.html" aria-label="Orbit home"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.6"/><circle cx="15.5" cy="4.5" r="2.3" fill="#D4744F"/></svg>Orbit</a>
     <nav class="pill__links" aria-label="Primary">
       <a href="method.html">Method</a>
       <a href="registry.html">Registry</a>
@@ -69,11 +69,43 @@
 <section class="section" id="how">
   <div class="wrap">
     <div class="sec-head" data-reveal><h2>Four steps. Same order, every time.</h2><p>Nothing is installed at your site. Nothing is decided after the data has been seen.</p></div>
-    <div class="steps4" data-reveal>
-      <div class="step4"><span class="step4__n">1</span><h3>Pre-register</h3><p>Rubric, sample size and threshold are hashed before any data is pulled.</p><span class="step4__art">sha256 3f9c…a1e2</span></div>
-      <div class="step4"><span class="step4__n">2</span><h3>Sample</h3><p>We pick the site and the window. Picks are drawn by a published seed.</p><span class="step4__art">seed a91f3c · n 812</span></div>
-      <div class="step4"><span class="step4__n">3</span><h3>Score twice</h3><p>A model scores every pick. A human re-scores a fifth. Disagreement widens the interval.</p><span class="step4__art">κ 0.86 · 160 double-scored</span></div>
-      <div class="step4"><span class="step4__n">4</span><h3>Publish, re-check</h3><p>A public grade page, re-checked monthly. Revoked if it stops holding.</p><span class="step4__art">current · next check week 16</span></div>
+    <div class="how" data-steps data-dwell="6000">
+      <ol class="how__list" data-reveal>
+        <li class="how__item"><button class="how__btn" type="button" aria-expanded="false"><span class="how__n">1</span><span><span class="how__title">Pre-register</span><span class="how__body">Rubric, sample size and threshold are hashed before any data is pulled.</span></span></button></li>
+        <li class="how__item"><button class="how__btn" type="button" aria-expanded="false"><span class="how__n">2</span><span><span class="how__title">Sample</span><span class="how__body">We pick the site and the window. Picks are drawn by a published seed.</span></span></button></li>
+        <li class="how__item"><button class="how__btn" type="button" aria-expanded="false"><span class="how__n">3</span><span><span class="how__title">Score twice</span><span class="how__body">A model scores every pick. A human re-scores a fifth. Disagreement widens the interval.</span></span></button></li>
+        <li class="how__item"><button class="how__btn" type="button" aria-expanded="false"><span class="how__n">4</span><span><span class="how__title">Publish, re-check</span><span class="how__body">A public grade page, re-checked monthly. Revoked if it stops holding.</span></span></button></li>
+      </ol>
+      <div class="how__stage" data-reveal aria-hidden="true">
+        <div class="sheet">
+          <div class="sheet__head"><b>Protocol</b><span>pre-registered week 8, day 6</span></div>
+          <div class="sheet__row"><div><b>Rubric v1</b><span>Six outcomes, exactly one per pick</span></div><span class="tag">Fixed</span></div>
+          <div class="sheet__row"><div><b>Sample of 812</b><span>Stratified by item class, ±2.5 points at 95%</span></div><span class="tag">Fixed</span></div>
+          <div class="sheet__row"><div><b>Threshold 90.0%</b><span>Agreed by vendor and operator</span></div><span class="tag">Fixed</span></div>
+          <div class="sheet__row"><div><b>sha256 3f9c…a1e2</b><span>Hash and timestamp on the grade page</span></div><span class="tag">Published</span></div>
+        </div>
+        <div class="sheet">
+          <div class="sheet__head"><b>Sample</b><span>drawn by Orbit, not the vendor</span></div>
+          <div class="sheet__row"><div><b>Specimen site A</b><span>Drawn at random from four eligible sites</span></div><span class="tag">Drawn</span></div>
+          <div class="sheet__row"><div><b>Weeks 9–12</b><span>The four most recent complete weeks</span></div><span class="tag">Set</span></div>
+          <div class="sheet__row"><div><b>Seed a91f3c</b><span>Anyone with the log can regenerate the sample</span></div><span class="tag">Published</span></div>
+          <div class="sheet__row"><div><b>812 of 41,206 picks</b><span>Every logged in-scope attempt was eligible</span></div><span class="tag">Drawn</span></div>
+        </div>
+        <div class="sheet">
+          <div class="sheet__head"><b>Scoring</b><span>every pick once, a fifth twice</span></div>
+          <div class="sheet__row"><div><b>Automatic scorer</b><span>Rubric, video and log record, versioned prompt</span></div><span class="tag">812 scored</span></div>
+          <div class="sheet__row"><div><b>Human scorer</b><span>160 picks, blind to the automatic result</span></div><span class="tag">160 scored</span></div>
+          <div class="sheet__row"><div><b>Agreement κ 0.86</b><span>9 disagreements, carried into the interval</span></div><span class="tag">In interval</span></div>
+          <div class="sheet__row"><div><b>Weakest class</b><span>Transparent or reflective items, κ 0.79</span></div><span class="tag tag--wait">Reported</span></div>
+        </div>
+        <div class="sheet">
+          <div class="sheet__head"><b>Grade</b><span>ORB-0000-SPEC</span></div>
+          <div class="sheet__row"><div><b>Measured 93.4%</b><span>95% interval 91.0 – 95.4, above the 90.0% threshold</span></div><span class="tag">Current</span></div>
+          <div class="sheet__row"><div><b>Claim 99.0%</b><span>Outside the interval by 3.6 points</span></div><span class="tag tag--no">Not supported</span></div>
+          <div class="sheet__row"><div><b>Next re-check week 16</b><span>Same protocol, fresh seed</span></div><span class="tag tag--grey">Scheduled</span></div>
+          <div class="sheet__row"><div><b>History</b><span>One check so far. Nothing is ever removed</span></div><span class="tag tag--grey">Public</span></div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -173,7 +205,7 @@
 
 <footer class="footer">
   <div class="wrap footer__row">
-    <a class="brand" href="index.html" aria-label="Orbit home"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.6"/><circle cx="15.5" cy="4.5" r="2.3" fill="#4fc98a"/></svg>Orbit</a>
+    <a class="brand" href="index.html" aria-label="Orbit home"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.6"/><circle cx="15.5" cy="4.5" r="2.3" fill="#D4744F"/></svg>Orbit</a>
     <nav class="footer__links" aria-label="Footer">
       <a href="method.html">Method</a>
       <a href="registry.html">Registry</a>

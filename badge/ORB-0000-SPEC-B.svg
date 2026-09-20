@@ -1,12 +1,13 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="385" height="28" role="img" aria-label="Orbit specimen: ORB-0000-SPEC-B · 88.2% · Revoked">
+<svg xmlns="http://www.w3.org/2000/svg" width="395" height="28" role="img" aria-label="Orbit specimen: ORB-0000-SPEC-B · 88.2% · Revoked">
 <title>Orbit specimen: ORB-0000-SPEC-B · 88.2% · Revoked</title>
-<rect width="385" height="28" rx="14" fill="#1c2320"/>
-<rect width="148" height="28" rx="14" fill="#0e1311"/>
-<rect x="120" width="14" height="28" fill="#0e1311"/>
-<circle cx="14" cy="14" r="5.5" fill="none" stroke="#eef2ef" stroke-width="1.4"/>
-<circle cx="18" cy="10" r="1.8" fill="#f47a72"/>
+<rect width="395" height="28" rx="14" fill="#F0EEE6"/>
+<rect x="0.5" y="0.5" width="394" height="27" rx="13.5" fill="none" stroke="#D9D6CC"/>
+<rect width="154" height="28" rx="14" fill="#141413"/>
+<rect x="126" width="14" height="28" fill="#141413"/>
+<circle cx="14" cy="14" r="5.5" fill="none" stroke="#FAF9F5" stroke-width="1.4"/>
+<circle cx="18" cy="10" r="1.8" fill="#D4744F"/>
 <g font-family="IBM Plex Mono, ui-monospace, Menlo, monospace" font-size="11.5">
-<text x="26" y="18" fill="#eef2ef">Orbit specimen</text>
-<text x="144" y="18" fill="#f47a72">ORB-0000-SPEC-B · 88.2% · Revoked</text>
+<text x="26" y="18" fill="#FAF9F5">Orbit specimen</text>
+<text x="152" y="18" fill="#B23A30">ORB-0000-SPEC-B · 88.2% · Revoked</text>
 </g>
 </svg>

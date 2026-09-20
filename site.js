@@ -37,6 +37,22 @@ if (reduce || !("IntersectionObserver" in window)) {
   toReveal.forEach((el) => io.observe(el));
 }
 
+// The four steps: click one to choose it; otherwise they advance on their own.
+document.querySelectorAll("[data-steps]").forEach((root) => {
+  const items = [...root.querySelectorAll(".how__item")];
+  const sheets = [...root.querySelectorAll(".sheet")];
+  const dwell = parseInt(root.dataset.dwell || "6000", 10);
+  let i = 0, timer = null;
+  const show = (n) => {
+    i = n;
+    items.forEach((it, k) => { it.classList.toggle("is-on", k === n); it.querySelector("button").setAttribute("aria-expanded", String(k === n)); });
+    sheets.forEach((s, k) => s.classList.toggle("is-on", k === n));
+  };
+  items.forEach((it, k) => it.querySelector("button").addEventListener("click", () => { clearInterval(timer); root.classList.add("how--manual"); show(k); }));
+  show(0);
+  if (!reduce && items.length > 1) timer = setInterval(() => show((i + 1) % items.length), dwell);
+});
+
 // Open a collapsed section when a link points at it.
 const openHash = () => { const el = location.hash && document.getElementById(location.hash.slice(1)); if (el && el.tagName === "DETAILS") el.open = true; };
 openHash(); addEventListener("hashchange", openHash);

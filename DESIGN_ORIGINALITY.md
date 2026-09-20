@@ -27,15 +27,15 @@ practical risk is therefore only copied material, so the rule is: copy nothing.
 
 | Reference trait | Orbit now |
 |---|---|
-| warm brown-black paper, warm off-white ink | green-black paper `#0e1311`, cool off-white `#eef2ef` |
-| Inter headlines, Mona Sans text, blue links | Manrope headlines, Figtree text, IBM Plex Mono for IDs and columns, mint links |
+| warm brown-black paper, warm off-white ink | warm cream paper `#FAF9F5`, near-black ink `#141413`, terracotta brand `#D4744F`. The founder asked for colours in the family Claude uses; the values are our own, and no Anthropic mark, name or wordmark appears anywhere |
+| Inter headlines, Mona Sans text, blue links | Manrope headlines, Figtree text, IBM Plex Mono for IDs and columns, terracotta links |
 | nav pill with the brand in the centre | pill with the brand on the left |
 | screenshot of the product on a photograph | the real workspace, embedded live, in a framed window |
-| four-item accordion beside a photo card | four numbered step cards, each showing the artifact the step produces |
+| four-item accordion beside a photo card with a floating panel | four numbered steps that switch a plain document sheet (protocol, sample manifest, scoring sheet, grade). Tabs-that-switch-a-preview is a pattern used by Stripe, Linear, GitHub and many others; the sheet, the artifacts and the styling are ours, and there is no photograph |
 | three full-width alternating rows | two half cards and one wide |
 | two-column FAQ with chevrons | one centred column with a plus marker |
 | "Stop hunting. Start closing." | "A number they can check." |
-| grain overlay, iridescent text-shadow, 5.2 s auto-advance | removed |
+| grain overlay, iridescent text-shadow | removed |
 | customer-logo strip | one line of links to what we publish |
 | six-column footer | one row |
 
