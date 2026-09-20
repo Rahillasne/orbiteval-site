@@ -1,19 +1,22 @@
 # orbiteval.com
 
-Public site for OrbitEval, the statistical release layer for robot policies. Static HTML,
-no build step here; served by GitHub Pages from `main`.
+Public site for Orbit, an independent verification body for deployed robots.
 
-Every page is **generated** from the private research repo (`capability-arena/build/`) and
-copied across — edit there, rebuild, copy, commit. Nothing in this repo is hand-edited except
-`CNAME`.
+Static HTML, no build step. Pages: `index.html`, `method.html`, `registry.html`,
+`calibration.html`, `specimen-report.html`, `demo.html`. Shared `site.css` and `site.js`.
 
-| page | what it is | built by |
-|---|---|---|
-| `index.html` | front door: the release check offer, the measured retrain result, pricing, then the public boards with intervals | `build.py` → `deploy.py` |
-| `check.html` | the release check, runs in the browser (`wheels/`, `sample/`); pricing and FAQ | `pages.py` |
-| `battle.html` | live policy battle (arena runtime on Cloud Run), on-the-boards battle, your-own-checkpoint instructions | `pages.py` |
-| `chat.html` | the assistant (Cloud Run); two attached files are refereed as a battle | `pages.py` |
-| `about.html`, `notes/` | company record; research notes | `pages.py` |
-| `shell.css`, `data/matrix.json` | shared layout; the board data the battle page reads | `pages.py` |
-| `arena.html` | the earlier rank-spread ranking layer, unlinked, kept reachable | `../arena/build/build.py` |
-| `atlas.html`, `noisefloor.html` | earlier pages, unlinked, kept reachable | hand-written, frozen |
+The header, `<head>` block, and footer are identical on every page; canonical copies live in
+`build/partials/` so an edit can be applied to all six files with a find-and-replace.
+
+"Book a demo" composes an email to rahil@orbiteval.com. To route it to a calendar link
+instead, set `DEMO_URL` at the top of `site.js`.
+
+The specimen report uses illustrative data and is labelled as such on the page. No
+calibration figure is shown anywhere until a real human-agreement study exists.
+
+## Legacy pages
+
+`arena.html`, `battle.html`, `atlas.html`, `noisefloor.html`, `chat.html`, `check.html`,
+`about.html`, `shell.css`, and the `data/`, `sample/`, `wheels/`, `notes/` folders are the
+previous site (the capability arena). They are not linked from the new pages but remain at
+their URLs so existing links resolve. Delete when no longer needed.

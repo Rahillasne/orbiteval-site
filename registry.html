@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@800;900&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='4' fill='%230F6E4A'/%3E%3Crect x='6' y='14' width='14' height='5' fill='%23fff'/%3E%3Cpath d='M25 9l3 5h-6z' fill='%23fff'/%3E%3C/svg%3E">
+<title>Registry — Orbit</title>
+<meta name="description" content="Every deployment Orbit has audited, with its current grade and status. A vendor chooses whether to be audited, never which results are shown.">
+</head>
+<body>
+<header class="wrap nav">
+  <a class="brand" href="index.html" aria-label="Orbit home"><span class="brand__mark">Orbit</span><span class="brand__sub">Independent verification</span></a>
+  <nav class="nav__links" aria-label="Primary">
+    <a href="method.html">Method</a>
+    <a href="registry.html">Registry</a>
+    <a href="calibration.html">Calibration</a>
+    <a href="specimen-report.html"><span class="nav__full">Specimen report</span><span class="nav__short">Specimen</span></a>
+  </nav>
+  <a class="btn btn--fill nav__cta" href="demo.html">Book a demo</a>
+</header>
+<main class="wrap">
+  <section class="section" style="padding-top:40px">
+    <p class="eyebrow">Registry</p>
+    <h1 style="margin-top:14px;max-width:12em">Every audited deployment, and its grade.</h1>
+    <p class="lede" style="margin-top:22px">If a vendor tells you their deployment is Orbit-verified, look it up here. If it isn't listed, it isn't verified. A vendor chooses whether to be audited, never which results are shown.</p>
+  </section>
+
+  <section class="section" style="padding-top:0">
+    <label class="eyebrow" for="lookup">Verify a grade</label>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;max-width:40em">
+      <input id="lookup" type="search" placeholder="Verification ID, vendor, or site" style="flex:1;min-width:220px;font:inherit;font-family:var(--mono);font-size:.95rem;padding:11px 14px;border:1.5px solid var(--ink);border-radius:4px;background:var(--ground);color:var(--ink)">
+    </div>
+    <div class="table-wrap mt">
+      <table id="registry">
+        <thead><tr><th>ID</th><th>Vendor</th><th>Site</th><th>Task</th><th class="n">Measured</th><th>Status</th><th>Last checked</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="mono"><a href="specimen-report.html">ORB-0000-SPEC</a></td>
+            <td>Specimen vendor</td>
+            <td>Specimen site A</td>
+            <td>Each-pick, totes to order containers</td>
+            <td class="n mono">93.4% <span class="small">(91.0–95.4)</span></td>
+            <td><span class="placard placard--specimen">Specimen</span></td>
+            <td class="mono">illustrative</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p id="nomatch" class="small mt" hidden>No grade matches that. If a vendor gave you an ID that isn't here, <a href="mailto:rahil@orbiteval.com?subject=Registry%20lookup">tell us</a> — that's exactly the case the registry exists for.</p>
+
+    <div class="empty mt">
+      <p class="eyebrow" style="margin-bottom:10px">No real deployments listed yet</p>
+      <p>The first audits are being scheduled for the fourth quarter of 2026. Each one will appear here the day its report is issued, with its verification ID, measured rate, status, and the date of its last re-check. The row above is a specimen so you can see the format; it is not a real deployment.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section__head"><p class="eyebrow">What a grade page shows</p><h2>One deployment, one page, the whole history.</h2></div>
+    <div class="threeup">
+      <div><span class="lbl">The reading</span><h3>Claimed, measured, interval.</h3><p>The same block that opens every report: the claimed rate, the measured one, and the 95% interval drawn on an axis so the gap is visible at a glance.</p></div>
+      <div><span class="lbl">The status</span><h3>Current, insufficient data, or revoked.</h3><p>With the date of the last re-check, the date the next one is due, and — for a revocation — the reason, in one sentence.</p></div>
+      <div><span class="lbl">The record</span><h3>Every re-check, in order.</h3><p>Protocol hash, seed, sample size, agreement, and the interval for each month the grade has existed. Nothing is ever removed from this list.</p></div>
+    </div>
+  </section>
+</main>
+<style>#registry td:first-child{white-space:nowrap}</style>
+<script>
+  const q = document.getElementById('lookup'), rows = [...document.querySelectorAll('#registry tbody tr')], nm = document.getElementById('nomatch');
+  q.addEventListener('input', () => { const v = q.value.trim().toLowerCase(); let n = 0; rows.forEach(r => { const hit = !v || r.textContent.toLowerCase().includes(v); r.hidden = !hit; if (hit) n++; }); nm.hidden = n > 0; });
+</script>
+<footer class="footer">
+  <div class="wrap">
+    <span>Orbit — independent performance verification for deployed robots</span>
+    <span><a href="mailto:rahil@orbiteval.com">rahil@orbiteval.com</a> · <a href="https://github.com/Rahillasne/orbit-eval">Open code</a> · <a href="method.html">Method</a></span>
+  </div>
+</footer>
+<script src="site.js"></script>
+</body>
+</html>

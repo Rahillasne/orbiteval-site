@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@800;900&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='4' fill='%230F6E4A'/%3E%3Crect x='6' y='14' width='14' height='5' fill='%23fff'/%3E%3Cpath d='M25 9l3 5h-6z' fill='%23fff'/%3E%3C/svg%3E">
+<title>Calibration — Orbit</title>
+<meta name="description" content="How often Orbit's automatic scorer disagrees with a human on the same picks, published and updated as it changes.">
+</head>
+<body>
+<header class="wrap nav">
+  <a class="brand" href="index.html" aria-label="Orbit home"><span class="brand__mark">Orbit</span><span class="brand__sub">Independent verification</span></a>
+  <nav class="nav__links" aria-label="Primary">
+    <a href="method.html">Method</a>
+    <a href="registry.html">Registry</a>
+    <a href="calibration.html">Calibration</a>
+    <a href="specimen-report.html"><span class="nav__full">Specimen report</span><span class="nav__short">Specimen</span></a>
+  </nav>
+  <a class="btn btn--fill nav__cta" href="demo.html">Book a demo</a>
+</header>
+<main class="wrap">
+  <section class="section" style="padding-top:40px">
+    <p class="eyebrow">Calibration · our error rate</p>
+    <h1 style="margin-top:14px;max-width:12em">How often we're wrong.</h1>
+    <p class="lede" style="margin-top:22px">Every number we publish comes from a scorer, and every scorer makes mistakes. This page is where we publish ours. If you can't find a verifier's error rate, you can't use their number — so this page exists before our first audit does.</p>
+  </section>
+
+  <section class="section" style="padding-top:0">
+    <div class="empty">
+      <p class="eyebrow" style="margin-bottom:10px">First calibration study in progress</p>
+      <p>We are double-scoring public piece-picking footage — the automatic scorer and a human, independently, on the same picks — to produce the first agreement figures. They will appear here in the form shown below the moment they exist, and we will not issue a report before they do.</p>
+      <p>Until then, no agreement figure appears anywhere on this site. A specimen report shows the <em>format</em> with illustrative values and is labelled as such.</p>
+    </div>
+  </section>
+
+  <div class="kvs">
+    <div class="kv"><span class="lbl">What will appear here</span><div>
+      <p><strong>Overall agreement.</strong> Cohen's κ between the automatic scorer and the human scorer, across all double-scored picks, with a 95% interval and the number of picks it rests on.</p>
+      <p><strong>Confusion matrix.</strong> For each of the six rubric outcomes, how often the scorer and the human agreed and, when they disagreed, what each said. This is the figure that matters most: a scorer that confuses "drop" with "success" is dangerous; one that confuses "miss" with "no attempt" is not.</p>
+      <p><strong>By item class.</strong> Agreement broken out by rigid, bagged, deformable, and transparent or reflective items, because that is where scorers fail.</p>
+      <p><strong>By scorer version.</strong> Every prompt or model version we have used, dated, with its own figures. Versions are never edited in place.</p>
+    </div></div>
+
+    <div class="kv"><span class="lbl">Format</span><div>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Scorer version</th><th>Period</th><th class="n">Double-scored picks</th><th class="n">κ</th><th class="n">95% interval</th><th>Weakest outcome</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">—</td><td class="mono">—</td><td class="n mono">—</td><td class="n mono">—</td><td class="n mono">—</td><td class="mono">—</td></tr>
+        </tbody>
+      </table></div>
+      <p class="small mt">Empty by design until the first study completes.</p>
+    </div></div>
+
+    <div class="kv"><span class="lbl">How error enters a report</span><div>
+      <p>The scorer's measured misclassification rates are used to correct the point estimate and are carried into the interval. A weaker scorer makes the interval wider; it does not move the point in the scorer's favour. When agreement on a given item class falls below the threshold set in the protocol, that class is reported as <span class="placard placard--caution">Insufficient data</span> rather than as a number.</p>
+    </div></div>
+
+    <div class="kv"><span class="lbl">Human scorers</span><div>
+      <p>Human scorers see the rubric and the pick, and never the automatic result. They are paid by the pick regardless of the outcome they record. Their own inter-rater agreement is measured on a shared subset and published alongside the scorer's.</p>
+    </div></div>
+  </div>
+  <section class="section"><p class="small">Updated whenever a scorer version changes or a study completes. Last change: page created, September 2026.</p></section>
+</main>
+<footer class="footer">
+  <div class="wrap">
+    <span>Orbit — independent performance verification for deployed robots</span>
+    <span><a href="mailto:rahil@orbiteval.com">rahil@orbiteval.com</a> · <a href="https://github.com/Rahillasne/orbit-eval">Open code</a> · <a href="method.html">Method</a></span>
+  </div>
+</footer>
+<script src="site.js"></script>
+</body>
+</html>

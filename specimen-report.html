@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@800;900&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='4' fill='%230F6E4A'/%3E%3Crect x='6' y='14' width='14' height='5' fill='%23fff'/%3E%3Cpath d='M25 9l3 5h-6z' fill='%23fff'/%3E%3C/svg%3E">
+<title>Specimen report — Orbit</title>
+<meta name="description" content="A specimen Orbit verification report with illustrative data, showing exactly what a customer receives.">
+</head>
+<body>
+<header class="wrap nav">
+  <a class="brand" href="index.html" aria-label="Orbit home"><span class="brand__mark">Orbit</span><span class="brand__sub">Independent verification</span></a>
+  <nav class="nav__links" aria-label="Primary">
+    <a href="method.html">Method</a>
+    <a href="registry.html">Registry</a>
+    <a href="calibration.html">Calibration</a>
+    <a href="specimen-report.html"><span class="nav__full">Specimen report</span><span class="nav__short">Specimen</span></a>
+  </nav>
+  <a class="btn btn--fill nav__cta" href="demo.html">Book a demo</a>
+</header>
+<div class="banner"><div class="wrap"><span class="placard placard--specimen">Specimen</span><span>Illustrative data. Not a real vendor, site, or deployment. This page shows the format of a report.</span></div></div>
+
+<main class="wrap">
+  <article class="report">
+    <header class="report__head">
+      <p class="eyebrow">Verification report · ORB-0000-SPEC · method v1</p>
+      <div class="report__title"><h1 style="font-size:clamp(1.9rem,4vw,2.8rem)">Specimen site A</h1><span class="placard placard--current">Current</span></div>
+      <div class="table-wrap mt"><table>
+        <tbody>
+          <tr><th style="width:180px">Vendor</th><td>Specimen vendor</td></tr>
+          <tr><th>Task</th><td>Each-pick from source totes into order containers, in-scope SKU list of 63 items declared 2026-W08</td></tr>
+          <tr><th>Policy version</th><td class="mono">vendor build 4.2.1 (unchanged during window)</td></tr>
+          <tr><th>Window</th><td class="mono">deployment weeks 9–12 · four complete weeks</td></tr>
+          <tr><th>Issued · valid until</th><td class="mono">week 13 · re-check due week 16</td></tr>
+          <tr><th>Protocol</th><td class="mono">sha256 3f9c…a1e2 · pre-registered week 8, day 6</td></tr>
+        </tbody>
+      </table></div>
+    </header>
+
+    <h2>1. The reading</h2>
+    <p>The vendor's claim for this deployment is <strong>99.0% pick success on in-scope SKUs</strong>. Over the window the deployment logged 41,206 in-scope pick attempts. We scored a stratified sample of 812.</p>
+    <figure class="reading" aria-label="Claimed 99.0 percent, measured 93.4 percent, 95 percent interval 91.0 to 95.4">
+      <figcaption class="reading__cap"><span>Reading</span><span>weeks 9–12</span></figcaption>
+      <div class="reading__row"><span class="lbl">Claimed</span><span class="num">99.0<small>%</small></span></div>
+      <div class="reading__row"><span class="lbl">Measured</span><span><span class="num num--big">93.4<small>%</small></span><span class="ci">95% interval 91.0 – 95.4 · 758 of 812 · cluster-adjusted by SKU (design effect 1.8) · scorer error included</span></span></div>
+      <div class="axis" style="--min:80; --max-v:100" aria-hidden="true">
+        <div class="axis__track"></div>
+        <div class="axis__bar" style="--lo:91.0; --hi:95.4"></div>
+        <div class="axis__point" style="--x:93.4"></div>
+        <div class="axis__claim" style="--x:99.0"><span>claim</span></div>
+        <div class="axis__ticks"><span style="--x:80">80</span><span style="--x:85">85</span><span style="--x:90">90</span><span style="--x:95">95</span><span style="--x:100">100</span></div>
+      </div>
+      <div class="reading__meta"><span>seed a91f3c</span><span>n = 812 of 41,206</span><span>scorer κ 0.86 (160 double-scored)</span></div>
+    </figure>
+    <div class="verdict"><strong>The claim is not supported.</strong> 99.0% lies outside the interval. The measured rate is 5.6 points below the claim. Against the pre-registered threshold of 90.0% for this site, the deployment passes and the grade is Current.</div>
+
+    <h2>2. Where the failures are</h2>
+    <p>Breakdown by item class. Bars show the measured success rate per class; these are descriptive, not pre-registered tests.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Item class</th><th class="n">Sampled</th><th class="n">Success</th><th style="width:40%">Rate</th></tr></thead>
+      <tbody>
+        <tr><td>Rigid, boxed</td><td class="n mono">301</td><td class="n mono">97.8%</td><td><span class="bar" style="width:97.8%"></span></td></tr>
+        <tr><td>Bagged, polybag</td><td class="n mono">222</td><td class="n mono">94.6%</td><td><span class="bar" style="width:94.6%"></span></td></tr>
+        <tr><td>Deformable, soft</td><td class="n mono">150</td><td class="n mono">90.7%</td><td><span class="bar" style="width:90.7%"></span></td></tr>
+        <tr><td>Transparent or reflective</td><td class="n mono">139</td><td class="n mono">84.2%</td><td><span class="bar bar--low" style="width:84.2%"></span></td></tr>
+      </tbody>
+    </table></div>
+    <p class="mt">By failure mode, across the 54 failed picks:</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Outcome</th><th class="n">Picks</th><th class="n">Share of sample</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">Miss</td><td class="n mono">19</td><td class="n mono">2.3%</td></tr>
+        <tr><td class="mono">Drop</td><td class="n mono">17</td><td class="n mono">2.1%</td></tr>
+        <tr><td class="mono">Double-pick</td><td class="n mono">11</td><td class="n mono">1.4%</td></tr>
+        <tr><td class="mono">Damage</td><td class="n mono">4</td><td class="n mono">0.5%</td></tr>
+        <tr><td class="mono">No attempt</td><td class="n mono">3</td><td class="n mono">0.4%</td></tr>
+      </tbody>
+    </table></div>
+    <p class="mt"><strong>What would move the number.</strong> If transparent and reflective items performed at the bagged-item rate, the overall measured rate would rise by about 1.8 points. Drops on bagged items are the second-largest single source of failure. No other class change would move the overall rate by more than half a point.</p>
+
+    <h2>3. Trend</h2>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Week</th><th class="n">Sampled</th><th class="n">Measured</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">9</td><td class="n mono">203</td><td class="n mono">94.6%</td></tr>
+        <tr><td class="mono">10</td><td class="n mono">205</td><td class="n mono">94.1%</td></tr>
+        <tr><td class="mono">11</td><td class="n mono">201</td><td class="n mono">93.7%</td></tr>
+        <tr><td class="mono">12</td><td class="n mono">203</td><td class="n mono">93.4%</td></tr>
+      </tbody>
+    </table></div>
+    <div class="verdict verdict--wait mt"><strong>Not called.</strong> The four weekly figures drift down by 1.2 points, but at roughly 200 picks per week that drift is inside week-to-week noise. We do not call a trend on this evidence. The pre-registered trend test runs across re-checks; the next is due week 16.</div>
+
+    <h2>4. Our error on this report</h2>
+    <p>160 of the 812 sampled picks (20%, stratified by class) were independently scored by a human who did not see the automatic result. Agreement: <span class="mono">κ = 0.86</span>. Disagreements: 9. The scorer's measured misclassification rates were used to correct the estimate and are included in the interval above.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Disagreement</th><th class="n">Count</th><th>Effect</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">scorer: success · human: drop</td><td class="n mono">4</td><td>Scorer optimistic — corrected downward</td></tr>
+        <tr><td class="mono">scorer: miss · human: no attempt</td><td class="n mono">3</td><td>No effect on the success rate</td></tr>
+        <tr><td class="mono">scorer: drop · human: success</td><td class="n mono">2</td><td>Scorer pessimistic — corrected upward</td></tr>
+      </tbody>
+    </table></div>
+    <p class="mt small">Weakest class for the scorer on this sample: transparent or reflective items (κ 0.79). Above the protocol threshold of 0.75, so reported as a number.</p>
+
+    <h2>5. How the sample was chosen</h2>
+    <div class="kvs">
+      <div class="kv"><span class="lbl">Site</span><div><p>Drawn at random by Orbit from the vendor's four sites operated for at least eight weeks. The vendor was told which site after the draw.</p></div></div>
+      <div class="kv"><span class="lbl">Window</span><div><p>The four most recent complete weeks at pre-registration.</p></div></div>
+      <div class="kv"><span class="lbl">Seed</span><div><p class="mono">a91f3c</p><p>Anyone with the vendor's pick log for weeks 9–12 can regenerate the 812 picks with the sampler in the open code.</p></div></div>
+      <div class="kv"><span class="lbl">Size</span><div><p>Set to deliver ±2.5 points at 95% after a clustering allowance of 1.8, for the smallest gap the operator said was worth knowing about (3 points).</p></div></div>
+    </div>
+
+    <h2>6. Evidence index</h2>
+    <p>Every scored pick, by the vendor's own log identifier. Video is held by the operator; this index lets either party pull any pick from their own records. The full index of 812 rows is attached to the report; the first five are shown here.</p>
+    <ul class="evidence">
+      <li><span>2026-W09-D2 08:14:03</span><span>pick 0000418822</span><span>rigid</span><span>success</span><span class="small">double-scored · agree</span></li>
+      <li><span>2026-W09-D2 08:14:41</span><span>pick 0000418829</span><span>bagged</span><span>drop</span><span class="small">—</span></li>
+      <li><span>2026-W09-D2 08:15:17</span><span>pick 0000418834</span><span>transparent</span><span>miss</span><span class="small">double-scored · agree</span></li>
+      <li><span>2026-W09-D2 08:16:02</span><span>pick 0000418851</span><span>rigid</span><span>success</span><span class="small">—</span></li>
+      <li><span>2026-W09-D2 08:16:39</span><span>pick 0000418857</span><span>deformable</span><span>success</span><span class="small">double-scored · disagree (scorer: success, human: drop)</span></li>
+    </ul>
+
+    <h2>7. Status and history</h2>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Check</th><th>Window</th><th class="n">n</th><th class="n">Measured</th><th class="n">κ</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">1 (this report)</td><td class="mono">weeks 9–12</td><td class="n mono">812</td><td class="n mono">93.4% (91.0–95.4)</td><td class="n mono">0.86</td><td><span class="placard placard--current">Current</span></td></tr>
+      </tbody>
+    </table></div>
+    <p class="small mt">This grade is re-checked monthly with a fresh seed. Every re-check is added to this table. Nothing is removed. To be told when it changes, email <a href="mailto:rahil@orbiteval.com?subject=Subscribe%20ORB-0000-SPEC">rahil@orbiteval.com</a> with the verification ID.</p>
+  </article>
+</main>
+
+<div class="banner"><div class="wrap"><span class="placard placard--specimen">Specimen</span><span>Illustrative data. Every figure on this page was chosen to show the format, not measured from a deployment.</span></div></div>
+<footer class="footer">
+  <div class="wrap">
+    <span>Orbit — independent performance verification for deployed robots</span>
+    <span><a href="mailto:rahil@orbiteval.com">rahil@orbiteval.com</a> · <a href="https://github.com/Rahillasne/orbit-eval">Open code</a> · <a href="method.html">Method</a></span>
+  </div>
+</footer>
+<script src="site.js"></script>
+</body>
+</html>
