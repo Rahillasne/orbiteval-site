@@ -23,17 +23,19 @@
 <body>
 <div class="shell">
   <aside class="sidebar">
-    <div class="brand"><span class="mark"><i></i></span><div class="word">OrbitEval<small>Capability Arena</small></div></div>
+    <div class="brand"><span class="mark"><i></i></span><div class="word">OrbitEval<small>Independent verification</small></div></div>
     <nav class="nav">
-      <a href="../index.html"><svg class="ico" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Overview</a><a href="../index.html"><svg class="ico" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13"/><circle cx="4" cy="6" r="1"/><circle cx="4" cy="12" r="1"/><circle cx="4" cy="18" r="1"/></svg>Leaderboards</a><a href="../check.html"><svg class="ico" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>Release check</a><a href="../battle.html"><svg class="ico" viewBox="0 0 24 24"><path d="M14 4l6 6-8 8-6-6zM4 20l4-4M14 14l2 2M4 6l2 2"/></svg>Battle</a><a href="../chat.html"><svg class="ico" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1.1-4.2A8 8 0 1 1 21 12z"/></svg>Chat</a>
+      <a href="../index.html">Overview</a>
+      <a href="../real.html">Is it real?</a>
+      <a href="../claims.html">Claim Check</a>
+      <a href="../decision.html">Decision card</a>
     </nav>
-    <div class="legal"><a href="../index.html#methodology">Methodology</a><a href="../about.html">About</a><span>Independent · not affiliated with any benchmark</span></div>
   </aside>
   <div class="main">
     <div class="topbar">
       <a class="tab" href="../index.html"><svg class="ico" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Overview</a>
       <div class="tabs-center"></div>
-      <a class="btn primary" href="../check.html">Check a release</a>
+      <a class="btn primary" href="../real.html">Check a release</a>
     </div>
     <div class="body wide">
       <main class="content">
@@ -61,7 +63,7 @@
     and permits only rejection rates and calibration to be published from these panels.</p>
     <p>Nothing here was withdrawn because it was wrong. The argument below is unchanged and now
     rests on the rejection rates, which is what the register allows and, as it turns out, the
-    sharper way to make the point. The original version is retained privately.</p>
+    sharper way to make the point. A copy of the original is kept in a private research repository. To be exact about what that does and does not mean: this site is served from a public repository, so earlier versions of any page remain in its public history. Correcting a page changes what is served, not what was recorded.</p>
   </div>
   <h1 class="serif" style="font-size:clamp(1.7rem,1.3rem + 1.6vw,2.4rem);line-height:1.12">A regression rule that fired on 81% of releases where nothing had changed</h1>
   <p class="meta">Rahil Lasne · reproducible from the sample on the release check page</p>
@@ -103,7 +105,7 @@
   </div>
 
   <h2>Scope</h2>
-  <p>One policy class, one simulated suite, ten tasks, 100 episodes each, eight seeds. The size of the effect is a property of this cell; on a different suite the same method read a gain of 1.7 points with an interval that crossed zero. What carries is the shape: a suite average shrinks with the number of tasks while every deployed skill keeps its full swing, so per-skill regressions are hidden by construction, not by bad luck. The statistics are ordinary, Wilson and Newcombe intervals with a stated floor, and the code is open source: <code>pip install orbit-eval</code>, then <code>orbit-eval release evals.csv</code>.</p>
+  <p>One policy class, one simulated suite, ten tasks, 100 episodes each, eight seeds. The size of any effect here is a property of this cell, and on a different suite the same method read a gain whose interval crossed zero. What carries is the shape: a suite average shrinks with the number of tasks while every deployed skill keeps its full swing, so per-skill regressions are hidden by construction, not by bad luck. The statistics are ordinary, Wilson and Newcombe intervals with a stated floor, and the code is open source: <code>pip install orbit-eval</code>, then <code>orbit-eval release evals.csv</code>.</p>
 </div>
 
 <div class="pagefoot"><span>© 2026 OrbitEval · Independent · not affiliated with any benchmark</span><a href="mailto:rahil@orbiteval.com">rahil@orbiteval.com</a></div>
