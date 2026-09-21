@@ -380,3 +380,47 @@ input:focus, textarea:focus { outline: none; border-color: var(--accent); box-sh
 .kv-lede { color: var(--ink-2); font-size: 16px; line-height: 1.6; max-width: 46ch; }
 /* Venue is a fact about the evidence, not a verdict, so it never borrows a status hue. */
 .tag--venue { color: var(--accent); background: rgba(185,85,47,.08); border-color: rgba(185,85,47,.28); }
+
+/* Decision card (decision.html) */
+.dc-split { display: grid; grid-template-columns: 1fr 1.25fr; gap: 24px; align-items: start; }
+@media (max-width: 900px) { .dc-split { grid-template-columns: 1fr; } }
+.dc-naive { border: 1px solid var(--line); border-radius: 16px; padding: 24px; background: rgba(178,58,48,.035); }
+.dc-two { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 14px; }
+.dc-two .small { color: var(--ink-mute); margin: 6px 0 0; }
+.dc-arm { display: block; font-family: var(--font-mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-mute); margin-bottom: 6px; }
+.dc-gap { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line-soft); }
+.dc-gap .num { display: block; }
+.dc-gap .small { color: var(--ink-2); margin: 8px 0 0; max-width: 42ch; }
+.dc-gap .small.mono { color: var(--ink-mute); }
+
+.dc-card { border: 1px solid var(--ink); border-radius: 16px; padding: 24px; background: var(--paper); box-shadow: 0 1px 0 rgba(20,20,19,.06), 0 18px 40px -28px rgba(20,20,19,.35); }
+.dc-card__head { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding-bottom: 16px; border-bottom: 1px solid var(--line); }
+.dc-kv { margin: 0; padding: 4px 0 18px; }
+.dc-kv > div { display: grid; grid-template-columns: 120px 1fr; gap: 16px; padding: 10px 0; border-bottom: 1px solid var(--line-soft); }
+.dc-kv dt { font-family: var(--font-ui); font-size: 12px; color: var(--ink-mute); }
+.dc-kv dd { margin: 0; font-size: 13px; color: var(--ink-2); overflow-wrap: anywhere; }
+@media (max-width: 560px) { .dc-kv > div { grid-template-columns: 1fr; gap: 3px; } }
+.dc-truth, .dc-rec { margin-top: 18px; }
+.dc-truth p, .dc-rec p { color: var(--ink-2); font-size: 14.5px; margin: 7px 0 0; max-width: 62ch; }
+.dc-truth { padding: 16px 18px; background: var(--paper-2); border-radius: 12px; }
+
+.dc-heat { min-width: 620px; }
+.dc-heat__r { display: grid; grid-template-columns: 44px repeat(8, 1fr) 120px; gap: 2px; margin-bottom: 2px; align-items: stretch; }
+.dc-heat__t { font-family: var(--font-mono); font-size: 12px; color: var(--ink-mute); display: flex; align-items: center; }
+.dc-heat__c { font-family: var(--font-mono); font-size: 12.5px; padding: 11px 6px; text-align: center; border-radius: 5px; border: 1.5px solid transparent; cursor: default; }
+.dc-heat__c:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.dc-heat__c--head, .dc-heat__s--head { background: transparent !important; color: var(--ink-mute) !important; font-size: 10.5px; letter-spacing: .06em; text-transform: uppercase; padding-bottom: 8px; border: 0; }
+.dc-heat__c.is-min { border-color: rgba(185,85,47,.85); }
+.dc-heat__c.is-max { border-color: rgba(20,20,19,.5); }
+.dc-heat__s { display: grid; grid-template-columns: 64px auto; align-items: center; gap: 10px; padding-left: 10px; }
+.dc-heat__s i { display: block; height: 7px; border-radius: 3px; background: rgba(185,85,47,.4); }
+.dc-heat__s b { font-family: var(--font-mono); font-size: 12px; font-weight: 500; color: var(--ink-2); }
+.dc-legend { display: flex; align-items: center; gap: 12px; margin-top: 18px; flex-wrap: wrap; }
+.dc-ramp { display: inline-flex; gap: 2px; }
+.dc-ramp i { width: 26px; height: 10px; border-radius: 2px; display: block; }
+.dc-legend .small { color: var(--ink-mute); }
+
+.tip { position: absolute; z-index: 60; background: var(--ink); color: var(--paper); font-family: var(--font-ui); font-size: 12.5px; line-height: 1.45; padding: 7px 10px; border-radius: 8px; max-width: 24em; pointer-events: none; box-shadow: 0 8px 24px -12px rgba(20,20,19,.6); }
+/* Four cards read better as a square than as three-plus-one. */
+.cards--four { grid-template-columns: repeat(2, 1fr); }
+@media (max-width: 720px) { .cards--four { grid-template-columns: 1fr; } }

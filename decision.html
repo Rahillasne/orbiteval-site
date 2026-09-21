@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#FAF9F5">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600&family=Figtree:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23D4744F'/%3E%3Ccircle cx='16' cy='16' r='9' stroke='%23FAF9F5' stroke-width='2.2' fill='none'/%3E%3Ccircle cx='23' cy='9' r='3' fill='%23141413'/%3E%3C/svg%3E">
+<title>Decision card — Orbit</title>
+<meta name="description" content="Two copies of the same robot software, trained twice. The standard test calls one 41 points better and puts the odds against it at one in 61 quadrillion. The true difference is zero.">
+</head>
+<body>
+<header class="topbar" id="top">
+  <div class="pill">
+    <a class="brand" href="index.html" aria-label="Orbit home"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.6"/><circle cx="15.5" cy="4.5" r="2.3" fill="#D4744F"/></svg>Orbit</a>
+    <nav class="pill__links" aria-label="Primary">
+      <a href="claims.html">Claim Check</a>
+      <a href="decision.html">Decision card</a>
+      <a href="method.html">Method</a>
+      <a href="registry.html">Registry</a>
+      <a href="app.html">Workspace</a>
+    </nav>
+    <a class="btn btn--primary btn--sm pill__cta" href="demo.html" data-demo>Book a demo <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    <button class="pill__menu" type="button" aria-expanded="false" aria-controls="mnav" aria-label="Menu"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+  </div>
+  <nav class="mnav" id="mnav" hidden aria-label="Menu">
+    <a href="claims.html">Claim Check</a>
+    <a href="decision.html">Decision card</a>
+    <a href="method.html">Method</a>
+    <a href="registry.html">Registry</a>
+    <a href="calibration.html">Calibration</a>
+    <a href="app.html">Workspace</a>
+    <a href="demo.html" data-demo>Book a demo</a>
+  </nav>
+</header>
+
+<main class="wrap">
+  <section class="page-head">
+    <p class="eyebrow"><span class="dot"></span>Decision card · protocol v1</p>
+    <h1 id="headline">A forty-one point difference between two copies of the same software.</h1>
+    <p class="lede">Nothing was changed between them. Same recipe, same training data, same settings — only the random seed differs. The standard test reports the gap as overwhelming. There is nothing there to find.</p>
+  </section>
+
+  <section class="section section--tight">
+    <div class="dc-split">
+      <div class="dc-naive">
+        <span class="lbl">What the usual test reports</span>
+        <div id="naive"></div>
+      </div>
+      <div class="dc-card" id="card"></div>
+    </div>
+  </section>
+
+  <section class="section" id="evidence">
+    <div class="sec-head"><h2>The evidence, in full.</h2></div>
+    <p class="kv-lede" id="evidence-lede"></p>
+    <div class="table-wrap">
+      <div class="dc-heat" id="heat"></div>
+    </div>
+    <div class="dc-legend" id="legend"></div>
+    <p class="small mt" id="heatnote"></p>
+  </section>
+
+  <section class="section" id="frequency">
+    <div class="sec-head"><h2>This is not a cherry-picked pair.</h2></div>
+    <div class="grid2">
+      <div>
+        <p class="kv-lede" id="freq-lede"></p>
+        <p class="kv-lede">Every one of those rejections is a mistake, and we know it is a mistake without having to argue about it, because both arms came from the same recipe.</p>
+      </div>
+      <div class="cc-null" id="freq"></div>
+    </div>
+  </section>
+
+  <section class="section" id="states">
+    <div class="sec-head"><h2>What a card can say.</h2></div>
+    <div class="cards cards--four">
+      <div class="card"><span class="placard placard--current">Supported improvement</span><h3>The change helped.</h3><p>The gap is larger than the noise of running the same thing twice, measured on this deployment rather than assumed.</p></div>
+      <div class="card"><span class="placard placard--revoked">Supported regression</span><h3>The change hurt.</h3><p>Same bar, in the other direction. This is the state that should stop a rollout, and the only state that should.</p></div>
+      <div class="card"><span class="placard placard--specimen">No material difference</span><h3>Nothing detectable changed.</h3><p>The card on this page. A gap this size is what the same software produces against itself.</p></div>
+      <div class="card"><span class="placard placard--caution">Insufficient evidence</span><h3>Not enough data to say.</h3><p>Reported with the number of runs that would settle it, so the answer is a plan instead of a shrug.</p></div>
+    </div>
+  </section>
+
+  <section class="section" id="limits">
+    <div class="sec-head"><h2>What this page does and does not show.</h2></div>
+    <div class="empty">
+      <p class="lbl" style="margin-bottom:10px">Read this before you quote it</p>
+      <p id="limit-provenance"></p>
+      <p class="mt"><strong>The arms are not two builds.</strong> They are two groups of retrainings of one recipe, labelled A and B so the card has something to compare. Presenting them as a vendor release would be the invented story this page exists to replace.</p>
+      <p class="mt"><strong>The rate is not the point; the spread is.</strong> No number on this page is a claim about how good this policy is, or about any deployed system. The claim is about how far apart two identical things land, and therefore how large a gap has to be before it means anything.</p>
+    </div>
+  </section>
+
+  <section class="cta" id="next">
+    <div class="sec-head sec-head--center"><h2>Now ask what your vendor's number would look like under this test.</h2></div>
+    <p class="lede" style="text-align:center;margin-inline:auto">If a release was measured once, this is the question it has not answered.</p>
+    <p style="text-align:center;margin-top:26px"><a class="btn btn--primary" href="demo.html" data-demo>Book a demo <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a> <a class="btn btn--ghost" href="claims.html">See the Claim Check</a></p>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap footer__row">
+    <a class="brand" href="index.html" aria-label="Orbit home"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.6"/><circle cx="15.5" cy="4.5" r="2.3" fill="#D4744F"/></svg>Orbit</a>
+    <nav class="footer__links" aria-label="Footer">
+      <a href="claims.html">Claim Check</a>
+      <a href="decision.html">Decision card</a>
+      <a href="method.html">Method</a>
+      <a href="registry.html">Registry</a>
+      <a href="calibration.html">Calibration</a>
+      <a href="specimen-report.html">Specimen report</a>
+      <a href="app.html">Workspace</a>
+      <a href="https://github.com/Rahillasne/orbit-eval">Open code</a>
+    </nav>
+    <div class="footer__meta"><span>© 2026 Orbit · Independent verification of deployed robots</span><span><a href="mailto:rahil@orbiteval.com">rahil@orbiteval.com</a> · <a href="#top">Back to top ↑</a></span></div>
+  </div>
+</footer>
+
+<div class="tip" id="tip" hidden></div>
+<script src="decision-data.js"></script>
+<script src="site.js"></script>
+<script src="decision.js"></script>
+</body>
+</html>
