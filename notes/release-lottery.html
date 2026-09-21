@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Same recipe, two retrains — OrbitEval</title>
+<title>A regression rule that fires when nothing changed — OrbitEval</title>
 <meta name="description" content="We trained the same robot policy recipe eight times. Between the two best retrains the suite average went up 1.3 points and four skills went down 5 to 10. At 100 episodes per skill none of those drops is callable. What that means for shipping a model, and a check you can run on your own logs.">
 <link rel="canonical" href="https://orbiteval.com/notes/release-lottery.html">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Same recipe, two retrains — OrbitEval">
+<meta property="og:title" content="A regression rule that fires when nothing changed — OrbitEval">
 <meta property="og:description" content="We trained the same robot policy recipe eight times. Between the two best retrains the suite average went up 1.3 points and four skills went down 5 to 10. At 100 episodes per skill none of those drops is callable. What that means for shipping a model, and a check you can run on your own logs.">
 <meta property="og:url" content="https://orbiteval.com/notes/release-lottery.html">
 <meta property="og:site_name" content="OrbitEval">
@@ -50,35 +50,44 @@
 </style>
 
 <div class="art">
-  <span class="label">Note · 14 September 2026</span>
-  <h1 class="serif" style="font-size:clamp(1.7rem,1.3rem + 1.6vw,2.4rem);line-height:1.12">Same recipe, two retrains: the suite went up 1.3 points and four skills went down</h1>
+  <span class="label">Note · 14 September 2026 · corrected 21 September 2026</span>
+  <div class="callout" style="border-color:#b8860b;background:#fdf6e3;margin-bottom:22px">
+    <p><strong>Correction, 21 September 2026.</strong> As first published, this note led with the
+    spread in suite means across eight retrainings of one recipe, and included a table of
+    per-skill rates for two individual retrains. Both have been removed.</p>
+    <p>Those figures are measurements of how much retraining alone moves a result. That quantity
+    belongs to a separate paper by the same author, currently under peer review, and an internal
+    register written on 19 September — after this note was published — reserves it for that paper
+    and permits only rejection rates and calibration to be published from these panels.</p>
+    <p>Nothing here was withdrawn because it was wrong. The argument below is unchanged and now
+    rests on the rejection rates, which is what the register allows and, as it turns out, the
+    sharper way to make the point. The original version is retained privately.</p>
+  </div>
+  <h1 class="serif" style="font-size:clamp(1.7rem,1.3rem + 1.6vw,2.4rem);line-height:1.12">A regression rule that fired on 81% of releases where nothing had changed</h1>
   <p class="meta">Rahil Lasne · reproducible from the sample on the release check page</p>
 
   <p class="lede">If you train a robot policy twice with the same data, the same config and a different seed, you get two different robots. Everyone who has done it knows this. What is less discussed is what it does to the number you use to decide whether the new model ships.</p>
 
-  <p>We trained π0.5 eight times on LIBERO-Object with identical data and settings, only the training seed changed, and evaluated each retrain on 1,000 episodes: ten tasks, 100 episodes each, the same initial states for every retrain. The suite means run from 56.4 to 69.2. That spread, 12.8 points, comes from nothing but the seed.</p>
+  <p>We trained π0.5 eight times on LIBERO-Object with identical data and settings, only the training seed changed, and evaluated each retrain on 1,000 episodes: ten tasks, 100 episodes each, the same initial states for every retrain. Because every run came from one recipe, any two of them differ by exactly nothing, and every difference a test reports between them is an error we can identify as an error.</p>
 
-  <h2>Pretend the two best retrains are two releases</h2>
-  <p>Take the retrain with the second-highest suite mean as "last release" and the highest as "this release". On the average, this release is better: 67.9 to 69.2, up 1.3 points. Here is what a per-skill check says about the same two models.</p>
-
-  <div class="tbl"><table>
-    <thead><tr><th>Skill</th><th class="num">Last</th><th class="num">This</th><th class="num">Change</th><th class="num">95% interval</th><th>Call</th></tr></thead>
-    <tbody>
-      <tr><td class="sk">task4</td><td class="num">92.0%</td><td class="num">82.0%</td><td class="num">−10.0 pp</td><td class="num">[−19.0, −1.0]</td><td><span class="v s">suspect</span></td></tr>
-      <tr><td class="sk">task5</td><td class="num">63.0%</td><td class="num">53.0%</td><td class="num">−10.0 pp</td><td class="num">[−23.0, +3.0]</td><td><span class="v s">suspect</span></td></tr>
-      <tr><td class="sk">task2</td><td class="num">95.0%</td><td class="num">88.0%</td><td class="num">−7.0 pp</td><td class="num">[−14.0, 0.0]</td><td><span class="v s">suspect</span></td></tr>
-      <tr><td class="sk">task9</td><td class="num">23.0%</td><td class="num">18.0%</td><td class="num">−5.0 pp</td><td class="num">[−15.0, +5.0]</td><td><span class="v s">suspect</span></td></tr>
-      <tr><td class="sk">five others</td><td class="num"></td><td class="num"></td><td class="num">−4 to +10</td><td class="num"></td><td><span class="v">held</span></td></tr>
-      <tr><td class="sk">task1</td><td class="num">37.0%</td><td class="num">77.0%</td><td class="num">+40.0 pp</td><td class="num">[+28.0, +52.0]</td><td><span class="v i">improved</span></td></tr>
-    </tbody>
-  </table></div>
-
-  <p>Four skills fell by 5 to 10 points. One rose by 40. The average moved 1.3. If task4 is the one your customer runs all day, the release that looks like a small improvement is a ten-point regression on their line, and the dashboard would never show it.</p>
+  <h2>What a regression rule does on that data</h2>
+  <p>Pick any two of those retrains, call one "last release" and the other "this release", and
+  run the rule almost everyone runs: flag any skill whose drop clears p&nbsp;≤&nbsp;0.05. On this
+  battery that rule fired on <strong>81% of comparisons where nothing had changed</strong>. The
+  priced rule — which accounts for the fact that training is itself a source of variation — fired
+  on <strong>2.5%</strong>.</p>
+  <p>Both numbers are error rates. There was no difference to find in any of those comparisons,
+  so every firing was a false alarm. A rule that cries wolf four times out of five is not a
+  safety net; it is noise that people learn to ignore, which is worse than having no rule.</p>
+  <p>The suite mean has the opposite failure. Averaged over ten skills, movement on any one of
+  them is diluted to almost nothing, so a release can look flat while the one skill a particular
+  customer runs all day has moved underneath it. Reporting the average alone is not a
+  conservative choice; it is a choice to not look.</p>
 
   <h2>What the check can and cannot say</h2>
-  <p>None of the four drops is called a regression, and that is correct. At 100 episodes per skill, the smallest drop this file can call real is about 12 points; a 10-point drop with an interval from −19 to −1 is real-looking but not separable from noise. The check says "suspect" and tells you the number of episodes it would take to know, rather than either flagging everything or passing everything. On this battery an unpriced rule, any drop with p ≤ 0.05, fired on 81% of comparisons where nothing had changed; the priced rule fired on 2.5%.</p>
+  <p>At 100 episodes per skill, the smallest drop this design can call real is about 12 points. Anything smaller is real-looking and not separable from noise, and saying so is the whole job: the check reports "suspect" together with the number of episodes it would take to know, rather than flagging everything or passing everything.</p>
 
-  <p>The one thing no two-version comparison can tell you is whether a skill is down because the model is worse or because training is a lottery and you drew a different ticket. Those two look identical from the outside. Separating them needs the same recipe trained more than once; with three retrains and per-skill selection, the held-out gain on this battery was 6 points over the best single retrain, and the expected number of damaged skills went from 1.2 to 0.02.</p>
+  <p>The one thing no two-version comparison can tell you is whether a skill is down because the model is worse or because training is a lottery and you drew a different ticket. Those two look identical from the outside. Separating them needs the same recipe trained more than once. How much that buys is a measurement this note does not report.</p>
 
   <h2>What to do with your own logs</h2>
   <ul>
