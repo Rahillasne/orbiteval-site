@@ -55,13 +55,18 @@
   </section>
 
   <section class="section" id="evidence">
-    <div class="sec-head"><h2>The evidence, in full.</h2></div>
+    <div class="sec-head"><h2>How big does a gap have to be before it means something?</h2></div>
     <p class="kv-lede" id="evidence-lede"></p>
-    <div class="table-wrap">
-      <div class="dc-heat" id="heat"></div>
+    <figure class="dc-fig">
+      <div id="fpr"></div>
+      <figcaption class="small" id="fprnote"></figcaption>
+    </figure>
+    <div class="table-wrap mt">
+      <table id="fprtbl">
+        <thead><tr><th>Call it a difference at</th><th class="n">Fires on</th><th class="n">False-positive rate</th></tr></thead>
+        <tbody id="fprrows"></tbody>
+      </table>
     </div>
-    <div class="dc-legend" id="legend"></div>
-    <p class="small mt" id="heatnote"></p>
   </section>
 
   <section class="section" id="frequency">
@@ -91,7 +96,7 @@
       <p class="lbl" style="margin-bottom:10px">Read this before you quote it</p>
       <p id="limit-provenance"></p>
       <p class="mt"><strong>The arms are not two builds.</strong> They are two groups of retrainings of one recipe, labelled A and B so the card has something to compare. Presenting them as a vendor release would be the invented story this page exists to replace.</p>
-      <p class="mt"><strong>The rate is not the point; the spread is.</strong> No number on this page is a claim about how good this policy is, or about any deployed system. The claim is about how far apart two identical things land, and therefore how large a gap has to be before it means anything.</p>
+      <p class="mt"><strong>Every figure here is a rejection rate.</strong> This page reports how often a decision rule fires when there is nothing to find. It does not report how noisy retraining is on this panel, which is a separate measurement belonging to a paper still under review, and which is deliberately not published here.</p>
     </div>
   </section>
 

@@ -55,7 +55,6 @@
       <div><dt>Compared</dt><dd class="mono">arm A (${H.arm_a.map(seed).join(", ")}) against arm B (${H.arm_b.map(seed).join(", ")})</dd></div>
       <div><dt>Task</dt><dd class="mono">${esc(P.suite)} · task ${H.task}</dd></div>
       <div><dt>Evidence</dt><dd>${H.n_a + H.n_b} episodes, ${D.arm_size * 2} training runs</dd></div>
-      <div><dt>Per-run rates</dt><dd class="mono">A: ${H.per_run_a.map(pp).join("%, ")}% &nbsp;·&nbsp; B: ${H.per_run_b.map(pp).join("%, ")}%</dd></div>
     </dl>
     <div class="verdict">
       <strong>The gap is not evidence of a difference.</strong>
@@ -70,51 +69,54 @@
     </div>
     <div class="dc-rec">
       <span class="lbl">Recommendation</span>
-      <p>Do not act on a single-run comparison at this task's noise level. Repeat the training run, or accept that a difference below the run-to-run spread is not measurable with the data in hand.</p>
+      <p>Do not act on a comparison of two runs a side at this sample size. Either repeat the training runs, or raise the gap at which a difference counts as one — the curve below prices both choices.</p>
     </div>`;
 
-  // ---- Heat table --------------------------------------------------------
-  // Sequential encoding: one hue, light to dark, on the ink token. Success
-  // rate here is neither good nor bad — the spread across a row is the
-  // point — so it must not borrow a status hue or the brand hue.
-  const runs = P.runs;
-  const shade = (v) => 0.05 + (v / 100) * 0.72;   // 0..100 -> alpha
-  const ink = (v) => (shade(v) > 0.46 ? "var(--paper)" : "var(--ink-2)");
-  const maxSpread = Math.max(...D.matrix.map((m) => m.spread));
+  // ---- False-positive curve ----------------------------------------------
+  // What the register permits and what a reader actually needs: for a family
+  // of decision rules of the form "call it a difference at >= X points",
+  // how often each one fires when the truth is zero. One series, so the
+  // title names it and no legend is needed.
+  const RC = D.reference_classes.find((r) => r.retrains_per_arm === D.arm_size);
+  const curve = RC.curve;
+  const W = 720, Hh = 300, M = { t: 18, r: 22, b: 44, l: 54 };
+  const xMax = curve[curve.length - 1].threshold_pp;
+  const sx = (v) => M.l + (v / xMax) * (W - M.l - M.r);
+  const sy = (v) => M.t + (1 - v) * (Hh - M.t - M.b);
+  const path = curve.map((c, i) => `${i ? "L" : "M"}${sx(c.threshold_pp).toFixed(1)},${sy(c.false_positive_rate).toFixed(1)}`).join("");
 
-  const head = `<div class="dc-heat__r dc-heat__r--head">
-      <span class="dc-heat__t">Task</span>
-      ${runs.map((r) => `<span class="dc-heat__c dc-heat__c--head">${esc(seed(r))}</span>`).join("")}
-      <span class="dc-heat__s dc-heat__s--head">Spread</span></div>`;
+  // Where the rule finally reaches the 5% a reader assumes they are getting.
+  const cross = curve.find((c) => c.false_positive_rate <= 0.05);
 
-  const body = D.matrix.map((m) => {
-    const cells = m.cells.map((c) => {
-      const v = c.successes / c.n * 100;
-      const edge = v === m.min ? " is-min" : (v === m.max ? " is-max" : "");
-      return `<span class="dc-heat__c${edge}" style="background:rgba(20,20,19,${shade(v).toFixed(3)});color:${ink(v)}"
-        tabindex="0" data-tip="${esc(seed(c.run))}, task ${m.task}: ${c.successes} of ${c.n} episodes succeeded (${pp(v)}%)">${tidy(v)}</span>`;
-    }).join("");
-    return `<div class="dc-heat__r">
-      <span class="dc-heat__t">${m.task}</span>${cells}
-      <span class="dc-heat__s"><i style="width:${(m.spread / maxSpread * 100).toFixed(1)}%"></i><b>${tidy(m.spread)}</b></span></div>`;
-  }).join("");
+  const gridY = [0, 0.25, 0.5, 0.75, 1];
+  $("#fpr").innerHTML = `
+  <svg viewBox="0 0 ${W} ${Hh}" class="dc-svg" role="img"
+       aria-label="False-positive rate against decision threshold, over ${RC.n_comparisons} comparisons where the true difference is zero">
+    ${gridY.map((g) => `<line x1="${M.l}" x2="${W - M.r}" y1="${sy(g)}" y2="${sy(g)}" class="dc-grid"/>
+      <text x="${M.l - 10}" y="${sy(g) + 4}" class="dc-ax dc-ax--y">${(g * 100).toFixed(0)}%</text>`).join("")}
+    ${[0, 10, 20, 30, 40].map((t) => `<text x="${sx(t)}" y="${Hh - 22}" class="dc-ax">${t}</text>`).join("")}
+    <text x="${(M.l + W - M.r) / 2}" y="${Hh - 4}" class="dc-ax dc-ax--title">Call it a difference at this many points or more</text>
+    <line x1="${M.l}" x2="${W - M.r}" y1="${sy(0.05)}" y2="${sy(0.05)}" class="dc-ref"/>
+    <text x="${W - M.r}" y="${sy(0.05) - 8}" class="dc-ax dc-ax--ref" text-anchor="end">the 5% you think you are getting</text>
+    <path d="${path}" class="dc-line"/>
+    ${curve.map((c) => `<circle cx="${sx(c.threshold_pp)}" cy="${sy(c.false_positive_rate)}" r="9" class="dc-hit"
+      tabindex="0" data-tip="A rule of &quot;at least ${c.threshold_pp} points&quot; fires on ${(c.false_positive_rate * 100).toFixed(1)}% of ${RC.n_comparisons.toLocaleString()} comparisons where the true difference is zero"/>`).join("")}
+  </svg>`;
 
-  $("#heat").innerHTML = head + body;
+  $("#evidence-lede").innerHTML = `Take every way of splitting these ${P.n_runs} runs into two arms of ${D.arm_size}, across all ${P.n_tasks} tasks:
+    <strong>${RC.n_comparisons.toLocaleString()} comparisons</strong> of ${RC.episodes_per_arm} episodes a side in which the true difference is zero.
+    Now pick a rule — <em>call it a difference when the gap is at least X points</em> — and count how often it fires. Every firing is a false positive.`;
 
-  $("#evidence-lede").innerHTML = `Every cell is a real evaluation: ${P.episodes_per_cell} episodes of
-    <span class="mono">${esc(P.policy_class)}</span> on one task of <span class="mono">${esc(P.suite)}</span>.
-    Reading across a row, the only thing that changes between the columns is the training seed.
-    ${P.total_episodes.toLocaleString()} episodes in total.`;
+  $("#fprnote").innerHTML = cross
+    ? `A rule has to wait for a gap of <strong>${cross.threshold_pp} points</strong> before its false-positive rate drops to the 5% most people assume they are working at. At ten points it is still ${(curve.find((c) => c.threshold_pp === 10).false_positive_rate * 100).toFixed(1)}%.`
+    : `Across the whole range shown, no threshold rule reaches a 5% false-positive rate.`;
 
-  const worst = D.matrix.reduce((a, b) => (b.spread > a.spread ? b : a));
-  $("#heatnote").innerHTML = `Darker is a higher success rate. The outlined cells are the lowest and highest run in each row.
-    The widest row is task ${worst.task}, where identical recipes land anywhere from <strong>${pp(worst.min)}%</strong> to
-    <strong>${pp(worst.max)}%</strong>. Not one row is flat.`;
-
-  $("#legend").innerHTML = `<span class="lbl">Success rate</span>
-    <span class="dc-ramp">${[0, 20, 40, 60, 80, 100].map((v) =>
-      `<i style="background:rgba(20,20,19,${shade(v).toFixed(3)})" title="${v}%"></i>`).join("")}</span>
-    <span class="small mono">0% → 100%</span>`;
+  // Every threshold except zero, which is trivially 100%. The table is the
+  // chart's data, so nothing here is encoded in position alone.
+  $("#fprrows").innerHTML = curve.filter((c) => c.threshold_pp > 0)
+    .map((c) => `<tr><td class="mono">≥ ${c.threshold_pp} points</td>
+      <td class="n mono">${Math.round(c.false_positive_rate * RC.n_comparisons).toLocaleString()} of ${RC.n_comparisons.toLocaleString()}</td>
+      <td class="n mono">${(c.false_positive_rate * 100).toFixed(1)}%</td></tr>`).join("");
 
   // ---- Frequency ---------------------------------------------------------
   const rate = (n) => (n / C.n_cells * 100).toFixed(1) + "%";
@@ -135,7 +137,7 @@
     The panel is ${P.n_runs} retrainings of <span class="mono">${esc(P.policy_class)}</span> evaluated on
     <span class="mono">${esc(P.suite)}</span>, ${P.n_tasks} tasks, ${P.episodes_per_cell} episodes each.
     No robot picked a real item here, and no rate on this page describes any deployed system. What transfers is the
-    arithmetic: a deployment logging a few hundred in-scope attempts a week has less data than a row of this table, not more.`;
+    arithmetic: a deployment logging a few hundred in-scope attempts a week sits at the left end of this curve, not the right.`;
 
   // ---- Hover -------------------------------------------------------------
   const tip = $("#tip");
@@ -149,8 +151,8 @@
     tip.style.top = (r.top + window.scrollY - tip.offsetHeight - 10) + "px";
   };
   const hide = () => { tip.hidden = true; };
-  $("#heat").addEventListener("mouseover", show);
-  $("#heat").addEventListener("focusin", show);
-  $("#heat").addEventListener("mouseout", hide);
-  $("#heat").addEventListener("focusout", hide);
+  $("#fpr").addEventListener("mouseover", show);
+  $("#fpr").addEventListener("focusin", show);
+  $("#fpr").addEventListener("mouseout", hide);
+  $("#fpr").addEventListener("focusout", hide);
 })();

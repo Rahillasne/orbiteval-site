@@ -404,21 +404,19 @@ input:focus, textarea:focus { outline: none; border-color: var(--accent); box-sh
 .dc-truth p, .dc-rec p { color: var(--ink-2); font-size: 14.5px; margin: 7px 0 0; max-width: 62ch; }
 .dc-truth { padding: 16px 18px; background: var(--paper-2); border-radius: 12px; }
 
-.dc-heat { min-width: 620px; }
-.dc-heat__r { display: grid; grid-template-columns: 44px repeat(8, 1fr) 120px; gap: 2px; margin-bottom: 2px; align-items: stretch; }
-.dc-heat__t { font-family: var(--font-mono); font-size: 12px; color: var(--ink-mute); display: flex; align-items: center; }
-.dc-heat__c { font-family: var(--font-mono); font-size: 12.5px; padding: 11px 6px; text-align: center; border-radius: 5px; border: 1.5px solid transparent; cursor: default; }
-.dc-heat__c:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
-.dc-heat__c--head, .dc-heat__s--head { background: transparent !important; color: var(--ink-mute) !important; font-size: 10.5px; letter-spacing: .06em; text-transform: uppercase; padding-bottom: 8px; border: 0; }
-.dc-heat__c.is-min { border-color: rgba(185,85,47,.85); }
-.dc-heat__c.is-max { border-color: rgba(20,20,19,.5); }
-.dc-heat__s { display: grid; grid-template-columns: 64px auto; align-items: center; gap: 10px; padding-left: 10px; }
-.dc-heat__s i { display: block; height: 7px; border-radius: 3px; background: rgba(185,85,47,.4); }
-.dc-heat__s b { font-family: var(--font-mono); font-size: 12px; font-weight: 500; color: var(--ink-2); }
-.dc-legend { display: flex; align-items: center; gap: 12px; margin-top: 18px; flex-wrap: wrap; }
-.dc-ramp { display: inline-flex; gap: 2px; }
-.dc-ramp i { width: 26px; height: 10px; border-radius: 2px; display: block; }
-.dc-legend .small { color: var(--ink-mute); }
+.dc-fig { margin: 24px 0 0; }
+.dc-svg { width: 100%; height: auto; overflow: visible; }
+.dc-grid { stroke: var(--line-soft); stroke-width: 1; }
+.dc-ref { stroke: var(--ink-mute); stroke-width: 1.5; stroke-dasharray: 4 4; }
+.dc-line { fill: none; stroke: var(--accent); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.dc-hit { fill: transparent; }
+.dc-hit:hover, .dc-hit:focus-visible { fill: rgba(185,85,47,.22); outline: none; }
+.dc-ax { font-family: var(--font-mono); font-size: 11px; fill: var(--ink-mute); text-anchor: middle; }
+.dc-ax--y { text-anchor: end; }
+.dc-ax--title { font-family: var(--font-ui); font-size: 12px; fill: var(--ink-soft); }
+.dc-ax--ref { font-family: var(--font-ui); font-size: 11.5px; fill: var(--ink-mute); }
+.dc-fig figcaption { color: var(--ink-2); margin-top: 16px; max-width: 64ch; }
+#fprtbl td:first-child { color: var(--ink); }
 
 .tip { position: absolute; z-index: 60; background: var(--ink); color: var(--paper); font-family: var(--font-ui); font-size: 12.5px; line-height: 1.45; padding: 7px 10px; border-radius: 8px; max-width: 24em; pointer-events: none; box-shadow: 0 8px 24px -12px rgba(20,20,19,.6); }
 /* Four cards read better as a square than as three-plus-one. */

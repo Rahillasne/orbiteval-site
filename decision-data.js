@@ -52,496 +52,281 @@ window.DECISION_CARD = {
   "welch_t": -2.0474422946995814,
   "df": 1,
   "t_crit": 12.706,
-  "p_two_sided": 1.6474263310395285e-17,
-  "per_run_a": [
-   17.0,
-   15.0
-  ],
-  "per_run_b": [
-   37.0,
-   77.0
-  ]
+  "p_two_sided": 1.6474263310395285e-17
  },
- "matrix": [
+ "reference_classes": [
   {
-   "task": 0,
-   "cells": [
+   "retrains_per_arm": 2,
+   "episodes_per_arm": 200,
+   "n_comparisons": 2100,
+   "curve": [
     {
-     "run": "pt2k88_s0",
-     "successes": 88,
-     "n": 100
+     "threshold_pp": 0,
+     "false_positive_rate": 1.0
     },
     {
-     "run": "pt2k88_s1",
-     "successes": 58,
-     "n": 100
+     "threshold_pp": 2,
+     "false_positive_rate": 0.8519047619047619
     },
     {
-     "run": "pt2k88_s2",
-     "successes": 83,
-     "n": 100
+     "threshold_pp": 4,
+     "false_positive_rate": 0.680952380952381
     },
     {
-     "run": "pt2k88_s3",
-     "successes": 76,
-     "n": 100
+     "threshold_pp": 6,
+     "false_positive_rate": 0.5480952380952381
     },
     {
-     "run": "pt2k88_s4",
-     "successes": 79,
-     "n": 100
+     "threshold_pp": 8,
+     "false_positive_rate": 0.4342857142857143
     },
     {
-     "run": "pt2k88_s5",
-     "successes": 72,
-     "n": 100
+     "threshold_pp": 10,
+     "false_positive_rate": 0.34523809523809523
     },
     {
-     "run": "pt2k88_s6",
-     "successes": 89,
-     "n": 100
+     "threshold_pp": 12,
+     "false_positive_rate": 0.2776190476190476
     },
     {
-     "run": "pt2k88_s7",
-     "successes": 87,
-     "n": 100
+     "threshold_pp": 14,
+     "false_positive_rate": 0.20333333333333334
+    },
+    {
+     "threshold_pp": 16,
+     "false_positive_rate": 0.1580952380952381
+    },
+    {
+     "threshold_pp": 18,
+     "false_positive_rate": 0.12333333333333334
+    },
+    {
+     "threshold_pp": 20,
+     "false_positive_rate": 0.09571428571428571
+    },
+    {
+     "threshold_pp": 22,
+     "false_positive_rate": 0.07523809523809524
+    },
+    {
+     "threshold_pp": 24,
+     "false_positive_rate": 0.062380952380952384
+    },
+    {
+     "threshold_pp": 26,
+     "false_positive_rate": 0.047619047619047616
+    },
+    {
+     "threshold_pp": 28,
+     "false_positive_rate": 0.034761904761904765
+    },
+    {
+     "threshold_pp": 30,
+     "false_positive_rate": 0.025714285714285714
+    },
+    {
+     "threshold_pp": 32,
+     "false_positive_rate": 0.017142857142857144
+    },
+    {
+     "threshold_pp": 34,
+     "false_positive_rate": 0.011904761904761904
+    },
+    {
+     "threshold_pp": 36,
+     "false_positive_rate": 0.008095238095238095
+    },
+    {
+     "threshold_pp": 38,
+     "false_positive_rate": 0.004285714285714286
+    },
+    {
+     "threshold_pp": 40,
+     "false_positive_rate": 0.0019047619047619048
     }
-   ],
-   "min": 57.99999999999999,
-   "max": 89.0,
-   "spread": 31.000000000000007
+   ]
   },
   {
-   "task": 1,
-   "cells": [
+   "retrains_per_arm": 3,
+   "episodes_per_arm": 300,
+   "n_comparisons": 2800,
+   "curve": [
     {
-     "run": "pt2k88_s0",
-     "successes": 21,
-     "n": 100
+     "threshold_pp": 0,
+     "false_positive_rate": 1.0
     },
     {
-     "run": "pt2k88_s1",
-     "successes": 22,
-     "n": 100
+     "threshold_pp": 2,
+     "false_positive_rate": 0.8139285714285714
     },
     {
-     "run": "pt2k88_s2",
-     "successes": 17,
-     "n": 100
+     "threshold_pp": 4,
+     "false_positive_rate": 0.6167857142857143
     },
     {
-     "run": "pt2k88_s3",
-     "successes": 37,
-     "n": 100
+     "threshold_pp": 6,
+     "false_positive_rate": 0.4832142857142857
     },
     {
-     "run": "pt2k88_s4",
-     "successes": 77,
-     "n": 100
+     "threshold_pp": 8,
+     "false_positive_rate": 0.37285714285714283
     },
     {
-     "run": "pt2k88_s5",
-     "successes": 19,
-     "n": 100
+     "threshold_pp": 10,
+     "false_positive_rate": 0.2775
     },
     {
-     "run": "pt2k88_s6",
-     "successes": 15,
-     "n": 100
+     "threshold_pp": 12,
+     "false_positive_rate": 0.20107142857142857
     },
     {
-     "run": "pt2k88_s7",
-     "successes": 30,
-     "n": 100
+     "threshold_pp": 14,
+     "false_positive_rate": 0.1442857142857143
+    },
+    {
+     "threshold_pp": 16,
+     "false_positive_rate": 0.1025
+    },
+    {
+     "threshold_pp": 18,
+     "false_positive_rate": 0.0725
+    },
+    {
+     "threshold_pp": 20,
+     "false_positive_rate": 0.0525
+    },
+    {
+     "threshold_pp": 22,
+     "false_positive_rate": 0.038214285714285715
+    },
+    {
+     "threshold_pp": 24,
+     "false_positive_rate": 0.023571428571428573
+    },
+    {
+     "threshold_pp": 26,
+     "false_positive_rate": 0.012857142857142857
+    },
+    {
+     "threshold_pp": 28,
+     "false_positive_rate": 0.0075
+    },
+    {
+     "threshold_pp": 30,
+     "false_positive_rate": 0.003928571428571429
+    },
+    {
+     "threshold_pp": 32,
+     "false_positive_rate": 0.0007142857142857143
+    },
+    {
+     "threshold_pp": 34,
+     "false_positive_rate": 0.00035714285714285714
+    },
+    {
+     "threshold_pp": 36,
+     "false_positive_rate": 0.0
+    },
+    {
+     "threshold_pp": 38,
+     "false_positive_rate": 0.0
+    },
+    {
+     "threshold_pp": 40,
+     "false_positive_rate": 0.0
     }
-   ],
-   "min": 15.0,
-   "max": 77.0,
-   "spread": 62.0
+   ]
   },
   {
-   "task": 2,
-   "cells": [
+   "retrains_per_arm": 4,
+   "episodes_per_arm": 400,
+   "n_comparisons": 350,
+   "curve": [
     {
-     "run": "pt2k88_s0",
-     "successes": 68,
-     "n": 100
+     "threshold_pp": 0,
+     "false_positive_rate": 1.0
     },
     {
-     "run": "pt2k88_s1",
-     "successes": 87,
-     "n": 100
+     "threshold_pp": 2,
+     "false_positive_rate": 0.7971428571428572
     },
     {
-     "run": "pt2k88_s2",
-     "successes": 92,
-     "n": 100
+     "threshold_pp": 4,
+     "false_positive_rate": 0.5942857142857143
     },
     {
-     "run": "pt2k88_s3",
-     "successes": 95,
-     "n": 100
+     "threshold_pp": 6,
+     "false_positive_rate": 0.44857142857142857
     },
     {
-     "run": "pt2k88_s4",
-     "successes": 88,
-     "n": 100
+     "threshold_pp": 8,
+     "false_positive_rate": 0.32
     },
     {
-     "run": "pt2k88_s5",
-     "successes": 79,
-     "n": 100
+     "threshold_pp": 10,
+     "false_positive_rate": 0.21428571428571427
     },
     {
-     "run": "pt2k88_s6",
-     "successes": 85,
-     "n": 100
+     "threshold_pp": 12,
+     "false_positive_rate": 0.15142857142857144
     },
     {
-     "run": "pt2k88_s7",
-     "successes": 85,
-     "n": 100
+     "threshold_pp": 14,
+     "false_positive_rate": 0.10571428571428572
+    },
+    {
+     "threshold_pp": 16,
+     "false_positive_rate": 0.06857142857142857
+    },
+    {
+     "threshold_pp": 18,
+     "false_positive_rate": 0.04285714285714286
+    },
+    {
+     "threshold_pp": 20,
+     "false_positive_rate": 0.022857142857142857
+    },
+    {
+     "threshold_pp": 22,
+     "false_positive_rate": 0.011428571428571429
+    },
+    {
+     "threshold_pp": 24,
+     "false_positive_rate": 0.002857142857142857
+    },
+    {
+     "threshold_pp": 26,
+     "false_positive_rate": 0.002857142857142857
+    },
+    {
+     "threshold_pp": 28,
+     "false_positive_rate": 0.002857142857142857
+    },
+    {
+     "threshold_pp": 30,
+     "false_positive_rate": 0.0
+    },
+    {
+     "threshold_pp": 32,
+     "false_positive_rate": 0.0
+    },
+    {
+     "threshold_pp": 34,
+     "false_positive_rate": 0.0
+    },
+    {
+     "threshold_pp": 36,
+     "false_positive_rate": 0.0
+    },
+    {
+     "threshold_pp": 38,
+     "false_positive_rate": 0.0
+    },
+    {
+     "threshold_pp": 40,
+     "false_positive_rate": 0.0
     }
-   ],
-   "min": 68.0,
-   "max": 95.0,
-   "spread": 27.0
-  },
-  {
-   "task": 3,
-   "cells": [
-    {
-     "run": "pt2k88_s0",
-     "successes": 11,
-     "n": 100
-    },
-    {
-     "run": "pt2k88_s1",
-     "successes": 46,
-     "n": 100
-    },
-    {
-     "run": "pt2k88_s2",
-     "successes": 33,
-     "n": 100
-    },
-    {
-     "run": "pt2k88_s3",
-     "successes": 50,
-     "n": 100
-    },
-    {
-     "run": "pt2k88_s4",
-     "successes": 48,
-     "n": 100
-    },
-    {
-     "run": "pt2k88_s5",
-     "successes": 30,
-     "n": 100
-    },
-    {
-     "run": "pt2k88_s6",
-     "successes": 47,
-     "n": 100
-    },
-    {
-     "run": "pt2k88_s7",
-     "successes": 40,
-     "n": 100
-    }
-   ],
-   "min": 11.0,
-   "max": 50.0,
-   "spread": 39.0
-  },
-  {
-   "task": 4,
-   "cells": [
-    {
-     "run": "pt2k88_s0",
-     "successes": 88,
-     "n": 100
-    },
-    {
-     "run": "pt2k88_s1",
-     "successes": 87,
-     "n": 100
-    },
-    {
-     "run": "pt2k88_s2",
-     "successes": 86,
-     "n": 100
-    },
-    {
-     "run": "pt2k88_s3",
-     "successes": 92,
-     "n": 100
-    },
-    {
-     "run": "pt2k88_s4",
-     "successes": 82,
-     "n": 100
-    },
-    {
-     "run": "pt2k88_s5",
-     "successes": 87,
-     "n": 100
-    },
-    {
-     "run": "pt2k88_s6",
-     "successes": 86,
-     "n": 100
-    },
-    {
-     "run": "pt2k88_s7",
-     "successes": 84,
-     "n": 100
-    }
-   ],
-   "min": 82.0,
-   "max": 92.0,
-   "spread": 10.0
-  },
-  {
-   "task": 5,
-   "cells": [
-    {
-     "run": "pt2k88_s0",
-     "successes": 51,
-     "n": 100
-    },
-    {
-     "run": "pt2k88_s1",
-     "successes": 74,
-     "n": 100
-    },
-    {
-     "run": "pt2k88_s2",
-     "successes": 39,
-     "n": 100
-    },
-    {
-     "run": "pt2k88_s3",
-     "successes": 63,
-     "n": 100
-    },
-    {
-     "run": "pt2k88_s4",
-     "successes": 53,
-     "n": 100
-    },
-    {
-     "run": "pt2k88_s5",
-     "successes": 47,
-     "n": 100
-    },
-    {
-     "run": "pt2k88_s6",
-     "successes": 64,
-     "n": 100
-    },
-    {
-     "run": "pt2k88_s7",
-     "successes": 47,
-     "n": 100
-    }
-   ],
-   "min": 39.0,
-   "max": 74.0,
-   "spread": 35.0
-  },
-  {
-   "task": 6,
-   "cells": [
-    {
-     "run": "pt2k88_s0",
-     "successes": 85,
-     "n": 100
-    },
-    {
-     "run": "pt2k88_s1",
-     "successes": 46,
-     "n": 100
-    },
-    {
-     "run": "pt2k88_s2",
-     "successes": 78,
-     "n": 100
-    },
-    {
-     "run": "pt2k88_s3",
-     "successes": 89,
-     "n": 100
-    },
-    {
-     "run": "pt2k88_s4",
-     "successes": 85,
-     "n": 100
-    },
-    {
-     "run": "pt2k88_s5",
-     "successes": 66,
-     "n": 100
-    },
-    {
-     "run": "pt2k88_s6",
-     "successes": 44,
-     "n": 100
-    },
-    {
-     "run": "pt2k88_s7",
-     "successes": 69,
-     "n": 100
-    }
-   ],
-   "min": 44.0,
-   "max": 89.0,
-   "spread": 45.0
-  },
-  {
-   "task": 7,
-   "cells": [
-    {
-     "run": "pt2k88_s0",
-     "successes": 74,
-     "n": 100
-    },
-    {
-     "run": "pt2k88_s1",
-     "successes": 83,
-     "n": 100
-    },
-    {
-     "run": "pt2k88_s2",
-     "successes": 79,
-     "n": 100
-    },
-    {
-     "run": "pt2k88_s3",
-     "successes": 69,
-     "n": 100
-    },
-    {
-     "run": "pt2k88_s4",
-     "successes": 79,
-     "n": 100
-    },
-    {
-     "run": "pt2k88_s5",
-     "successes": 57,
-     "n": 100
-    },
-    {
-     "run": "pt2k88_s6",
-     "successes": 67,
-     "n": 100
-    },
-    {
-     "run": "pt2k88_s7",
-     "successes": 69,
-     "n": 100
-    }
-   ],
-   "min": 56.99999999999999,
-   "max": 83.0,
-   "spread": 26.000000000000007
-  },
-  {
-   "task": 8,
-   "cells": [
-    {
-     "run": "pt2k88_s0",
-     "successes": 73,
-     "n": 100
-    },
-    {
-     "run": "pt2k88_s1",
-     "successes": 83,
-     "n": 100
-    },
-    {
-     "run": "pt2k88_s2",
-     "successes": 86,
-     "n": 100
-    },
-    {
-     "run": "pt2k88_s3",
-     "successes": 85,
-     "n": 100
-    },
-    {
-     "run": "pt2k88_s4",
-     "successes": 83,
-     "n": 100
-    },
-    {
-     "run": "pt2k88_s5",
-     "successes": 68,
-     "n": 100
-    },
-    {
-     "run": "pt2k88_s6",
-     "successes": 73,
-     "n": 100
-    },
-    {
-     "run": "pt2k88_s7",
-     "successes": 76,
-     "n": 100
-    }
-   ],
-   "min": 68.0,
-   "max": 86.0,
-   "spread": 18.0
-  },
-  {
-   "task": 9,
-   "cells": [
-    {
-     "run": "pt2k88_s0",
-     "successes": 40,
-     "n": 100
-    },
-    {
-     "run": "pt2k88_s1",
-     "successes": 25,
-     "n": 100
-    },
-    {
-     "run": "pt2k88_s2",
-     "successes": 22,
-     "n": 100
-    },
-    {
-     "run": "pt2k88_s3",
-     "successes": 23,
-     "n": 100
-    },
-    {
-     "run": "pt2k88_s4",
-     "successes": 18,
-     "n": 100
-    },
-    {
-     "run": "pt2k88_s5",
-     "successes": 39,
-     "n": 100
-    },
-    {
-     "run": "pt2k88_s6",
-     "successes": 36,
-     "n": 100
-    },
-    {
-     "run": "pt2k88_s7",
-     "successes": 28,
-     "n": 100
-    }
-   ],
-   "min": 18.0,
-   "max": 40.0,
-   "spread": 22.0
+   ]
   }
  ]
 };

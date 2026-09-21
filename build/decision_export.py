@@ -11,6 +11,21 @@ page, but they are not two builds and the page says so: dressing them as a
 vendor release would be the synthetic storytelling this page exists to
 replace.
 
+BOUND BY THE OVERLAP REGISTER. This module reads panels.py, and so inherits
+the rule in research/sensitivity_2026-09-19/OVERLAP_REGISTER.md: compute
+rejection rates and calibration from these panels, and never publish a
+retraining-noise magnitude -- a sigma, a variance decomposition, or a
+seed-to-seed spread reported as a result in its own right -- because that
+magnitude belongs to the sibling paper, which is under review.
+
+An earlier version of this file emitted the full per-run, per-task matrix
+and a spread column, and the page reported the widest row as a finding.
+That was a breach and the matrix is gone. What remains is rejection rates:
+the arm-level pooled rates that are the INPUTS to a rejection, and the
+false-positive rate of a threshold rule as a function of its threshold,
+which is "false-positive behavior of a test" and is named as permitted.
+Per-run rates are not emitted anywhere in this file.
+
 Usage:
     python3 build/decision_export.py [--study PATH] [--out PATH]
 """
@@ -29,6 +44,24 @@ DEFAULT_OUT = os.path.join(
 
 Z = 1.959964
 ARM_SIZE = 2  # retrains per arm; the smallest number anyone actually runs
+ARM_SIZES = (2, 3, 4)
+
+# The thresholds the false-positive curve is reported at. A coarse grid,
+# deliberately: this is a table of rejection rates for a family of decision
+# rules, which the register permits, and not the empirical distribution of
+# the gap, which would be the magnitude it does not.
+THRESHOLDS = tuple(range(0, 42, 2))
+
+
+def fpr_curve(gaps):
+    """For each threshold, the share of same-recipe comparisons a rule of
+    the form "call it a difference when the gap is at least this wide"
+    would fire on. Every firing is a false positive, because the true
+    difference in every one of these comparisons is zero."""
+    n = len(gaps)
+    return [{"threshold_pp": th,
+             "false_positive_rate": sum(1 for g in gaps if g >= th) / n}
+            for th in THRESHOLDS]
 
 
 def build(study_path):
@@ -42,21 +75,30 @@ def build(study_path):
     runs = sorted(p)
     n_tasks = spec.n_tasks
 
-    # The full per-run, per-task matrix. This is the evidence; everything
-    # else on the card is a reading of it.
-    matrix = []
-    for t in range(n_tasks):
-        cells = []
-        for r in runs:
-            ep = p[r][t]
-            cells.append({"run": r, "successes": sum(ep), "n": len(ep)})
-        rates = [c["successes"] / c["n"] * 100.0 for c in cells]
-        matrix.append({
-            "task": t,
-            "cells": cells,
-            "min": min(rates),
-            "max": max(rates),
-            "spread": max(rates) - min(rates),
+    # Reference classes at each arm size. Each is a set of comparisons in
+    # which the truth is zero, so a curve over them is a false-positive
+    # curve. Gaps are accumulated to build that curve and are never
+    # emitted individually.
+    reference_classes = []
+    for J in ARM_SIZES:
+        gaps, n_per_arm = [], None
+        for A in itertools.combinations(runs, J):
+            rest = [r for r in runs if r not in A]
+            for B in itertools.combinations(rest, J):
+                if min(A) >= min(B):
+                    continue
+                for t in range(n_tasks):
+                    xa = sum(sum(p[r][t]) for r in A)
+                    na = sum(len(p[r][t]) for r in A)
+                    xb = sum(sum(p[r][t]) for r in B)
+                    nb = sum(len(p[r][t]) for r in B)
+                    n_per_arm = na
+                    gaps.append(abs(xa / na - xb / nb) * 100.0)
+        reference_classes.append({
+            "retrains_per_arm": J,
+            "episodes_per_arm": n_per_arm,
+            "n_comparisons": len(gaps),
+            "curve": fpr_curve(gaps),
         })
 
     # Every disjoint arm pair, every task. Classify what each test did.
@@ -98,8 +140,6 @@ def build(study_path):
                         # |z| this large the value underflows any sensible
                         # printed precision, so the page states a bound.
                         "p_two_sided": math.erfc(abs(z) / math.sqrt(2.0)),
-                        "per_run_a": [r * 100.0 for r in ra],
-                        "per_run_b": [r * 100.0 for r in rb],
                     })
 
     cases.sort(key=lambda c: -c["gap_pp"])
@@ -131,7 +171,7 @@ def build(study_path):
             "retrain_rejects_are_subset": n_both == n_rt,
         },
         "headline": headline,
-        "matrix": matrix,
+        "reference_classes": reference_classes,
     }
 
 
