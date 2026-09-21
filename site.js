@@ -65,3 +65,27 @@ document.querySelectorAll("[data-copy]").forEach((el) => {
     catch { location.href = "mailto:" + el.dataset.copy; }
   });
 });
+
+// Build provenance in every footer. build/build.py writes build-stamp.js;
+// if it is missing or stale the line says so rather than showing nothing,
+// because a page that quietly serves old numbers is the failure this whole
+// site argues against.
+(() => {
+  // The workspace has a sidebar rather than a footer, and it needs the
+  // stamp just as much: it is the page that shows the numbers.
+  const meta = document.querySelector(".footer__meta, .ws__foot");
+  if (!meta) return;
+  const s = window.BUILD_STAMP;
+  const el = document.createElement("span");
+  el.className = "footer__stamp";
+  if (!s) {
+    el.innerHTML = `<span class="footer__warn">Build provenance unavailable</span>`;
+  } else {
+    const age = Math.floor((Date.now() - Date.parse(s.generated)) / 864e5);
+    const stale = age > 30 ? ` · <span class="footer__warn">${age} days old</span>` : "";
+    el.innerHTML = `Built <span class="mono">${s.commit}</span>${s.dirty ? " (uncommitted)" : ""} ·
+      corpus <span class="mono">${s.corpus_sha256.slice(0, 12)}…</span> ·
+      <span class="mono">${s.generated.replace("T", " ").replace("+00:00", "Z")}</span>${stale}`;
+  }
+  meta.appendChild(el);
+})();

@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#FAF9F5">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600&family=Figtree:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23D4744F'/%3E%3Ccircle cx='16' cy='16' r='9' stroke='%23FAF9F5' stroke-width='2.2' fill='none'/%3E%3Ccircle cx='23' cy='9' r='3' fill='%23141413'/%3E%3C/svg%3E">
+<title>Is that difference real? — Orbit</title>
+<meta name="description" content="A free check on a before-and-after robot result. Put in what you measured; get an interval, a verdict, and how often a gap that size appears when nothing has changed. Runs entirely in your browser.">
+</head>
+<body>
+<header class="topbar" id="top">
+  <div class="pill">
+    <a class="brand" href="index.html" aria-label="Orbit home"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.6"/><circle cx="15.5" cy="4.5" r="2.3" fill="#D4744F"/></svg>Orbit</a>
+    <nav class="pill__links" aria-label="Primary">
+      <a href="real.html">Is it real?</a>
+      <a href="claims.html">Claim Check</a>
+      <a href="decision.html">Decision card</a>
+      <a href="method.html">Method</a>
+      <a href="app.html">Workspace</a>
+    </nav>
+    <a class="btn btn--primary btn--sm pill__cta" href="demo.html" data-demo>Book a demo <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    <button class="pill__menu" type="button" aria-expanded="false" aria-controls="mnav" aria-label="Menu"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+  </div>
+  <nav class="mnav" id="mnav" hidden aria-label="Menu">
+    <a href="real.html">Is it real?</a>
+    <a href="claims.html">Claim Check</a>
+    <a href="decision.html">Decision card</a>
+    <a href="method.html">Method</a>
+    <a href="registry.html">Registry</a>
+    <a href="calibration.html">Calibration</a>
+    <a href="app.html">Workspace</a>
+    <a href="demo.html" data-demo>Book a demo</a>
+  </nav>
+</header>
+
+<main class="wrap">
+  <section class="page-head">
+    <p class="eyebrow"><span class="dot"></span>Free tool · nothing leaves your browser</p>
+    <h1>Is that difference real?</h1>
+    <p class="lede">Your vendor changed something and the number moved. Put in what you measured before and after, and find out whether the change is large enough to mean anything.</p>
+  </section>
+
+  <section class="section section--tight">
+    <form class="rc-grid" id="calc" autocomplete="off">
+      <div class="rc-in">
+        <fieldset class="rc-set">
+          <legend class="lbl">Before the change</legend>
+          <div class="rc-pair">
+            <div class="field"><label for="bn">Attempts</label><input id="bn" type="number" min="1" step="1" inputmode="numeric" value="400"></div>
+            <div class="field"><label for="bx">Of those, succeeded</label><input id="bx" type="number" min="0" step="1" inputmode="numeric" value="376"></div>
+          </div>
+          <p class="rc-rate" id="brate"></p>
+        </fieldset>
+
+        <fieldset class="rc-set">
+          <legend class="lbl">After the change</legend>
+          <div class="rc-pair">
+            <div class="field"><label for="an">Attempts</label><input id="an" type="number" min="1" step="1" inputmode="numeric" value="400"></div>
+            <div class="field"><label for="ax">Of those, succeeded</label><input id="ax" type="number" min="0" step="1" inputmode="numeric" value="352"></div>
+          </div>
+          <p class="rc-rate" id="arate"></p>
+        </fieldset>
+
+        <fieldset class="rc-set">
+          <legend class="lbl">Your judgement</legend>
+          <div class="rc-pair">
+            <div class="field"><label for="th">A difference worth acting on</label><input id="th" type="number" min="0.1" step="0.5" inputmode="decimal" value="5"><span class="rc-unit">points</span></div>
+            <div class="field"><label for="runs">Separate training runs each side</label><input id="runs" type="number" min="1" step="1" inputmode="numeric" value="1"></div>
+          </div>
+          <p class="small rc-hint">The threshold is yours to set: it is the smallest change that would alter what you do. The run count is how many times the model was trained independently on each side, not how many times it was evaluated.</p>
+        </fieldset>
+
+        <div class="rc-actions">
+          <button class="btn btn--ghost btn--sm" type="button" id="share">Copy a link to this result</button>
+          <button class="btn btn--ghost btn--sm" type="reset" id="reset">Reset</button>
+        </div>
+      </div>
+
+      <output class="rc-out" id="out" for="bn bx an ax th runs"></output>
+    </form>
+  </section>
+
+  <section class="section" id="states">
+    <div class="sec-head"><h2>Four answers, and never just better or worse.</h2></div>
+    <div class="cards cards--four">
+      <div class="card"><span class="placard placard--current">Supported improvement</span><h3>The change helped.</h3><p>The whole interval sits above zero. The gap is bigger than what sampling alone produces at this number of attempts.</p></div>
+      <div class="card"><span class="placard placard--revoked">Supported regression</span><h3>The change hurt.</h3><p>The whole interval sits below zero. This is the only state that should stop a rollout on its own.</p></div>
+      <div class="card"><span class="placard placard--specimen">No material difference</span><h3>Nothing worth acting on.</h3><p>The interval covers zero and is tight enough to rule out a change as large as the one you said you would act on.</p></div>
+      <div class="card"><span class="placard placard--caution">Insufficient evidence</span><h3>You cannot tell yet.</h3><p>The interval covers zero but is too wide to rule out a difference you would care about. The honest answer is more data, and the tool says how much.</p></div>
+    </div>
+  </section>
+
+  <section class="section" id="how">
+    <div class="sec-head"><h2>What this does, and why it is not the usual arithmetic.</h2></div>
+    <div class="kvs">
+      <div class="kv"><span class="lbl">The interval</span><div><p>A Newcombe hybrid-score interval for the difference between two rates, not the textbook one. The textbook interval drifts below its promised coverage exactly where picking robots live, at success rates above 90%. We simulated both: at 95% against 95% with a hundred attempts a side, the textbook interval covers about 94.6% of the time and this one about 96.4%. Erring wide is the right direction for a tool that tells you whether to trust a number.</p></div></div>
+      <div class="kv"><span class="lbl">The reference class</span><div><p id="rcabout"></p></div></div>
+      <div class="kv"><span class="lbl">What it cannot do</span><div><p>It sees two numbers. It cannot know whether the two periods ran the same product mix, whether the scorer changed, whether the easy items moved to another line, or whether anyone picked the window after seeing the result. Every one of those breaks the comparison more thoroughly than the arithmetic here can detect.</p></div></div>
+      <div class="kv"><span class="lbl">Your data</span><div><p>Nothing is uploaded. The numbers live in this page and in the fragment after the <span class="mono">#</span> in the address bar, which browsers never send to a server. Sharing the link shares the inputs with whoever you send it to, so treat the link the way you would treat the numbers.</p></div></div>
+      <div class="kv"><span class="lbl">Provenance</span><div><p id="prov"></p></div></div>
+    </div>
+  </section>
+
+  <section class="cta" id="next">
+    <div class="sec-head sec-head--center"><h2>This is the free version.</h2></div>
+    <p class="lede" style="text-align:center;margin-inline:auto">It checks the arithmetic on two numbers you already have. What it cannot do is tell you whether those numbers were measured on the right thing, in the right window, by a scorer whose own error rate anyone has checked. That is the paid one.</p>
+    <p style="text-align:center;margin-top:26px"><a class="btn btn--primary" href="demo.html" data-demo>Book a demo <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a> <a class="btn btn--ghost" href="method.html">Read the method</a></p>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap footer__row">
+    <a class="brand" href="index.html" aria-label="Orbit home"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.6"/><circle cx="15.5" cy="4.5" r="2.3" fill="#D4744F"/></svg>Orbit</a>
+    <nav class="footer__links" aria-label="Footer">
+      <a href="real.html">Is it real?</a>
+      <a href="claims.html">Claim Check</a>
+      <a href="decision.html">Decision card</a>
+      <a href="method.html">Method</a>
+      <a href="registry.html">Registry</a>
+      <a href="calibration.html">Calibration</a>
+      <a href="app.html">Workspace</a>
+      <a href="https://github.com/Rahillasne/orbit-eval">Open code</a>
+    </nav>
+    <div class="footer__meta"><span>© 2026 Orbit · Independent verification of deployed robots</span><span><a href="mailto:rahil@orbiteval.com">rahil@orbiteval.com</a> · <a href="#top">Back to top ↑</a></span></div>
+  </div>
+</footer>
+
+<div class="toast" id="toast" hidden></div>
+<script src="decision-data.js"></script>
+<script src="claims-data.js"></script>
+<script src="build-stamp.js"></script>
+<script src="site.js"></script>
+<script src="real.js"></script>
+</body>
+</html>

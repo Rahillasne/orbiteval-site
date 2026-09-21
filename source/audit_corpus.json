@@ -1,0 +1,212 @@
+{
+  "_README": "Audit corpus. Disjoint from the six curation papers audited by the sibling submission (DemInf, DemoScore, CUPID, Rinse, SCIZOR, ReMix) and from the reference-distribution sources. Every entry from an external group.",
+  "external_median_sigma_pp": 6.9,
+  "claims": [
+    {
+      "citation_key": "imlevla2609",
+      "paper": "IMLE-VLA",
+      "claim": "LIBERO avg, H=30 vs pi0.5",
+      "delta_pp": 1.0,
+      "n_episodes": 2000,
+      "base_rate": 0.966,
+      "level": "suite",
+      "provenance": "50 episodes per task stated; 40 tasks over four suites"
+    },
+    {
+      "citation_key": "actionpiece2609",
+      "paper": "ActionPiece",
+      "claim": "LIBERO vs ActionCodec",
+      "delta_pp": 1.1,
+      "n_episodes": 2000,
+      "base_rate": 0.943,
+      "level": "suite",
+      "provenance": "standard LIBERO protocol, 40 tasks x 50"
+    },
+    {
+      "citation_key": "actionpiece2609",
+      "paper": "ActionPiece",
+      "claim": "LIBERO-Plus vs strongest baseline",
+      "delta_pp": 4.5,
+      "n_episodes": 2000,
+      "base_rate": 0.666,
+      "level": "suite",
+      "provenance": "LIBERO-Plus, protocol as above"
+    },
+    {
+      "citation_key": "savla2609",
+      "paper": "SAVLA",
+      "claim": "LIBERO avg vs GR00T N1.5",
+      "delta_pp": 5.1,
+      "n_episodes": 2000,
+      "base_rate": 0.89,
+      "level": "suite",
+      "provenance": "500 episodes per suite stated, four suites"
+    },
+    {
+      "citation_key": "savla2609",
+      "paper": "SAVLA",
+      "claim": "LIBERO-Long vs GR00T N1.5",
+      "delta_pp": 2.7,
+      "n_episodes": 500,
+      "base_rate": 0.24,
+      "level": "suite",
+      "provenance": "500 episodes per suite stated"
+    },
+    {
+      "citation_key": "driftingvla2608",
+      "paper": "DriftingVLA",
+      "claim": "LIBERO overall vs 10-NFE pi0.5",
+      "delta_pp": 1.22,
+      "n_episodes": 2000,
+      "base_rate": 0.977,
+      "level": "suite",
+      "provenance": "50 trials per task per seed stated"
+    },
+    {
+      "citation_key": "driftingvla2608",
+      "paper": "DriftingVLA",
+      "claim": "LIBERO-Long vs pi0.5",
+      "delta_pp": 1.93,
+      "n_episodes": 500,
+      "base_rate": 0.934,
+      "level": "suite",
+      "provenance": "as above, one suite"
+    },
+    {
+      "citation_key": "driftingvla2608",
+      "paper": "DriftingVLA",
+      "claim": "real-world overall vs pi0.5",
+      "delta_pp": 3.45,
+      "n_episodes": 300,
+      "base_rate": 0.76,
+      "level": "suite",
+      "provenance": "six tasks, 50 trials per task"
+    },
+    {
+      "citation_key": "turbovla2607",
+      "paper": "TurboVLA",
+      "claim": "LIBERO avg vs pi0.5",
+      "delta_pp": 0.8,
+      "n_episodes": 2000,
+      "base_rate": 0.973,
+      "level": "suite",
+      "provenance": "50 rollouts per task stated"
+    },
+    {
+      "citation_key": "turbovla2607",
+      "paper": "TurboVLA",
+      "claim": "bimanual avg vs pi0.5",
+      "delta_pp": 3.2,
+      "n_episodes": 2500,
+      "base_rate": 0.586,
+      "level": "suite",
+      "provenance": "50 bimanual tasks x 50 rollouts"
+    },
+    {
+      "citation_key": "turbovla2607",
+      "paper": "TurboVLA",
+      "claim": "ablation N=6 vs N=2",
+      "delta_pp": 4.2,
+      "n_episodes": 2000,
+      "base_rate": 0.956,
+      "level": "suite",
+      "provenance": "same protocol"
+    },
+    {
+      "citation_key": "turbovla2607",
+      "paper": "TurboVLA",
+      "claim": "cross-attention vs concatenation",
+      "delta_pp": 1.3,
+      "n_episodes": 2000,
+      "base_rate": 0.959,
+      "level": "suite",
+      "provenance": "same protocol"
+    },
+    {
+      "citation_key": "dem2609",
+      "paper": "DEM",
+      "claim": "RoboCasa vs GR00T N1.7",
+      "delta_pp": -1.3,
+      "n_episodes": 1800,
+      "base_rate": 0.563,
+      "level": "suite",
+      "provenance": "18 tasks, 100 rollouts each, stated"
+    },
+    {
+      "citation_key": "dem2609",
+      "paper": "DEM",
+      "claim": "MeanFlow vs flow matching",
+      "delta_pp": 0.9,
+      "n_episodes": 1800,
+      "base_rate": 0.552,
+      "level": "suite",
+      "provenance": "as above"
+    },
+    {
+      "citation_key": "dem2609",
+      "paper": "DEM",
+      "claim": "MeanFlow vs Diffusion Policy",
+      "delta_pp": 1.8,
+      "n_episodes": 1800,
+      "base_rate": 0.547,
+      "level": "suite",
+      "provenance": "as above"
+    },
+    {
+      "citation_key": "dem2609",
+      "paper": "DEM",
+      "claim": "MeanFlow vs ACT",
+      "delta_pp": 3.2,
+      "n_episodes": 1800,
+      "base_rate": 0.54,
+      "level": "suite",
+      "provenance": "as above"
+    },
+    {
+      "citation_key": "liberorecover2609",
+      "paper": "LIBERO-RECOVER",
+      "claim": "GR00T mixed training, LIBERO avg",
+      "delta_pp": 0.7,
+      "n_episodes": 2000,
+      "base_rate": 0.869,
+      "level": "suite",
+      "provenance": "standard LIBERO protocol"
+    },
+    {
+      "citation_key": "liberorecover2609",
+      "paper": "LIBERO-RECOVER",
+      "claim": "GR00T mixed, recovery rate",
+      "delta_pp": 3.4,
+      "n_episodes": 2000,
+      "base_rate": 0.195,
+      "level": "suite",
+      "provenance": "recovery split, protocol as above"
+    },
+    {
+      "citation_key": "liberorecover2609",
+      "paper": "LIBERO-RECOVER",
+      "claim": "OpenVLA-OFT recovery",
+      "delta_pp": 6.0,
+      "n_episodes": 2000,
+      "base_rate": 0.238,
+      "level": "suite",
+      "provenance": "as above"
+    },
+    {
+      "citation_key": "liberorecover2609",
+      "paper": "LIBERO-RECOVER",
+      "claim": "OpenVLA-OFT LIBERO-Goal",
+      "delta_pp": 5.4,
+      "n_episodes": 500,
+      "base_rate": 0.273,
+      "level": "suite",
+      "provenance": "one suite"
+    }
+  ],
+  "yardstick": {
+    "method": "base-rate-conditioned retrain coefficient",
+    "note": "sigma_retrain = coef * 100*sqrt(p(1-p)). THE THREE COEFFICIENTS ARE NO LONGER STORED HERE. They are derived at import time by claims.py from reference.coefficient_band(), which computes them from the external cells in reference_sources.json. They used to be typed into this file, and because nothing cross-checked them they drifted from the cells: the typed minimum was 0.020 against a true 0.01941, and the typed maximum was 0.158 against a true 0.18566, because the two positive cells of forensic2609 had been missed when the list was assembled by hand. tests/test_claims.py asserts that no coefficient literal returns to this file.",
+    "history": "Earlier corrections, kept for the record. 2026-09-19: coef_min corrected 0.024 -> 0.020 because the minimum measured coefficient is smaller than the value then in use, which had made the audit harsher than the evidence supports. 2026-09-19, later: the whole block was removed in favour of derivation, after the typed values were found to disagree with the cells they claimed to summarise."
+  },
+  "_derived_fields_note": "Precomputed classification, sigma_star and yardstick fields were REMOVED 2026-09-19. They had already gone stale after the coef_min correction (one claim still read 'erased' when the corrected floor makes it 'inconclusive'). claims.py recomputes all of them from delta_pp, n_episodes, base_rate and the yardstick block, so storing them here duplicated a derivation that can silently drift. This file now holds only inputs and provenance."
+}

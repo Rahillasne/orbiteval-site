@@ -134,3 +134,4 @@
   .axis__point { background: #111; }
   .bar, .axis__bar { background: #C4603C; }
 }
+.ws__foot .footer__stamp { display: block; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line-soft); color: var(--ink-mute); font-size: 10.5px; line-height: 1.55; }

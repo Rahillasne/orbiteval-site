@@ -422,3 +422,39 @@ input:focus, textarea:focus { outline: none; border-color: var(--accent); box-sh
 /* Four cards read better as a square than as three-plus-one. */
 .cards--four { grid-template-columns: repeat(2, 1fr); }
 @media (max-width: 720px) { .cards--four { grid-template-columns: 1fr; } }
+
+/* Is it real? (real.html) */
+.rc-grid { display: grid; grid-template-columns: 1fr 1.1fr; gap: 26px; align-items: start; }
+@media (max-width: 900px) { .rc-grid { grid-template-columns: 1fr; } }
+.rc-in { display: flex; flex-direction: column; gap: 18px; }
+.rc-set { border: 1px solid var(--line); border-radius: 16px; padding: 18px 20px 20px; margin: 0; background: var(--paper); }
+.rc-set legend { padding: 0 8px; margin-left: -8px; }
+.rc-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (max-width: 480px) { .rc-pair { grid-template-columns: 1fr; } }
+.rc-pair .field { margin: 0; position: relative; }
+.rc-unit { position: absolute; right: 12px; bottom: 11px; font-family: var(--font-mono); font-size: 11.5px; color: var(--ink-mute); pointer-events: none; }
+.rc-rate { font-family: var(--font-mono); font-size: 12.5px; color: var(--ink-mute); margin: 12px 0 0; }
+.rc-hint { color: var(--ink-mute); margin: 12px 0 0; max-width: 54ch; }
+.rc-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+.rc-out { display: block; }
+.rc-card { border: 1px solid var(--ink); border-radius: 16px; padding: 24px; background: var(--paper); box-shadow: 0 1px 0 rgba(20,20,19,.06), 0 18px 40px -28px rgba(20,20,19,.35); }
+.rc-card--improvement { border-color: rgba(30,122,71,.55); }
+.rc-card--regression { border-color: rgba(178,58,48,.55); }
+.rc-card--insufficient, .rc-card--wait { border-color: rgba(148,96,0,.5); }
+.rc-card__head { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding-bottom: 16px; margin-bottom: 14px; border-bottom: 1px solid var(--line); }
+.rc-card .num { display: block; }
+.rc-card .ci { margin-bottom: 18px; }
+.rc-card .verdict { font-size: 14.5px; }
+.rc-card > p { color: var(--ink-2); font-size: 14.5px; margin: 16px 0 0; max-width: 60ch; }
+.rc-ref, .rc-warns { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line-soft); }
+.rc-ref p { color: var(--ink-2); font-size: 14.5px; margin: 7px 0 0; max-width: 62ch; }
+.rc-ref a, .rc-card a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+.rc-warn { list-style: none; padding: 0; margin: 8px 0 0; }
+.rc-warn li { color: var(--ink-2); font-size: 14px; line-height: 1.55; padding: 9px 0 9px 18px; border-bottom: 1px solid var(--line-soft); position: relative; max-width: 62ch; }
+.rc-warn li::before { content: ""; position: absolute; left: 0; top: 16px; width: 7px; height: 7px; border-radius: 2px; background: var(--wait); }
+.rc-warn li:last-child { border-bottom: 0; padding-bottom: 0; }
+.toast { position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%); z-index: 70; background: var(--ink); color: var(--paper); font-size: 13.5px; padding: 11px 18px; border-radius: 999px; box-shadow: 0 10px 30px -14px rgba(20,20,19,.7); }
+.footer__stamp { color: var(--ink-mute); font-size: 11.5px; line-height: 1.6; }
+.footer__stamp .mono { font-size: 11px; }
+.footer__warn { color: var(--wait); font-weight: 500; }
