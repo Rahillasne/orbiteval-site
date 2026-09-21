@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#FAF9F5">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600&family=Figtree:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23D4744F'/%3E%3Ccircle cx='16' cy='16' r='9' stroke='%23FAF9F5' stroke-width='2.2' fill='none'/%3E%3Ccircle cx='23' cy='9' r='3' fill='%23141413'/%3E%3C/svg%3E">
+<title>Claim Check — Orbit</title>
+<meta name="description" content="Twenty published robot-policy improvement claims, checked against a pre-registered protocol. None is independently supported. Every number, the corpus and the code are here.">
+</head>
+<body>
+<header class="topbar" id="top">
+  <div class="pill">
+    <a class="brand" href="index.html" aria-label="Orbit home"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.6"/><circle cx="15.5" cy="4.5" r="2.3" fill="#D4744F"/></svg>Orbit</a>
+    <nav class="pill__links" aria-label="Primary">
+      <a href="claims.html">Claim Check</a>
+      <a href="method.html">Method</a>
+      <a href="registry.html">Registry</a>
+      <a href="calibration.html">Calibration</a>
+      <a href="app.html">Workspace</a>
+    </nav>
+    <a class="btn btn--primary btn--sm pill__cta" href="demo.html" data-demo>Book a demo <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    <button class="pill__menu" type="button" aria-expanded="false" aria-controls="mnav" aria-label="Menu"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+  </div>
+  <nav class="mnav" id="mnav" hidden aria-label="Menu">
+    <a href="claims.html">Claim Check</a>
+    <a href="method.html">Method</a>
+    <a href="registry.html">Registry</a>
+    <a href="calibration.html">Calibration</a>
+    <a href="specimen-report.html">Specimen report</a>
+    <a href="app.html">Workspace</a>
+    <a href="demo.html" data-demo>Book a demo</a>
+  </nav>
+</header>
+
+<main class="wrap">
+  <section class="page-head">
+    <p class="eyebrow"><span class="dot"></span>Claim Check · protocol v1</p>
+    <h1>Twenty published claims that a robot policy got better. We checked all twenty.</h1>
+    <p class="lede">None of them is independently supported. Not because the researchers were careless, but because the number of episodes behind a robot result is almost never enough to tell an improvement from the noise of training the same recipe twice.</p>
+  </section>
+
+  <section class="cc-tally" id="tally" aria-label="Result"></section>
+
+  <section class="section section--tight">
+    <div class="verdict verdict--bad" id="robustness"></div>
+  </section>
+
+  <section class="section" id="what-this-is">
+    <div class="sec-head"><h2>What this evidence is, and what it is not.</h2></div>
+    <div class="cards">
+      <div class="card">
+        <span class="lbl">Provenance</span>
+        <h3>Published claims, mostly from simulators.</h3>
+        <p>Each row is a comparison an external group published, taken from their own table. The column marked <em>venue</em> says whether the episodes behind it ran on a physical robot or in a simulation benchmark, and says <em>unstated</em> whenever the claim itself does not make that clear.</p>
+      </div>
+      <div class="card">
+        <span class="lbl">Not a fraud finding</span>
+        <h3>"Not supported" is not "false".</h3>
+        <p>A claim fails this check when the evidence behind it cannot separate the reported gain from noise. The gain may well be real. Nobody, including the authors, can currently tell from the numbers reported.</p>
+      </div>
+      <div class="card">
+        <span class="lbl">Pre-registered</span>
+        <h3>The rule was fixed before the corpus.</h3>
+        <p>The threshold each claim is measured against is derived from external sources at run time, never typed in by hand. An earlier version of this audit typed three numbers and they drifted. That is the whole reason this page exists.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="claims">
+    <div class="sec-head"><h2>The twenty claims.</h2></div>
+    <div class="cc-controls">
+      <div class="field"><label for="q">Find a claim</label><input id="q" type="search" placeholder="Paper, benchmark, or verdict" autocomplete="off"></div>
+      <div class="cc-filters" id="filters" role="group" aria-label="Filter by verdict"></div>
+    </div>
+    <div class="table-wrap">
+      <table id="tbl">
+        <thead><tr>
+          <th>Paper</th><th>Comparison</th><th>Venue</th>
+          <th class="n">Reported gain</th><th class="n">Episodes</th><th class="n">Base rate</th>
+          <th>Verdict</th><th></th>
+        </tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+    <p id="nomatch" class="small mt" hidden>Nothing matches that.</p>
+    <p class="small mt" id="rowcount"></p>
+  </section>
+
+  <section class="section" id="null-reference">
+    <div class="sec-head"><h2>Why a small gain cannot be trusted.</h2></div>
+    <div class="grid2">
+      <div>
+        <p class="kv-lede">Train the same recipe twice, change nothing but the seed, and the two runs do not score the same. So we built the case where the right answer is known: every comparison below is between two policies trained from an <strong>identical recipe</strong>, where the true difference is zero by construction.</p>
+        <p class="kv-lede">Then we ran the test almost everyone runs — pool the episodes, compare the two rates — and counted how often it announced a winner.</p>
+      </div>
+      <div class="cc-null" id="nullref"></div>
+    </div>
+    <p class="small mt" id="nullnote"></p>
+  </section>
+
+  <section class="section" id="method">
+    <div class="sec-head"><h2>How a claim is checked.</h2></div>
+    <div class="kvs">
+      <div class="kv"><span class="lbl">Step 1</span><div><p>Take the gain the authors report, the number of episodes behind it, and the success rate it sits at. Nothing else from the paper is used.</p></div></div>
+      <div class="kv"><span class="lbl">Step 2</span><div><p>Compute the smallest amount of retraining noise that would be enough to erase that gain. This is a property of the claim alone, written <span class="mono">σ*</span> below.</p></div></div>
+      <div class="kv"><span class="lbl">Step 3</span><div><p>Compare <span class="mono">σ*</span> against how much retraining noise other groups have actually measured, scaled to the success rate this particular claim sits at, because noise on a proportion is smaller near 100% than near 50%.</p></div></div>
+      <div class="kv"><span class="lbl">Step 4</span><div><p>Report one of four states, and never force a claim into better or worse. If eight external measurements do not pin the noise down to a single number, the honest verdict is the range, and the range is what gets printed.</p></div></div>
+      <div class="kv"><span class="lbl">Reproduce it</span><div><p id="repro"></p></div></div>
+    </div>
+  </section>
+
+  <section class="section" id="limits">
+    <div class="sec-head"><h2>The limits of this page.</h2></div>
+    <div class="empty">
+      <p class="lbl" style="margin-bottom:10px">Read this before you quote it</p>
+      <p><strong>This is benchmark evidence, not warehouse evidence.</strong> Nineteen of the twenty claims rest on simulation benchmarks. Nothing here measures a robot picking groceries, and no rate on this page should be quoted as the failure rate of any deployed system.</p>
+      <p class="mt"><strong>The null reference is a reference class, not a forecast.</strong> It says how often a standard test announces a winner when the true difference is zero, in a particular family of policies and tasks we could run repeatedly. It is the right starting point for a deployment and the wrong finishing point. We replace it with your own repeated measurements as soon as there are any.</p>
+      <p class="mt"><strong>The sample is what we could verify, not the literature.</strong> 41 papers were screened to find claims reporting enough detail to check at all. Papers that report a gain with no episode count cannot be checked and are not here, so this is not a random sample of published work.</p>
+    </div>
+  </section>
+
+  <section class="cta" id="next">
+    <div class="sec-head sec-head--center"><h2>Your vendor is going to show you a number.</h2></div>
+    <p class="lede" style="text-align:center;margin-inline:auto">We are the people who check the number. Same protocol, run on your deployment instead of somebody's paper.</p>
+    <p style="text-align:center;margin-top:26px"><a class="btn btn--primary" href="demo.html" data-demo>Book a demo <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a> <a class="btn btn--ghost" href="method.html">Read the method</a></p>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap footer__row">
+    <a class="brand" href="index.html" aria-label="Orbit home"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.6"/><circle cx="15.5" cy="4.5" r="2.3" fill="#D4744F"/></svg>Orbit</a>
+    <nav class="footer__links" aria-label="Footer">
+      <a href="claims.html">Claim Check</a>
+      <a href="method.html">Method</a>
+      <a href="registry.html">Registry</a>
+      <a href="calibration.html">Calibration</a>
+      <a href="specimen-report.html">Specimen report</a>
+      <a href="app.html">Workspace</a>
+      <a href="index.html#independence">Conflict policy</a>
+      <a href="https://github.com/Rahillasne/orbit-eval">Open code</a>
+    </nav>
+    <div class="footer__meta"><span>© 2026 Orbit · Independent verification of deployed robots</span><span><a href="mailto:rahil@orbiteval.com">rahil@orbiteval.com</a> · <a href="#top">Back to top ↑</a></span></div>
+  </div>
+</footer>
+
+<script src="claims-data.js"></script>
+<script src="site.js"></script>
+<script src="claims.js"></script>
+</body>
+</html>
