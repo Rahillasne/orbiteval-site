@@ -232,7 +232,7 @@
     $("#prov").innerHTML = `Reference classes: ${CLASSES.map((c) => `${c.n_comparisons.toLocaleString()} comparisons at ${c.episodes_per_arm} an arm`).join(", ")}.
       Panel <span class="mono">${esc(p.name)}</span>, generated ${esc(D.generated)}.
       ${C ? `Claim Check corpus <span class="mono">sha256 ${esc(C.corpus_sha256.slice(0, 16))}…</span>, <a href="claims-data.json" download>downloadable</a>.` : ""}
-      <a href="method.html">Method</a> · <a href="decision.html">how the reference class is built</a>.`;
+      <a href="decision.html">How the reference class is built</a>.`;
   }
 
   // ---- Wiring ------------------------------------------------------------
