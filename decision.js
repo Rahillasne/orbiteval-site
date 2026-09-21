@@ -29,6 +29,11 @@
 
 
   // ---- The naive read ----------------------------------------------------
+  // The four labels on this card are load-bearing. The arm rates stay
+  // visible because without them there is no case to decide, but each one
+  // is named for exactly what it is: an observed rate, a naive read, a
+  // run-level read, and an interpretation that is not a recommendation
+  // about any deployment.
   const hi = H.rate_b >= H.rate_a;
   $("#naive").innerHTML = `
     <div class="dc-two">
@@ -42,34 +47,37 @@
       <p class="small mono">z = ${H.z.toFixed(2)} · p = ${sci(H.p_two_sided)}</p>
       <p class="small">Pooling the episodes and comparing the two rates, the gap clears every conventional threshold by a wide margin.
       This test puts the odds of a gap this large, if the two were really the same, at about <strong>one in ${odds(H.p_two_sided)}</strong>.
-      On this reading, arm ${hi ? "B" : "A"} is better and the matter is settled.</p>
+      On this reading, arm ${hi ? "B" : "A"} is the winner and the matter is settled. It is not.</p>
     </div>`;
 
   // ---- The card ----------------------------------------------------------
   $("#card").innerHTML = `
     <div class="dc-card__head">
       <span class="lbl">Decision card</span>
-      <span class="placard placard--specimen">No material difference</span>
+      <span class="placard placard--specimen">No material difference detected</span>
     </div>
     <dl class="dc-kv">
-      <div><dt>Compared</dt><dd class="mono">arm A (${H.arm_a.map(seed).join(", ")}) against arm B (${H.arm_b.map(seed).join(", ")})</dd></div>
-      <div><dt>Task</dt><dd class="mono">${esc(P.suite)} · task ${H.task}</dd></div>
-      <div><dt>Evidence</dt><dd>${H.n_a + H.n_b} episodes, ${D.arm_size * 2} training runs</dd></div>
+      <div><dt>Observed arm rates</dt>
+        <dd class="mono">${pp(H.rate_a)}% vs ${pp(H.rate_b)}%
+          <span class="dc-sub">arm A ${H.x_a}/${H.n_a} · arm B ${H.x_b}/${H.n_b} · ${esc(P.suite)} task ${H.task}</span></dd></div>
+      <div><dt>Naive episode-level read</dt>
+        <dd><strong>Winner</strong>
+          <span class="dc-sub mono">z = ${H.z.toFixed(2)} · p = ${sci(H.p_two_sided)}, pooling all ${H.n_a + H.n_b} episodes</span></dd></div>
+      <div><dt>Run-level read</dt>
+        <dd><strong>No material difference detected</strong>
+          <span class="dc-sub mono">t = ${H.welch_t.toFixed(2)} against ${H.t_crit.toFixed(3)} at ${H.df} df, over ${D.arm_size * 2} training runs</span></dd></div>
+      <div><dt>Interpretation</dt>
+        <dd>Same recipe, different seed. <strong>Not a deployment recommendation.</strong>
+          <span class="dc-sub">Both arms were trained from one recipe on identical data, so the true difference is exactly zero and the naive read is a known error.</span></dd></div>
     </dl>
     <div class="verdict">
       <strong>The gap is not evidence of a difference.</strong>
-      Treating each training run as the unit rather than each episode, the statistic is
-      <span class="mono">t = ${H.welch_t.toFixed(2)}</span> against a critical value of
-      <span class="mono">${H.t_crit.toFixed(3)}</span> at ${H.df} degree of freedom, and the comparison does not reject.
-      Two runs per arm cannot resolve a gap of this size from the variation between runs of the same recipe.
-    </div>
-    <div class="dc-truth">
-      <span class="lbl">Known truth</span>
-      <p>Both arms are retrainings of one recipe on identical data, so the real difference between them is exactly zero. The pooled-episode reading above is wrong, and this is a case where that can be stated rather than suspected.</p>
+      Two runs per arm cannot separate a gap of this size from the variation between runs of the same recipe.
+      Nothing here says anything about whether either arm is fit to deploy; the comparison is between a thing and a copy of itself.
     </div>
     <div class="dc-rec">
-      <span class="lbl">Recommendation</span>
-      <p>Do not act on a comparison of two runs a side at this sample size. Either repeat the training runs, or raise the gap at which a difference counts as one — the curve below prices both choices.</p>
+      <span class="lbl">What to do with a comparison shaped like this</span>
+      <p>Do not act on two runs a side at this sample size. Either repeat the training runs, or raise the gap at which a difference counts as one — the curve below prices both choices.</p>
     </div>`;
 
   // ---- False-positive curve ----------------------------------------------

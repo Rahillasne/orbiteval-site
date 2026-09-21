@@ -458,3 +458,6 @@ input:focus, textarea:focus { outline: none; border-color: var(--accent); box-sh
 .footer__stamp { color: var(--ink-mute); font-size: 11.5px; line-height: 1.6; }
 .footer__stamp .mono { font-size: 11px; }
 .footer__warn { color: var(--wait); font-weight: 500; }
+.dc-sub { display: block; margin-top: 4px; font-size: 11.5px; line-height: 1.5; color: var(--ink-mute); font-family: var(--font-ui); }
+.dc-sub.mono { font-family: var(--font-mono); font-size: 11px; }
+.dc-kv dd strong { color: var(--ink); }
