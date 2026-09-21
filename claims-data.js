@@ -74,6 +74,12 @@ window.CLAIM_CHECK = {
    "level": "suite",
    "provenance": "50 episodes per task stated; 40 tasks over four suites",
    "venue": "simulation_benchmark",
+   "source": {
+    "title": "IMLE-VLA: Fast Single-Step Action Generation for Vision-Language-Action Policies",
+    "authors": "Hosseinkhani, Kian and Peng, Qinhe and Shramko, George and Aghabozorgi, Mehran and Qian, Jianing and Engst, Tristan and Moazeni, Alireza and Jayaraman, Dinesh and Li, Ke",
+    "arxiv": "2609.10915",
+    "url": "https://arxiv.org/abs/2609.10915"
+   },
    "sigma_star_pp": null,
    "band_lo_pp": 0.3518,
    "band_hi_pp": 3.3647,
@@ -91,6 +97,12 @@ window.CLAIM_CHECK = {
    "level": "suite",
    "provenance": "standard LIBERO protocol, 40 tasks x 50",
    "venue": "simulation_benchmark",
+   "source": {
+    "title": "ActionPiece: Rethinking Action Tokenization for Autoregressive Vision-Language-Action Models",
+    "authors": "Lian, Shijie and Yu, Bin and Shen, Zhaolong and Lin, Xiaopeng and Du, Yichao and Zhang, Zhirui and Yang, Laurence T. and Chen, Kai",
+    "arxiv": "2609.18487",
+    "url": "https://arxiv.org/abs/2609.18487"
+   },
    "sigma_star_pp": null,
    "band_lo_pp": 0.45,
    "band_hi_pp": 4.3044,
@@ -108,6 +120,12 @@ window.CLAIM_CHECK = {
    "level": "suite",
    "provenance": "LIBERO-Plus, protocol as above",
    "venue": "simulation_benchmark",
+   "source": {
+    "title": "ActionPiece: Rethinking Action Tokenization for Autoregressive Vision-Language-Action Models",
+    "authors": "Lian, Shijie and Yu, Bin and Shen, Zhaolong and Lin, Xiaopeng and Du, Yichao and Zhang, Zhirui and Yang, Laurence T. and Chen, Kai",
+    "arxiv": "2609.18487",
+    "url": "https://arxiv.org/abs/2609.18487"
+   },
    "sigma_star_pp": 1.2343,
    "band_lo_pp": 0.9154,
    "band_hi_pp": 8.7565,
@@ -125,6 +143,12 @@ window.CLAIM_CHECK = {
    "level": "suite",
    "provenance": "500 episodes per suite stated, four suites",
    "venue": "simulation_benchmark",
+   "source": {
+    "title": "SAVLA: Symmetry-Aware Vision-Language-Action Models for Robotic Manipulation",
+    "authors": "Li, Junle and Li, Weixian Waylon and Wu, Fuxiang and Hao, Fusheng and He, Fengxiang",
+    "arxiv": "2609.16641",
+    "url": "https://arxiv.org/abs/2609.16641"
+   },
    "sigma_star_pp": 1.7017,
    "band_lo_pp": 0.6073,
    "band_hi_pp": 5.8091,
@@ -142,6 +166,12 @@ window.CLAIM_CHECK = {
    "level": "suite",
    "provenance": "500 episodes per suite stated",
    "venue": "simulation_benchmark",
+   "source": {
+    "title": "SAVLA: Symmetry-Aware Vision-Language-Action Models for Robotic Manipulation",
+    "authors": "Li, Junle and Li, Weixian Waylon and Wu, Fuxiang and Hao, Fusheng and He, Fengxiang",
+    "arxiv": "2609.16641",
+    "url": "https://arxiv.org/abs/2609.16641"
+   },
    "sigma_star_pp": null,
    "band_lo_pp": 0.829,
    "band_hi_pp": 7.9293,
@@ -159,6 +189,12 @@ window.CLAIM_CHECK = {
    "level": "suite",
    "provenance": "50 trials per task per seed stated",
    "venue": "simulation_benchmark",
+   "source": {
+    "title": "DriftingVLA: Native One-Step Vision-Language-Action Generation via Per-Dimension Temporal Drifting",
+    "authors": "Gao, Yuxuan and Zhang, Shiqi and Shen, Yedong and Duan, Yifan and Yu, Wenhao and Zhang, Xin and Cao, Siyuan and Deng, Jiajun and Zhang, Yanyong",
+    "arxiv": "2608.29749",
+    "url": "https://arxiv.org/abs/2608.29749"
+   },
    "sigma_star_pp": 0.2853,
    "band_lo_pp": 0.291,
    "band_hi_pp": 2.7831,
@@ -176,6 +212,12 @@ window.CLAIM_CHECK = {
    "level": "suite",
    "provenance": "as above, one suite",
    "venue": "simulation_benchmark",
+   "source": {
+    "title": "DriftingVLA: Native One-Step Vision-Language-Action Generation via Per-Dimension Temporal Drifting",
+    "authors": "Gao, Yuxuan and Zhang, Shiqi and Shen, Yedong and Duan, Yifan and Yu, Wenhao and Zhang, Xin and Cao, Siyuan and Deng, Jiajun and Zhang, Yanyong",
+    "arxiv": "2608.29749",
+    "url": "https://arxiv.org/abs/2608.29749"
+   },
    "sigma_star_pp": null,
    "band_lo_pp": 0.4819,
    "band_hi_pp": 4.6096,
@@ -193,6 +235,12 @@ window.CLAIM_CHECK = {
    "level": "suite",
    "provenance": "six tasks, 50 trials per task",
    "venue": "physical_robot",
+   "source": {
+    "title": "DriftingVLA: Native One-Step Vision-Language-Action Generation via Per-Dimension Temporal Drifting",
+    "authors": "Gao, Yuxuan and Zhang, Shiqi and Shen, Yedong and Duan, Yifan and Yu, Wenhao and Zhang, Xin and Cao, Siyuan and Deng, Jiajun and Zhang, Yanyong",
+    "arxiv": "2608.29749",
+    "url": "https://arxiv.org/abs/2608.29749"
+   },
    "sigma_star_pp": null,
    "band_lo_pp": 0.829,
    "band_hi_pp": 7.9293,
@@ -210,6 +258,12 @@ window.CLAIM_CHECK = {
    "level": "suite",
    "provenance": "50 rollouts per task stated",
    "venue": "simulation_benchmark",
+   "source": {
+    "title": "TurboVLA: Real-Time Vision-Language-Action Model at 32 Hz on an RTX 4090 with $<$1 GB VRAM",
+    "authors": "Xie, Hengyi and Yao, Chenfei and Wu, Xianjin and Zhu, Yingying and Liang, Dingkang and Bai, Xiang and Ding, Han",
+    "arxiv": "2607.27205",
+    "url": "https://arxiv.org/abs/2607.27205"
+   },
    "sigma_star_pp": null,
    "band_lo_pp": 0.3146,
    "band_hi_pp": 3.0092,
@@ -227,6 +281,12 @@ window.CLAIM_CHECK = {
    "level": "suite",
    "provenance": "50 bimanual tasks x 50 rollouts",
    "venue": "unstated",
+   "source": {
+    "title": "TurboVLA: Real-Time Vision-Language-Action Model at 32 Hz on an RTX 4090 with $<$1 GB VRAM",
+    "authors": "Xie, Hengyi and Yao, Chenfei and Wu, Xianjin and Zhu, Yingying and Liang, Dingkang and Bai, Xiang and Ding, Han",
+    "arxiv": "2607.27205",
+    "url": "https://arxiv.org/abs/2607.27205"
+   },
    "sigma_star_pp": 0.602,
    "band_lo_pp": 0.956,
    "band_hi_pp": 9.1447,
@@ -244,6 +304,12 @@ window.CLAIM_CHECK = {
    "level": "suite",
    "provenance": "same protocol",
    "venue": "unstated",
+   "source": {
+    "title": "TurboVLA: Real-Time Vision-Language-Action Model at 32 Hz on an RTX 4090 with $<$1 GB VRAM",
+    "authors": "Xie, Hengyi and Yao, Chenfei and Wu, Xianjin and Zhu, Yingying and Liang, Dingkang and Bai, Xiang and Ding, Han",
+    "arxiv": "2607.27205",
+    "url": "https://arxiv.org/abs/2607.27205"
+   },
    "sigma_star_pp": 1.4442,
    "band_lo_pp": 0.3981,
    "band_hi_pp": 3.8078,
@@ -261,6 +327,12 @@ window.CLAIM_CHECK = {
    "level": "suite",
    "provenance": "same protocol",
    "venue": "unstated",
+   "source": {
+    "title": "TurboVLA: Real-Time Vision-Language-Action Model at 32 Hz on an RTX 4090 with $<$1 GB VRAM",
+    "authors": "Xie, Hengyi and Yao, Chenfei and Wu, Xianjin and Zhu, Yingying and Liang, Dingkang and Bai, Xiang and Ding, Han",
+    "arxiv": "2607.27205",
+    "url": "https://arxiv.org/abs/2607.27205"
+   },
    "sigma_star_pp": 0.1529,
    "band_lo_pp": 0.3849,
    "band_hi_pp": 3.6815,
@@ -278,6 +350,12 @@ window.CLAIM_CHECK = {
    "level": "suite",
    "provenance": "18 tasks, 100 rollouts each, stated",
    "venue": "simulation_benchmark",
+   "source": {
+    "title": "Decoupling Vision, Language, and Action for Efficient Multi-Task Robot Policies",
+    "authors": "Sun, Xiatao and Liang, Chen and Zeng, Ziyao and Wang, Qian and Zhang, Haoyang and Sun, Yue and Li, Qiucheng and Rakita, Daniel",
+    "arxiv": "2609.18374",
+    "url": "https://arxiv.org/abs/2609.18374"
+   },
    "sigma_star_pp": null,
    "band_lo_pp": 0.9627,
    "band_hi_pp": 9.2091,
@@ -295,6 +373,12 @@ window.CLAIM_CHECK = {
    "level": "suite",
    "provenance": "as above",
    "venue": "unstated",
+   "source": {
+    "title": "Decoupling Vision, Language, and Action for Efficient Multi-Task Robot Policies",
+    "authors": "Sun, Xiatao and Liang, Chen and Zeng, Ziyao and Wang, Qian and Zhang, Haoyang and Sun, Yue and Li, Qiucheng and Rakita, Daniel",
+    "arxiv": "2609.18374",
+    "url": "https://arxiv.org/abs/2609.18374"
+   },
    "sigma_star_pp": null,
    "band_lo_pp": 0.9652,
    "band_hi_pp": 9.2327,
@@ -312,6 +396,12 @@ window.CLAIM_CHECK = {
    "level": "suite",
    "provenance": "as above",
    "venue": "unstated",
+   "source": {
+    "title": "Decoupling Vision, Language, and Action for Efficient Multi-Task Robot Policies",
+    "authors": "Sun, Xiatao and Liang, Chen and Zeng, Ziyao and Wang, Qian and Zhang, Haoyang and Sun, Yue and Li, Qiucheng and Rakita, Daniel",
+    "arxiv": "2609.18374",
+    "url": "https://arxiv.org/abs/2609.18374"
+   },
    "sigma_star_pp": null,
    "band_lo_pp": 0.9662,
    "band_hi_pp": 9.2419,
@@ -329,6 +419,12 @@ window.CLAIM_CHECK = {
    "level": "suite",
    "provenance": "as above",
    "venue": "unstated",
+   "source": {
+    "title": "Decoupling Vision, Language, and Action for Efficient Multi-Task Robot Policies",
+    "authors": "Sun, Xiatao and Liang, Chen and Zeng, Ziyao and Wang, Qian and Zhang, Haoyang and Sun, Yue and Li, Qiucheng and Rakita, Daniel",
+    "arxiv": "2609.18374",
+    "url": "https://arxiv.org/abs/2609.18374"
+   },
    "sigma_star_pp": null,
    "band_lo_pp": 0.9674,
    "band_hi_pp": 9.2533,
@@ -346,6 +442,12 @@ window.CLAIM_CHECK = {
    "level": "suite",
    "provenance": "standard LIBERO protocol",
    "venue": "simulation_benchmark",
+   "source": {
+    "title": "LIBERO-RECOVER: Beyond Task Success Towards Failure Recovery in Robotic Manipulation Models",
+    "authors": "Liu, Lin and Bao, Zhicheng and Zhang, Lu and Song, Ziying and Yang, Wu and Zhuang, Yuzheng and Tao, Shuai and Liu, Wulong and Jia, Caiyan and Lu, Huchuan",
+    "arxiv": "2609.05178",
+    "url": "https://arxiv.org/abs/2609.05178"
+   },
    "sigma_star_pp": null,
    "band_lo_pp": 0.6549,
    "band_hi_pp": 6.2642,
@@ -363,6 +465,12 @@ window.CLAIM_CHECK = {
    "level": "suite",
    "provenance": "recovery split, protocol as above",
    "venue": "unstated",
+   "source": {
+    "title": "LIBERO-RECOVER: Beyond Task Success Towards Failure Recovery in Robotic Manipulation Models",
+    "authors": "Liu, Lin and Bao, Zhicheng and Zhang, Lu and Song, Ziying and Yang, Wu and Zhuang, Yuzheng and Tao, Shuai and Liu, Wulong and Jia, Caiyan and Lu, Huchuan",
+    "arxiv": "2609.05178",
+    "url": "https://arxiv.org/abs/2609.05178"
+   },
    "sigma_star_pp": 0.8484,
    "band_lo_pp": 0.769,
    "band_hi_pp": 7.3559,
@@ -380,6 +488,12 @@ window.CLAIM_CHECK = {
    "level": "suite",
    "provenance": "as above",
    "venue": "unstated",
+   "source": {
+    "title": "LIBERO-RECOVER: Beyond Task Success Towards Failure Recovery in Robotic Manipulation Models",
+    "authors": "Liu, Lin and Bao, Zhicheng and Zhang, Lu and Song, Ziying and Yang, Wu and Zhuang, Yuzheng and Tao, Shuai and Liu, Wulong and Jia, Caiyan and Lu, Huchuan",
+    "arxiv": "2609.05178",
+    "url": "https://arxiv.org/abs/2609.05178"
+   },
    "sigma_star_pp": 1.9439,
    "band_lo_pp": 0.8266,
    "band_hi_pp": 7.9065,
@@ -397,6 +511,12 @@ window.CLAIM_CHECK = {
    "level": "suite",
    "provenance": "one suite",
    "venue": "simulation_benchmark",
+   "source": {
+    "title": "LIBERO-RECOVER: Beyond Task Success Towards Failure Recovery in Robotic Manipulation Models",
+    "authors": "Liu, Lin and Bao, Zhicheng and Zhang, Lu and Song, Ziying and Yang, Wu and Zhuang, Yuzheng and Tao, Shuai and Liu, Wulong and Jia, Caiyan and Lu, Huchuan",
+    "arxiv": "2609.05178",
+    "url": "https://arxiv.org/abs/2609.05178"
+   },
    "sigma_star_pp": null,
    "band_lo_pp": 0.8647,
    "band_hi_pp": 8.2712,

@@ -43,7 +43,7 @@
         <p class="small mono">${H.x_b} of ${H.n_b} episodes</p></div>
     </div>
     <div class="dc-gap">
-      <span class="num cc-bad">${pp(H.gap_pp)} points apart</span>
+      <span class="num cc-bad">${pp(H.gap_pp)} percentage points apart</span>
       <p class="small mono">z = ${H.z.toFixed(2)} · p = ${sci(H.p_two_sided)}</p>
       <p class="small">Pooling the episodes and comparing the two rates, the gap clears every conventional threshold by a wide margin.
       This test puts the odds of a gap this large, if the two were really the same, at about <strong>one in ${odds(H.p_two_sided)}</strong>.
@@ -103,26 +103,26 @@
     ${gridY.map((g) => `<line x1="${M.l}" x2="${W - M.r}" y1="${sy(g)}" y2="${sy(g)}" class="dc-grid"/>
       <text x="${M.l - 10}" y="${sy(g) + 4}" class="dc-ax dc-ax--y">${(g * 100).toFixed(0)}%</text>`).join("")}
     ${[0, 10, 20, 30, 40].map((t) => `<text x="${sx(t)}" y="${Hh - 22}" class="dc-ax">${t}</text>`).join("")}
-    <text x="${(M.l + W - M.r) / 2}" y="${Hh - 4}" class="dc-ax dc-ax--title">Call it a difference at this many points or more</text>
+    <text x="${(M.l + W - M.r) / 2}" y="${Hh - 4}" class="dc-ax dc-ax--title">Call it a difference at this many percentage points or more</text>
     <line x1="${M.l}" x2="${W - M.r}" y1="${sy(0.05)}" y2="${sy(0.05)}" class="dc-ref"/>
     <text x="${W - M.r}" y="${sy(0.05) - 8}" class="dc-ax dc-ax--ref" text-anchor="end">the 5% you think you are getting</text>
     <path d="${path}" class="dc-line"/>
     ${curve.map((c) => `<circle cx="${sx(c.threshold_pp)}" cy="${sy(c.false_positive_rate)}" r="9" class="dc-hit"
-      tabindex="0" data-tip="A rule of &quot;at least ${c.threshold_pp} points&quot; fires on ${(c.false_positive_rate * 100).toFixed(1)}% of ${RC.n_comparisons.toLocaleString()} comparisons where the true difference is zero"/>`).join("")}
+      tabindex="0" data-tip="A rule of &quot;at least ${c.threshold_pp} percentage points&quot; fires on ${(c.false_positive_rate * 100).toFixed(1)}% of ${RC.n_comparisons.toLocaleString()} comparisons where the true difference is zero"/>`).join("")}
   </svg>`;
 
   $("#evidence-lede").innerHTML = `Take every way of splitting these ${P.n_runs} runs into two arms of ${D.arm_size}, across all ${P.n_tasks} tasks:
     <strong>${RC.n_comparisons.toLocaleString()} comparisons</strong> of ${RC.episodes_per_arm} episodes a side in which the true difference is zero.
-    Now pick a rule — <em>call it a difference when the gap is at least X points</em> — and count how often it fires. Every firing is a false positive.`;
+    Now pick a rule — <em>call it a difference when the gap is at least X percentage points</em> — and count how often it fires. Every firing is a false positive.`;
 
   $("#fprnote").innerHTML = cross
-    ? `A rule has to wait for a gap of <strong>${cross.threshold_pp} points</strong> before its false-positive rate drops to the 5% most people assume they are working at. At ten points it is still ${(curve.find((c) => c.threshold_pp === 10).false_positive_rate * 100).toFixed(1)}%.`
+    ? `A rule has to wait for a gap of <strong>${cross.threshold_pp} percentage points</strong> before its false-positive rate drops to the 5% most people assume they are working at. At ten points it is still ${(curve.find((c) => c.threshold_pp === 10).false_positive_rate * 100).toFixed(1)}%.`
     : `Across the whole range shown, no threshold rule reaches a 5% false-positive rate.`;
 
   // Every threshold except zero, which is trivially 100%. The table is the
   // chart's data, so nothing here is encoded in position alone.
   $("#fprrows").innerHTML = curve.filter((c) => c.threshold_pp > 0)
-    .map((c) => `<tr><td class="mono">≥ ${c.threshold_pp} points</td>
+    .map((c) => `<tr><td class="mono">≥ ${c.threshold_pp} pct. points</td>
       <td class="n mono">${Math.round(c.false_positive_rate * RC.n_comparisons).toLocaleString()} of ${RC.n_comparisons.toLocaleString()}</td>
       <td class="n mono">${(c.false_positive_rate * 100).toFixed(1)}%</td></tr>`).join("");
 
@@ -138,7 +138,8 @@
       <div><span class="lbl">Runs as the unit</span><span class="num num--big cc-good">${rate(C.retrain_level_rejects)}</span>
         <p class="small">${C.retrain_level_rejects} of the same comparisons announced a winner.</p></div>
     </div>
-    <p class="small cc-null__foot">Both tested at the 5% level. Every rejection by the stricter test is also one by the looser: ${C.episode_only_rejects} comparisons are called by pooling alone.</p>`;
+    <p class="small cc-null__foot">Both tested at the 5% level. Every rejection by the stricter test is also one by the looser: ${C.episode_only_rejects} comparisons are called by pooling alone.</p>
+    <p class="small cc-null__foot"><strong>These ${C.n_cells.toLocaleString()} comparisons are not independent of one another.</strong> They are every way of splitting the same ${P.n_runs} runs, so each run appears in many of them. That is why no confidence interval is printed beside ${rate(C.episode_level_rejects)}: a binomial interval would assume independence these comparisons do not have, and would claim more precision than the design supports. The figure is an exhaustive enumeration over one panel, not an estimate sampled from a population.</p>`;
 
   // ---- Provenance --------------------------------------------------------
   $("#limit-provenance").innerHTML = `<strong>This is a simulation benchmark, not a warehouse.</strong>

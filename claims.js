@@ -66,9 +66,13 @@
     return `<tr class="cc-detail" data-for="${c.i}" hidden><td colspan="8">
       <div class="cc-detail__in">
         <div><span class="lbl">Verdict</span><p>${esc(c.state_line)}</p>${sig}</div>
-        <div><span class="lbl">As the paper reports it</span>
-          <p>${esc(c.provenance)}.</p>
-          <p class="mono small">${esc(c.citation_key)} · level: ${esc(c.level)} · ${c.n_episodes.toLocaleString()} episodes · base rate ${pct(c.base_rate)}</p>
+        <div><span class="lbl">Go and check it</span>
+          <p class="cc-cite">${esc(c.source.title || c.paper)}<br>
+            <span class="small">${esc((c.source.authors || "").split(" and ").slice(0, 3).join(", "))}${(c.source.authors || "").split(" and ").length > 3 ? " and others" : ""}</span></p>
+          <p><a class="cc-src" href="${esc(c.source.url)}" target="_blank" rel="noopener">arXiv:${esc(c.source.arxiv)}<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg></a></p>
+          <p class="small"><strong>What the paper states:</strong> ${esc(c.provenance)}.</p>
+          <p class="small"><strong>What we took from it:</strong> a gain of ${c.delta_pp > 0 ? "+" : ""}${c.delta_pp.toFixed(2)} points at a base rate of ${pct(c.base_rate)}, over ${c.n_episodes.toLocaleString()} episodes, at the ${esc(c.level)} level. Nothing else from the paper is used.</p>
+          <p class="mono small">${esc(c.citation_key)}</p>
         </div>
       </div>
     </td></tr>`;
@@ -84,7 +88,7 @@
       if (hit) shown++;
       const [vl, vc] = VENUE[c.venue] || VENUE.unstated;
       return `<tr class="cc-row" data-i="${c.i}" ${hit ? "" : "hidden"}>
-        <td>${esc(c.paper)}</td>
+        <td><a class="cc-src" href="${esc(c.source.url)}" target="_blank" rel="noopener">${esc(c.paper)}<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg></a></td>
         <td>${esc(c.claim)}</td>
         <td><span class="tag ${vc}">${vl}</span></td>
         <td class="n mono">${c.delta_pp > 0 ? "+" : ""}${c.delta_pp.toFixed(2)} pp</td>

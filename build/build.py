@@ -36,6 +36,7 @@ import shutil
 import subprocess
 import sys
 
+allow_dirty = False
 HERE = os.path.dirname(os.path.abspath(__file__))
 SITE = os.path.dirname(HERE)
 DEFAULT_STUDY = os.path.expanduser(
@@ -150,13 +151,46 @@ def vendor(study):
     return copied
 
 
-def git(*args):
+def git(*args, strip=True):
     try:
-        return subprocess.run(["git", "-C", SITE, *args],
-                              capture_output=True, text=True,
-                              check=True).stdout.strip()
+        out = subprocess.run(["git", "-C", SITE, *args],
+                             capture_output=True, text=True,
+                             check=True).stdout
+        return out.strip() if strip else out
     except Exception:
         return ""
+
+
+GENERATED = ("claims-data.json", "claims-data.js", "decision-data.json",
+             "decision-data.js", "build-stamp.js", "source/audit_corpus.json",
+             "source/reference_sources.json")
+
+
+def dirty_paths():
+    """Uncommitted paths, excluding the files this build just wrote.
+
+    The build necessarily runs before the commit that carries its output, so
+    the generated files are always modified at this point. Counting them made
+    every published page print "uncommitted", which reads as an unfinished
+    product and was live for hours.
+    """
+    # NOT stripped: porcelain status codes are two columns plus a space, and
+    # an unstaged modification leaves column one blank. Stripping the whole
+    # output eats that leading space on the FIRST line only, which silently
+    # removed one character from the first path and stopped it matching
+    # GENERATED -- so the build called itself dirty forever.
+    out = git("status", "--porcelain", strip=False)
+    paths = []
+    for line in out.split("\n"):
+        if len(line) < 4:
+            continue
+        path = line[3:].strip().strip('"')
+        # A rename reads "old -> new"; the new path is the one that matters.
+        if " -> " in path:
+            path = path.split(" -> ", 1)[1]
+        if path not in GENERATED:
+            paths.append(path)
+    return paths
 
 
 def stamp(study):
@@ -167,7 +201,7 @@ def stamp(study):
     # commit that carries it, so this names the parent; `dirty` says whether
     # anything was uncommitted at build time, which is the honest caveat.
     commit = git("rev-parse", "--short", "HEAD")
-    dirty = bool(git("status", "--porcelain"))
+    dirty = bool(dirty_paths())
     data = {
         "commit": commit or "unknown",
         "dirty": dirty,
@@ -187,10 +221,15 @@ def stamp(study):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--study", default=DEFAULT_STUDY)
+    ap.add_argument("--allow-dirty", action="store_true",
+                    help="stamp and publish even though the tree has "
+                         "uncommitted changes outside the generated files")
     ap.add_argument("--check", action="store_true",
                     help="verify the guard against existing data; generate "
                          "nothing")
     args = ap.parse_args()
+    global allow_dirty
+    allow_dirty = args.allow_dirty
 
     try:
         if args.check:
@@ -206,9 +245,17 @@ def main():
         print("register guard: clean")
         print("vendored: {}".format(", ".join(vendor(study))))
         s = stamp(study)
-        print("stamp: {} corpus {}… {}{}".format(
-            s["commit"], s["corpus_sha256"][:12], s["generated"],
-            "  (WORKING TREE DIRTY)" if s["dirty"] else ""))
+        print("stamp: {} corpus {}… {}".format(
+            s["commit"], s["corpus_sha256"][:12], s["generated"]))
+        if s["dirty"]:
+            print("\nREFUSING TO PUBLISH A DIRTY BUILD", file=sys.stderr)
+            print("  Uncommitted, besides the generated files:", file=sys.stderr)
+            for path in dirty_paths():
+                print("    " + path, file=sys.stderr)
+            print("  Commit them, or pass --allow-dirty to stamp the site "
+                  "as built from an uncommitted tree.", file=sys.stderr)
+            if not allow_dirty:
+                return 1
         return 0
     except BuildError as e:
         print("\nBUILD FAILED\n  {}".format(e), file=sys.stderr)

@@ -63,7 +63,7 @@
   }
 
   // ---- Inputs ------------------------------------------------------------
-  const FIELDS = ["bn", "bx", "an", "ax", "th", "runs"];
+  const FIELDS = ["bn", "bx", "an", "ax", "th", "design"];
   const num = (id) => parseFloat($("#" + id).value);
 
   function readHash() {
@@ -89,7 +89,8 @@
 
   function render() {
     const bn = num("bn"), bx = num("bx"), an = num("an"), ax = num("ax");
-    const thr = num("th") / 100, runs = Math.max(1, Math.round(num("runs")) || 1);
+    const thr = num("th") / 100;
+    const design = $("#design").value;
 
     const bad = [];
     if (!(bn > 0) || !(an > 0)) bad.push("Attempts must be at least one on each side.");
@@ -114,7 +115,12 @@
     else if (hi < 0) state = "regression";
     else if (lo > -thr && hi < thr) state = "nodiff";
     else state = "insufficient";
-    const [cls, label] = STATE[state];
+    // An unknown design overrides the arithmetic. The numbers still print,
+    // because hiding them helps nobody, but the verdict says what it is.
+    const undefined_design = design === "unknown";
+    const [cls, label] = undefined_design
+      ? ["placard--caution", "Not a defensible comparison"]
+      : STATE[state];
 
     const perSide = Math.min(an, bn);
     const rc = CLASSES.length ? pickClass(perSide) : null;
@@ -122,9 +128,13 @@
 
     // Warnings, most consequential first.
     const warn = [];
-    if (runs === 1) {
-      warn.push(`Both sides come from a single training run, so nothing here measures what changes when the same recipe is trained again. That variation is usually the largest term, and this interval does not contain it. Treat every verdict below as the best case.`);
+    // The design question outranks everything else: a matched or replayed
+    // comparison is not what a two-proportion interval describes, and an
+    // unknown design means the arithmetic has no standing at all.
+    if (design === "matched" || design === "replay") {
+      warn.push(`You said the two sides used ${design === "replay" ? "the same recorded episodes, replayed" : "the same tasks or items, matched one to one"}. The interval below treats them as independent samples, which they are not, so it is <strong>wider than it should be</strong>. A paired analysis on the per-item outcomes would be sharper, and this page cannot do it from two totals.`);
     }
+    warn.push(`This is an episode-level check. It cannot see training-run variation, because two success totals do not contain it, and on the evidence below that variation is usually larger than anything here. Read every verdict as a best case.`);
     if (rc && (perSide < rc.episodes_per_arm / 2 || perSide > rc.episodes_per_arm * 2)) {
       warn.push(`Your ${perSide.toLocaleString()} attempts a side sit well outside the reference class, which has ${rc.episodes_per_arm} an arm. The comparison below is indicative only.`);
     }
@@ -141,19 +151,43 @@
             : `<p>No practical number of attempts would settle this at your threshold while the two rates stay this close. The threshold, not the sample, is the thing to revisit.</p>`)
       : "";
 
+    window.__lastResult = {
+      before: { attempts: bn, successes: bx, rate_pct: +(pb * 100).toFixed(1) },
+      after: { attempts: an, successes: ax, rate_pct: +(pa * 100).toFixed(1) },
+      difference_pp: +(d * 100).toFixed(1),
+      interval_pp: [+(lo * 100).toFixed(1), +(hi * 100).toFixed(1)],
+      interval_method: "Newcombe hybrid-score, 95%",
+      design: $("#design").selectedOptions[0].textContent.trim(),
+      threshold_pp: +(thr * 100).toFixed(1),
+      verdict: label,
+      verdict_key: undefined_design ? "not_defensible" : state,
+      next_action: nextAction(undefined_design ? "unknown" : state, n1, perSide),
+      reference: rc ? {
+        n_comparisons: rc.n_comparisons, episodes_per_arm: rc.episodes_per_arm,
+        retrains_per_arm: rc.retrains_per_arm, suite: (D.panel || {}).suite,
+        threshold_pp: ref.at, false_positive_pct: +(ref.rate * 100).toFixed(1),
+      } : null,
+      corpus_sha256: C ? C.corpus_sha256 : null,
+      generated: new Date().toISOString().slice(0, 19) + "Z",
+      computed: "locally in the browser; no data sent to any server",
+    };
+
     $("#out").innerHTML = `
-      <div class="rc-card rc-card--${state}">
+      <div class="rc-card rc-card--${undefined_design ? "insufficient" : state}">
         <div class="rc-card__head"><span class="lbl">The reading</span><span class="placard ${cls}">${label}</span></div>
-        <span class="num num--big">${sgn(d)}${Math.abs(d * 100).toFixed(1)}<small> points</small></span>
-        <p class="ci">95% interval ${sgn(lo)}${Math.abs(lo * 100).toFixed(1)} to ${sgn(hi)}${Math.abs(hi * 100).toFixed(1)} points
+        <span class="num num--big">${sgn(d)}${Math.abs(d * 100).toFixed(1)}<small> percentage points</small></span>
+        <p class="ci">95% interval ${sgn(lo)}${Math.abs(lo * 100).toFixed(1)} to ${sgn(hi)}${Math.abs(hi * 100).toFixed(1)} percentage points
           &nbsp;·&nbsp; ${pp(pb)}% → ${pp(pa)}%</p>
-        <div class="verdict ${state === "improvement" ? "verdict--ok" : state === "regression" ? "verdict--bad" : state === "nodiff" ? "" : "verdict--wait"}">
-          ${reading(state, d, lo, hi, thr)}
+        <div class="verdict ${undefined_design ? "verdict--wait" : state === "improvement" ? "verdict--ok" : state === "regression" ? "verdict--bad" : state === "nodiff" ? "" : "verdict--wait"}">
+          ${undefined_design
+            ? `<strong>The arithmetic ran; the study design is unknown.</strong> Two totals cannot tell us whether the same items, tasks and conditions sat behind both, and if they did not, no interval here means what it appears to mean. Say how the attempts were collected and this becomes a verdict. Until then it is a calculation, not evidence.`
+            : reading(state, d, lo, hi, thr)}
         </div>
+        <div class="rc-next"><span class="lbl">What to do next</span><p>${nextAction(undefined_design ? "unknown" : state, n1, perSide)}</p></div>
         ${plan}
         ${ref ? `<div class="rc-ref">
           <span class="lbl">Against the reference class</span>
-          <p>A rule of <em>call it a difference at ${ref.at} points or more</em> fires on
+          <p>A rule of <em>call it a difference at ${ref.at} percentage points or more</em> fires on
              <strong>${(ref.rate * 100).toFixed(1)}%</strong> of ${rc.n_comparisons.toLocaleString()} comparisons
              in which the true difference is zero, at ${rc.episodes_per_arm} attempts an arm and
              ${rc.retrains_per_arm} training runs a side.
@@ -163,12 +197,22 @@
       </div>`;
   }
 
+  function nextAction(state, n1, perSide) {
+    if (state === "unknown") return `Write down how the two sets of attempts were collected — same items or different, same shift or not, same scorer or not — and run this again. That sentence is worth more than any interval on this page.`;
+    if (state === "improvement") return `Before you roll this out, repeat it across independent training runs. A gap that survives one comparison at one sample size is the weakest form of this evidence, and retraining is where most apparent wins go.`;
+    if (state === "regression") return `Hold the rollout and investigate. Check whether the item mix, the scorer or the shift pattern also changed over the same window before concluding the software caused it.`;
+    if (state === "nodiff") return `Do not spend effort reverting this change on the strength of the numbers. They rule out a difference as large as the one you said you would act on, in both directions.`;
+    return n1
+      ? `Collect roughly ${n1.toLocaleString()} attempts a side under the same protocol — you have ${perSide.toLocaleString()} — and run this again. Changing the protocol partway through makes the combined total worth less than either half.`
+      : `Revisit the threshold rather than the sample. At these rates no practical number of attempts settles a difference this small.`;
+  }
+
   function reading(state, d, lo, hi, thr) {
     const t = (thr * 100).toFixed(1);
     if (state === "improvement") return `<strong>The whole interval is above zero.</strong> At this number of attempts, a gap this size is larger than sampling alone tends to produce. What that does not establish is that the change caused it.`;
     if (state === "regression") return `<strong>The whole interval is below zero.</strong> The measured rate fell by more than sampling alone tends to produce at this number of attempts.`;
-    if (state === "nodiff") return `<strong>There is nothing here worth acting on.</strong> The interval covers zero and stays inside the ${t} points you said would change your decision, so a difference that large has been ruled out in both directions.`;
-    return `<strong>This does not settle anything.</strong> The interval covers zero, but it also reaches past the ${t} points you said would change your decision, so a difference you would care about has not been ruled out either way.`;
+    if (state === "nodiff") return `<strong>There is nothing here worth acting on.</strong> The interval covers zero and stays inside the ${t} percentage points you said would change your decision, so a difference that large has been ruled out in both directions.`;
+    return `<strong>This does not settle anything.</strong> The interval covers zero, but it also reaches past the ${t} percentage points you said would change your decision, so a difference you would care about has not been ruled out either way.`;
   }
 
   // ---- Provenance --------------------------------------------------------
@@ -191,6 +235,49 @@
   FIELDS.forEach((f) => $("#" + f).addEventListener("input", render));
   $("#calc").addEventListener("submit", (e) => e.preventDefault());
   $("#reset").addEventListener("click", () => setTimeout(() => { render(); }, 0));
+  function brief(fmt) {
+    const b = window.__lastResult;
+    if (!b) return "";
+    if (fmt === "json") return JSON.stringify(b, null, 2);
+    return [
+      `# Difference check — orbiteval.com/real.html`,
+      ``,
+      `Before: ${b.before.successes} of ${b.before.attempts} (${b.before.rate_pct.toFixed(1)}%)`,
+      `After:  ${b.after.successes} of ${b.after.attempts} (${b.after.rate_pct.toFixed(1)}%)`,
+      `Difference: ${b.difference_pp.toFixed(1)} percentage points`,
+      `95% interval: ${b.interval_pp[0].toFixed(1)} to ${b.interval_pp[1].toFixed(1)} percentage points (Newcombe hybrid-score)`,
+      `Study design as stated: ${b.design}`,
+      `Threshold that would change a decision: ${b.threshold_pp.toFixed(1)} percentage points`,
+      ``,
+      `Verdict: ${b.verdict}`,
+      `Next: ${b.next_action}`,
+      ``,
+      `Reference class: ${b.reference.n_comparisons} comparisons of the same recipe`,
+      `  at ${b.reference.episodes_per_arm} episodes an arm, ${b.reference.retrains_per_arm} training runs a side,`,
+      `  simulated ${b.reference.suite} benchmark, true difference zero by construction.`,
+      `  A rule of "at least ${b.reference.threshold_pp} percentage points" fires on ${b.reference.false_positive_pct.toFixed(1)}% of them.`,
+      ``,
+      `Limits: episode-level only; cannot see training-run variation.`,
+      `  The reference class is a simulation benchmark, not warehouse evidence`,
+      `  and not a universal error rate.`,
+      `Corpus sha256: ${b.corpus_sha256}`,
+      `Generated: ${b.generated} · computed in the browser, nothing uploaded.`,
+    ].join("\n");
+  }
+
+  function copyBrief(fmt, label) {
+    const t = $("#toast");
+    navigator.clipboard.writeText(brief(fmt)).then(
+      () => { t.textContent = `${label} copied. Built in your browser.`; },
+      () => { t.textContent = "Could not copy — your browser blocked it."; }
+    ).then(() => {
+      t.hidden = false; clearTimeout(copyBrief.t);
+      copyBrief.t = setTimeout(() => (t.hidden = true), 2800);
+    });
+  }
+  $("#copy-md").addEventListener("click", () => copyBrief("md", "Markdown brief"));
+  $("#copy-json").addEventListener("click", () => copyBrief("json", "JSON"));
+
   $("#share").addEventListener("click", async () => {
     writeHash();
     const t = $("#toast");

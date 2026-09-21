@@ -23,6 +23,7 @@ import datetime
 import hashlib
 import json
 import os
+import re
 import sys
 
 DEFAULT_STUDY = os.path.expanduser(
@@ -30,6 +31,12 @@ DEFAULT_STUDY = os.path.expanduser(
 DEFAULT_OUT = os.path.join(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
     "claims-data.json")
+# The bibliography the paper already verified against the arXiv API. Source
+# links are read from it rather than typed, for the same reason the noise
+# band is: a hand-typed identifier with no cross-check is exactly the
+# failure this audit is about.
+DEFAULT_BIB = os.path.expanduser(
+    "~/Orbit-Research-aistats/paper/aistats2027/refs.bib")
 
 # Benchmarks whose episodes are simulated. Matching is on the lowercased
 # claim text. A claim that matches nothing here is "unstated" — it is not
@@ -87,13 +94,54 @@ STATE_COPY = {
 }
 
 
-def build(study_path):
+def load_sources(bib_path):
+    """citation_key -> {title, authors, arxiv, url} from the bibliography.
+
+    Fails loudly on a missing file or a key without a resolvable arXiv id:
+    a claim the reader cannot go and check is the thing this page exists to
+    complain about, so it must not ship silently.
+    """
+    if not os.path.exists(bib_path):
+        raise SystemExit(
+            "bibliography not found at {}\n"
+            "  Source links for every claim are read from it. Pass --bib "
+            "PATH.".format(bib_path))
+    with open(bib_path) as f:
+        bib = f.read()
+    out = {}
+    for m in re.finditer(r"@\w+\{([^,]+),(.*?)\n\}", bib, re.S):
+        key, body = m.group(1).strip(), m.group(2)
+        arx = re.search(r"arXiv:([0-9]{4}\.[0-9]{4,5})", body)
+        if not arx:
+            continue
+        title = re.search(r"title\s*=\s*\{(.*?)\}\s*,\s*\n\s*author", body, re.S)
+        author = re.search(r"author\s*=\s*\{(.*?)\}\s*,\s*\n\s*\w+\s*=", body, re.S)
+        clean = lambda t: re.sub(r"\s+", " ", t).replace("{", "").replace("}", "").strip()
+        out[key] = {
+            "title": clean(title.group(1)) if title else None,
+            "authors": clean(author.group(1)) if author else None,
+            "arxiv": arx.group(1),
+            "url": "https://arxiv.org/abs/" + arx.group(1),
+        }
+    return out
+
+
+def build(study_path, bib_path=DEFAULT_BIB):
     sys.path.insert(0, study_path)
     import claims  # noqa: E402
     import core  # noqa: E402
     import reference  # noqa: E402
 
     band_lo, band_med, band_hi = claims.coefficient_band()
+    sources = load_sources(bib_path)
+
+    missing = sorted({c.citation_key for c in claims.CLAIMS} - set(sources))
+    if missing:
+        raise SystemExit(
+            "no resolvable source for: {}\n"
+            "  Every published claim on the page must carry a link a reader "
+            "can follow. Add the entry to {} before building.".format(
+                ", ".join(missing), bib_path))
 
     rows = []
     for c in claims.CLAIMS:
@@ -110,6 +158,7 @@ def build(study_path):
             "level": c.level,
             "provenance": c.provenance,
             "venue": derive_venue(c.claim),
+            "source": sources[c.citation_key],
             # sigma-star: the smallest retraining SD that would erase the
             # reported gain. None when the gain fails on episode noise alone.
             "sigma_star_pp": None if s is None else round(s * 100.0, 4),
@@ -186,9 +235,10 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--study", default=DEFAULT_STUDY)
     ap.add_argument("--out", default=DEFAULT_OUT)
+    ap.add_argument("--bib", default=DEFAULT_BIB)
     args = ap.parse_args()
 
-    data = build(args.study)
+    data = build(args.study, args.bib)
     with open(args.out, "w") as f:
         json.dump(data, f, indent=1)
         f.write("\n")
