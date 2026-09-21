@@ -132,7 +132,11 @@
     // comparison is not what a two-proportion interval describes, and an
     // unknown design means the arithmetic has no standing at all.
     if (design === "matched" || design === "replay") {
-      warn.push(`You said the two sides used ${design === "replay" ? "the same recorded episodes, replayed" : "the same tasks or items, matched one to one"}. The interval below treats them as independent samples, which they are not, so it is <strong>wider than it should be</strong>. A paired analysis on the per-item outcomes would be sharper, and this page cannot do it from two totals.`);
+      // Not "wider than it should be": pairing moves the variance in
+      // either direction depending on how the pairs correlate, and this
+      // page cannot know which. Say what is actually true — it is the
+      // wrong estimator — and stop there.
+      warn.push(`You said the two sides used ${design === "replay" ? "the same recorded episodes, replayed" : "the same tasks or items, matched one to one"}. This calculation does not use the pairing structure, so it is <strong>not the appropriate matched-design estimator</strong>. A paired analysis needs the per-item outcomes, which two totals do not carry; depending on how the pairs correlate, the correct interval could be narrower or wider than the one below.`);
     }
     warn.push(`This is an episode-level check. It cannot see training-run variation, because two success totals do not contain it, and on the evidence below that variation is usually larger than anything here. Read every verdict as a best case.`);
     if (rc && (perSide < rc.episodes_per_arm / 2 || perSide > rc.episodes_per_arm * 2)) {
