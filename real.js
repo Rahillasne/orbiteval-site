@@ -203,6 +203,12 @@
     $("#share").t = setTimeout(() => (t.hidden = true), 2800);
   });
 
+  // A fragment change does not reload the page, so following a shared link
+  // while already here would otherwise leave the previous numbers on screen
+  // with a new address in the bar. writeHash uses replaceState, which does
+  // not fire this, so there is no loop.
+  addEventListener("hashchange", () => { readHash(); render(); });
+
   readHash();
   render();
 })();
