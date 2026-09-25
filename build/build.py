@@ -11,14 +11,16 @@ Three jobs, in order, any of which failing stops the build:
 
 2. Run the exporters, then vendor the inputs they read into `source/` so
    the published site carries the corpus it claims to have checked, rather
-   than only a hash of a file nobody can see.
+   than only a hash of a file nobody can see. Vendoring strips anything on
+   the register on the way through and says so in the file.
 
 3. Guard the overlap register mechanically. OVERLAP_REGISTER.md binds every
    task that reads panels.py: rejection rates and calibration may be
    published, retraining-noise magnitudes may not. A first version of the
    decision page published a per-run matrix and a spread column and was
    live before anyone noticed. A rule nobody checks is not a rule, so this
-   step checks it.
+   step checks it, over the generated data AND the vendored source, and
+   then runs build/test_redaction.py.
 
 Then it writes build-stamp.js, which every page loads to print the commit,
 the corpus hash and the generation time in its footer.
@@ -32,6 +34,7 @@ import datetime
 import hashlib
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -52,6 +55,50 @@ VENDORED = ("audit_corpus.json", "reference_sources.json")
 FORBIDDEN_KEYS = ("matrix", "per_run_a", "per_run_b", "per_seed",
                   "spread", "sigma", "sigma_retrain", "variance",
                   "variance_ratio", "seed_rates")
+
+# Substrings that make a key forbidden whatever it is called around them.
+# The exact list above missed `external_median_sigma_pp`, which sat in a
+# PUBLIC vendored source file for days because no name in it matched exactly.
+# A register that only catches the names someone already thought of is not a
+# register. `n_seeds` and `seed_axis` are counts and labels, not magnitudes,
+# and deliberately do not match any token here.
+FORBIDDEN_TOKENS = ("sigma", "variance", "spread", "per_seed", "seed_rates",
+                    "per_run", "matrix")
+
+# The ONE exemption, pinned to a single field in a single file at a single
+# path. Not a class of names, not a file-wide pass, and not a rule that any
+# future evidence record inherits.
+#
+# A broad "sigma is sometimes fine" exception would be worse than no token
+# rule at all, because it would read as a check while letting the next
+# magnitude through under a plausible name. So an exemption has to name the
+# file, match the exact JSON path, and carry its reason. Anything that does
+# not match all three is forbidden, including this same field name in
+# release-record-data.json, in the NHTSA output, in the public source
+# corpora, or anywhere else in claims-data.json.
+EXEMPTIONS = (
+    {
+        "file": "claims-data.json",
+        "path": re.compile(r"^/claims\[\d+\]/sigma_star_pp$"),
+        "field": "sigma_star_pp",
+        "why": ("A derived planning threshold computed from PUBLIC EXTERNAL "
+                "data, not a measurement of our retraining noise. "
+                "core.sigma_star(delta, n, p) returns the smallest retrain SD "
+                "that would erase an external claim, from that claim's own "
+                "published gain, episode count and base rate. It is the "
+                "withheld quantity inverted: a requirement read off someone "
+                "else's table. claims.py and reference.py import neither "
+                "panels.py nor anything derived from it, so the register "
+                "clause does not reach them. Scope is the existing Claim "
+                "Check output and nothing else."),
+    },
+)
+
+# Public artifacts that are not generated but ARE published: the corpora the
+# evidence pages claim to have checked. They are vendored from the research
+# source, so a magnitude added upstream reaches the site unless it is stripped
+# on the way through.
+PUBLIC_SOURCE = ("source/audit_corpus.json", "source/reference_sources.json")
 
 
 class BuildError(RuntimeError):
@@ -91,6 +138,56 @@ def walk(node, path=""):
         yield path, node
 
 
+def exempt(name, leaf, path):
+    """True only for an exemption matching this file, field AND exact path."""
+    for e in EXEMPTIONS:
+        if e["file"] == name and e["field"] == leaf and e["path"].match(path):
+            return True
+    return False
+
+
+def forbidden_key(leaf, name=None, path=None):
+    """Why this key name is forbidden here, or None if it is allowed.
+
+    `name` and `path` locate the key. Omit them -- as redact() does, since it
+    strips before anything is published -- and no exemption can apply, which
+    is the safe direction: a field is exempt somewhere specific or nowhere.
+    """
+    if name is not None and path is not None and exempt(name, leaf, path):
+        return None
+    low = leaf.lower()
+    if leaf in FORBIDDEN_KEYS:
+        return "name {!r} is on the register".format(leaf)
+    for tok in FORBIDDEN_TOKENS:
+        if tok in low:
+            return "name {!r} contains {!r}".format(leaf, tok)
+    return None
+
+
+def redact(node, removed, path=""):
+    """A copy of `node` with every forbidden key dropped, recording what went.
+
+    Vendoring copied the research corpus verbatim, which is how a
+    retraining-noise magnitude reached a public file. Stripping it here means
+    the published corpus can never carry one even if the research file grows a
+    new one tomorrow. What was removed is recorded in the file itself: a
+    silent redaction is indistinguishable from a file that never had the
+    field, and the next person to compare the two copies deserves to know.
+    """
+    if isinstance(node, dict):
+        out = {}
+        for k, v in node.items():
+            if forbidden_key(k):
+                removed.append(path + "/" + k)
+                continue
+            out[k] = redact(v, removed, path + "/" + k)
+        return out
+    if isinstance(node, list):
+        return [redact(v, removed, path + "[{}]".format(i))
+                for i, v in enumerate(node)]
+    return node
+
+
 def guard_register(study):
     """Fail if a generated data file carries a retraining-noise magnitude.
 
@@ -100,7 +197,9 @@ def guard_register(study):
     of rates IS the magnitude the register withholds.
     """
     problems = []
-    for name in ("decision-data.json", "claims-data.json"):
+    checked = ("decision-data.json", "claims-data.json",
+               "release-record-data.json") + PUBLIC_SOURCE
+    for name in checked:
         p = os.path.join(SITE, name)
         if not os.path.exists(p):
             continue
@@ -109,8 +208,9 @@ def guard_register(study):
         n_runs = (data.get("panel") or {}).get("n_runs")
         for path, value in walk(data):
             leaf = path.rsplit("/", 1)[-1].split("[")[0]
-            if leaf in FORBIDDEN_KEYS:
-                problems.append("{}: key {!r} at {}".format(name, leaf, path))
+            why = forbidden_key(leaf, name, path)
+            if why:
+                problems.append("{}: {} at {}".format(name, why, path))
             if (n_runs and isinstance(value, list) and len(value) == n_runs
                     and value and all(isinstance(v, (int, float))
                                       and not isinstance(v, bool)
@@ -137,18 +237,57 @@ def run_exporter(script, study):
     return r.stdout.strip()
 
 
+def run_redaction_tests():
+    """Run build/test_redaction.py as part of every build.
+
+    The retraining-noise field was removed from the public corpus by hand on
+    2026-09-25, and the next build would have copied it straight back. A test
+    that has to be remembered is one that stops being run, so the build runs
+    it and refuses to finish if it fails.
+    """
+    r = subprocess.run(
+        [sys.executable, os.path.join(HERE, "test_redaction.py")],
+        capture_output=True, text=True)
+    if r.returncode != 0:
+        raise BuildError(
+            "redaction tests FAILED:\n{}{}".format(r.stdout, r.stderr))
+    last = [ln for ln in (r.stdout + r.stderr).strip().split("\n") if ln.strip()]
+    return last[-2] if len(last) > 1 else "redaction tests passed"
+
+
 def vendor(study):
+    """Copy the corpora the site publishes, stripping anything on the register.
+
+    The research originals are left untouched; only the public copy is
+    redacted, and it says so on its face.
+    """
     out = os.path.join(SITE, "source")
     os.makedirs(out, exist_ok=True)
-    copied = []
+    copied, stripped = [], []
     for name in VENDORED:
         src = os.path.join(study, name)
         if not os.path.exists(src):
             raise BuildError("cannot vendor {}: not found in {}".format(
                 name, study))
-        shutil.copy2(src, os.path.join(out, name))
+        with open(src) as f:
+            data = json.load(f)
+        removed = []
+        data = redact(data, removed)
+        if removed:
+            data["_redacted"] = {
+                "fields": sorted(removed),
+                "why": ("Withheld under OVERLAP_REGISTER.md: these are "
+                        "retraining-noise magnitudes, which belong to a "
+                        "sibling submission under review. Everything the "
+                        "published pages compute from this corpus is present. "
+                        "The unredacted file is in the research repository."),
+            }
+            stripped += ["{}{}".format(name, r) for r in removed]
+        with open(os.path.join(out, name), "w") as f:
+            json.dump(data, f, indent=1)
+            f.write("\n")
         copied.append(name)
-    return copied
+    return copied, stripped
 
 
 def git(*args, strip=True):
@@ -235,15 +374,24 @@ def main():
         if args.check:
             guard_register(args.study)
             print("register guard: clean")
+            print("redaction tests: {}".format(run_redaction_tests()))
             return 0
 
         study = require_study(args.study)
         print("research source: {}".format(study))
         for script in ("claims_export.py", "decision_export.py"):
             print("  " + run_exporter(script, study).replace("\n", "\n  "))
+        # Vendor BEFORE guarding. The register now covers the public source
+        # copies as well as the generated files, and those copies are written
+        # by this step; guarding first would check the previous build's files
+        # and pass on a corpus that no longer exists.
+        copied, stripped = vendor(study)
+        print("vendored: {}".format(", ".join(copied)))
+        for r in stripped:
+            print("  REDACTED {} (overlap register)".format(r))
         guard_register(study)
         print("register guard: clean")
-        print("vendored: {}".format(", ".join(vendor(study))))
+        print("redaction tests: {}".format(run_redaction_tests()))
         s = stamp(study)
         print("stamp: {} corpus {}… {}".format(
             s["commit"], s["corpus_sha256"][:12], s["generated"]))

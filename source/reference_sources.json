@@ -1,101 +1,167 @@
 {
-  "_README": "External per-seed sources for the reference distribution of retraining noise. Assembled by the controller via literature retrieval, which the retrieval policy forbids delegating. EVERY entry is from a group other than the authors, and every entry records the sentence that settles which axis its spread varies. A spread over evaluation repeats is episode noise and must never be entered here.",
-  "n_screened": 41,
-  "_n_screened_note": "Robot-policy and imitation-learning papers examined while hunting per-seed success rates. Only the entries below reported per-seed BINOMIAL success rates with the training axis explicitly identified. The screening rate is a reported result of the paper, not bookkeeping.",
-  "sources": [
-    {
-      "citation_key": "stageinfo2607",
-      "arxiv_id": "2607.13605",
-      "policy_class": "VLA fine-tune",
-      "suite": "LIBERO-10",
-      "level": "suite",
-      "n_seeds": 3,
-      "n_episodes": 500,
-      "arms": {
-        "original_5k": [64.80, 58.96, 48.60],
-        "taskctx_5k": [44.62, 49.00, 57.09],
-        "ordinal_stage_state_5k": [45.80, 62.08, 55.20],
-        "original_continuation": [47.60, 52.00, 47.60]
-      },
-      "seed_axis": "training",
-      "settling_quote": "Each arrangement is repeated across three paired action-policy runs using distinct random seeds (101, 202, 303) to account for training variability.",
-      "provenance": "Per-run success rates read from the DIRECT 5K SUCCESS RATE and CONTINUATION tables, columns Run 1 / Run 2 / Run 3. Episode count from '50 episodes per task' over the ten LIBERO-10 tasks.",
-      "note": "Strongest quantitative source. Binomial floor is about 2.2 points against observed spreads of 8.20, 6.33, 8.17 and 2.54, so three of four arms show retraining noise clearly above episode noise."
-    },
-    {
-      "citation_key": "effvla2609",
-      "arxiv_id": "2609.13984",
-      "policy_class": "VLA",
-      "suite": "LIBERO-Plus",
-      "level": "suite",
-      "n_seeds": 5,
-      "n_episodes": 1000,
-      "arms": {
-        "effvla_anchor": [79.8, 77.2, 78.5, 80.0, 79.5],
-        "oft_anchor": [79.0, 75.5, 77.2, 78.8, 79.0]
-      },
-      "paired": true,
-      "seed_axis": "training",
-      "settling_quote": "The sweep trains one seed per cell, so we re-trained the V = L = A = l anchor pair from scratch under five seeds to measure run-to-run variation directly.",
-      "provenance": "Table 13, five training seeds at the l/l/l anchor, LIBERO-Plus mean success rate. Episode count from 'about 1,000 rollouts per cell'; the authors state the resulting binomial standard error is about 1.4 points.",
-      "note": "EFFVLA's five-seed spread (SD 1.16) falls BELOW its own binomial floor (1.29), giving a negative retrain-variance estimate. OFT gives 0.81 points. Report both, including the negative.",
-      "pairing_caveat": "The paired contrast SD is 0.46 against an unpaired 1.93, a 4.2-fold reduction implying a correlation of 0.98 on the TOTAL per-arm variance. Each seed produced both models, but if the two arms were also evaluated on the SAME rollout initial conditions then part of that correlation is common random numbers at the EPISODE level rather than a shared training draw. The paper must NOT attribute the full reduction to seed reuse without establishing whether rollouts were shared. The recommendation to pair survives either way; the mechanism attribution is what carries the caveat."
-    },
-    {
-      "citation_key": "forensic2609",
-      "arxiv_id": "2609.16745",
-      "policy_class": "ACT",
-      "suite": "two simulated manipulation tasks",
-      "level": "task",
-      "n_seeds": 3,
-      "n_episodes": 50,
-      "arms_mean_sd": [[26.0, 3.3], [45.2, 6.2], [35.9, 1.4], [72.4, 5.1], [16.1, 5.5], [18.0, 9.0]],
-      "seed_axis": "training",
-      "settling_quote": "labels give each arm's mean (SD) across 3 training seeds",
-      "provenance": "Mean and standard deviation across three training seeds, read from the re-run figure's arm labels. Episode count from 'The paper's main results use 3 seeds and 50 episodes per seed'.",
-      "note": "Four of six cells give a NEGATIVE retrain-variance estimate because the observed spread falls below the binomial floor at fifty episodes. This is the clearest demonstration that a three-seed standard deviation, carrying two degrees of freedom, is nearly uninformative. Keep all six cells including the negatives."
-    },
-    {
-      "citation_key": "minerva2609",
-      "arxiv_id": "2609.03715",
-      "policy_class": "compact manipulation policy",
-      "suite": "LIBERO",
-      "level": "suite",
-      "n_seeds": 3,
-      "n_episodes": 2000,
-      "range_only": [94.60, 96.75],
-      "seed_axis": "training",
-      "settling_quote": "Robustness of findings was assessed by re-training key configurations with three different random seeds.",
-      "provenance": "Only the min and max across three seeds are reported, as a 'plus or minus 1 point seed band'. Episode count from 50 episodes per task over 10 tasks and 4 suites.",
-      "note": "Individual per-seed values are not published, so the deviation must be estimated from the range with the d2 constant for n=3 (1.693) and flagged as range-derived, not sample-derived. Near a 95 percent base rate, so its episode noise is small and its retrain estimate sits near 1 point."
-    },
-    {
-      "citation_key": "langtransfer2609",
-      "arxiv_id": "2609.07470",
-      "policy_class": "VLA",
-      "suite": "LIBERO-90",
-      "level": "suite",
-      "n_seeds": 3,
-      "n_episodes": 1800,
-      "margins_only": {"greek_only": [-0.3, 0.7, 2.7], "bilingual_range": [6.7, 7.1]},
-      "seed_axis": "training",
-      "settling_quote": "three training seeds per arm still yield a minimum attainable two-sided run-level p-value of 0.100",
-      "provenance": "Per-seed MARGINS over an instruction-blind floor, not raw success rates. Episode count from 20 trials per task over 90 tasks.",
-      "note": "Reports margins rather than raw rates, so the variance is of a DIFFERENCE and is not directly comparable to a single-arm deviation. Use qualitatively or convert with an explicit stated assumption. The paper also retracted five preliminary conclusions after seed replication, which is worth citing in the introduction independently of any number."
-    },
-    {
-      "citation_key": "geomcond2609",
-      "arxiv_id": "2609.09213",
-      "policy_class": "embodied small language model",
-      "suite": "custom, 3 tasks",
-      "level": "task",
-      "n_seeds": 3,
-      "n_episodes": 30,
-      "qualitative_only": true,
-      "seed_axis": "training",
-      "settling_quote": "one of three seeds fails to converge (L1 loss 0.882, versus 0.262 and 0.258 for its siblings)",
-      "provenance": "Reports per-seed CONTRASTS and leave-one-seed-out ranges rather than per-seed raw rates, so no clean single-arm deviation can be extracted.",
-      "note": "Qualitative support only. Its value is that the sign of the f0-shuffled contrast CHANGES across seeds, and that one of three training runs failed to converge and was retained rather than dropped."
-    }
-  ]
+ "_README": "External per-seed sources for the reference distribution of retraining noise. Assembled by the controller via literature retrieval, which the retrieval policy forbids delegating. EVERY entry is from a group other than the authors, and every entry records the sentence that settles which axis its spread varies. A spread over evaluation repeats is episode noise and must never be entered here.",
+ "n_screened": 41,
+ "_n_screened_note": "Robot-policy and imitation-learning papers examined while hunting per-seed success rates. Only the entries below reported per-seed BINOMIAL success rates with the training axis explicitly identified. The screening rate is a reported result of the paper, not bookkeeping.",
+ "sources": [
+  {
+   "citation_key": "stageinfo2607",
+   "arxiv_id": "2607.13605",
+   "policy_class": "VLA fine-tune",
+   "suite": "LIBERO-10",
+   "level": "suite",
+   "n_seeds": 3,
+   "n_episodes": 500,
+   "arms": {
+    "original_5k": [
+     64.8,
+     58.96,
+     48.6
+    ],
+    "taskctx_5k": [
+     44.62,
+     49.0,
+     57.09
+    ],
+    "ordinal_stage_state_5k": [
+     45.8,
+     62.08,
+     55.2
+    ],
+    "original_continuation": [
+     47.6,
+     52.0,
+     47.6
+    ]
+   },
+   "seed_axis": "training",
+   "settling_quote": "Each arrangement is repeated across three paired action-policy runs using distinct random seeds (101, 202, 303) to account for training variability.",
+   "provenance": "Per-run success rates read from the DIRECT 5K SUCCESS RATE and CONTINUATION tables, columns Run 1 / Run 2 / Run 3. Episode count from '50 episodes per task' over the ten LIBERO-10 tasks.",
+   "note": "Strongest quantitative source. Binomial floor is about 2.2 points against observed spreads of 8.20, 6.33, 8.17 and 2.54, so three of four arms show retraining noise clearly above episode noise."
+  },
+  {
+   "citation_key": "effvla2609",
+   "arxiv_id": "2609.13984",
+   "policy_class": "VLA",
+   "suite": "LIBERO-Plus",
+   "level": "suite",
+   "n_seeds": 5,
+   "n_episodes": 1000,
+   "arms": {
+    "effvla_anchor": [
+     79.8,
+     77.2,
+     78.5,
+     80.0,
+     79.5
+    ],
+    "oft_anchor": [
+     79.0,
+     75.5,
+     77.2,
+     78.8,
+     79.0
+    ]
+   },
+   "paired": true,
+   "seed_axis": "training",
+   "settling_quote": "The sweep trains one seed per cell, so we re-trained the V = L = A = l anchor pair from scratch under five seeds to measure run-to-run variation directly.",
+   "provenance": "Table 13, five training seeds at the l/l/l anchor, LIBERO-Plus mean success rate. Episode count from 'about 1,000 rollouts per cell'; the authors state the resulting binomial standard error is about 1.4 points.",
+   "note": "EFFVLA's five-seed spread (SD 1.16) falls BELOW its own binomial floor (1.29), giving a negative retrain-variance estimate. OFT gives 0.81 points. Report both, including the negative.",
+   "pairing_caveat": "The paired contrast SD is 0.46 against an unpaired 1.93, a 4.2-fold reduction implying a correlation of 0.98 on the TOTAL per-arm variance. Each seed produced both models, but if the two arms were also evaluated on the SAME rollout initial conditions then part of that correlation is common random numbers at the EPISODE level rather than a shared training draw. The paper must NOT attribute the full reduction to seed reuse without establishing whether rollouts were shared. The recommendation to pair survives either way; the mechanism attribution is what carries the caveat."
+  },
+  {
+   "citation_key": "forensic2609",
+   "arxiv_id": "2609.16745",
+   "policy_class": "ACT",
+   "suite": "two simulated manipulation tasks",
+   "level": "task",
+   "n_seeds": 3,
+   "n_episodes": 50,
+   "arms_mean_sd": [
+    [
+     26.0,
+     3.3
+    ],
+    [
+     45.2,
+     6.2
+    ],
+    [
+     35.9,
+     1.4
+    ],
+    [
+     72.4,
+     5.1
+    ],
+    [
+     16.1,
+     5.5
+    ],
+    [
+     18.0,
+     9.0
+    ]
+   ],
+   "seed_axis": "training",
+   "settling_quote": "labels give each arm's mean (SD) across 3 training seeds",
+   "provenance": "Mean and standard deviation across three training seeds, read from the re-run figure's arm labels. Episode count from 'The paper's main results use 3 seeds and 50 episodes per seed'.",
+   "note": "Four of six cells give a NEGATIVE retrain-variance estimate because the observed spread falls below the binomial floor at fifty episodes. This is the clearest demonstration that a three-seed standard deviation, carrying two degrees of freedom, is nearly uninformative. Keep all six cells including the negatives."
+  },
+  {
+   "citation_key": "minerva2609",
+   "arxiv_id": "2609.03715",
+   "policy_class": "compact manipulation policy",
+   "suite": "LIBERO",
+   "level": "suite",
+   "n_seeds": 3,
+   "n_episodes": 2000,
+   "range_only": [
+    94.6,
+    96.75
+   ],
+   "seed_axis": "training",
+   "settling_quote": "Robustness of findings was assessed by re-training key configurations with three different random seeds.",
+   "provenance": "Only the min and max across three seeds are reported, as a 'plus or minus 1 point seed band'. Episode count from 50 episodes per task over 10 tasks and 4 suites.",
+   "note": "Individual per-seed values are not published, so the deviation must be estimated from the range with the d2 constant for n=3 (1.693) and flagged as range-derived, not sample-derived. Near a 95 percent base rate, so its episode noise is small and its retrain estimate sits near 1 point."
+  },
+  {
+   "citation_key": "langtransfer2609",
+   "arxiv_id": "2609.07470",
+   "policy_class": "VLA",
+   "suite": "LIBERO-90",
+   "level": "suite",
+   "n_seeds": 3,
+   "n_episodes": 1800,
+   "margins_only": {
+    "greek_only": [
+     -0.3,
+     0.7,
+     2.7
+    ],
+    "bilingual_range": [
+     6.7,
+     7.1
+    ]
+   },
+   "seed_axis": "training",
+   "settling_quote": "three training seeds per arm still yield a minimum attainable two-sided run-level p-value of 0.100",
+   "provenance": "Per-seed MARGINS over an instruction-blind floor, not raw success rates. Episode count from 20 trials per task over 90 tasks.",
+   "note": "Reports margins rather than raw rates, so the variance is of a DIFFERENCE and is not directly comparable to a single-arm deviation. Use qualitatively or convert with an explicit stated assumption. The paper also retracted five preliminary conclusions after seed replication, which is worth citing in the introduction independently of any number."
+  },
+  {
+   "citation_key": "geomcond2609",
+   "arxiv_id": "2609.09213",
+   "policy_class": "embodied small language model",
+   "suite": "custom, 3 tasks",
+   "level": "task",
+   "n_seeds": 3,
+   "n_episodes": 30,
+   "qualitative_only": true,
+   "seed_axis": "training",
+   "settling_quote": "one of three seeds fails to converge (L1 loss 0.882, versus 0.262 and 0.258 for its siblings)",
+   "provenance": "Reports per-seed CONTRASTS and leave-one-seed-out ranges rather than per-seed raw rates, so no clean single-arm deviation can be extracted.",
+   "note": "Qualitative support only. Its value is that the sign of the f0-shuffled contrast CHANGES across seeds, and that one of three training runs failed to converge and was retained rather than dropped."
+  }
+ ]
 }
