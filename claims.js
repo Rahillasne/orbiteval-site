@@ -1,5 +1,6 @@
 // Claim Check — renders claims-data.js, which build/claims_export.py writes
-// from the audit modules. Nothing is computed here; this file only formats.
+// from Corpus 2 v2 and the audit modules. Nothing is computed here; this file
+// only formats.
 (() => {
   const D = window.CLAIM_CHECK;
   const $ = (s) => document.querySelector(s);
@@ -8,11 +9,15 @@
 
   const pct = (x) => (x * 100).toFixed(1) + "%";
   const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  // A rate exactly as the paper printed it, with its unit.
+  const printed = (c, v) => (c.printed_unit === "percent" ? v + "%" : v);
+  // A count, or the words for its absence. Never a formatted null.
+  const count = (c) => (c.n_episodes === null ? "not stated" : c.n_episodes.toLocaleString());
+  const sign = (x) => (x > 0 ? "+" : "");
 
-  // Four states shown to a reader, folded from the five the study reports.
-  // "erased" and "fails_on_episode_noise" are both "not supported"; they
-  // differ only in which kind of noise was enough, and the row detail says
-  // which.
+  // States shown to a reader, folded from the study's five plus one. "erased"
+  // and "fails_on_episode_noise" are both "not supported"; the row detail says
+  // which kind of noise was enough.
   const S = D.summary;
   const notSupported = S.erased + S.fails_on_episode_noise;
 
@@ -27,6 +32,7 @@
     erased: "placard--revoked",
     fails_on_episode_noise: "placard--revoked",
     negative_gain: "placard--specimen",
+    count_not_stated: "placard--unknown",
   };
 
   // ---- Tally -------------------------------------------------------------
@@ -34,6 +40,7 @@
     { n: S.survives, label: "Supported", sub: "Gain larger than retraining noise at its harshest.", cls: "is-zero" },
     { n: S.inconclusive, label: "Inconclusive", sub: "Gain sits inside the observed range of retraining noise.", cls: "" },
     { n: notSupported, label: "Not supported", sub: `Gain smaller than noise. ${S.fails_on_episode_noise} fail on episode count alone.`, cls: "" },
+    { n: S.count_not_stated, label: "Count not stated", sub: "The paper states no single episode count, so the gain cannot be sized.", cls: "" },
     { n: S.negative_gain, label: "Reported loss", sub: "Authors report a decrease. Excluded from the tally.", cls: "" },
   ];
   $("#tally").innerHTML = tally.map((t) => `
@@ -44,25 +51,32 @@
     </div>`).join("");
 
   // ---- Robustness --------------------------------------------------------
-  // The one input a reader can reasonably dispute is the floor of the
-  // retraining-noise band. So the audit is also reported with that floor at
-  // zero, where nothing can be erased by retraining noise at all.
   const Z = D.summary_at_zero_floor;
   $("#robustness").innerHTML = `<strong>This does not turn on how harsh we were.</strong>
     Set the retraining-noise floor to zero — the most forgiving assumption available, under which no claim can be erased by retraining at all —
     and the count of supported claims is still <strong>${Z.survives} of ${D.n_claims}</strong>.
-    ${Z.fails_on_episode_noise} of them do not clear the noise in their own episode counts before retraining is considered.`;
+    ${Z.fails_on_episode_noise} of them do not clear the noise in their own episode counts before retraining is considered,
+    and ${Z.count_not_stated} state no single episode count at all.`;
 
   // ---- Table -------------------------------------------------------------
   const rows = D.claims.map((c, i) => ({ ...c, i }));
   let active = "all";
 
   function detail(c) {
-    const sig = c.sigma_star_pp === null
-      ? `<p>No amount of retraining noise is needed to erase this gain: it does not clear the noise in its own ${c.n_episodes.toLocaleString()} episodes. <span class="mono">σ*</span> does not exist.</p>`
-      : `<p><span class="mono">σ* = ${c.sigma_star_pp.toFixed(2)} pp</span> — retraining noise of that size would erase the reported gain.
-         At this claim's base rate of ${pct(c.base_rate)}, external sources put retraining noise between
+    let sig;
+    if (c.state === "count_not_stated") {
+      sig = `<p>The paper does not state one episode count per arm for this comparison, so no <span class="mono">σ*</span> is computed.${c.n_note ? " " + esc(c.n_note) : ""}</p>`;
+    } else if (c.sigma_star_pp === null) {
+      sig = `<p>No amount of retraining noise is needed to erase this gain: it does not clear the noise in its own ${count(c)} episodes per arm. <span class="mono">σ*</span> does not exist.</p>`;
+    } else {
+      sig = `<p><span class="mono">σ* = ${c.sigma_star_pp.toFixed(2)} pp</span> — retraining noise of that size would erase the reported gain.
+         At this comparison's pooled rate of ${pct(c.pooled_rate)}, the mean of the two printed rates, external sources put retraining noise between
          <span class="mono">${c.band_lo_pp.toFixed(2)}</span> and <span class="mono">${c.band_hi_pp.toFixed(2)} pp</span>.</p>`;
+    }
+    const basis = c.n_basis.map((q) => `p.${q.page}: “${esc(q.quote)}”`).join(" ");
+    const took = c.n_episodes === null
+      ? "and no episode count, because the paper does not state one"
+      : `over ${count(c)} episodes per arm`;
     return `<tr class="cc-detail" data-for="${c.i}" hidden><td colspan="8">
       <div class="cc-detail__in">
         <div><span class="lbl">Verdict</span><p>${esc(c.state_line)}</p>${sig}</div>
@@ -70,8 +84,9 @@
           <p class="cc-cite">${esc(c.source.title || c.paper)}<br>
             <span class="small">${esc((c.source.authors || "").split(" and ").slice(0, 3).join(", "))}${(c.source.authors || "").split(" and ").length > 3 ? " and others" : ""}</span></p>
           <p><a class="cc-src" href="${esc(c.source.url)}" target="_blank" rel="noopener">arXiv:${esc(c.source.arxiv)}<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg></a></p>
-          <p class="small"><strong>What the paper states:</strong> ${esc(c.provenance)}.</p>
-          <p class="small"><strong>What we took from it:</strong> a gain of ${c.delta_pp > 0 ? "+" : ""}${c.delta_pp.toFixed(2)} points at a base rate of ${pct(c.base_rate)}, over ${c.n_episodes.toLocaleString()} episodes, at the ${esc(c.level)} level. Nothing else from the paper is used.</p>
+          <p class="small"><strong>What the paper prints:</strong> ${esc(c.candidate_display)} ${esc(printed(c, c.candidate_printed))}, ${esc(c.baseline_display)} ${esc(printed(c, c.baseline_printed))} (p.${c.source.page}, ${esc(c.source.where)}).</p>
+          <p class="small"><strong>What it says about episodes:</strong> ${basis}</p>
+          <p class="small"><strong>What we took from it:</strong> a gain of ${sign(c.delta_pp)}${c.delta_pp.toFixed(2)} points, ${took}, at the ${esc(c.level)} level. Nothing else from the paper is used.</p>
           <p class="mono small">${esc(c.citation_key)}</p>
         </div>
       </div>
@@ -84,16 +99,16 @@
     const html = rows.map((c) => {
       const bucket = c.state === "erased" || c.state === "fails_on_episode_noise" ? "not_supported" : c.state;
       const hit = (active === "all" || bucket === active)
-        && (!q || `${c.paper} ${c.claim} ${c.state_label} ${c.venue}`.toLowerCase().includes(q));
+        && (!q || `${c.paper} ${c.claim} ${c.candidate_display} ${c.baseline_display} ${c.state_label} ${c.venue}`.toLowerCase().includes(q));
       if (hit) shown++;
       const [vl, vc] = VENUE[c.venue] || VENUE.unstated;
       return `<tr class="cc-row" data-i="${c.i}" ${hit ? "" : "hidden"}>
         <td><a class="cc-src" href="${esc(c.source.url)}" target="_blank" rel="noopener">${esc(c.paper)}<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg></a></td>
-        <td>${esc(c.claim)}</td>
+        <td>${esc(c.candidate_display)} <span class="small">vs</span> ${esc(c.baseline_display)}<br><span class="small">${esc(c.claim)}</span></td>
         <td><span class="tag ${vc}">${vl}</span></td>
-        <td class="n mono">${c.delta_pp > 0 ? "+" : ""}${c.delta_pp.toFixed(2)} pp</td>
-        <td class="n mono">${c.n_episodes.toLocaleString()}</td>
-        <td class="n mono">${pct(c.base_rate)}</td>
+        <td class="n mono">${sign(c.delta_pp)}${c.delta_pp.toFixed(2)} pp</td>
+        <td class="n mono">${count(c)}</td>
+        <td class="n mono">${esc(printed(c, c.baseline_printed))} → ${esc(printed(c, c.candidate_printed))}</td>
         <td><span class="placard ${PLACARD[c.state]}">${esc(c.state_label)}</span></td>
         <td class="n"><button class="cc-more" type="button" aria-expanded="false" data-i="${c.i}">Why</button></td>
       </tr>${detail(c)}`;
@@ -115,6 +130,7 @@
     ["all", `All ${D.n_claims}`],
     ["not_supported", `Not supported ${notSupported}`],
     ["inconclusive", `Inconclusive ${S.inconclusive}`],
+    ["count_not_stated", `Count not stated ${S.count_not_stated}`],
     ["survives", `Supported ${S.survives}`],
     ["negative_gain", `Reported loss ${S.negative_gain}`],
   ];
@@ -147,10 +163,11 @@
   }
 
   // ---- Provenance line ---------------------------------------------------
-  $("#repro").innerHTML = `The corpus is ${D.n_claims} claims from papers by external groups, hashed
-    <span class="mono">sha256 ${esc(D.corpus_sha256.slice(0, 16))}…</span>, and is published as
-    <a href="claims-data.json" download>claims-data.json</a>. The retraining-noise band comes from
-    ${D.band.n_cells} cells across ${Object.keys(D.band.sources).length} external sources and is derived at run time, not typed:
+  $("#repro").innerHTML = `The corpus is ${D.n_claims} claims from papers by external groups: Corpus 2 v${D.corpus_version}, corrected ${esc(D.corrected)},
+    hashed <span class="mono">sha256 ${esc(D.corpus_sha256.slice(0, 16))}…</span> and published as
+    <a href="${esc(D.corpus_file)}" download>${esc(D.corpus_file)}</a>, with the data behind this page in <a href="claims-data.json" download>claims-data.json</a>.
+    The previous version stays published as <a href="${esc(D.corpus_v1_file)}" download>${esc(D.corpus_v1_file)}</a>.
+    The retraining-noise band comes from ${D.band.n_cells} cells across ${Object.keys(D.band.sources).length} external sources and is derived at run time, not typed:
     <span class="mono">${D.band.coef_min.toFixed(4)}</span> to <span class="mono">${D.band.coef_max.toFixed(4)}</span>.
     Generated ${esc(D.generated)} under protocol v${D.protocol_version}.`;
 
