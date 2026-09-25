@@ -280,9 +280,11 @@ def vendor_v2(corpus2_dir):
     """Publish Corpus 2 v2 beside v1, byte for byte.
 
     v1 keeps its own name and bytes, because readers already link to it. v2 is
-    its own file. v2 must carry no register key at all: its research copy is
-    tested for that, so a key found here is a failure upstream, not something
-    to strip quietly.
+    its own file. Its research copy is meant to carry no register key at all,
+    but `test_corpus2.py` only checks that no key contains "sigma", so this
+    function checks the full register token list itself and refuses rather
+    than strips if it finds one. Once that check passes, the file is copied
+    byte for byte, not re-serialised.
     """
     with open(os.path.join(corpus2_dir, CORPUS2_V2), encoding="utf-8") as f:
         data = json.load(f)
@@ -291,9 +293,8 @@ def vendor_v2(corpus2_dir):
     if removed:
         raise BuildError("Corpus 2 v2 carries register keys: {}".format(
             ", ".join(removed)))
-    with open(os.path.join(SITE, "source", CORPUS2_V2), "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=1, ensure_ascii=False)
-        f.write("\n")
+    shutil.copyfile(os.path.join(corpus2_dir, CORPUS2_V2),
+                    os.path.join(SITE, "source", CORPUS2_V2))
     return CORPUS2_V2
 
 
@@ -389,9 +390,14 @@ def dirty_paths():
 
 
 def stamp(study, corpus2_dir):
-    corpus = os.path.join(study, "audit_corpus.json")
-    with open(corpus, "rb") as f:
-        corpus_hash = hashlib.sha256(f.read()).hexdigest()
+    # `corpus_sha256` is Corpus 2 v2, the file the Claim Check is computed
+    # from; every page's footer prints it, so it must name the same corpus
+    # the Claim Check body shows. `study_corpus_sha256` is the sensitivity
+    # study's own copy of the corpus, which its code still loads.
+    corpus_hash = file_sha256(os.path.join(corpus2_dir, CORPUS2_V2))
+    study_corpus = os.path.join(study, "audit_corpus.json")
+    with open(study_corpus, "rb") as f:
+        study_corpus_hash = hashlib.sha256(f.read()).hexdigest()
     # The commit the build ran against. The stamp is written before the
     # commit that carries it, so this names the parent; `dirty` says whether
     # anything was uncommitted at build time, which is the honest caveat.
@@ -401,7 +407,7 @@ def stamp(study, corpus2_dir):
         "commit": commit or "unknown",
         "dirty": dirty,
         "corpus_sha256": corpus_hash,
-        "corpus2_v2_sha256": file_sha256(os.path.join(corpus2_dir, CORPUS2_V2)),
+        "study_corpus_sha256": study_corpus_hash,
         "corpus2_source_commit": git_at(corpus2_dir, "rev-parse", "--short",
                                         "HEAD") or "unknown",
         "generated": datetime.datetime.now(
