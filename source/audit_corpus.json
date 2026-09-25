@@ -1,6 +1,11 @@
 {
   "_README": "Audit corpus. Disjoint from the six curation papers audited by the sibling submission (DemInf, DemoScore, CUPID, Rinse, SCIZOR, ReMix) and from the reference-distribution sources. Every entry from an external group.",
-  "external_median_sigma_pp": 6.9,
+  "_redacted": {
+    "fields": [
+      "/external_median_sigma_pp"
+    ],
+    "why": "Withheld under OVERLAP_REGISTER.md: these are retraining-noise magnitudes, which belong to a sibling submission under review. Everything the published pages compute from this corpus is present. The unredacted file is in the research repository."
+  },
   "claims": [
     {
       "citation_key": "imlevla2609",
