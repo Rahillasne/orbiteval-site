@@ -44,6 +44,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 SITE = os.path.dirname(HERE)
 DEFAULT_STUDY = os.path.expanduser(
     "~/Orbit-Research-aistats/research/sensitivity_2026-09-19")
+DEFAULT_CORPUS2 = os.path.expanduser("~/Orbit-Research/research/audit_corpus")
+CORPUS2_V2 = "audit_corpus_v2.json"
 
 # Files the exporters read, vendored into the site so the published pages
 # carry their own evidence. The per-episode panel files are deliberately
@@ -98,7 +100,8 @@ EXEMPTIONS = (
 # evidence pages claim to have checked. They are vendored from the research
 # source, so a magnitude added upstream reaches the site unless it is stripped
 # on the way through.
-PUBLIC_SOURCE = ("source/audit_corpus.json", "source/reference_sources.json")
+PUBLIC_SOURCE = ("source/audit_corpus.json", "source/reference_sources.json",
+                 "source/audit_corpus_v2.json")
 
 
 class BuildError(RuntimeError):
@@ -228,9 +231,9 @@ def guard_register(study):
                 "\n  ".join(problems), study))
 
 
-def run_exporter(script, study):
+def run_exporter(script, study, *extra):
     r = subprocess.run(
-        [sys.executable, os.path.join(HERE, script), "--study", study],
+        [sys.executable, os.path.join(HERE, script), "--study", study, *extra],
         capture_output=True, text=True)
     if r.returncode != 0:
         raise BuildError("{} failed:\n{}{}".format(script, r.stdout, r.stderr))
@@ -253,6 +256,59 @@ def run_redaction_tests():
             "redaction tests FAILED:\n{}{}".format(r.stdout, r.stderr))
     last = [ln for ln in (r.stdout + r.stderr).strip().split("\n") if ln.strip()]
     return last[-2] if len(last) > 1 else "redaction tests passed"
+
+
+def require_corpus2(corpus2_dir):
+    """Corpus 2 v2 and its reader, or a hard failure naming what is missing.
+
+    The Claim Check is computed from Corpus 2 v2, which lives in Orbit-Research
+    beside the one module allowed to read it. A missing checkout stops the
+    build for the same reason a missing study does: the old page would keep
+    serving old numbers.
+    """
+    missing = [f for f in ("corpus2.py", CORPUS2_V2)
+               if not os.path.exists(os.path.join(corpus2_dir, f))]
+    if missing:
+        raise BuildError(
+            "Corpus 2 v2 not found at {}: missing {}\n"
+            "  Pass --corpus2-dir PATH, the research/audit_corpus directory of "
+            "an Orbit-Research checkout.".format(corpus2_dir, ", ".join(missing)))
+    return corpus2_dir
+
+
+def vendor_v2(corpus2_dir):
+    """Publish Corpus 2 v2 beside v1, byte for byte.
+
+    v1 keeps its own name and bytes, because readers already link to it. v2 is
+    its own file. v2 must carry no register key at all: its research copy is
+    tested for that, so a key found here is a failure upstream, not something
+    to strip quietly.
+    """
+    with open(os.path.join(corpus2_dir, CORPUS2_V2), encoding="utf-8") as f:
+        data = json.load(f)
+    removed = []
+    redact(data, removed)
+    if removed:
+        raise BuildError("Corpus 2 v2 carries register keys: {}".format(
+            ", ".join(removed)))
+    with open(os.path.join(SITE, "source", CORPUS2_V2), "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=1, ensure_ascii=False)
+        f.write("\n")
+    return CORPUS2_V2
+
+
+def file_sha256(path):
+    with open(path, "rb") as f:
+        return hashlib.sha256(f.read()).hexdigest()
+
+
+def git_at(repo, *args):
+    """git in another repository, for recording where the inputs came from."""
+    try:
+        return subprocess.run(["git", "-C", repo, *args], capture_output=True,
+                              text=True, check=True).stdout.strip()
+    except Exception:
+        return ""
 
 
 def vendor(study):
@@ -302,7 +358,7 @@ def git(*args, strip=True):
 
 GENERATED = ("claims-data.json", "claims-data.js", "decision-data.json",
              "decision-data.js", "build-stamp.js", "source/audit_corpus.json",
-             "source/reference_sources.json")
+             "source/reference_sources.json", "source/audit_corpus_v2.json")
 
 
 def dirty_paths():
@@ -332,7 +388,7 @@ def dirty_paths():
     return paths
 
 
-def stamp(study):
+def stamp(study, corpus2_dir):
     corpus = os.path.join(study, "audit_corpus.json")
     with open(corpus, "rb") as f:
         corpus_hash = hashlib.sha256(f.read()).hexdigest()
@@ -345,6 +401,9 @@ def stamp(study):
         "commit": commit or "unknown",
         "dirty": dirty,
         "corpus_sha256": corpus_hash,
+        "corpus2_v2_sha256": file_sha256(os.path.join(corpus2_dir, CORPUS2_V2)),
+        "corpus2_source_commit": git_at(corpus2_dir, "rev-parse", "--short",
+                                        "HEAD") or "unknown",
         "generated": datetime.datetime.now(
             datetime.timezone.utc).replace(microsecond=0).isoformat(),
         "study": os.path.basename(study.rstrip("/")),
@@ -360,6 +419,7 @@ def stamp(study):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--study", default=DEFAULT_STUDY)
+    ap.add_argument("--corpus2-dir", default=DEFAULT_CORPUS2)
     ap.add_argument("--allow-dirty", action="store_true",
                     help="stamp and publish even though the tree has "
                          "uncommitted changes outside the generated files")
@@ -378,9 +438,12 @@ def main():
             return 0
 
         study = require_study(args.study)
+        corpus2_dir = require_corpus2(args.corpus2_dir)
+        print("corpus 2 v2: {}".format(corpus2_dir))
         print("research source: {}".format(study))
-        for script in ("claims_export.py", "decision_export.py"):
-            print("  " + run_exporter(script, study).replace("\n", "\n  "))
+        print("  " + run_exporter("claims_export.py", study, "--corpus2-dir",
+                                  corpus2_dir).replace("\n", "\n  "))
+        print("  " + run_exporter("decision_export.py", study).replace("\n", "\n  "))
         # Vendor BEFORE guarding. The register now covers the public source
         # copies as well as the generated files, and those copies are written
         # by this step; guarding first would check the previous build's files
@@ -389,10 +452,11 @@ def main():
         print("vendored: {}".format(", ".join(copied)))
         for r in stripped:
             print("  REDACTED {} (overlap register)".format(r))
+        print("vendored: {}".format(vendor_v2(corpus2_dir)))
         guard_register(study)
         print("register guard: clean")
         print("redaction tests: {}".format(run_redaction_tests()))
-        s = stamp(study)
+        s = stamp(study, corpus2_dir)
         print("stamp: {} corpus {}… {}".format(
             s["commit"], s["corpus_sha256"][:12], s["generated"]))
         if s["dirty"]:
