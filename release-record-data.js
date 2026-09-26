@@ -12,7 +12,8 @@ window.RELEASE_RECORD = {
    "url": "https://static.nhtsa.gov/odi/ffdd/sgo-2021-01/",
    "pulled": "2026-09-21",
    "sha256": "f856d0b9cedc5f4447515c200eeacdff5d4cabf63003dcac207385eb466ff7f5",
-   "checked": "Release labels and outcomes were read per event, so identity and exposure were derived from the evidence rather than taken on trust."
+   "checked": "Release labels and outcomes were read per event, so identity and exposure were derived from the evidence rather than taken on trust.",
+   "reading": "This is a share of reported incidents, not a rate per mile. Without mileage it cannot say whether Version 11 is safer or less safe, and five version labels still need adjudication."
   },
   "corpus2": {
    "key": "corpus2",
