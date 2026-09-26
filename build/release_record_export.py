@@ -18,10 +18,10 @@ Corpus 1  NHTSA Standing General Order automated-driving incident reports, per
 Corpus 2  Twenty published robot-policy claims with citations, as published
           summaries: 12 of the 20 state an episode count per arm, and 8 do
           not. A summary carries no way to check who deployed what or how
-          much exposure was accumulated, so identity and exposure here are
-          DECLARED BY THE SUBMITTER and the page says so on every row. The
-          engine takes them as caller assertions; this exporter records that
-          they were assertions.
+          much exposure was accumulated, so identity is unknown and exposure
+          missing on every row, and the page says they could not be checked.
+          The engine takes both as caller assertions; this exporter records
+          that they were assertions.
 
 BOUND BY THE OVERLAP REGISTER. Rejection rates and calibration may be
 published; a retraining-noise magnitude may not. This module emits counts,
@@ -260,7 +260,7 @@ def build_corpus2(engine, corpus2_dir):
                     "engine at {} is older than v0.2: a no-comparison record "
                     "must say its detection limit was not computed, not "
                     "print {!r} for a limit that does not exist.\n"
-                    "  Build the preview against Orbit-Research branch "
+                    "  Build the site against Orbit-Research branch "
                     "engine-vnext: pass --engine pointed at its "
                     "product/release_record.".format(engine, rec.mde_basis))
             rec.notes.append(NO_COUNT_NOTE)
@@ -356,15 +356,14 @@ def build(engine, corpus2_dir):
                 "key": "corpus2",
                 "name": "Twenty published robot-policy claims, with citations",
                 "label": ("Corpus 2: published summary; identity and exposure "
-                          "declared by submitter"),
+                          "not checkable"),
                 "evidence_class": "published summary, count stated for 12 of 20, no per-event file",
                 "file": "audit_corpus_v2.json",
                 "url": None,
                 "pulled": None,
                 "sha256": sha256(corpus2_path),
                 "checked": ("A published summary carries no per-event file, so "
-                            "identity and exposure could not be checked. Both "
-                            "were declared by the submitter."),
+                            "identity and exposure could not be checked."),
             },
             "upload": {
                 "key": "upload",

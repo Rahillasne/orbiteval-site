@@ -82,9 +82,9 @@
     // The four verdicts.
     h.push('<div class="rr-vs">');
     h.push(verdictTile('Release identity', rec.identity,
-      rec.identity_declared ? 'Declared by submitter, not independently checked' : null));
+      rec.identity_declared ? 'Not checkable: the source has no per-event file' : null));
     h.push(verdictTile('Exposure', rec.exposure,
-      rec.exposure_declared ? 'Declared by submitter, not independently checked' : null));
+      rec.exposure_declared ? 'Not checkable: the source has no per-event file' : null));
     h.push(verdictTile('Claim', rec.claim, null));
     h.push(verdictTile('Sufficiency', rec.sufficiency,
       'Detection limit ' + rec.mde_basis));
@@ -180,12 +180,9 @@
         '<h2>Execution unavailable on this static site</h2>' +
         '<p class="rr-none">This page has no runtime, so nothing here can read your file, ' +
         'and a result invented in the browser would be exactly the fabrication this tool ' +
-        'exists to catch. Run the engine yourself instead — it needs nothing beyond the ' +
-        'Python standard library:</p>' +
-        '<pre class="mono">cd product/release_record\n' +
-        'python3 test_release_record.py   # 29 tests\n' +
-        'python3 run_corpora.py           # both corpora</pre>' +
-        '<p class="rr-none">One row per event, with the columns the engine reads: ' +
+        'exists to catch. The engine that produced the records above is not yet ' +
+        'published.</p>' +
+        '<p class="rr-none">It reads one row per event, with these columns: ' +
         'event id, event time, release label, outcome (1 or 0), revision, and exposure ' +
         'where it was recorded. Rows with no release label and no denominator are still ' +
         'accepted — they return <strong>unknown</strong> and <strong>missing</strong> ' +

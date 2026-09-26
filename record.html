@@ -53,15 +53,15 @@
 
         <button class="rr-src" type="button" role="radio" aria-checked="true" data-src="nhtsa">
           <span class="rr-src__top"><span class="rr-src__name">NHTSA incident record</span><span class="tag tag--grey">Real field data</span></span>
-          <span class="rr-src__sub">Field incident record, regulator-filed. Every automated-driving
-            incident reported to the US federal regulator, per event, as a customer would upload it.</span>
+          <span class="rr-src__sub">Field incident record, regulator-filed. Automated-driving incident
+            reports filed with the US federal regulator, read one event at a time.</span>
           <span class="rr-src__meta mono" data-src-meta="nhtsa"></span>
         </button>
 
         <button class="rr-src" type="button" role="radio" aria-checked="false" data-src="corpus2">
           <span class="rr-src__top"><span class="rr-src__name">Published policy claims</span><span class="tag tag--grey">Published summary</span></span>
           <span class="rr-src__sub">Twenty robot-policy claims with citations. 12 of the 20 state an
-            episode count per arm; 8 do not. Identity and exposure are declared by the submitter, not independently checked.</span>
+            episode count per arm; 8 do not. A published summary has no per-event file, so release identity and exposure cannot be checked.</span>
           <span class="rr-src__meta mono" data-src-meta="corpus2"></span>
         </button>
 
@@ -125,7 +125,7 @@
     <div class="sec-head"><h2>What it will not do.</h2></div>
     <div class="empty">
       <p>Missing information degrades a verdict and never raises one. A file with no release labels and
-        no denominator is a valid upload that returns <strong>unknown</strong> and <strong>missing</strong>,
+        no denominator is still accepted and returns <strong>unknown</strong> and <strong>missing</strong>,
         because refusing the file would hide the finding worth reporting.</p>
       <p>A significant result from a study that could not reliably have detected the claimed effect is
         <strong>insufficient evidence</strong>, not <strong>supported</strong>.</p>

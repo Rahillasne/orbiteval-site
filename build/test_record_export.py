@@ -24,7 +24,7 @@ class RecordData(unittest.TestCase):
                           c["corpus2_no_count"]), (20, 8, 8))
 
     def test_a_record_with_no_stated_count_has_no_detection_limit(self):
-        """Review Focus 1, and the founder's rule for unknown counts."""
+        """Review Focus 1, and the rule for unknown counts."""
         for i in NO_COUNT:
             r = self.rows[i]
             self.assertIsNone(r["mde_pp"], i)
