@@ -26,7 +26,7 @@ Then it writes build-stamp.js, which every page loads to print the commit,
 the corpus hash and the generation time in its footer.
 
 Usage:
-    python3 build/build.py [--study PATH]
+    python3 build/build.py [--study PATH] [--corpus2-dir PATH]
     python3 build/build.py --check     # verify only, generate nothing
 """
 import argparse

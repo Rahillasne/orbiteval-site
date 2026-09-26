@@ -42,9 +42,15 @@ the sensitivity study, which lives on branch `aistats2027-sensitivity`
 (worktree `~/Orbit-Research-aistats`). Do not hand-edit the generated
 files.
 
+The Claim Check itself is computed from Corpus 2 v2 in Orbit-Research, read
+through `research/audit_corpus/corpus2.py`, with the study's own functions
+(`claims.classify`, `core.sigma_star`, the retraining-noise band). Nothing
+about a claim is recomputed here.
+
     python3 build/build.py                 # regenerate everything
     python3 build/build.py --check         # run the register guard only
     python3 build/build.py --study PATH    # point at a different checkout
+    python3 build/build.py --corpus2-dir PATH   # research/audit_corpus of an Orbit-Research checkout
 
 The build fails, rather than skipping, when the research source is missing:
 a site that quietly keeps serving last month's numbers is the exact failure

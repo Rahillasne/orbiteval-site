@@ -65,7 +65,7 @@
   function detail(c) {
     let sig;
     if (c.state === "count_not_stated") {
-      sig = `<p>The paper does not state one episode count per arm for this comparison, so no <span class="mono">σ*</span> is computed.${c.n_note ? " " + esc(c.n_note) : ""}</p>`;
+      sig = `<p>No <span class="mono">σ*</span> is computed.${c.n_note ? " " + esc(c.n_note) : ""}</p>`;
     } else if (c.sigma_star_pp === null) {
       sig = `<p>No amount of retraining noise is needed to erase this gain: it does not clear the noise in its own ${count(c)} episodes per arm. <span class="mono">σ*</span> does not exist.</p>`;
     } else {
@@ -84,7 +84,7 @@
           <p class="cc-cite">${esc(c.source.title || c.paper)}<br>
             <span class="small">${esc((c.source.authors || "").split(" and ").slice(0, 3).join(", "))}${(c.source.authors || "").split(" and ").length > 3 ? " and others" : ""}</span></p>
           <p><a class="cc-src" href="${esc(c.source.url)}" target="_blank" rel="noopener">arXiv:${esc(c.source.arxiv)}<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg></a></p>
-          <p class="small"><strong>What the paper prints:</strong> ${esc(c.candidate_display)} ${esc(printed(c, c.candidate_printed))}, ${esc(c.baseline_display)} ${esc(printed(c, c.baseline_printed))} (p.${c.source.page}, ${esc(c.source.where)}).</p>
+          <p class="small"><strong>What the paper prints:</strong> ${esc(c.candidate_display)}: ${esc(printed(c, c.candidate_printed))}; ${esc(c.baseline_display)}: ${esc(printed(c, c.baseline_printed))} (p.${c.source.page}, ${esc(c.source.where)}).</p>
           <p class="small"><strong>What it says about episodes:</strong> ${basis}</p>
           <p class="small"><strong>What we took from it:</strong> a gain of ${sign(c.delta_pp)}${c.delta_pp.toFixed(2)} points, ${took}, at the ${esc(c.level)} level. Nothing else from the paper is used.</p>
           <p class="mono small">${esc(c.citation_key)}</p>
