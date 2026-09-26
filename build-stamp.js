@@ -6,6 +6,6 @@ window.BUILD_STAMP = {
  "corpus_sha256": "6fd9de036ed111d2eecc87bd1fc44c510d392a6bffb2b373961fa97b3c58ad4e",
  "study_corpus_sha256": "274d620ecc2f9c2e37fee3a2f97851ddee47b24865b65eac93cdca272f1354e1",
  "corpus2_source_commit": "660dc8b",
- "artifact_sha256": "f436dcd4b346ff5a7e1190892e0da758cb35e8df82221f02345f8472e7d26f6b",
+ "artifact_sha256": "0886face247894a6f8e56f2ece9fa824a79242cb422eb31a21d4d6e12ee5a1bb",
  "study": "sensitivity_2026-09-19"
 };

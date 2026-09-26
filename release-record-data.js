@@ -17,13 +17,13 @@ window.RELEASE_RECORD = {
   "corpus2": {
    "key": "corpus2",
    "name": "Twenty published robot-policy claims, with citations",
-   "label": "Corpus 2: published summary; identity and exposure declared by submitter",
+   "label": "Corpus 2: published summary; identity and exposure not checkable",
    "evidence_class": "published summary, count stated for 12 of 20, no per-event file",
    "file": "audit_corpus_v2.json",
    "url": null,
    "pulled": null,
    "sha256": "6fd9de036ed111d2eecc87bd1fc44c510d392a6bffb2b373961fa97b3c58ad4e",
-   "checked": "A published summary carries no per-event file, so identity and exposure could not be checked. Both were declared by the submitter."
+   "checked": "A published summary carries no per-event file, so identity and exposure could not be checked."
   },
   "upload": {
    "key": "upload",
