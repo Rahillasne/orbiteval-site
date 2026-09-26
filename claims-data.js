@@ -3,7 +3,7 @@ window.CLAIM_CHECK = {
  "generated": "2026-09-25",
  "protocol_version": 1,
  "corpus_version": 2,
- "corpus_sha256": "7f767786e257af397bd0414b588491e50b699f01892fb0e41ef42485ba9a96a8",
+ "corpus_sha256": "6fd9de036ed111d2eecc87bd1fc44c510d392a6bffb2b373961fa97b3c58ad4e",
  "corpus_file": "source/audit_corpus_v2.json",
  "corpus_v1_file": "source/audit_corpus.json",
  "corrected": "2026-09-25",
@@ -504,7 +504,7 @@ window.CLAIM_CHECK = {
      "quote": "We conduct ablations on LIBERO"
     }
    ],
-   "n_note": "The paper states its LIBERO protocol once, for the main results (50 rollouts per task, 2,000 trials), and does not restate it for the ablations. Under the strict stated-count rule (founder decision, 2026-09-25) no count is taken from it.",
+   "n_note": "The paper states its LIBERO protocol once, for the main results (50 rollouts per task, 2,000 trials), and does not restate it for the ablations. Under the strict stated-count rule applied to all 20 claims, no count is taken from it.",
    "pooled_rate": 0.956,
    "level": "suite",
    "venue": "unstated",
@@ -546,7 +546,7 @@ window.CLAIM_CHECK = {
      "quote": "We conduct ablations on LIBERO"
     }
    ],
-   "n_note": "The paper states its LIBERO protocol once, for the main results (50 rollouts per task, 2,000 trials), and does not restate it for the ablations. Under the strict stated-count rule (founder decision, 2026-09-25) no count is taken from it. The paper's proposed Bidirectional Interaction (97.7) is not this row; against concatenation it gives +2.5.",
+   "n_note": "The paper states its LIBERO protocol once, for the main results (50 rollouts per task, 2,000 trials), and does not restate it for the ablations. Under the strict stated-count rule applied to all 20 claims, no count is taken from it. The paper's proposed Bidirectional Interaction (97.7) is not this row; against concatenation it gives +2.5.",
    "pooled_rate": 0.9585,
    "level": "suite",
    "venue": "unstated",
