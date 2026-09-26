@@ -1,28 +1,34 @@
 {
  "generated": "2026-09-25",
  "protocol_version": 1,
- "corpus_sha256": "274d620ecc2f9c2e37fee3a2f97851ddee47b24865b65eac93cdca272f1354e1",
+ "corpus_version": 2,
+ "corpus_sha256": "6fd9de036ed111d2eecc87bd1fc44c510d392a6bffb2b373961fa97b3c58ad4e",
+ "corpus_file": "source/audit_corpus_v2.json",
+ "corpus_v1_file": "source/audit_corpus.json",
+ "corrected": "2026-09-25",
  "corpus_note": "Audit corpus. Disjoint from the six curation papers audited by the sibling submission (DemInf, DemoScore, CUPID, Rinse, SCIZOR, ReMix) and from the reference-distribution sources. Every entry from an external group.",
  "n_papers_screened": 41,
  "n_claims": 20,
  "summary": {
   "negative_gain": 1,
-  "fails_on_episode_noise": 11,
-  "erased": 3,
-  "inconclusive": 5,
-  "survives": 0
+  "fails_on_episode_noise": 7,
+  "erased": 1,
+  "inconclusive": 3,
+  "survives": 0,
+  "count_not_stated": 8
  },
  "summary_at_zero_floor": {
   "negative_gain": 1,
-  "fails_on_episode_noise": 11,
+  "fails_on_episode_noise": 7,
   "erased": 0,
-  "inconclusive": 8,
-  "survives": 0
+  "inconclusive": 4,
+  "survives": 0,
+  "count_not_stated": 8
  },
  "band": {
-  "coef_min": 0.019409683130415873,
-  "coef_median": 0.08835971191817961,
-  "coef_max": 0.1856606730440824,
+  "coef_min": 0.0194096831304,
+  "coef_median": 0.0883597119182,
+  "coef_max": 0.185660673044,
   "n_cells": 8,
   "sources": {
    "effvla2609": 1,
@@ -41,15 +47,15 @@
     "episodes_per_cell": 100,
     "n_tasks": 10,
     "n_cells": 2100,
-    "episode_level_reject": 0.4138095238095238,
-    "retrain_level_reject": 0.017142857142857144
+    "episode_level_reject": 0.41380952381,
+    "retrain_level_reject": 0.0171428571429
    },
    {
     "retrains_per_arm": 3,
     "episodes_per_cell": 100,
     "n_tasks": 10,
     "n_cells": 2800,
-    "episode_level_reject": 0.43392857142857144,
+    "episode_level_reject": 0.433928571429,
     "retrain_level_reject": 0.0275
    },
    {
@@ -57,8 +63,8 @@
     "episodes_per_cell": 100,
     "n_tasks": 10,
     "n_cells": 350,
-    "episode_level_reject": 0.44857142857142857,
-    "retrain_level_reject": 0.025714285714285714
+    "episode_level_reject": 0.448571428571,
+    "retrain_level_reject": 0.0257142857143
    }
   ]
  },
@@ -67,17 +73,40 @@
    "citation_key": "imlevla2609",
    "paper": "IMLE-VLA",
    "claim": "LIBERO avg, H=30 vs pi0.5",
+   "candidate_display": "IMLE-VLA (H=30)",
+   "baseline_display": "π0.5",
+   "printed_unit": "percent",
+   "candidate_printed": "97.1",
+   "baseline_printed": "96.1",
    "delta_pp": 1.0,
    "n_episodes": 2000,
-   "base_rate": 0.966,
+   "n_status": "stated",
+   "n_basis": [
+    {
+     "page": 6,
+     "quote": "four LIBERO suites (50 episodes per task)"
+    },
+    {
+     "page": 5,
+     "quote": "Each suite contains 10 tasks"
+    },
+    {
+     "page": 5,
+     "quote": "every task is evaluated over 50 episodes following the standard protocol"
+    }
+   ],
+   "n_note": null,
+   "pooled_rate": 0.966,
    "level": "suite",
-   "provenance": "50 episodes per task stated; 40 tasks over four suites",
    "venue": "simulation_benchmark",
+   "checked": "machine_reviewed",
    "source": {
     "title": "IMLE-VLA: Fast Single-Step Action Generation for Vision-Language-Action Policies",
     "authors": "Hosseinkhani, Kian and Peng, Qinhe and Shramko, George and Aghabozorgi, Mehran and Qian, Jianing and Engst, Tristan and Moazeni, Alireza and Jayaraman, Dinesh and Li, Ke",
     "arxiv": "2609.10915",
-    "url": "https://arxiv.org/abs/2609.10915"
+    "url": "https://arxiv.org/abs/2609.10915",
+    "page": 6,
+    "where": "Table II, Avg."
    },
    "sigma_star_pp": null,
    "band_lo_pp": 0.3518,
@@ -90,21 +119,36 @@
    "citation_key": "actionpiece2609",
    "paper": "ActionPiece",
    "claim": "LIBERO vs ActionCodec",
+   "candidate_display": "ActionPiece",
+   "baseline_display": "ActionCodec",
+   "printed_unit": "percent",
+   "candidate_printed": "94.8",
+   "baseline_printed": "93.7",
    "delta_pp": 1.1,
    "n_episodes": 2000,
-   "base_rate": 0.943,
+   "n_status": "stated",
+   "n_basis": [
+    {
+     "page": 8,
+     "quote": "Full LIBERO contains 2,000 rollouts, full LIBERO-Plus 10,030, and complete VLA-Arena 3,400."
+    }
+   ],
+   "n_note": null,
+   "pooled_rate": 0.9425,
    "level": "suite",
-   "provenance": "standard LIBERO protocol, 40 tasks x 50",
    "venue": "simulation_benchmark",
+   "checked": "model_reads",
    "source": {
     "title": "ActionPiece: Rethinking Action Tokenization for Autoregressive Vision-Language-Action Models",
     "authors": "Lian, Shijie and Yu, Bin and Shen, Zhaolong and Lin, Xiaopeng and Du, Yichao and Zhang, Zhirui and Yang, Laurence T. and Chen, Kai",
     "arxiv": "2609.18487",
-    "url": "https://arxiv.org/abs/2609.18487"
+    "url": "https://arxiv.org/abs/2609.18487",
+    "page": 8,
+    "where": "Table 1, LIBERO Overall"
    },
    "sigma_star_pp": null,
-   "band_lo_pp": 0.45,
-   "band_hi_pp": 4.3044,
+   "band_lo_pp": 0.4518,
+   "band_hi_pp": 4.3221,
    "state": "fails_on_episode_noise",
    "state_label": "Not supported",
    "state_line": "The reported gain does not clear the noise in its own episode count, before retraining variation is considered at all."
@@ -112,22 +156,37 @@
   {
    "citation_key": "actionpiece2609",
    "paper": "ActionPiece",
-   "claim": "LIBERO-Plus vs strongest baseline",
+   "claim": "LIBERO-Plus vs strongest baseline (FAST)",
+   "candidate_display": "ActionPiece",
+   "baseline_display": "FAST",
+   "printed_unit": "percent",
+   "candidate_printed": "68.8",
+   "baseline_printed": "64.3",
    "delta_pp": 4.5,
-   "n_episodes": 2000,
-   "base_rate": 0.666,
+   "n_episodes": 10030,
+   "n_status": "stated",
+   "n_basis": [
+    {
+     "page": 8,
+     "quote": "Full LIBERO contains 2,000 rollouts, full LIBERO-Plus 10,030, and complete VLA-Arena 3,400."
+    }
+   ],
+   "n_note": null,
+   "pooled_rate": 0.6655,
    "level": "suite",
-   "provenance": "LIBERO-Plus, protocol as above",
    "venue": "simulation_benchmark",
+   "checked": "human",
    "source": {
     "title": "ActionPiece: Rethinking Action Tokenization for Autoregressive Vision-Language-Action Models",
     "authors": "Lian, Shijie and Yu, Bin and Shen, Zhaolong and Lin, Xiaopeng and Du, Yichao and Zhang, Zhirui and Yang, Laurence T. and Chen, Kai",
     "arxiv": "2609.18487",
-    "url": "https://arxiv.org/abs/2609.18487"
+    "url": "https://arxiv.org/abs/2609.18487",
+    "page": 8,
+    "where": "Table 1, LIBERO-Plus Overall"
    },
-   "sigma_star_pp": 1.2343,
-   "band_lo_pp": 0.9154,
-   "band_hi_pp": 8.7565,
+   "sigma_star_pp": 1.5536,
+   "band_lo_pp": 0.9158,
+   "band_hi_pp": 8.7598,
    "state": "inconclusive",
    "state_label": "Inconclusive",
    "state_line": "The reported gain sits inside the range of retraining noise observed across external sources. Eight cells cannot pin down one number, and the honest answer is the range."
@@ -136,113 +195,212 @@
    "citation_key": "savla2609",
    "paper": "SAVLA",
    "claim": "LIBERO avg vs GR00T N1.5",
+   "candidate_display": "SAVLA",
+   "baseline_display": "GR00T N1.5",
+   "printed_unit": "percent",
+   "candidate_printed": "91.6",
+   "baseline_printed": "86.5",
    "delta_pp": 5.1,
-   "n_episodes": 2000,
-   "base_rate": 0.89,
+   "n_episodes": null,
+   "n_status": "ambiguous",
+   "n_basis": [
+    {
+     "page": 5,
+     "quote": "Each model is evaluated on 500 episodes per suite, and we report the mean over three random seeds."
+    }
+   ],
+   "n_note": "Four suites. Whether 500 is per seed (6,000 per arm pooled over three seeds) or in total (2,000) is not stated.",
+   "pooled_rate": 0.8905,
    "level": "suite",
-   "provenance": "500 episodes per suite stated, four suites",
    "venue": "simulation_benchmark",
+   "checked": "human",
    "source": {
     "title": "SAVLA: Symmetry-Aware Vision-Language-Action Models for Robotic Manipulation",
     "authors": "Li, Junle and Li, Weixian Waylon and Wu, Fuxiang and Hao, Fusheng and He, Fengxiang",
     "arxiv": "2609.16641",
-    "url": "https://arxiv.org/abs/2609.16641"
+    "url": "https://arxiv.org/abs/2609.16641",
+    "page": 5,
+    "where": "Table I, Average"
    },
-   "sigma_star_pp": 1.7017,
-   "band_lo_pp": 0.6073,
-   "band_hi_pp": 5.8091,
-   "state": "inconclusive",
-   "state_label": "Inconclusive",
-   "state_line": "The reported gain sits inside the range of retraining noise observed across external sources. Eight cells cannot pin down one number, and the honest answer is the range."
+   "sigma_star_pp": null,
+   "band_lo_pp": null,
+   "band_hi_pp": null,
+   "state": "count_not_stated",
+   "state_label": "Count not stated",
+   "state_line": "The paper does not state one episode count per arm for this comparison, so the gain cannot be sized against noise. It stays listed rather than being dropped."
   },
   {
    "citation_key": "savla2609",
    "paper": "SAVLA",
-   "claim": "LIBERO-Long vs GR00T N1.5",
+   "claim": "LIBERO-Long rotation sweep, mean of 13 angles, vs GR00T N1.5",
+   "candidate_display": "SAVLA",
+   "baseline_display": "GR00T N1.5",
+   "printed_unit": "percent",
+   "candidate_printed": "25.4",
+   "baseline_printed": "22.7",
    "delta_pp": 2.7,
-   "n_episodes": 500,
-   "base_rate": 0.24,
+   "n_episodes": null,
+   "n_status": "ambiguous",
+   "n_basis": [
+    {
+     "page": 6,
+     "quote": "At each of the 13 scene rotations, we evaluate 200 episodes using three random seeds."
+    }
+   ],
+   "n_note": "Whether 200 is per seed (7,800 per arm) or in total (2,600) is not stated. Not the in-distribution Table I row (79.3 vs 66.7).",
+   "pooled_rate": 0.2405,
    "level": "suite",
-   "provenance": "500 episodes per suite stated",
    "venue": "simulation_benchmark",
+   "checked": "human",
    "source": {
     "title": "SAVLA: Symmetry-Aware Vision-Language-Action Models for Robotic Manipulation",
     "authors": "Li, Junle and Li, Weixian Waylon and Wu, Fuxiang and Hao, Fusheng and He, Fengxiang",
     "arxiv": "2609.16641",
-    "url": "https://arxiv.org/abs/2609.16641"
+    "url": "https://arxiv.org/abs/2609.16641",
+    "page": 7,
+    "where": "Fig. 2, LIBERO-Long panel; values also in Sec. V-B text, p.6"
    },
    "sigma_star_pp": null,
-   "band_lo_pp": 0.829,
-   "band_hi_pp": 7.9293,
-   "state": "fails_on_episode_noise",
-   "state_label": "Not supported",
-   "state_line": "The reported gain does not clear the noise in its own episode count, before retraining variation is considered at all."
+   "band_lo_pp": null,
+   "band_hi_pp": null,
+   "state": "count_not_stated",
+   "state_label": "Count not stated",
+   "state_line": "The paper does not state one episode count per arm for this comparison, so the gain cannot be sized against noise. It stays listed rather than being dropped."
   },
   {
    "citation_key": "driftingvla2608",
    "paper": "DriftingVLA",
    "claim": "LIBERO overall vs 10-NFE pi0.5",
+   "candidate_display": "DriftingVLA",
+   "baseline_display": "π0.5 (10 NFE)",
+   "printed_unit": "percent",
+   "candidate_printed": "98.32",
+   "baseline_printed": "97.10",
    "delta_pp": 1.22,
-   "n_episodes": 2000,
-   "base_rate": 0.977,
+   "n_episodes": 12000,
+   "n_status": "stated",
+   "n_basis": [
+    {
+     "page": 8,
+     "quote": "four suites—Spatial, Object, Goal, and Long—with 10 tasks per suite"
+    },
+    {
+     "page": 8,
+     "quote": "Each trained policy is evaluated for 100 episodes per task"
+    },
+    {
+     "page": 8,
+     "quote": "three random seeds (42, 43, and 44)"
+    }
+   ],
+   "n_note": null,
+   "pooled_rate": 0.9771,
    "level": "suite",
-   "provenance": "50 trials per task per seed stated",
    "venue": "simulation_benchmark",
+   "checked": "human",
    "source": {
     "title": "DriftingVLA: Native One-Step Vision-Language-Action Generation via Per-Dimension Temporal Drifting",
     "authors": "Gao, Yuxuan and Zhang, Shiqi and Shen, Yedong and Duan, Yifan and Yu, Wenhao and Zhang, Xin and Cao, Siyuan and Deng, Jiajun and Zhang, Yanyong",
     "arxiv": "2608.29749",
-    "url": "https://arxiv.org/abs/2608.29749"
+    "url": "https://arxiv.org/abs/2608.29749",
+    "page": 9,
+    "where": "Table I, overall"
    },
-   "sigma_star_pp": 0.2853,
-   "band_lo_pp": 0.291,
-   "band_hi_pp": 2.7831,
-   "state": "erased",
-   "state_label": "Not supported",
-   "state_line": "The reported gain is smaller than retraining noise even under the most forgiving coefficient anyone has measured."
+   "sigma_star_pp": 0.4184,
+   "band_lo_pp": 0.2903,
+   "band_hi_pp": 2.7772,
+   "state": "inconclusive",
+   "state_label": "Inconclusive",
+   "state_line": "The reported gain sits inside the range of retraining noise observed across external sources. Eight cells cannot pin down one number, and the honest answer is the range."
   },
   {
    "citation_key": "driftingvla2608",
    "paper": "DriftingVLA",
    "claim": "LIBERO-Long vs pi0.5",
+   "candidate_display": "DriftingVLA",
+   "baseline_display": "π0.5",
+   "printed_unit": "percent",
+   "candidate_printed": "94.33",
+   "baseline_printed": "92.40",
    "delta_pp": 1.93,
-   "n_episodes": 500,
-   "base_rate": 0.934,
+   "n_episodes": 3000,
+   "n_status": "stated",
+   "n_basis": [
+    {
+     "page": 8,
+     "quote": "four suites—Spatial, Object, Goal, and Long—with 10 tasks per suite"
+    },
+    {
+     "page": 8,
+     "quote": "Each trained policy is evaluated for 100 episodes per task"
+    },
+    {
+     "page": 8,
+     "quote": "three random seeds (42, 43, and 44)"
+    }
+   ],
+   "n_note": null,
+   "pooled_rate": 0.93365,
    "level": "suite",
-   "provenance": "as above, one suite",
    "venue": "simulation_benchmark",
+   "checked": "human",
    "source": {
     "title": "DriftingVLA: Native One-Step Vision-Language-Action Generation via Per-Dimension Temporal Drifting",
     "authors": "Gao, Yuxuan and Zhang, Shiqi and Shen, Yedong and Duan, Yifan and Yu, Wenhao and Zhang, Xin and Cao, Siyuan and Deng, Jiajun and Zhang, Yanyong",
     "arxiv": "2608.29749",
-    "url": "https://arxiv.org/abs/2608.29749"
+    "url": "https://arxiv.org/abs/2608.29749",
+    "page": 9,
+    "where": "Table I, Long"
    },
-   "sigma_star_pp": null,
-   "band_lo_pp": 0.4819,
-   "band_hi_pp": 4.6096,
-   "state": "fails_on_episode_noise",
-   "state_label": "Not supported",
-   "state_line": "The reported gain does not clear the noise in its own episode count, before retraining variation is considered at all."
+   "sigma_star_pp": 0.5276,
+   "band_lo_pp": 0.4831,
+   "band_hi_pp": 4.621,
+   "state": "inconclusive",
+   "state_label": "Inconclusive",
+   "state_line": "The reported gain sits inside the range of retraining noise observed across external sources. Eight cells cannot pin down one number, and the honest answer is the range."
   },
   {
    "citation_key": "driftingvla2608",
    "paper": "DriftingVLA",
    "claim": "real-world overall vs pi0.5",
+   "candidate_display": "DriftingVLA",
+   "baseline_display": "π0.5",
+   "printed_unit": "percent",
+   "candidate_printed": "77.67",
+   "baseline_printed": "74.22",
    "delta_pp": 3.45,
-   "n_episodes": 300,
-   "base_rate": 0.76,
+   "n_episodes": 900,
+   "n_status": "stated",
+   "n_basis": [
+    {
+     "page": 8,
+     "quote": "50 trials per task and seed"
+    },
+    {
+     "page": 8,
+     "quote": "yielding 300 evaluation trials per seed across the six-task suite"
+    },
+    {
+     "page": 8,
+     "quote": "three random seeds (42, 43, and 44)"
+    }
+   ],
+   "n_note": null,
+   "pooled_rate": 0.75945,
    "level": "suite",
-   "provenance": "six tasks, 50 trials per task",
    "venue": "physical_robot",
+   "checked": "human",
    "source": {
     "title": "DriftingVLA: Native One-Step Vision-Language-Action Generation via Per-Dimension Temporal Drifting",
     "authors": "Gao, Yuxuan and Zhang, Shiqi and Shen, Yedong and Duan, Yifan and Yu, Wenhao and Zhang, Xin and Cao, Siyuan and Deng, Jiajun and Zhang, Yanyong",
     "arxiv": "2608.29749",
-    "url": "https://arxiv.org/abs/2608.29749"
+    "url": "https://arxiv.org/abs/2608.29749",
+    "page": 10,
+    "where": "Table II, overall"
    },
    "sigma_star_pp": null,
-   "band_lo_pp": 0.829,
-   "band_hi_pp": 7.9293,
+   "band_lo_pp": 0.8296,
+   "band_hi_pp": 7.9355,
    "state": "fails_on_episode_noise",
    "state_label": "Not supported",
    "state_line": "The reported gain does not clear the noise in its own episode count, before retraining variation is considered at all."
@@ -251,17 +409,32 @@
    "citation_key": "turbovla2607",
    "paper": "TurboVLA",
    "claim": "LIBERO avg vs pi0.5",
+   "candidate_display": "TurboVLA",
+   "baseline_display": "π0.5",
+   "printed_unit": "percent",
+   "candidate_printed": "97.7",
+   "baseline_printed": "96.9",
    "delta_pp": 0.8,
    "n_episodes": 2000,
-   "base_rate": 0.973,
+   "n_status": "stated",
+   "n_basis": [
+    {
+     "page": 8,
+     "quote": "we conduct 50 rollouts per task and report suite-level and average success rates over 2,000 trials"
+    }
+   ],
+   "n_note": null,
+   "pooled_rate": 0.973,
    "level": "suite",
-   "provenance": "50 rollouts per task stated",
    "venue": "simulation_benchmark",
+   "checked": "machine_reviewed",
    "source": {
     "title": "TurboVLA: Real-Time Vision-Language-Action Model at 32 Hz on an RTX 4090 with $<$1 GB VRAM",
     "authors": "Xie, Hengyi and Yao, Chenfei and Wu, Xianjin and Zhu, Yingying and Liang, Dingkang and Bai, Xiang and Ding, Han",
     "arxiv": "2607.27205",
-    "url": "https://arxiv.org/abs/2607.27205"
+    "url": "https://arxiv.org/abs/2607.27205",
+    "page": 9,
+    "where": "Table 1, Avg."
    },
    "sigma_star_pp": null,
    "band_lo_pp": 0.3146,
@@ -274,19 +447,34 @@
    "citation_key": "turbovla2607",
    "paper": "TurboVLA",
    "claim": "bimanual avg vs pi0.5",
+   "candidate_display": "TurboVLA",
+   "baseline_display": "π0.5",
+   "printed_unit": "percent",
+   "candidate_printed": "60.2",
+   "baseline_printed": "57.0",
    "delta_pp": 3.2,
-   "n_episodes": 2500,
-   "base_rate": 0.586,
+   "n_episodes": 5000,
+   "n_status": "stated",
+   "n_basis": [
+    {
+     "page": 8,
+     "quote": "we conduct 100 clean-setting rollouts per task and report the average success rate across all 50 tasks"
+    }
+   ],
+   "n_note": null,
+   "pooled_rate": 0.586,
    "level": "suite",
-   "provenance": "50 bimanual tasks x 50 rollouts",
    "venue": "unstated",
+   "checked": "human",
    "source": {
     "title": "TurboVLA: Real-Time Vision-Language-Action Model at 32 Hz on an RTX 4090 with $<$1 GB VRAM",
     "authors": "Xie, Hengyi and Yao, Chenfei and Wu, Xianjin and Zhu, Yingying and Liang, Dingkang and Bai, Xiang and Ding, Han",
     "arxiv": "2607.27205",
-    "url": "https://arxiv.org/abs/2607.27205"
+    "url": "https://arxiv.org/abs/2607.27205",
+    "page": 9,
+    "where": "Table 2, Avg."
    },
-   "sigma_star_pp": 0.602,
+   "sigma_star_pp": 0.9207,
    "band_lo_pp": 0.956,
    "band_hi_pp": 9.1447,
    "state": "erased",
@@ -297,67 +485,124 @@
    "citation_key": "turbovla2607",
    "paper": "TurboVLA",
    "claim": "ablation N=6 vs N=2",
+   "candidate_display": "TurboVLA, N = 6",
+   "baseline_display": "TurboVLA, N = 2",
+   "printed_unit": "percent",
+   "candidate_printed": "97.7",
+   "baseline_printed": "93.5",
    "delta_pp": 4.2,
-   "n_episodes": 2000,
-   "base_rate": 0.956,
+   "n_episodes": null,
+   "n_status": "unknown",
+   "n_basis": [
+    {
+     "page": 8,
+     "quote": "we conduct 50 rollouts per task and report suite-level and average success rates over 2,000 trials"
+    },
+    {
+     "page": 10,
+     "quote": "We conduct ablations on LIBERO"
+    }
+   ],
+   "n_note": "The paper states its LIBERO protocol once, for the main results (50 rollouts per task, 2,000 trials), and does not restate it for the ablations. Under the strict stated-count rule applied to all 20 claims, no count is taken from it.",
+   "pooled_rate": 0.956,
    "level": "suite",
-   "provenance": "same protocol",
    "venue": "unstated",
+   "checked": "model_reads",
    "source": {
     "title": "TurboVLA: Real-Time Vision-Language-Action Model at 32 Hz on an RTX 4090 with $<$1 GB VRAM",
     "authors": "Xie, Hengyi and Yao, Chenfei and Wu, Xianjin and Zhu, Yingying and Liang, Dingkang and Bai, Xiang and Ding, Han",
     "arxiv": "2607.27205",
-    "url": "https://arxiv.org/abs/2607.27205"
+    "url": "https://arxiv.org/abs/2607.27205",
+    "page": 11,
+    "where": "Table 6, Avg."
    },
-   "sigma_star_pp": 1.4442,
-   "band_lo_pp": 0.3981,
-   "band_hi_pp": 3.8078,
-   "state": "inconclusive",
-   "state_label": "Inconclusive",
-   "state_line": "The reported gain sits inside the range of retraining noise observed across external sources. Eight cells cannot pin down one number, and the honest answer is the range."
+   "sigma_star_pp": null,
+   "band_lo_pp": null,
+   "band_hi_pp": null,
+   "state": "count_not_stated",
+   "state_label": "Count not stated",
+   "state_line": "The paper does not state one episode count per arm for this comparison, so the gain cannot be sized against noise. It stays listed rather than being dropped."
   },
   {
    "citation_key": "turbovla2607",
    "paper": "TurboVLA",
-   "claim": "cross-attention vs concatenation",
+   "claim": "one-way cross-attention (Visual Queries Language) vs concatenation",
+   "candidate_display": "TurboVLA, one-way cross-attention",
+   "baseline_display": "TurboVLA, concatenation",
+   "printed_unit": "percent",
+   "candidate_printed": "96.5",
+   "baseline_printed": "95.2",
    "delta_pp": 1.3,
-   "n_episodes": 2000,
-   "base_rate": 0.959,
+   "n_episodes": null,
+   "n_status": "unknown",
+   "n_basis": [
+    {
+     "page": 8,
+     "quote": "we conduct 50 rollouts per task and report suite-level and average success rates over 2,000 trials"
+    },
+    {
+     "page": 10,
+     "quote": "We conduct ablations on LIBERO"
+    }
+   ],
+   "n_note": "The paper states its LIBERO protocol once, for the main results (50 rollouts per task, 2,000 trials), and does not restate it for the ablations. Under the strict stated-count rule applied to all 20 claims, no count is taken from it. The paper's proposed Bidirectional Interaction (97.7) is not this row; against concatenation it gives +2.5.",
+   "pooled_rate": 0.9585,
    "level": "suite",
-   "provenance": "same protocol",
    "venue": "unstated",
+   "checked": "model_reads",
    "source": {
     "title": "TurboVLA: Real-Time Vision-Language-Action Model at 32 Hz on an RTX 4090 with $<$1 GB VRAM",
     "authors": "Xie, Hengyi and Yao, Chenfei and Wu, Xianjin and Zhu, Yingying and Liang, Dingkang and Bai, Xiang and Ding, Han",
     "arxiv": "2607.27205",
-    "url": "https://arxiv.org/abs/2607.27205"
+    "url": "https://arxiv.org/abs/2607.27205",
+    "page": 11,
+    "where": "Table 5, Avg."
    },
-   "sigma_star_pp": 0.1529,
-   "band_lo_pp": 0.3849,
-   "band_hi_pp": 3.6815,
-   "state": "erased",
-   "state_label": "Not supported",
-   "state_line": "The reported gain is smaller than retraining noise even under the most forgiving coefficient anyone has measured."
+   "sigma_star_pp": null,
+   "band_lo_pp": null,
+   "band_hi_pp": null,
+   "state": "count_not_stated",
+   "state_label": "Count not stated",
+   "state_line": "The paper does not state one episode count per arm for this comparison, so the gain cannot be sized against noise. It stays listed rather than being dropped."
   },
   {
    "citation_key": "dem2609",
    "paper": "DEM",
    "claim": "RoboCasa vs GR00T N1.7",
+   "candidate_display": "DEM",
+   "baseline_display": "GR00T N1.7",
+   "printed_unit": "percent",
+   "candidate_printed": "55.6",
+   "baseline_printed": "56.9",
    "delta_pp": -1.3,
    "n_episodes": 1800,
-   "base_rate": 0.563,
+   "n_status": "stated",
+   "n_basis": [
+    {
+     "page": 4,
+     "quote": "Every policy and every variant is trained for 300k steps on the same demonstrations and evaluated over 100 rollouts per task."
+    },
+    {
+     "page": 5,
+     "quote": "18 tasks, 100 rollouts each"
+    }
+   ],
+   "n_note": null,
+   "pooled_rate": 0.5625,
    "level": "suite",
-   "provenance": "18 tasks, 100 rollouts each, stated",
    "venue": "simulation_benchmark",
+   "checked": "model_reads",
    "source": {
     "title": "Decoupling Vision, Language, and Action for Efficient Multi-Task Robot Policies",
     "authors": "Sun, Xiatao and Liang, Chen and Zeng, Ziyao and Wang, Qian and Zhang, Haoyang and Sun, Yue and Li, Qiucheng and Rakita, Daniel",
     "arxiv": "2609.18374",
-    "url": "https://arxiv.org/abs/2609.18374"
+    "url": "https://arxiv.org/abs/2609.18374",
+    "page": 5,
+    "where": "Table I, Avg. (18)"
    },
    "sigma_star_pp": null,
-   "band_lo_pp": 0.9627,
-   "band_hi_pp": 9.2091,
+   "band_lo_pp": 0.9629,
+   "band_hi_pp": 9.2102,
    "state": "negative_gain",
    "state_label": "Reported loss",
    "state_line": "The authors report a decrease. Listed for completeness and excluded from the tally."
@@ -365,22 +610,41 @@
   {
    "citation_key": "dem2609",
    "paper": "DEM",
-   "claim": "MeanFlow vs flow matching",
+   "claim": "MeanFlow head vs flow-matching head, both inside DEM",
+   "candidate_display": "DEM, MeanFlow head",
+   "baseline_display": "DEM, flow-matching head",
+   "printed_unit": "percent",
+   "candidate_printed": "55.6",
+   "baseline_printed": "54.7",
    "delta_pp": 0.9,
    "n_episodes": 1800,
-   "base_rate": 0.552,
+   "n_status": "stated",
+   "n_basis": [
+    {
+     "page": 4,
+     "quote": "Every policy and every variant is trained for 300k steps on the same demonstrations and evaluated over 100 rollouts per task."
+    },
+    {
+     "page": 5,
+     "quote": "18 tasks, 100 rollouts each"
+    }
+   ],
+   "n_note": null,
+   "pooled_rate": 0.5515,
    "level": "suite",
-   "provenance": "as above",
    "venue": "unstated",
+   "checked": "model_reads",
    "source": {
     "title": "Decoupling Vision, Language, and Action for Efficient Multi-Task Robot Policies",
     "authors": "Sun, Xiatao and Liang, Chen and Zeng, Ziyao and Wang, Qian and Zhang, Haoyang and Sun, Yue and Li, Qiucheng and Rakita, Daniel",
     "arxiv": "2609.18374",
-    "url": "https://arxiv.org/abs/2609.18374"
+    "url": "https://arxiv.org/abs/2609.18374",
+    "page": 6,
+    "where": "Table V"
    },
    "sigma_star_pp": null,
-   "band_lo_pp": 0.9652,
-   "band_hi_pp": 9.2327,
+   "band_lo_pp": 0.9653,
+   "band_hi_pp": 9.2337,
    "state": "fails_on_episode_noise",
    "state_label": "Not supported",
    "state_line": "The reported gain does not clear the noise in its own episode count, before retraining variation is considered at all."
@@ -388,18 +652,37 @@
   {
    "citation_key": "dem2609",
    "paper": "DEM",
-   "claim": "MeanFlow vs Diffusion Policy",
+   "claim": "MeanFlow head vs Diffusion Policy head, both inside DEM",
+   "candidate_display": "DEM, MeanFlow head",
+   "baseline_display": "DEM, Diffusion Policy head",
+   "printed_unit": "percent",
+   "candidate_printed": "55.6",
+   "baseline_printed": "53.8",
    "delta_pp": 1.8,
    "n_episodes": 1800,
-   "base_rate": 0.547,
+   "n_status": "stated",
+   "n_basis": [
+    {
+     "page": 4,
+     "quote": "Every policy and every variant is trained for 300k steps on the same demonstrations and evaluated over 100 rollouts per task."
+    },
+    {
+     "page": 5,
+     "quote": "18 tasks, 100 rollouts each"
+    }
+   ],
+   "n_note": null,
+   "pooled_rate": 0.547,
    "level": "suite",
-   "provenance": "as above",
    "venue": "unstated",
+   "checked": "model_reads",
    "source": {
     "title": "Decoupling Vision, Language, and Action for Efficient Multi-Task Robot Policies",
     "authors": "Sun, Xiatao and Liang, Chen and Zeng, Ziyao and Wang, Qian and Zhang, Haoyang and Sun, Yue and Li, Qiucheng and Rakita, Daniel",
     "arxiv": "2609.18374",
-    "url": "https://arxiv.org/abs/2609.18374"
+    "url": "https://arxiv.org/abs/2609.18374",
+    "page": 6,
+    "where": "Table V"
    },
    "sigma_star_pp": null,
    "band_lo_pp": 0.9662,
@@ -411,18 +694,37 @@
   {
    "citation_key": "dem2609",
    "paper": "DEM",
-   "claim": "MeanFlow vs ACT",
+   "claim": "MeanFlow head vs ACT head, both inside DEM",
+   "candidate_display": "DEM, MeanFlow head",
+   "baseline_display": "DEM, ACT head",
+   "printed_unit": "percent",
+   "candidate_printed": "55.6",
+   "baseline_printed": "52.4",
    "delta_pp": 3.2,
    "n_episodes": 1800,
-   "base_rate": 0.54,
+   "n_status": "stated",
+   "n_basis": [
+    {
+     "page": 4,
+     "quote": "Every policy and every variant is trained for 300k steps on the same demonstrations and evaluated over 100 rollouts per task."
+    },
+    {
+     "page": 5,
+     "quote": "18 tasks, 100 rollouts each"
+    }
+   ],
+   "n_note": null,
+   "pooled_rate": 0.54,
    "level": "suite",
-   "provenance": "as above",
    "venue": "unstated",
+   "checked": "model_reads",
    "source": {
     "title": "Decoupling Vision, Language, and Action for Efficient Multi-Task Robot Policies",
     "authors": "Sun, Xiatao and Liang, Chen and Zeng, Ziyao and Wang, Qian and Zhang, Haoyang and Sun, Yue and Li, Qiucheng and Rakita, Daniel",
     "arxiv": "2609.18374",
-    "url": "https://arxiv.org/abs/2609.18374"
+    "url": "https://arxiv.org/abs/2609.18374",
+    "page": 6,
+    "where": "Table V"
    },
    "sigma_star_pp": null,
    "band_lo_pp": 0.9674,
@@ -434,94 +736,166 @@
   {
    "citation_key": "liberorecover2609",
    "paper": "LIBERO-RECOVER",
-   "claim": "GR00T mixed training, LIBERO avg",
+   "claim": "GR00T N1.5 mixed training, standard LIBERO average",
+   "candidate_display": "GR00T N1.5, mixed training",
+   "baseline_display": "GR00T N1.5",
+   "printed_unit": "percent",
+   "candidate_printed": "87.2",
+   "baseline_printed": "86.5",
    "delta_pp": 0.7,
-   "n_episodes": 2000,
-   "base_rate": 0.869,
+   "n_episodes": null,
+   "n_status": "unknown",
+   "n_basis": [
+    {
+     "page": 7,
+     "quote": "each task is evaluated over 10 trials with slight object-position perturbations"
+    }
+   ],
+   "n_note": "The stated 10 trials per task cannot print the table's three-decimal rates, and the appendix the paper points to is empty.",
+   "pooled_rate": 0.8685,
    "level": "suite",
-   "provenance": "standard LIBERO protocol",
    "venue": "simulation_benchmark",
+   "checked": "human",
    "source": {
     "title": "LIBERO-RECOVER: Beyond Task Success Towards Failure Recovery in Robotic Manipulation Models",
     "authors": "Liu, Lin and Bao, Zhicheng and Zhang, Lu and Song, Ziying and Yang, Wu and Zhuang, Yuzheng and Tao, Shuai and Liu, Wulong and Jia, Caiyan and Lu, Huchuan",
     "arxiv": "2609.05178",
-    "url": "https://arxiv.org/abs/2609.05178"
+    "url": "https://arxiv.org/abs/2609.05178",
+    "page": 10,
+    "where": "Table 2, upper LIBERO block; average in Key Finding 6"
    },
    "sigma_star_pp": null,
-   "band_lo_pp": 0.6549,
-   "band_hi_pp": 6.2642,
-   "state": "fails_on_episode_noise",
-   "state_label": "Not supported",
-   "state_line": "The reported gain does not clear the noise in its own episode count, before retraining variation is considered at all."
+   "band_lo_pp": null,
+   "band_hi_pp": null,
+   "state": "count_not_stated",
+   "state_label": "Count not stated",
+   "state_line": "The paper does not state one episode count per arm for this comparison, so the gain cannot be sized against noise. It stays listed rather than being dropped."
   },
   {
    "citation_key": "liberorecover2609",
    "paper": "LIBERO-RECOVER",
-   "claim": "GR00T mixed, recovery rate",
+   "claim": "GR00T N1.5 mixed training, average recovery rate",
+   "candidate_display": "GR00T N1.5, mixed training",
+   "baseline_display": "GR00T N1.5",
+   "printed_unit": "percent",
+   "candidate_printed": "21.2",
+   "baseline_printed": "17.8",
    "delta_pp": 3.4,
-   "n_episodes": 2000,
-   "base_rate": 0.195,
+   "n_episodes": null,
+   "n_status": "unknown",
+   "n_basis": [
+    {
+     "page": 6,
+     "quote": "The resulting benchmark contains 2178 recovery scenarios derived from 130 subtasks across four task categories"
+    },
+    {
+     "page": 7,
+     "quote": "each task is evaluated over 10 trials with slight object-position perturbations"
+    }
+   ],
+   "n_note": "Fig. 5 sums to 2,117 scenarios, not 2,178, and attempts per scenario are never stated.",
+   "pooled_rate": 0.195,
    "level": "suite",
-   "provenance": "recovery split, protocol as above",
    "venue": "unstated",
+   "checked": "human",
    "source": {
     "title": "LIBERO-RECOVER: Beyond Task Success Towards Failure Recovery in Robotic Manipulation Models",
     "authors": "Liu, Lin and Bao, Zhicheng and Zhang, Lu and Song, Ziying and Yang, Wu and Zhuang, Yuzheng and Tao, Shuai and Liu, Wulong and Jia, Caiyan and Lu, Huchuan",
     "arxiv": "2609.05178",
-    "url": "https://arxiv.org/abs/2609.05178"
-   },
-   "sigma_star_pp": 0.8484,
-   "band_lo_pp": 0.769,
-   "band_hi_pp": 7.3559,
-   "state": "inconclusive",
-   "state_label": "Inconclusive",
-   "state_line": "The reported gain sits inside the range of retraining noise observed across external sources. Eight cells cannot pin down one number, and the honest answer is the range."
-  },
-  {
-   "citation_key": "liberorecover2609",
-   "paper": "LIBERO-RECOVER",
-   "claim": "OpenVLA-OFT recovery",
-   "delta_pp": 6.0,
-   "n_episodes": 2000,
-   "base_rate": 0.238,
-   "level": "suite",
-   "provenance": "as above",
-   "venue": "unstated",
-   "source": {
-    "title": "LIBERO-RECOVER: Beyond Task Success Towards Failure Recovery in Robotic Manipulation Models",
-    "authors": "Liu, Lin and Bao, Zhicheng and Zhang, Lu and Song, Ziying and Yang, Wu and Zhuang, Yuzheng and Tao, Shuai and Liu, Wulong and Jia, Caiyan and Lu, Huchuan",
-    "arxiv": "2609.05178",
-    "url": "https://arxiv.org/abs/2609.05178"
-   },
-   "sigma_star_pp": 1.9439,
-   "band_lo_pp": 0.8266,
-   "band_hi_pp": 7.9065,
-   "state": "inconclusive",
-   "state_label": "Inconclusive",
-   "state_line": "The reported gain sits inside the range of retraining noise observed across external sources. Eight cells cannot pin down one number, and the honest answer is the range."
-  },
-  {
-   "citation_key": "liberorecover2609",
-   "paper": "LIBERO-RECOVER",
-   "claim": "OpenVLA-OFT LIBERO-Goal",
-   "delta_pp": 5.4,
-   "n_episodes": 500,
-   "base_rate": 0.273,
-   "level": "suite",
-   "provenance": "one suite",
-   "venue": "simulation_benchmark",
-   "source": {
-    "title": "LIBERO-RECOVER: Beyond Task Success Towards Failure Recovery in Robotic Manipulation Models",
-    "authors": "Liu, Lin and Bao, Zhicheng and Zhang, Lu and Song, Ziying and Yang, Wu and Zhuang, Yuzheng and Tao, Shuai and Liu, Wulong and Jia, Caiyan and Lu, Huchuan",
-    "arxiv": "2609.05178",
-    "url": "https://arxiv.org/abs/2609.05178"
+    "url": "https://arxiv.org/abs/2609.05178",
+    "page": 10,
+    "where": "Table 2, lower LIBERO-Recover block; average in Key Finding 6"
    },
    "sigma_star_pp": null,
-   "band_lo_pp": 0.8647,
-   "band_hi_pp": 8.2712,
-   "state": "fails_on_episode_noise",
-   "state_label": "Not supported",
-   "state_line": "The reported gain does not clear the noise in its own episode count, before retraining variation is considered at all."
+   "band_lo_pp": null,
+   "band_hi_pp": null,
+   "state": "count_not_stated",
+   "state_label": "Count not stated",
+   "state_line": "The paper does not state one episode count per arm for this comparison, so the gain cannot be sized against noise. It stays listed rather than being dropped."
+  },
+  {
+   "citation_key": "liberorecover2609",
+   "paper": "LIBERO-RECOVER",
+   "claim": "OpenVLA-OFT with temporal context, average recovery rate",
+   "candidate_display": "OpenVLA-OFT, temporal context",
+   "baseline_display": "OpenVLA-OFT",
+   "printed_unit": "percent",
+   "candidate_printed": "26.8",
+   "baseline_printed": "20.8",
+   "delta_pp": 6.0,
+   "n_episodes": null,
+   "n_status": "unknown",
+   "n_basis": [
+    {
+     "page": 6,
+     "quote": "The resulting benchmark contains 2178 recovery scenarios derived from 130 subtasks across four task categories"
+    },
+    {
+     "page": 7,
+     "quote": "each task is evaluated over 10 trials with slight object-position perturbations"
+    }
+   ],
+   "n_note": "The temporal-context comparison (Table 3), not mixed training (Table 2: 20.8 -> 25.4). Attempts per scenario are never stated.",
+   "pooled_rate": 0.238,
+   "level": "suite",
+   "venue": "unstated",
+   "checked": "human",
+   "source": {
+    "title": "LIBERO-RECOVER: Beyond Task Success Towards Failure Recovery in Robotic Manipulation Models",
+    "authors": "Liu, Lin and Bao, Zhicheng and Zhang, Lu and Song, Ziying and Yang, Wu and Zhuang, Yuzheng and Tao, Shuai and Liu, Wulong and Jia, Caiyan and Lu, Huchuan",
+    "arxiv": "2609.05178",
+    "url": "https://arxiv.org/abs/2609.05178",
+    "page": 10,
+    "where": "Table 3; average in Key Finding 7"
+   },
+   "sigma_star_pp": null,
+   "band_lo_pp": null,
+   "band_hi_pp": null,
+   "state": "count_not_stated",
+   "state_label": "Count not stated",
+   "state_line": "The paper does not state one episode count per arm for this comparison, so the gain cannot be sized against noise. It stays listed rather than being dropped."
+  },
+  {
+   "citation_key": "liberorecover2609",
+   "paper": "LIBERO-RECOVER",
+   "claim": "OpenVLA-OFT with temporal context, LIBERO-Goal recovery split",
+   "candidate_display": "OpenVLA-OFT, temporal context",
+   "baseline_display": "OpenVLA-OFT",
+   "printed_unit": "proportion",
+   "candidate_printed": "0.300",
+   "baseline_printed": "0.246",
+   "delta_pp": 5.4,
+   "n_episodes": null,
+   "n_status": "unknown",
+   "n_basis": [
+    {
+     "page": 6,
+     "quote": "The resulting benchmark contains 2178 recovery scenarios derived from 130 subtasks across four task categories"
+    },
+    {
+     "page": 7,
+     "quote": "each task is evaluated over 10 trials with slight object-position perturbations"
+    }
+   ],
+   "n_note": "Recovery on the Goal split, not standard LIBERO-Goal. Attempts per scenario are never stated.",
+   "pooled_rate": 0.273,
+   "level": "suite",
+   "venue": "simulation_benchmark",
+   "checked": "human",
+   "source": {
+    "title": "LIBERO-RECOVER: Beyond Task Success Towards Failure Recovery in Robotic Manipulation Models",
+    "authors": "Liu, Lin and Bao, Zhicheng and Zhang, Lu and Song, Ziying and Yang, Wu and Zhuang, Yuzheng and Tao, Shuai and Liu, Wulong and Jia, Caiyan and Lu, Huchuan",
+    "arxiv": "2609.05178",
+    "url": "https://arxiv.org/abs/2609.05178",
+    "page": 10,
+    "where": "Table 3, LIBERO-Recover block, LIBERO-Goal column"
+   },
+   "sigma_star_pp": null,
+   "band_lo_pp": null,
+   "band_hi_pp": null,
+   "state": "count_not_stated",
+   "state_label": "Count not stated",
+   "state_line": "The paper does not state one episode count per arm for this comparison, so the gain cannot be sized against noise. It stays listed rather than being dropped."
   }
  ]
 }

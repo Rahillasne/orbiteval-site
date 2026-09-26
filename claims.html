@@ -40,6 +40,7 @@
     <p class="eyebrow"><span class="dot"></span>Claim Check · protocol v1</p>
     <h1>Twenty published claims that a robot policy got better. We checked all twenty.</h1>
     <p class="lede">None of them is independently supported. Not because the researchers were careless, but because the number of episodes behind a robot result is almost never enough to tell an improvement from the noise of training the same recipe twice.</p>
+    <p class="small cc-correction"><strong>Corrected 25 September 2026.</strong> A second reading of the papers found that 8 of the 20 claims do not state one episode count per arm, so no detection limit is computed for them. They are now marked “count not stated” instead of being given a count, and each comparison names what it was measured against. Five stated counts were also corrected against the papers, which moved two claims from not supported to inconclusive; claims failing on episode count alone fell from 11 to 7. None is supported, before or after. <a href="source/audit_corpus.json">The previous corpus</a> stays published.</p>
   </section>
 
   <section class="cc-tally" id="tally" aria-label="Result"></section>
@@ -79,7 +80,7 @@
       <table id="tbl">
         <thead><tr>
           <th>Paper</th><th>Comparison</th><th>Venue</th>
-          <th class="n">Reported gain</th><th class="n">Episodes</th><th class="n">Base rate</th>
+          <th class="n">Reported gain</th><th class="n">Episodes per arm</th><th class="n">Printed rates</th>
           <th>Verdict</th><th></th>
         </tr></thead>
         <tbody id="rows"></tbody>
@@ -104,7 +105,7 @@
   <section class="section" id="method">
     <div class="sec-head"><h2>How a claim is checked.</h2></div>
     <div class="kvs">
-      <div class="kv"><span class="lbl">Step 1</span><div><p>Take the gain the authors report, the number of episodes behind it, and the success rate it sits at. Nothing else from the paper is used.</p></div></div>
+      <div class="kv"><span class="lbl">Step 1</span><div><p>Take the gain the authors report, the two success rates they print, and the number of episodes per arm. If the paper does not state one episode count, stop: the claim is listed as count not stated. Nothing else from the paper is used.</p></div></div>
       <div class="kv"><span class="lbl">Step 2</span><div><p>Compute the smallest amount of retraining noise that would be enough to erase that gain. This is a property of the claim alone, written <span class="mono">σ*</span> below.</p></div></div>
       <div class="kv"><span class="lbl">Step 3</span><div><p>Compare <span class="mono">σ*</span> against how much retraining noise other groups have actually measured, scaled to the success rate this particular claim sits at, because noise on a proportion is smaller near 100% than near 50%.</p></div></div>
       <div class="kv"><span class="lbl">Step 4</span><div><p>Report one of four states, and never force a claim into better or worse. If eight external measurements do not pin the noise down to a single number, the honest verdict is the range, and the range is what gets printed.</p></div></div>
@@ -118,7 +119,7 @@
       <p class="lbl" style="margin-bottom:10px">Read this before you quote it</p>
       <p><strong>This is benchmark evidence, not warehouse evidence.</strong> Nineteen of the twenty claims rest on simulation benchmarks. Nothing here measures a robot picking groceries, and no rate on this page should be quoted as the failure rate of any deployed system.</p>
       <p class="mt"><strong>The null reference is a reference class, not a forecast.</strong> It says how often a standard test announces a winner when the true difference is zero, in a particular family of policies and tasks we could run repeatedly. It is the right starting point for a deployment and the wrong finishing point. We replace it with your own repeated measurements as soon as there are any.</p>
-      <p class="mt"><strong>The sample is what we could verify, not the literature.</strong> 41 papers were screened to find claims reporting enough detail to check at all. Papers that report a gain with no episode count cannot be checked and are not here, so this is not a random sample of published work.</p>
+      <p class="mt"><strong>The sample is what we could verify, not the literature.</strong> 41 papers were screened to find claims reporting enough detail to check at all. Eight of the twenty turned out, on a line-by-line reading, not to state one episode count, so no detection limit is computed for them; they stay on the page rather than being dropped after the fact. This is not a random sample of published work.</p>
     </div>
   </section>
 

@@ -1,22 +1,24 @@
 """Export the Claim Check data file for orbiteval.com.
 
-Reads the audit modules from the sensitivity study and writes
-`claims-data.json` into the site root. Nothing is computed here that the
-study does not already compute: this script imports `claims`, `core` and
-`reference` and copies out what they return, so the page cannot drift from
-the code that produced the paper.
+The claims come from Corpus 2 v2, read through research/audit_corpus/corpus2.py
+in Orbit-Research: the one module allowed to read that file. Everything
+computed about a claim comes from the sensitivity study's own functions
+(`claims.classify`, `core.sigma_star`, the retraining-noise band and its
+per-claim edges), so the page cannot drift from the code behind the paper.
+The one number computed here is the pooled rate, the mean of the two rates the
+paper printed, which the page labels as exactly that.
 
-The one thing this script does add is the `venue` field, and it is derived
-here rather than read from the corpus, because the corpus does not record
-it. The derivation is by benchmark name and is deliberately conservative:
-anything not recognised is "unstated", never guessed. The page prints the
-rule next to the column.
+A claim whose paper does not state one episode count per arm cannot be sized
+against noise. It gets the state `count_not_stated`, no sigma-star and no band,
+and is never folded into another state.
+
+v2 corrected v1 on 2026-09-25. v1 printed the midpoint of the two arms as an
+unlabelled base rate and carried several wrong counts. v1 stays published at
+source/audit_corpus.json; v2 is source/audit_corpus_v2.json.
 
 Usage:
-    python3 build/claims_export.py [--study PATH] [--out PATH]
-
-The study defaults to the aistats worktree, which is where the modules are
-checked out. This script only ever reads from it.
+    python3 build/claims_export.py [--study PATH] [--corpus2-dir PATH]
+                                   [--bib PATH] [--out PATH]
 """
 import argparse
 import datetime
@@ -26,32 +28,27 @@ import os
 import re
 import sys
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from canonical import canonical  # noqa: E402  (needs the path above)
+
 DEFAULT_STUDY = os.path.expanduser(
     "~/Orbit-Research-aistats/research/sensitivity_2026-09-19")
+DEFAULT_CORPUS2 = os.path.expanduser("~/Orbit-Research/research/audit_corpus")
 DEFAULT_OUT = os.path.join(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
     "claims-data.json")
-# The bibliography the paper already verified against the arXiv API. Source
-# links are read from it rather than typed, for the same reason the noise
-# band is: a hand-typed identifier with no cross-check is exactly the
-# failure this audit is about.
+# The bibliography the paper already verified against the arXiv API.
 DEFAULT_BIB = os.path.expanduser(
     "~/Orbit-Research-aistats/paper/aistats2027/refs.bib")
 
 # Benchmarks whose episodes are simulated. Matching is on the lowercased
-# claim text. A claim that matches nothing here is "unstated" — it is not
-# assumed to be either kind.
+# claim text. A claim that matches nothing here is "unstated".
 SIMULATION_MARKERS = ("libero", "robocasa", "metaworld", "meta-world")
 PHYSICAL_MARKERS = ("real-world", "real world")
 
 
 def derive_venue(claim_text):
-    """One of "simulation_benchmark", "physical_robot", "unstated".
-
-    Physical markers win over simulation markers: a claim that says
-    "real-world" is a physical claim even if it also names a simulator,
-    because the simulator may only be the baseline's origin.
-    """
+    """One of "simulation_benchmark", "physical_robot", "unstated"."""
     t = claim_text.lower()
     if any(m in t for m in PHYSICAL_MARKERS):
         return "physical_robot"
@@ -60,9 +57,9 @@ def derive_venue(claim_text):
     return "unstated"
 
 
-# The four positive states, in the order the page lists them, with the
-# sentence the page prints. The wording is the study's, restated for a
-# reader who has not read the paper. No state is called "false".
+# The states the page shows, with the sentence it prints. The first five are
+# the study's; the sixth exists because v2 records when a paper states no
+# single count. No state is called "false".
 STATE_COPY = {
     "survives": {
         "label": "Supported",
@@ -91,16 +88,17 @@ STATE_COPY = {
         "line": "The authors report a decrease. Listed for completeness and "
                 "excluded from the tally.",
     },
+    "count_not_stated": {
+        "label": "Count not stated",
+        "line": "The paper does not state one episode count per arm for this "
+                "comparison, so the gain cannot be sized against noise. It "
+                "stays listed rather than being dropped.",
+    },
 }
 
 
 def load_sources(bib_path):
-    """citation_key -> {title, authors, arxiv, url} from the bibliography.
-
-    Fails loudly on a missing file or a key without a resolvable arXiv id:
-    a claim the reader cannot go and check is the thing this page exists to
-    complain about, so it must not ship silently.
-    """
+    """citation_key -> {title, authors, arxiv, url} from the bibliography."""
     if not os.path.exists(bib_path):
         raise SystemExit(
             "bibliography not found at {}\n"
@@ -126,16 +124,53 @@ def load_sources(bib_path):
     return out
 
 
-def build(study_path, bib_path=DEFAULT_BIB):
+def _study(study_path):
     sys.path.insert(0, study_path)
     import claims  # noqa: E402
     import core  # noqa: E402
     import reference  # noqa: E402
+    return claims, core, reference
 
-    band_lo, band_med, band_hi = claims.coefficient_band()
+
+def _corpus2(corpus2_dir):
+    sys.path.insert(0, corpus2_dir)
+    import corpus2  # noqa: E402
+    return corpus2
+
+
+def pooled_rate(c):
+    """The mean of the two rates the paper printed, labelled as such."""
+    return (c["candidate_rate"] + c["baseline_rate"]) / 2.0
+
+
+def _tally(claims_mod, stated, n_not_stated, floor=None):
+    """The study's own summary over the claims that have a count.
+
+    `claims.summary` and `claims.summary_at_floor` iterate the module's
+    CLAIMS, which the study loads from its own copy of v1. They are pointed at
+    v2's stated claims for the call and restored after it, so the counting
+    rule is the study's, unmodified.
+    """
+    saved = claims_mod.CLAIMS
+    claims_mod.CLAIMS = tuple(stated)
+    try:
+        s = claims_mod.summary() if floor is None else claims_mod.summary_at_floor(floor)
+    finally:
+        claims_mod.CLAIMS = saved
+    out = dict(s)
+    out["count_not_stated"] = n_not_stated
+    return out
+
+
+def build(study_path, corpus2_dir=DEFAULT_CORPUS2, bib_path=DEFAULT_BIB):
+    claims_mod, core, reference = _study(study_path)
+    corpus2 = _corpus2(corpus2_dir)
+    data = corpus2.load()
+    entries = data["claims"]
+
+    band_lo, band_med, band_hi = claims_mod.coefficient_band()
     sources = load_sources(bib_path)
-
-    missing = sorted({c.citation_key for c in claims.CLAIMS} - set(sources))
+    missing = sorted({c["citation_key"] for c in entries} - set(sources))
     if missing:
         raise SystemExit(
             "no resolvable source for: {}\n"
@@ -143,41 +178,56 @@ def build(study_path, bib_path=DEFAULT_BIB):
             "can follow. Add the entry to {} before building.".format(
                 ", ".join(missing), bib_path))
 
-    rows = []
-    for c in claims.CLAIMS:
-        state = claims.classify(c)
-        s = core.sigma_star(
-            delta=c.delta_pp / 100.0, n=c.n_episodes, p=c.base_rate)
-        rows.append({
-            "citation_key": c.citation_key,
-            "paper": c.paper,
-            "claim": c.claim,
-            "delta_pp": c.delta_pp,
-            "n_episodes": c.n_episodes,
-            "base_rate": c.base_rate,
-            "level": c.level,
-            "provenance": c.provenance,
-            "venue": derive_venue(c.claim),
-            "source": sources[c.citation_key],
-            # sigma-star: the smallest retraining SD that would erase the
-            # reported gain. None when the gain fails on episode noise alone.
-            "sigma_star_pp": None if s is None else round(s * 100.0, 4),
-            # The band conditioned on THIS claim's base rate, which is what
-            # sigma-star is actually compared against.
-            "band_lo_pp": round(
-                claims._reference_sigma_pp(band_lo, c.base_rate), 4),
-            "band_hi_pp": round(
-                claims._reference_sigma_pp(band_hi, c.base_rate), 4),
-            "state": state,
-            "state_label": STATE_COPY[state]["label"],
-            "state_line": STATE_COPY[state]["line"],
-        })
+    rows, stated = [], []
+    for c in entries:
+        n = corpus2.stated_n(c)
+        p = pooled_rate(c)
+        row = {
+            "citation_key": c["citation_key"],
+            "paper": c["paper"],
+            "claim": c["claim"],
+            "candidate_display": c["candidate_display"],
+            "baseline_display": c["baseline_display"],
+            "printed_unit": c["printed_unit"],
+            "candidate_printed": c["candidate_printed"],
+            "baseline_printed": c["baseline_printed"],
+            "delta_pp": c["delta_pp"],
+            "n_episodes": n,
+            "n_status": c["n_status"],
+            "n_basis": c["n_basis"],
+            "n_note": c.get("n_note"),
+            "pooled_rate": p,
+            "level": c["level"],
+            "venue": derive_venue(c["claim"]),
+            "checked": c["checked"],
+            "source": dict(sources[c["citation_key"]],
+                           page=c["source"]["page"], where=c["source"]["where"]),
+        }
+        if n is None:
+            state = "count_not_stated"
+            row.update({"sigma_star_pp": None, "band_lo_pp": None,
+                        "band_hi_pp": None})
+        else:
+            cl = claims_mod.Claim(
+                citation_key=c["citation_key"], paper=c["paper"],
+                claim=c["claim"], delta_pp=c["delta_pp"], n_episodes=n,
+                base_rate=p, level=c["level"], provenance="")
+            stated.append(cl)
+            state = claims_mod.classify(cl)
+            s = core.sigma_star(delta=c["delta_pp"] / 100.0, n=n, p=p)
+            row.update({
+                # sigma-star: the smallest retraining SD that would erase the
+                # reported gain. None when the gain fails on episode noise.
+                "sigma_star_pp": None if s is None else round(s * 100.0, 4),
+                "band_lo_pp": round(claims_mod._reference_sigma_pp(band_lo, p), 4),
+                "band_hi_pp": round(claims_mod._reference_sigma_pp(band_hi, p), 4),
+            })
+        row.update({"state": state,
+                    "state_label": STATE_COPY[state]["label"],
+                    "state_line": STATE_COPY[state]["line"]})
+        rows.append(row)
 
-    summary = claims.summary()
-    # The audit is also reported with the band's lower edge at zero, which
-    # is the most forgiving floor a reader could ask for: at that floor
-    # nothing can be erased by retraining noise at all.
-    summary_at_zero = claims.summary_at_floor(0.0)
+    n_not_stated = sum(1 for r in rows if r["state"] == "count_not_stated")
 
     null_ref = None
     cal_path = os.path.join(study_path, "out", "calibration.json")
@@ -201,21 +251,24 @@ def build(study_path, bib_path=DEFAULT_BIB):
             ],
         }
 
-    corpus_path = os.path.join(study_path, "audit_corpus.json")
-    with open(corpus_path, "rb") as f:
-        corpus_bytes = f.read()
-    corpus_hash = hashlib.sha256(corpus_bytes).hexdigest()
-    corpus = json.loads(corpus_bytes)
+    with open(corpus2.CORPUS_PATH, "rb") as f:
+        corpus_hash = hashlib.sha256(f.read()).hexdigest()
 
     return {
         "generated": datetime.date.today().isoformat(),
         "protocol_version": 1,
+        "corpus_version": 2,
         "corpus_sha256": corpus_hash,
-        "corpus_note": corpus["_README"],
+        "corpus_file": "source/audit_corpus_v2.json",
+        "corpus_v1_file": "source/audit_corpus.json",
+        "corrected": "2026-09-25",
+        "corpus_note": data["_README"],
         "n_papers_screened": reference.N_SCREENED,
         "n_claims": len(rows),
-        "summary": summary,
-        "summary_at_zero_floor": summary_at_zero,
+        "summary": _tally(claims_mod, stated, n_not_stated),
+        # The most forgiving floor a reader could ask for: at zero, nothing
+        # can be erased by retraining noise at all.
+        "summary_at_zero_floor": _tally(claims_mod, stated, n_not_stated, 0.0),
         "band": {
             "coef_min": band_lo,
             "coef_median": band_med,
@@ -234,28 +287,29 @@ def build(study_path, bib_path=DEFAULT_BIB):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--study", default=DEFAULT_STUDY)
+    ap.add_argument("--corpus2-dir", default=DEFAULT_CORPUS2)
     ap.add_argument("--out", default=DEFAULT_OUT)
     ap.add_argument("--bib", default=DEFAULT_BIB)
     args = ap.parse_args()
 
-    data = build(args.study, args.bib)
-    with open(args.out, "w") as f:
-        json.dump(data, f, indent=1)
+    data = canonical(build(args.study, args.corpus2_dir, args.bib))
+    with open(args.out, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=1, ensure_ascii=False)
         f.write("\n")
 
-    # The page reads the .js wrapper so it renders from a file:// URL as
-    # well as over http. The .json beside it is the downloadable evidence,
-    # and both are written from the same object so they cannot disagree.
+    # The page reads the .js wrapper so it renders from a file:// URL as well
+    # as over http. Both are written from the same object.
     js_out = os.path.splitext(args.out)[0] + ".js"
-    with open(js_out, "w") as f:
+    with open(js_out, "w", encoding="utf-8") as f:
         f.write("// Generated by build/claims_export.py. Do not edit.\n")
         f.write("window.CLAIM_CHECK = ")
-        json.dump(data, f, indent=1)
+        json.dump(data, f, indent=1, ensure_ascii=False)
         f.write(";\n")
 
     s = data["summary"]
-    print("wrote {} ({} claims, {} papers screened)".format(
-        args.out, data["n_claims"], data["n_papers_screened"]))
+    print("wrote {} ({} claims, {} papers screened, corpus v{})".format(
+        args.out, data["n_claims"], data["n_papers_screened"],
+        data["corpus_version"]))
     print("  " + ", ".join("{}={}".format(k, v) for k, v in s.items()))
 
 

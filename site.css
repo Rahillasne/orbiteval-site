@@ -272,6 +272,7 @@ td.n, th.n { text-align: right; font-variant-numeric: tabular-nums; }
 .placard--caution { color: var(--wait); background: rgba(148,96,0,.10); border-color: rgba(148,96,0,.3); }
 .placard--revoked { color: var(--bad); background: rgba(178,58,48,.10); border-color: rgba(178,58,48,.3); }
 .placard--specimen { color: var(--ink-soft); background: repeating-linear-gradient(135deg, rgba(20,20,19,.07) 0 3px, transparent 3px 6px); border-color: rgba(20,20,19,.25); }
+.placard--unknown { color: var(--ink-soft); background: transparent; border-style: dashed; border-color: rgba(20,20,19,.35); }
 
 .banner { background: rgba(20,20,19,.035); border-bottom: 1px solid var(--line-soft); color: var(--ink-2); font-size: 13px; padding: 10px 0; }
 .banner--foot { border-top: 1px solid var(--line-soft); border-bottom: 0; margin-top: 56px; }
@@ -343,7 +344,7 @@ input:focus, textarea:focus { outline: none; border-color: var(--accent); box-sh
 @media (prefers-reduced-motion: reduce) { .js [data-reveal] { opacity: 1; transform: none; transition: none; } }
 
 /* Claim Check (claims.html) */
-.cc-tally { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; margin-top: 8px; }
+.cc-tally { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; margin-top: 8px; }
 .cc-stat { background: var(--paper); padding: 26px 24px 24px; display: flex; flex-direction: column; gap: 8px; }
 .cc-stat .lbl { color: var(--ink); }
 .cc-stat .small { color: var(--ink-soft); margin: 0; max-width: 28ch; }
