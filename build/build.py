@@ -39,6 +39,9 @@ import shutil
 import subprocess
 import sys
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from canonical import is_canonical  # noqa: E402  (needs the path above)
+
 allow_dirty = False
 HERE = os.path.dirname(os.path.abspath(__file__))
 SITE = os.path.dirname(HERE)
@@ -231,13 +234,51 @@ def guard_register(study):
                 "\n  ".join(problems), study))
 
 
-def run_exporter(script, study, *extra):
+def guard_canonical():
+    """Fail if a generated file carries a float at more than canonical precision.
+
+    Two interpreters disagreed about the last bit of `coef_min`: CPython 3.12
+    changed `sum()` to compensated summation, so the same inputs gave a
+    different final digit than 3.11. Each interpreter was internally
+    deterministic, which is what made it hard to see. Exporters now round at
+    the publication boundary; this check is what stops the next exporter from
+    forgetting to.
+    """
+    problems = []
+    for name in ("decision-data.json", "claims-data.json",
+                 "release-record-data.json"):
+        p = os.path.join(SITE, name)
+        if not os.path.exists(p):
+            continue
+        with open(p) as f:
+            data = json.load(f)
+        for path, value in walk(data):
+            if not is_canonical(value):
+                problems.append("{}: {} = {!r}".format(name, path, value))
+    if problems:
+        raise BuildError(
+            "NON-CANONICAL FLOAT -- refusing to publish.\n"
+            "  {}\n"
+            "  These carry more precision than the computation has, and they "
+            "differ between CPython versions. The exporter that wrote them "
+            "must pass its data through canonical().".format(
+                "\n  ".join(problems[:10])))
+
+
+def run_guard_tests():
+    """Run the guard tests as part of the build.
+
+    The register and the exemption are only worth what checks them, and a
+    test suite that has to be remembered is one that stops being run. This
+    puts them in the path of every build instead.
+    """
     r = subprocess.run(
-        [sys.executable, os.path.join(HERE, script), "--study", study, *extra],
+        [sys.executable, os.path.join(HERE, "test_build_guards.py")],
         capture_output=True, text=True)
     if r.returncode != 0:
-        raise BuildError("{} failed:\n{}{}".format(script, r.stdout, r.stderr))
-    return r.stdout.strip()
+        raise BuildError("guard tests FAILED:\n{}{}".format(r.stdout, r.stderr))
+    last = [ln for ln in (r.stdout + r.stderr).strip().split("\n") if ln.strip()]
+    return last[-2] if len(last) > 1 else "guard tests passed"
 
 
 def run_redaction_tests():
@@ -256,6 +297,30 @@ def run_redaction_tests():
             "redaction tests FAILED:\n{}{}".format(r.stdout, r.stderr))
     last = [ln for ln in (r.stdout + r.stderr).strip().split("\n") if ln.strip()]
     return last[-2] if len(last) > 1 else "redaction tests passed"
+
+
+def run_exporter(script, study, *extra):
+    r = subprocess.run(
+        [sys.executable, os.path.join(HERE, script), "--study", study, *extra],
+        capture_output=True, text=True)
+    if r.returncode != 0:
+        raise BuildError("{} failed:\n{}{}".format(script, r.stdout, r.stderr))
+    return r.stdout.strip()
+
+
+def run_record_exporter(corpus2_dir):
+    """Generate the Release Record page data from the engine and Corpus 2 v2
+    in the same Orbit-Research checkout as corpus2_dir."""
+    orbit = os.path.dirname(os.path.dirname(os.path.abspath(corpus2_dir)))
+    r = subprocess.run(
+        [sys.executable, os.path.join(HERE, "release_record_export.py"),
+         "--engine", os.path.join(orbit, "product", "release_record"),
+         "--corpus2-dir", corpus2_dir],
+        capture_output=True, text=True)
+    if r.returncode != 0:
+        raise BuildError("release_record_export.py failed:\n{}{}".format(
+            r.stdout, r.stderr))
+    return r.stdout.strip()
 
 
 def require_corpus2(corpus2_dir):
@@ -303,15 +368,6 @@ def file_sha256(path):
         return hashlib.sha256(f.read()).hexdigest()
 
 
-def git_at(repo, *args):
-    """git in another repository, for recording where the inputs came from."""
-    try:
-        return subprocess.run(["git", "-C", repo, *args], capture_output=True,
-                              text=True, check=True).stdout.strip()
-    except Exception:
-        return ""
-
-
 def vendor(study):
     """Copy the corpora the site publishes, stripping anything on the register.
 
@@ -347,6 +403,15 @@ def vendor(study):
     return copied, stripped
 
 
+def git_at(repo, *args):
+    """git in another repository, for recording where the inputs came from."""
+    try:
+        return subprocess.run(["git", "-C", repo, *args], capture_output=True,
+                              text=True, check=True).stdout.strip()
+    except Exception:
+        return ""
+
+
 def git(*args, strip=True):
     try:
         out = subprocess.run(["git", "-C", SITE, *args],
@@ -357,9 +422,16 @@ def git(*args, strip=True):
         return ""
 
 
+# The generated data the pages read. Hashed into the stamp as one number.
+GENERATED_DATA = ("claims-data.json", "decision-data.json",
+                  "release-record-data.json", "source/audit_corpus.json",
+                  "source/reference_sources.json", "source/audit_corpus_v2.json")
+
 GENERATED = ("claims-data.json", "claims-data.js", "decision-data.json",
-             "decision-data.js", "build-stamp.js", "source/audit_corpus.json",
-             "source/reference_sources.json", "source/audit_corpus_v2.json")
+             "decision-data.js", "release-record-data.json",
+             "release-record-data.js", "build-stamp.js",
+             "source/audit_corpus.json", "source/reference_sources.json",
+             "source/audit_corpus_v2.json")
 
 
 def dirty_paths():
@@ -389,11 +461,53 @@ def dirty_paths():
     return paths
 
 
+def artifact_sha256():
+    """One hash over every generated data file, in a fixed order.
+
+    This is the "same inputs produced the same artifact" number. It covers
+    what the pages actually read, so a change to any published figure moves
+    it, and it is computed before the stamp is written so the stamp can never
+    hash itself.
+    """
+    h = hashlib.sha256()
+    for name in sorted(GENERATED_DATA):
+        path = os.path.join(SITE, name)
+        if not os.path.exists(path):
+            continue
+        h.update(name.encode())
+        with open(path, "rb") as f:
+            h.update(f.read())
+    return h.hexdigest()
+
+
 def stamp(study, corpus2_dir):
-    # `corpus_sha256` is Corpus 2 v2, the file the Claim Check is computed
-    # from; every page's footer prints it, so it must name the same corpus
-    # the Claim Check body shows. `study_corpus_sha256` is the sensitivity
-    # study's own copy of the corpus, which its code still loads.
+    """Provenance for the footer: inputs and outputs, no wall clock.
+
+    The stamp used to record the moment the build ran, so two people building
+    one commit from one set of inputs produced different bytes. That quietly
+    contradicts the sentence the whole site rests on.
+
+    It also used to name the SITE's own HEAD, which cannot work: the stamp is
+    committed into the very commit it would have to name, so a clean rebuild
+    of that commit always disagrees with the file inside it. The commit
+    recorded here is therefore the SOURCE commit -- the research worktree the
+    numbers came from -- which is an input to the build rather than its
+    container, and is stable however often the site is committed. The site's
+    own commit is in git already and does not need restating.
+
+    `corpus_sha256` is Corpus 2 v2, the file the Claim Check and the Release
+    Record are computed from; every page's footer prints it, so it must name
+    the same corpus the page body shows. `study_corpus_sha256` is the
+    sensitivity study's own copy of the corpus, which its code still loads
+    and which `corpus_sha256` named before Corpus 2 v2 existed.
+    `corpus2_source_commit` names the Orbit-Research checkout `corpus2_dir`
+    came from, the same way `source_commit` names the study's.
+
+    Everything left is a fact about inputs or outputs: which research commit,
+    its date, the input corpus hashes, and one hash over everything generated.
+    The footer still warns when the site is going stale, measuring the age of
+    the SOURCE rather than the last time somebody happened to run a build.
+    """
     corpus_hash = file_sha256(os.path.join(corpus2_dir, CORPUS2_V2))
     study_corpus = os.path.join(study, "audit_corpus.json")
     with open(study_corpus, "rb") as f:
@@ -401,17 +515,18 @@ def stamp(study, corpus2_dir):
     # The commit the build ran against. The stamp is written before the
     # commit that carries it, so this names the parent; `dirty` says whether
     # anything was uncommitted at build time, which is the honest caveat.
-    commit = git("rev-parse", "--short", "HEAD")
+    source_commit = git_at(study, "rev-parse", "--short", "HEAD")
+    source_date = git_at(study, "show", "-s", "--format=%cI", "HEAD")
     dirty = bool(dirty_paths())
     data = {
-        "commit": commit or "unknown",
+        "source_commit": source_commit or "unknown",
+        "source_date": source_date or "unknown",
         "dirty": dirty,
         "corpus_sha256": corpus_hash,
         "study_corpus_sha256": study_corpus_hash,
         "corpus2_source_commit": git_at(corpus2_dir, "rev-parse", "--short",
                                         "HEAD") or "unknown",
-        "generated": datetime.datetime.now(
-            datetime.timezone.utc).replace(microsecond=0).isoformat(),
+        "artifact_sha256": artifact_sha256(),
         "study": os.path.basename(study.rstrip("/")),
     }
     with open(os.path.join(SITE, "build-stamp.js"), "w") as f:
@@ -440,6 +555,9 @@ def main():
         if args.check:
             guard_register(args.study)
             print("register guard: clean")
+            guard_canonical()
+            print("canonical guard: clean")
+            print("guard tests: {}".format(run_guard_tests()))
             print("redaction tests: {}".format(run_redaction_tests()))
             return 0
 
@@ -449,7 +567,12 @@ def main():
         print("research source: {}".format(study))
         print("  " + run_exporter("claims_export.py", study, "--corpus2-dir",
                                   corpus2_dir).replace("\n", "\n  "))
-        print("  " + run_exporter("decision_export.py", study).replace("\n", "\n  "))
+        print("  " + run_exporter("decision_export.py", study).replace(
+            "\n", "\n  "))
+        # The Release Record exporter reads the engine and Corpus 2 v2, not
+        # the study, so it takes no --study and fails on its own terms if
+        # either is absent.
+        print("  " + run_record_exporter(corpus2_dir).replace("\n", "\n  "))
         # Vendor BEFORE guarding. The register now covers the public source
         # copies as well as the generated files, and those copies are written
         # by this step; guarding first would check the previous build's files
@@ -461,10 +584,15 @@ def main():
         print("vendored: {}".format(vendor_v2(corpus2_dir)))
         guard_register(study)
         print("register guard: clean")
-        print("redaction tests: {}".format(run_redaction_tests()))
+        guard_canonical()
+        print("canonical guard: clean")
         s = stamp(study, corpus2_dir)
-        print("stamp: {} corpus {}… {}".format(
-            s["commit"], s["corpus_sha256"][:12], s["generated"]))
+        # After the stamp: the tests check the stamp's own shape and hash.
+        print("guard tests: {}".format(run_guard_tests()))
+        print("redaction tests: {}".format(run_redaction_tests()))
+        print("stamp: source {} corpus {}… artifact {}…".format(
+            s["source_commit"], s["corpus_sha256"][:12],
+            s["artifact_sha256"][:12]))
         if s["dirty"]:
             print("\nREFUSING TO PUBLISH A DIRTY BUILD", file=sys.stderr)
             print("  Uncommitted, besides the generated files:", file=sys.stderr)
