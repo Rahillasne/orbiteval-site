@@ -81,11 +81,16 @@ document.querySelectorAll("[data-copy]").forEach((el) => {
   if (!s) {
     el.innerHTML = `<span class="footer__warn">Build provenance unavailable</span>`;
   } else {
-    const age = Math.floor((Date.now() - Date.parse(s.generated)) / 864e5);
+    // Staleness is measured from the SOURCE commit's own date, not from when
+    // a build happened to run. Same source, same bytes -- the stamp carries no
+    // wall clock, because two people building one commit must get one artifact.
+    const day = s.source_date ? s.source_date.slice(0, 10) : "";
+    const age = day ? Math.floor((Date.now() - Date.parse(day)) / 864e5) : 0;
     const stale = age > 30 ? ` · <span class="footer__warn">${age} days old</span>` : "";
-    el.innerHTML = `Built <span class="mono">${s.commit}</span>${s.dirty ? " (uncommitted)" : ""} ·
+    el.innerHTML = `Source <span class="mono">${s.source_commit}</span>${s.dirty ? " (built from an uncommitted tree)" : ""} ·
       corpus <span class="mono">${s.corpus_sha256.slice(0, 12)}…</span> ·
-      <span class="mono">${s.generated.replace("T", " ").replace("+00:00", "Z")}</span>${stale}`;
+      artifact <span class="mono">${s.artifact_sha256.slice(0, 12)}…</span> ·
+      <span class="mono">${day}</span>${stale}`;
   }
   meta.appendChild(el);
 })();

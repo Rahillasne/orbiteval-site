@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#FAF9F5">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600&family=Figtree:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23D4744F'/%3E%3Ccircle cx='16' cy='16' r='9' stroke='%23FAF9F5' stroke-width='2.2' fill='none'/%3E%3Ccircle cx='23' cy='9' r='3' fill='%23141413'/%3E%3C/svg%3E">
+<title>Release Record — Orbit</title>
+<meta name="description" content="Pick a real corpus and generate a Release Record: whether a claim about a changed system is supported by the evidence behind it, and whether that evidence could ever have settled the claim.">
+</head>
+<body>
+<header class="topbar" id="top">
+  <div class="pill">
+    <a class="brand" href="index.html" aria-label="Orbit home"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.6"/><circle cx="15.5" cy="4.5" r="2.3" fill="#D4744F"/></svg>Orbit</a>
+    <nav class="pill__links" aria-label="Primary">
+      <a href="real.html">Is it real?</a>
+      <a href="claims.html">Claim Check</a>
+      <a href="decision.html">Decision card</a>
+    </nav>
+    <a class="btn btn--primary btn--sm pill__cta" href="demo.html" data-demo>Book a demo <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    <button class="pill__menu" type="button" aria-expanded="false" aria-controls="mnav" aria-label="Menu"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+  </div>
+  <nav class="mnav" id="mnav" hidden aria-label="Menu">
+    <a href="real.html">Is it real?</a>
+    <a href="claims.html">Claim Check</a>
+    <a href="decision.html">Decision card</a>
+    <a href="registry.html">Registry</a>
+    <a href="calibration.html">Calibration</a>
+    <a href="specimen-report.html">Specimen report</a>
+    <a href="demo.html" data-demo>Book a demo</a>
+  </nav>
+</header>
+
+<main class="wrap">
+
+  <section class="page-head">
+    <p class="eyebrow"><span class="dot"></span>Release Record v0.2 · runs on real corpora only</p>
+    <h1>Can this release claim be proven?</h1>
+    <p class="lede">Something changed in a deployed system, and someone said the change made it better.
+      Orbit reads the evidence behind that claim and answers two questions: does the evidence support it,
+      and could this evidence ever have settled it.</p>
+  </section>
+
+  <!-- ------------------------------------------------------------- chooser -->
+  <section class="section section--tight" id="generate">
+    <div class="rr-pick">
+      <p class="lbl">Step 1 — choose the evidence</p>
+      <div class="rr-srcs" role="radiogroup" aria-label="Evidence source">
+
+        <button class="rr-src" type="button" role="radio" aria-checked="true" data-src="nhtsa">
+          <span class="rr-src__top"><span class="rr-src__name">NHTSA incident record</span><span class="tag tag--grey">Real field data</span></span>
+          <span class="rr-src__sub">Field incident record, regulator-filed. Automated-driving incident
+            reports filed with the US federal regulator, read one event at a time.</span>
+          <span class="rr-src__meta mono" data-src-meta="nhtsa"></span>
+        </button>
+
+        <button class="rr-src" type="button" role="radio" aria-checked="false" data-src="corpus2">
+          <span class="rr-src__top"><span class="rr-src__name">Published policy claims</span><span class="tag tag--grey">Published summary</span></span>
+          <span class="rr-src__sub">Twenty robot-policy claims with citations. 12 of the 20 state an
+            episode count per arm; 8 do not. A published summary has no per-event file, so release identity and exposure cannot be checked.</span>
+          <span class="rr-src__meta mono" data-src-meta="corpus2"></span>
+        </button>
+
+        <button class="rr-src rr-src--off" type="button" role="radio" aria-checked="false" data-src="upload">
+          <span class="rr-src__top"><span class="rr-src__name">Your own evidence file</span><span class="tag tag--no">Unavailable</span></span>
+          <span class="rr-src__sub">CSV of events, one row per incident, trial, episode or pick.</span>
+          <span class="rr-src__meta mono">Execution unavailable on this static site</span>
+        </button>
+
+      </div>
+
+      <div class="rr-claim" data-claim-pick hidden>
+        <label class="lbl" for="rr-claim-select">Step 2 — choose the claim</label>
+        <p class="small rr-claim__note">One record covers one release pair and one claim. A release
+          carrying three claims gets three records, never one blended verdict.</p>
+        <select id="rr-claim-select"></select>
+      </div>
+
+      <div class="rr-go">
+        <button class="btn btn--primary" type="button" data-generate>Generate Release Record <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+        <span class="small" data-go-note></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- -------------------------------------------------------------- record -->
+  <section class="section section--tight" id="record" data-record hidden aria-live="polite"></section>
+
+  <!-- ------------------------------------------------------------ verdicts -->
+  <section class="section">
+    <div class="sec-head"><h2>Four verdicts, and nothing else.</h2>
+      <p>The record answers these and refuses the rest. It does not rank vendors, score safety,
+        infer that a release caused a change, or tell you what to retest.</p></div>
+    <div class="kvs">
+      <div class="kv"><p class="lbl">Release identity</p><div>
+        <p><strong>verified / reconstructed / unknown</strong></p>
+        <p>Which software was actually running on each side. Formatting variants of one label merge
+          automatically and the record lists what it merged. Anything close but not identical is
+          flagged for a named human and never merged: a one-character difference is how Version 10
+          differs from Version 11.</p></div></div>
+      <div class="kv"><p class="lbl">Exposure</p><div>
+        <p><strong>present / missing</strong></p>
+        <p>Whether the evidence records how much was done — miles, hours, attempts. Without it,
+          counts of events cannot become rates, and a release that simply drove more looks worse.</p></div></div>
+      <div class="kv"><p class="lbl">Claim</p><div>
+        <p><strong>supported / not supported / insufficient evidence</strong></p>
+        <p>Never "false". A claim the evidence cannot reach is not a refuted claim. Exact claims and
+          floor claims are different claims: "+5 points" needs the interval to cover 5, so an
+          observed +38 does not support it, while "at least +5 points" needs the whole interval to
+          clear 5, so +38 does.</p></div></div>
+      <div class="kv"><p class="lbl">Sufficiency</p><div>
+        <p><strong>capable / incapable / indeterminate</strong></p>
+        <p>Whether the study could have detected the claimed effect at all — a property of the design,
+          fixed before any outcome is seen. It comes from the two sample sizes and the rate the design
+          was planned around. Read off the result instead, it is not a capability verdict, and a record
+          with no design rate can never reach <em>supported</em>.</p></div></div>
+    </div>
+  </section>
+
+  <section class="section section--tight">
+    <div class="sec-head"><h2>What it will not do.</h2></div>
+    <div class="empty">
+      <p>Missing information degrades a verdict and never raises one. A file with no release labels and
+        no denominator is still accepted and returns <strong>unknown</strong> and <strong>missing</strong>,
+        because refusing the file would hide the finding worth reporting.</p>
+      <p>A significant result from a study that could not reliably have detected the claimed effect is
+        <strong>insufficient evidence</strong>, not <strong>supported</strong>.</p>
+      <p>When the two arms are separate training runs, episode-level noise cannot see run-to-run
+        variation. The interval is too narrow and the detection limit is a lower bound, so that
+        comparison cannot reach <strong>supported</strong> without a measured run-to-run term,
+        however clean it looks.</p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="wrap footer__row">
+    <a class="brand" href="index.html" aria-label="Orbit home"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.6"/><circle cx="15.5" cy="4.5" r="2.3" fill="#D4744F"/></svg>Orbit</a>
+    <nav class="footer__links" aria-label="Footer">
+      <a href="claims.html">Claim Check</a>
+      <a href="decision.html">Decision card</a>
+      <a href="registry.html">Registry</a>
+      <a href="calibration.html">Calibration</a>
+      <a href="specimen-report.html">Specimen report</a>
+      <a href="https://github.com/Rahillasne/orbit-eval">Open code</a>
+    </nav>
+    <div class="footer__meta"><span>© 2026 OrbitEval · Independent verification of deployed robots</span><span><a href="mailto:rahil@orbiteval.com">rahil@orbiteval.com</a> · <a href="#top">Back to top ↑</a></span></div>
+  </div>
+</footer>
+
+<div class="tip" id="tip" hidden></div>
+<script src="release-record-data.js"></script>
+<script src="build-stamp.js"></script>
+<script src="site.js"></script>
+<script src="record.js"></script>
+</body>
+</html>

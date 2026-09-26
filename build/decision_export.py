@@ -36,6 +36,9 @@ import math
 import os
 import sys
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from canonical import canonical  # noqa: E402  (needs the path above)
+
 DEFAULT_STUDY = os.path.expanduser(
     "~/Orbit-Research-aistats/research/sensitivity_2026-09-19")
 DEFAULT_OUT = os.path.join(
@@ -181,7 +184,7 @@ def main():
     ap.add_argument("--out", default=DEFAULT_OUT)
     args = ap.parse_args()
 
-    data = build(args.study)
+    data = canonical(build(args.study))
     with open(args.out, "w") as f:
         json.dump(data, f, indent=1)
         f.write("\n")
