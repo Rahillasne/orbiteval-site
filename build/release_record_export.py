@@ -327,6 +327,32 @@ def check_golden(engine, nhtsa, corpus2):
                 "\n  ".join(problems)))
 
 
+NUMBER_WORDS = ("no", "one", "two", "three", "four", "five", "six", "seven",
+                "eight", "nine", "ten")
+
+
+def nhtsa_reading(rec):
+    """The plain sentence printed under the NHTSA figures, or None.
+
+    The record names an operator and prints a difference whose interval can
+    exclude zero, but its denominator is reported incidents, not miles. The
+    engine says so in its own terms (exposure missing, sufficiency
+    indeterminate); this says it in words a reader cannot miss. It is built
+    from the record, so it cannot outlive the data it describes.
+    """
+    if rec["exposure"] != "missing" or not rec["display"].get("difference"):
+        return None
+    version = rec["candidate_label"].rsplit(", ", 1)[-1]
+    s = ("This is a share of reported incidents, not a rate per mile. Without "
+         "mileage it cannot say whether {} is safer or less safe".format(version))
+    n = len(rec["flagged_for_adjudication"])
+    if n:
+        word = NUMBER_WORDS[n] if n < len(NUMBER_WORDS) else str(n)
+        s += ", and {} version label{} still need{} adjudication".format(
+            word, "" if n == 1 else "s", "s" if n == 1 else "")
+    return s + "."
+
+
 def build(engine, corpus2_dir):
     nhtsa = build_nhtsa(engine)
     corpus2, corpus2_path = build_corpus2(engine, corpus2_dir)
@@ -351,6 +377,7 @@ def build(engine, corpus2_dir):
                 "checked": ("Release labels and outcomes were read per event, "
                             "so identity and exposure were derived from the "
                             "evidence rather than taken on trust."),
+                "reading": nhtsa_reading(nhtsa),
             },
             "corpus2": {
                 "key": "corpus2",

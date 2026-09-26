@@ -97,6 +97,10 @@
       h.push(row('Candidate', d.candidate, true));
       h.push(row('Difference', d.difference + '  ' + d.interval, true));
       h.push(row('Detection limit', d.detection_limit_full, true));
+      // The exporter's plain reading of these figures, printed as written.
+      if (src.reading) {
+        h.push('<p class="verdict verdict--wait">' + esc(src.reading) + '</p>');
+      }
       h.push('</div>');
     } else {
       h.push('<div class="rr-block"><p class="lbl">What the evidence shows</p>' +

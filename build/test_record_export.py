@@ -39,6 +39,14 @@ class RecordData(unittest.TestCase):
         for r in self.rows:
             self.assertNotEqual(r["baseline_label"], "comparator")
 
+    def test_the_nhtsa_figures_carry_their_plain_reading(self):
+        """A named operator's share of reported incidents is not a per-mile rate."""
+        self.assertEqual(
+            self.d["sources"]["nhtsa"]["reading"],
+            "This is a share of reported incidents, not a rate per mile. "
+            "Without mileage it cannot say whether Version 11 is safer or less "
+            "safe, and five version labels still need adjudication.")
+
     def test_one_identity_value_for_every_corpus2_record(self):
         self.assertEqual({r["identity"] for r in self.rows}, {"unknown"})
 
