@@ -58,6 +58,9 @@ has('id="independence"', "the conflict policy anchor the footer links to");
 for (const bad of [/\bcompliant\b/i, /guarantee/i, /passport/i, /EU ID/, /\bcertified\b/i]) {
   for (const f of ["index.html", "eu-check.html"]) assert(!bad.test(read(f)), `${f} uses a banned word: ${bad}`);
 }
+for (const gone of ["app.html", "app.js", "app.css", "app-data.json", "specimen-report.html", "registry.html"]) {
+  assert(!fs.existsSync(path.join(SITE, gone)), `${gone} should be deleted`);
+}
 const R = json("release-record-data.json");
 const c = R.corpus2[2];
 const N = R.nhtsa;

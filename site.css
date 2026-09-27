@@ -282,7 +282,7 @@ td.n, th.n { text-align: right; font-variant-numeric: tabular-nums; }
 .empty p { color: var(--ink-2); font-size: 15.5px; }
 .empty p:last-child { margin: 0; }
 
-/* The Reading (site pages; the workspace has its own copy in app.css) */
+/* The Reading (site pages) */
 .reading { margin: 0; border-radius: 14px; padding: 20px 22px; background: var(--paper-2); border: 1px solid var(--line-soft); }
 .reading__cap { display: flex; justify-content: space-between; gap: 12px; font-family: var(--font-mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-mute); margin-bottom: 12px; }
 .reading__row { display: grid; grid-template-columns: 96px 1fr; gap: 12px; align-items: baseline; padding: 4px 0; }

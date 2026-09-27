@@ -1,7 +1,7 @@
 // Orbit site — no framework, no build step.
 document.documentElement.classList.add("js");
 
-// Paste a Calendly / Cal.com link here to send every "Book a demo" button straight to it.
+// Paste a Calendly / Cal.com link here to send every "Book a call" button straight to it.
 // Leave it empty and the buttons go to demo.html, whose form composes an email.
 const DEMO_URL = "";
 
