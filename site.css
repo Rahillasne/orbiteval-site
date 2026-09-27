@@ -477,6 +477,9 @@ select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px
 /* ---------------------------------------------------------- Release Record
    record.html. An evidence instrument: paper, rules, tabular figures. No
    cards that glow, no progress rings, nothing that implies a score. */
+/* record.html?embed=1: the record alone, as the home page's live preview. */
+.rr-embed .topbar, .rr-embed .footer, .rr-embed main > section:not([data-record]) { display: none; }
+.rr-embed main > [data-record] { padding-top: 14px; }
 .rr-pick { max-width: 62em; }
 .rr-srcs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 14px 0 0; }
 .rr-src { display: flex; flex-direction: column; gap: 9px; text-align: left; padding: 20px; border: 1px solid var(--line); border-radius: 16px; background: var(--paper); font: inherit; color: inherit; cursor: pointer; transition: border-color .18s var(--ease), background-color .18s var(--ease); }

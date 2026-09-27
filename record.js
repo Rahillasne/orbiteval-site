@@ -196,12 +196,12 @@
     }
   }
 
-  function generate() {
+  function generate(quiet) {
     if (state.src === 'upload') return;
     var src = D.sources[state.src === 'nhtsa' ? 'nhtsa' : 'corpus2'];
     root.hidden = false;
     root.innerHTML = render(current(), src);
-    root.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (quiet !== true) root.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   function init() {
@@ -222,6 +222,19 @@
       state.claim = Number(sel.value);
       if (!root.hidden) generate();
     });
+
+    /* A link can open one record: #nhtsa, or #claim-N counting from 0. With
+     * ?embed=1 the page shows that record alone, which is how the home page
+     * frames it. Nothing is chosen here that a visitor could not choose. */
+    var embed = /[?&]embed=1(&|$)/.test(location.search);
+    if (embed) document.documentElement.classList.add('rr-embed');
+    var m = /^#(?:(nhtsa)|claim-(\d+))$/.exec(location.hash);
+    var linked = !!m && (!!m[1] || !!D.corpus2[Number(m[2])]);
+    if (linked && m[2] !== undefined) {
+      state.src = 'corpus2';
+      state.claim = Number(m[2]);
+      sel.value = String(state.claim);
+    }
 
     /* A radiogroup promises arrow-key navigation, so it has to work. Tab
      * reaches the group, arrows move within it, and the moved-to option is
@@ -249,6 +262,7 @@
 
     document.querySelector('[data-generate]').addEventListener('click', generate);
     paint();
+    if (linked) generate(embed);
   }
 
   init();
