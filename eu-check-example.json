@@ -24,13 +24,13 @@
  "hints": {
   "uses_ml": {
    "answer": "yes",
-   "quote": "- the [π0 model](https://www.physicalintelligence.company/blog/pi0), a flow-based vision-language-action model (VLA)."
+   "quote": "- the [π₀ model](https://www.physicalintelligence.company/blog/pi0), a flow-based vision-language-action model (VLA)."
   },
   "safety_job": null
  },
  "claims": [
   {
-   "quote": "- the [π0 model](https://www.physicalintelligence.company/blog/pi0), a flow-based vision-language-action model (VLA).",
+   "quote": "- the [π₀ model](https://www.physicalintelligence.company/blog/pi0), a flow-based vision-language-action model (VLA).",
    "page": 1,
    "kind": "other",
    "claimed_pct": null,
@@ -39,7 +39,7 @@
    "file": "README.md"
   },
   {
-   "quote": "- the [π0-FAST model](https://www.physicalintelligence.company/research/fast), an autoregressive VLA, based on the FAST action tokenizer.",
+   "quote": "- the [π₀-FAST model](https://www.physicalintelligence.company/research/fast), an autoregressive VLA, based on the FAST action tokenizer.",
    "page": 1,
    "kind": "other",
    "claimed_pct": null,
@@ -48,7 +48,7 @@
    "file": "README.md"
   },
   {
-   "quote": "- the [π0.5 model](https://www.physicalintelligence.company/blog/pi05), an upgraded version of π0 with better open-world generalization trained with [knowledge insulation](https://www.physicalintelligence.company/research/knowledge_insulation).",
+   "quote": "- the [π₀.₅ model](https://www.physicalintelligence.company/blog/pi05), an upgraded version of π₀ with better open-world generalization trained with [knowledge insulation](https://www.physicalintelligence.company/research/knowledge_insulation).",
    "page": 1,
    "kind": "other",
    "claimed_pct": null,
