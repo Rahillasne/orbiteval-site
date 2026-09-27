@@ -58,9 +58,10 @@ assert.strictEqual(fail + S.inconclusive + S.count_not_stated + S.negative_gain 
   "every claim is counted once");
 assert.strictEqual(S.survives, 0, "the home page says none passes");
 has(`We checked ${CC.n_claims} published comparisons from robot AI research. None passes our check.`, "proof heading");
-has(`${Word(fail)} ${fail === 1 ? "fails" : "fail"} it, ${word(S.inconclusive)} ${S.inconclusive === 1 ? "is" : "are"} inconclusive, `
+const outcomes = `${Word(fail)} ${fail === 1 ? "fails" : "fail"} it, ${word(S.inconclusive)} ${S.inconclusive === 1 ? "is" : "are"} inconclusive, `
   + `${word(S.count_not_stated)} ${S.count_not_stated === 1 ? "does" : "do"} not state one clear episode count per arm, `
-  + `and ${word(S.negative_gain)} ${S.negative_gain === 1 ? "reports" : "report"} a loss.`, "proof detail");
+  + `and ${word(S.negative_gain)} ${S.negative_gain === 1 ? "reports" : "report"} a loss.`;
+has(outcomes, "proof detail");
 assert(!home.includes("claims that a robot AI got better"), "one of the twenty reports a loss");
 
 // The Claim Check's venue sentence, counted over the field its Venue column reads.
@@ -73,8 +74,13 @@ const venueSentence = `${Word(venues.simulation_benchmark)} name${venues.simulat
   + `${word(venues.physical_robot)} a physical robot, and ${word(venues.unstated)} ${venues.unstated === 1 ? "does" : "do"} not say.`;
 assert(claimsPage.includes(venueSentence), `claims.html should say ${JSON.stringify(venueSentence)}`);
 assert(!claimsPage.includes("Nineteen of the twenty"), "claims.html no longer says nineteen rest on simulation");
+assert(!/improvement claims|independently supported|researchers were careless, but/.test(claimsPage),
+  "claims.html no longer calls all twenty improvements or gives episode count as the only reason");
+// Its heading, description and lede name all four outcomes, with the same counts.
 for (const s of [
-  "<h1>Twenty published comparisons from robot-policy research. We checked all twenty.</h1>",
+  `<meta name="description" content="${Word(CC.n_claims)} published comparisons from robot-policy research, checked against a pre-registered protocol. None passes our check. Every number, the corpus and the code are here.">`,
+  `<h1>${Word(CC.n_claims)} published comparisons from robot-policy research. We checked all ${word(CC.n_claims)}.</h1>`,
+  `<p class="lede">None of them passes our check. ${outcomes} None of this says the researchers were careless, or that their numbers are false.</p>`,
   'The <a href="eu-check.html">free check</a> asks the same question of your own claims: is the test big enough to back the number?',
 ]) assert(claimsPage.includes(s), `claims.html should say ${s}`);
 

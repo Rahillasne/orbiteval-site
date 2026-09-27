@@ -40,6 +40,30 @@ assert.strictEqual(Stats.neededOne(0.94, 0.94), null, "at the claim, no count ba
 assert.strictEqual(Stats.neededOne(0.9, 0.94), null, "below the claim, no count backs it");
 assert.strictEqual(Stats.neededOne(0.9401, 0.94), null, "beyond the 2,000,000 cap");
 
+// neededOne remembers its answers (at most 500): a repeat call returns the same
+// result without scanning again, and a call after its entry has been evicted
+// still returns what the definition gives.
+{
+  const ms = (f) => { const t = process.hrtime.bigint(); const v = f(); return [v, Number(process.hrtime.bigint() - t) / 1e6]; };
+  const [a, slow] = ms(() => Stats.neededOne(0.97, 0.95));
+  const [b, fast] = ms(() => Stats.neededOne(0.97, 0.95));
+  assert.strictEqual(b, a, "same arguments, same result");
+  assert(fast * 5 < slow, `the repeat call does not scan again (${slow.toFixed(2)} ms, then ${fast.toFixed(3)} ms)`);
+  const reference = (p, c, cap) => {
+    if (!(p > c) || !reaches(p, c, cap)) return null;
+    let last = 0;
+    for (let n = 1; n < cap; n++) if (!reaches(p, c, n)) last = n;
+    return last + 1;
+  };
+  const ps = Array.from({ length: 600 }, (_, i) => 0.9 + (i + 1) / 10000);   // 600 keys: more than the memo holds
+  const firstPass = ps.map((p) => Stats.neededOne(p, 0.9, 3000));
+  ps.forEach((p, i) => {
+    assert.strictEqual(firstPass[i], reference(p, 0.9, 3000), `neededOne(${p}, 0.9, 3000)`);
+    assert.strictEqual(Stats.neededOne(p, 0.9, 3000), firstPass[i], `neededOne(${p}, 0.9, 3000) after eviction`);
+  });
+  assert(firstPass.some((n) => n === null) && firstPass.some((n) => n !== null), "the keys cover both answers");
+}
+
 // 3. The check's rules.
 const E = require(path.join(SITE, "eu-check-logic.js"));
 const TODAY = "2026-09-26";
@@ -99,19 +123,13 @@ assert.strictEqual(short.text, "At 95% confidence, your test shows at least 92.3
 assert(row("rate", "90", "96", "92").needed > 96, "92 of 96 at a 90% claim");
 assert(row("rate", "70", "20", "18").needed > 20, "18 of 20 at a 70% claim");
 // No claim from 90% to 99%, at any attempt count up to 300, is told a total at
-// or below the attempts it already ran. neededOne scans to its 2,000,000 cap on
-// every call (~20 ms), so the sweep runs one worker per claimed percentage and
-// computes each distinct (rate, claim) once; the result is awaited at the end.
+// or below the attempts it already ran. Each new (rate, claim) scans to the
+// 2,000,000 cap (~20 ms; neededOne's own memo skips repeats), so the sweep runs
+// one worker per claimed percentage; the result is awaited at the end.
 const SWEEP = `
 const { parentPort, workerData: { site, pct } } = require("worker_threads");
 const path = require("path");
-const Stats = require(path.join(site, "stats.js")), E = require(path.join(site, "eu-check-logic.js"));
-const real = Stats.neededOne, memo = new Map();
-Stats.neededOne = (p, c, cap) => {
-  const k = p + "|" + c + "|" + cap;
-  if (!memo.has(k)) memo.set(k, real(p, c, cap));
-  return memo.get(k);
-};
+const E = require(path.join(site, "eu-check-logic.js"));
 let asked = 0;
 const bad = [];
 for (let n = 1; n <= 300; n++) {

@@ -22,13 +22,26 @@
   // can pass and a larger one fail again; one scan over the whole range keeps
   // the last count that fails. null when p is at or below the claim, or when
   // the cap itself is not enough.
-  function neededOne(p, claim, cap = 2000000) {
+  function scanNeeded(p, claim, cap) {
     if (!(p > claim)) return null;
     const ok = (n) => wilson(Math.floor(p * n + 1e-9), n)[0] >= claim - 1e-12;
     if (!ok(cap)) return null;
     let lastFail = 0;
     for (let n = 1; n < cap; n++) if (!ok(n)) lastFail = n;
     return lastFail + 1;
+  }
+
+  // A scan to the cap takes ~20 ms, and the check page asks again for every
+  // row on every keystroke, so answers are remembered. At most 500 are kept;
+  // when full, the oldest is dropped. The answer never changes, only its cost.
+  const MEMO_MAX = 500, memo = new Map();
+  function neededOne(p, claim, cap = 2000000) {
+    const key = p + "|" + claim + "|" + cap;
+    if (memo.has(key)) return memo.get(key);
+    const N = scanNeeded(p, claim, cap);
+    if (memo.size >= MEMO_MAX) memo.delete(memo.keys().next().value);
+    memo.set(key, N);
+    return N;
   }
 
   const api = { Z, wilson, neededOne };
