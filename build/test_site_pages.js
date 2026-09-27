@@ -74,6 +74,9 @@ const venueSentence = `${Word(venues.simulation_benchmark)} name${venues.simulat
   + `${word(venues.physical_robot)} a physical robot, and ${word(venues.unstated)} ${venues.unstated === 1 ? "does" : "do"} not say.`;
 assert(claimsPage.includes(venueSentence), `claims.html should say ${JSON.stringify(venueSentence)}`);
 assert(!claimsPage.includes("Nineteen of the twenty"), "claims.html no longer says nineteen rest on simulation");
+// Step 4 names no count of states: the tally shows five verdicts, the protocol has six states.
+assert(!/\b(four|five|six) states\b/.test(claimsPage), "claims.html does not count the states");
+assert(claimsPage.includes("<p>Report the verdict the numbers allow, and never force a claim into better or worse."), "Step 4");
 assert(!/improvement claims|independently supported|researchers were careless, but/.test(claimsPage),
   "claims.html no longer calls all twenty improvements or gives episode count as the only reason");
 // Its heading, description and lede name all four outcomes, with the same counts.
@@ -105,6 +108,13 @@ for (const s of [
   "<h3>Handoff</h3><p>A report on each claim for your technical file, with a list of what is missing.</p>",
 ]) assert(demo.includes(s), `demo.html should say ${s}`);
 has(`eu-check.html?embed=1&example=1`, "the hero embeds the check with the example");
+// The embed's own disclaimer is out of sight inside the iframe, so the plate
+// carries it directly under the window, before the link that covers the plate.
+const NOTE = '<p class="plate__note small">Example only. Not legal advice, not a conformity assessment and not a certificate.</p>';
+has(NOTE, "the example disclaimer under the preview");
+assert(home.indexOf('class="plate__win"') < home.indexOf(NOTE) && home.indexOf(NOTE) < home.indexOf('class="plate__link"'),
+  "the disclaimer sits after the window and before the plate link");
+has(`<b>Claim Check<small>${CC.n_claims} published comparisons</small></b>`, "the mock header counts comparisons");
 has("€20,000", "pilot price");
 has('id="independence"', "the conflict policy anchor the footer links to");
 for (const bad of [/\bcompliant\b/i, /guarantee/i, /passport/i, /EU ID/, /\bcertified\b/i]) {

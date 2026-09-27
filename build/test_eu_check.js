@@ -118,7 +118,13 @@ const short = row("rate", "94", "200", "192");            // observed 96%
 assert.strictEqual(short.status, "short");
 assert.strictEqual(short.needed, Stats.neededOne(192 / 200, 0.94));
 assert.strictEqual(short.text, "At 95% confidence, your test shows at least 92.3%."
-  + " About 628 attempts in total would back it, if your success rate stays at 96.0%.");
+  + " About 628 attempts in total would back it, if you keep the same success rate (192 of 200).");
+// The rate is given as the counts themselves: a rounded rate near the claim
+// would print the claim itself (239 of 254 is 94.09%, which floors to 94.0%).
+const near = row("rate", "94", "254", "239");
+assert(near.needed > 254 && near.text.endsWith(" if you keep the same success rate (239 of 254)."), near.text);
+assert(!near.text.includes("94.0%"), near.text);
+assert(row("rate", "95", "1500", "1430").text.endsWith(" if you keep the same success rate (1,430 of 1,500)."), "counts are grouped");
 // The rows the old rounding got wrong now ask for more than was already run.
 assert(row("rate", "90", "96", "92").needed > 96, "92 of 96 at a 90% claim");
 assert(row("rate", "70", "20", "18").needed > 20, "18 of 20 at a 70% claim");
@@ -138,7 +144,8 @@ for (let n = 1; n <= 300; n++) {
     const r = E.claimRow({ kind: "rate", claimedPct: String(pct), attempts: String(n), successes: String(x) });
     if (r.needed == null) continue;
     asked++;
-    if (!(r.needed > n) || !r.text.includes(" About " + r.needed.toLocaleString("en-US") + " attempts in total"))
+    if (!(r.needed > n) || !r.text.includes(" About " + r.needed.toLocaleString("en-US") + " attempts in total")
+      || !r.text.endsWith(" if you keep the same success rate (" + x + " of " + n + ")."))
       bad.push(x + " of " + n + " at " + pct + "%: " + r.text);
   }
 }
@@ -149,6 +156,9 @@ const sweep = Promise.all(Array.from({ length: 10 }, (_, i) => new Promise((done
   const w = new Worker(SWEEP, { eval: true, workerData: { site: SITE, pct: 90 + i } });
   w.once("message", done);
   w.once("error", fail);
+  // A worker that ends without posting its result fails the test (after a
+  // message, this rejection is ignored: the promise has already settled).
+  w.once("exit", (code) => fail(new Error(`sweep worker for ${90 + i}% exited (code ${code}) without a result`)));
 }))).then((parts) => {
   const asked = parts.reduce((a, r) => a + r.asked, 0);
   assert.deepStrictEqual(parts.flatMap((r) => r.bad), [], "rows told a total at or below their attempts");
@@ -248,7 +258,7 @@ assert(mail.includes("Notified body if Part A applies") && mail.includes("1 of 1
 assert(mail.includes("\nOpen items in this check: 1\n") && !mail.includes("Missing"), mail);
 
 // The report marks what the AI read and nobody has checked since.
-const AIMARK = " (read by AI, not checked)";
+const AIMARK = " (read by AI, not checked by you)";
 const aiRow = (text, edited) => ({ kind: "rate", text, claimedPct: "90", attempts: "1000", successes: "940",
   ai: { quote: text, page: 1, file: null }, edited });
 const s3 = st({ safetyJob: null, sellWhen: "before", filled: { usesML: "Uses a neural network." },
@@ -294,5 +304,12 @@ const EX = JSON.parse(fs.readFileSync(path.join(SITE, "eu-check-example.json"), 
 assert.strictEqual(EX.source.commit, "215abfb217dbac7d5f1273282331b9b1866c0479");
 assert(EX.claims.length > 0 && EX.claims.every((c) => typeof c.quote === "string"), "the example has real quotes");
 
-sweep.then((asked) => console.log(`eu-check: stats and logic OK (attempts sweep: ${asked} rows, every total above the attempts run)`),
-  (e) => { console.error(e); process.exitCode = 1; });
+// The process never exits 0 without printing OK.
+let reachedOK = false;
+process.on("exit", (code) => {
+  if (code === 0 && !reachedOK) { console.error("eu-check: ended before the sweep reported"); process.exitCode = 1; }
+});
+sweep.then((asked) => {
+  reachedOK = true;
+  console.log(`eu-check: stats and logic OK (attempts sweep: ${asked} rows, every total above the attempts run)`);
+}, (e) => { console.error(e); process.exitCode = 1; });

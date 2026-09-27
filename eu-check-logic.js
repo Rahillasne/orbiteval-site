@@ -82,7 +82,8 @@
     return { status: "short", label: "Not enough proof", lower, needed,
       text: backs + (needed === null
         ? " More than 2,000,000 attempts would be needed at your current success rate."
-        : " About " + needed.toLocaleString("en-US") + " attempts in total would back it, if your success rate stays at " + floorPct(observed) + ".") };
+        : " About " + needed.toLocaleString("en-US") + " attempts in total would back it, if you keep the same success rate ("
+          + x.toLocaleString("en-US") + " of " + n.toLocaleString("en-US") + ").") };
   }
 
   const item = (id, state, text) => ({ id, state, text });
@@ -135,7 +136,7 @@
     return days > 0 ? days + " days to 20 January 2027." : "The Machinery Regulation has applied since 20 January 2027.";
   }
 
-  const AI_MARK = " (read by AI, not checked)";
+  const AI_MARK = " (read by AI, not checked by you)";
   const SAFETY = { yes: "yes", no: "no", unsure: "not sure" };
   const SELL = { now: "Already selling", before: "Before 20 January 2027", after: "From 20 January 2027", undecided: "Not decided" };
 

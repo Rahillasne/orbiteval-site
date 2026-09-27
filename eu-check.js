@@ -235,7 +235,7 @@
       const files = (j.source.files || []).map((f) =>
         `<a href="${esc(f.url)}" target="_blank" rel="noopener">${esc(f.name)}</a> (${esc(String(f.sha256).slice(0, 12))})`).join(", ");
       const commit = esc(String(j.source.commit || "").slice(0, 7));
-      statusHTML(`Loaded a real example: ${esc(j.source.title)}, read by AI on ${esc(j.read.date)} and checked by code. `
+      statusHTML(`Loaded a real example: ${esc(j.source.title)}, read by AI on ${esc(j.read.date)} and checked against the source text by code. `
         + `${j.claims.length} claims.` + (j.note ? " " + esc(j.note) : "")
         + (files ? ` Source: commit <span class="mono">${commit}</span> — ${files}.` : ""));
     } catch (e) { status("The example could not be loaded."); }
