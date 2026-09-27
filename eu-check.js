@@ -4,7 +4,12 @@
 // clears the page.
 (() => {
   const E = window.EUCheck, $ = (s) => document.querySelector(s);
-  const API = (window.EUCHECK_API || "").replace(/\/$/, "");
+  // ?embed=1 is the home page's preview window: a read-only view with the reader
+  // off, so the preview can never send anything to it. ?example=1 fills it with the example.
+  const params = new URLSearchParams(location.search);
+  const embed = params.get("embed") === "1";
+  if (embed) document.documentElement.classList.add("ec-embed");
+  const API = embed ? "" : (window.EUCHECK_API || "").replace(/\/$/, "");
   // pdf.js 3.11.174, served from this site so no third party sees a visitor's document.
   const PDFJS = "vendor/pdfjs-3.11.174/";
   const PDFJS_SRI = "sha384-/1qUCSGwTur9vjf/z9lmu/eCUYbpOTgSjmpbMQZ1/CtX2v/WcAIKqRv+U1DUCG6e";
@@ -28,6 +33,14 @@
 
   const PLACARD = { backed: "current", short: "caution", invalid: "revoked", nocount: "unknown", other: "unknown" };
   const ICON = { ok: "✓", warn: "!", bad: "✗", na: "–" };
+
+  // The preview is read-only: nothing in it can be typed into or pressed. Run
+  // after every re-render, since the cards, the step bar and the summaries are
+  // rebuilt, and switched back on, each time the page repaints.
+  function lockIfEmbed() {
+    if (!embed) return;
+    document.querySelectorAll("main input, main select, main textarea, main button").forEach((el) => { el.disabled = true; });
+  }
 
   // ---- The three steps --------------------------------------------------------
   // Step 1 is always open to the visitor; Claims and Result once there is a claim.
@@ -66,6 +79,7 @@
     if (!reachable(n)) return;
     state.step = n;
     paintAll();
+    if (embed) return;   // the preview never takes focus, and never scrolls the home page around it
     const target = opts.focus || $(`#s${n} .ec-step__body > h2`);
     if (target) target.focus({ preventScroll: true });
     $("#steps").scrollIntoView({ block: "start", behavior: reduceMotion() ? "auto" : "smooth" });
@@ -117,6 +131,7 @@
       c.querySelector("[data-rate]").hidden = r.kind === "other";
     });
     $("#more").hidden = state.rows.filter((r) => r.ai).length < 25;
+    lockIfEmbed();
   }
 
   function paintCard(r, res) {
@@ -223,6 +238,7 @@
     paintSteps(res);
     $("#book").href = "mailto:rahil@orbiteval.com?subject=" + encodeURIComponent("EU check: the full check")
       + "&body=" + encodeURIComponent(E.mailBody(state, today()));
+    lockIfEmbed();
   }
 
   // ---- Questions -------------------------------------------------------------
@@ -436,4 +452,6 @@
 
   state.step = 1;
   renderCards(); paintAll();
+  // The preview opens on the example's claims (step 2), never on its result.
+  if (embed && params.get("example") === "1") loadExample();
 })();
