@@ -562,7 +562,7 @@ select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px
 .ec-opts label { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border: 1px solid var(--line); border-radius: 999px; font-size: 14px; cursor: pointer; background: var(--paper); }
 .ec-opts input { width: auto; margin: 0; padding: 0; accent-color: var(--btn); }
 .ec-opts label:has(input:checked) { border-color: var(--ink); background: var(--ink); color: var(--paper); }
-.ec select { width: 100%; font: inherit; font-size: 15px; padding: 11px 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--paper-2); color: var(--ink); }
+.ec select { width: 100%; font: inherit; font-size: 15px; padding: 11px 12px; border: 1px solid var(--line); border-radius: 12px; background-color: var(--paper-2); color: var(--ink); }
 .ec-aihint { margin: 4px 0 0; font-size: 12.5px; color: var(--accent); }
 .ec-aihint:empty { display: none; }
 .ec-days { display: flex; align-items: baseline; flex-wrap: wrap; gap: 10px; margin: 0 0 14px; color: var(--ink-soft); }
@@ -597,3 +597,35 @@ select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px
 /* Embedded under the home page hero: the check alone, filled with the real example. */
 .ec-embed .topbar, .ec-embed .footer, .ec-embed .ec-head, .ec-embed #drop, .ec-embed .ec-actions, .ec-embed .ec-foot { display: none; }
 .ec-embed .ec { padding-top: 16px; }
+
+/* EU Readiness Check, fix round 1 */
+#readstatus:empty { display: none; }
+.ec-filerow { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: -2px 0 2px; }
+.ec-filerow[hidden] { display: none; }
+.ec-filerow #filename { color: var(--ink-2); overflow-wrap: anywhere; }
+.ec-linklike { background: transparent; border: 0; padding: 0; color: var(--accent); font-size: 12.5px; font-family: inherit; cursor: pointer; text-decoration: underline; }
+.ec-linklike:hover { color: var(--btn-hover); }
+/* Under 640px the claims table becomes a stack of cards: the table's fixed
+   column widths (867px, per the fix-round audit) cannot fit a 375px screen,
+   and .table-wrap's horizontal scroll hid the verdict off screen. */
+@media (max-width: 640px) {
+  .ec-rows thead { display: none; }
+  .ec-rows, .ec-rows tbody { display: block; width: 100%; }
+  .ec-rows tr {
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px 10px;
+    grid-template-areas: "claim claim claim" "pct att succ" "result result result";
+    position: relative; width: 100%; margin: 0 0 14px; padding: 14px 40px 14px 14px;
+    border: 1px solid var(--line-soft); border-radius: 12px; background: var(--paper);
+  }
+  .ec-rows td { display: block; padding: 0; border: 0; min-width: 0; }
+  .ec-rows td::before { content: attr(data-label); display: block; font-size: 11px; color: var(--ink-mute); margin-bottom: 3px; }
+  .ec-rows td[data-label=""]::before, .ec-rows td[data-label="Claim"]::before { display: none; }
+  .ec-rows td[data-label="Claim"] { grid-area: claim; min-width: 0; }
+  .ec-rows td[data-label="Claimed %"] { grid-area: pct; }
+  .ec-rows td[data-label="Attempts"] { grid-area: att; }
+  .ec-rows td[data-label="Succeeded"] { grid-area: succ; }
+  .ec-rows td[data-label="Result"] { grid-area: result; min-width: 0; }
+  .ec-rows td[data-label=""] { position: absolute; top: 10px; right: 10px; }
+  .ec-rows td.n input, .ec-rows select, .ec-rows td[data-label="Claim"] input { width: 100%; }
+  .ec-rows td.n input { text-align: left; }
+}

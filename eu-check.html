@@ -47,11 +47,12 @@
       <div class="ec-drop" id="drop">
         <input type="file" id="file" accept=".pdf,.txt,.md,text/plain,application/pdf" hidden>
         <button type="button" class="btn btn--ghost btn--sm" id="pick">Drop your datasheet (PDF) or choose a file</button>
+        <div class="ec-filerow" id="filerow" hidden><span class="small mono" id="filename"></span><button type="button" class="ec-linklike" id="removefile">Remove file</button></div>
         <textarea id="paste" rows="3" placeholder="…or paste your product claims here"></textarea>
         <button type="button" class="btn btn--primary btn--sm" id="read">Read it with AI</button>
         <p class="small ec-note">Your text is sent to our server and to OpenAI to be read. We do not store it. OpenAI does not use API data to train its models unless we opt in to share it. It keeps logs that can include your text for up to 30 days, or longer where the law requires it or to protect its services or others from harm (developers.openai.com/api/docs/guides/your-data, read 26 September 2026). Don't send anything you can't share with a third party. You can type everything by hand instead.</p>
-        <p class="small" id="readstatus" role="status" aria-live="polite"></p>
       </div>
+      <p class="small" id="readstatus" role="status" aria-live="polite"></p>
       <fieldset class="ec-q"><legend>Does the machine use AI or machine learning?</legend>
         <div class="ec-opts"><label><input type="radio" name="usesML" value="yes"> Yes</label><label><input type="radio" name="usesML" value="no"> No</label></div>
         <p class="ec-aihint" data-hint="usesML"></p></fieldset>

@@ -13,8 +13,16 @@
   const today = () => new Date().toLocaleDateString("en-CA");   // YYYY-MM-DD, local
   const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
   const fresh = () => ({ usesML: null, safetyJob: null, sellWhen: null, method: false, rows: [], filled: {} });
-  let state = fresh(), nextId = 1, picked = null;
-  const withId = (r) => Object.assign({ id: nextId++, text: "", kind: "rate", claimedPct: "", attempts: "", successes: "", ai: null }, r);
+  let state = fresh(), nextId = 1, picked = null, limited = false;
+  const withId = (r) => Object.assign({ id: nextId++, text: "", kind: "rate", claimedPct: "", attempts: "", successes: "", ai: null, edited: false }, r);
+
+  // Embed mode is a read-only preview: nothing inside the page can be typed
+  // into or clicked. Run after every re-render, since the claims table is
+  // rebuilt from scratch each time a row is added, deleted or AI-filled.
+  function lockIfEmbed() {
+    if (!embed) return;
+    document.querySelectorAll("main input, main select, main textarea, main button").forEach((el) => { el.disabled = true; });
+  }
 
   // ---- Result panel --------------------------------------------------------
   const PLACARD = { backed: "current", short: "caution", invalid: "revoked", nocount: "unknown", other: "unknown" };
@@ -47,15 +55,15 @@
   // ---- Claims table --------------------------------------------------------
   function rowHTML(r) {
     const ai = r.ai ? `<details class="ec-ai"><summary>AI · check this</summary><q>${esc(r.ai.quote)}</q>${
-      r.ai.page ? ` <span class="mono small">${r.ai.file ? esc(r.ai.file) : "page " + r.ai.page}</span>` : ""}</details>` : "";
+      r.ai.page ? ` <span class="mono small">${r.ai.file ? esc(r.ai.file) : "page " + esc(String(r.ai.page))}</span>` : ""}</details>` : "";
     return `<tr data-id="${r.id}">
-      <td><select data-f="kind" aria-label="Kind of claim"><option value="rate">Success rate</option><option value="other">Other claim</option></select>
+      <td data-label="Claim"><select data-f="kind" aria-label="Kind of claim"><option value="rate">Success rate</option><option value="other">Other claim</option></select>
         <input data-f="text" aria-label="Claim" placeholder="e.g. 94% pick success">${ai}</td>
-      <td class="n"><input data-f="claimedPct" inputmode="decimal" aria-label="Claimed %"></td>
-      <td class="n"><input data-f="attempts" inputmode="numeric" aria-label="Attempts"></td>
-      <td class="n"><input data-f="successes" inputmode="numeric" aria-label="Succeeded"></td>
-      <td class="ec-res" data-res></td>
-      <td><button type="button" class="ec-del" data-del aria-label="Delete this claim">×</button></td></tr>`;
+      <td class="n" data-label="Claimed %"><input data-f="claimedPct" inputmode="decimal" aria-label="Claimed %"></td>
+      <td class="n" data-label="Attempts"><input data-f="attempts" inputmode="numeric" aria-label="Attempts"></td>
+      <td class="n" data-label="Succeeded"><input data-f="successes" inputmode="numeric" aria-label="Succeeded"></td>
+      <td class="ec-res" data-res data-label="Result"></td>
+      <td data-label=""><button type="button" class="ec-del" data-del aria-label="Delete this claim">×</button></td></tr>`;
   }
 
   function renderRows() {
@@ -66,6 +74,7 @@
       for (const f of ["kind", "text", "claimedPct", "attempts", "successes"]) tr.querySelector(`[data-f="${f}"]`).value = r[f];
     });
     $("#more").hidden = state.rows.filter((r) => r.ai).length < 25;
+    lockIfEmbed();
   }
 
   function paintRow(r, res) {
@@ -78,6 +87,7 @@
     const r = tr && state.rows.find((x) => x.id === Number(tr.dataset.id));
     if (!r || !f) return;
     r[f] = e.target.value;
+    if (r.ai) r.edited = true;   // the person's edit now owns this row; a later AI read must not erase it
     paintResult();
   });
   $("#rows tbody").addEventListener("click", (e) => {
@@ -108,6 +118,7 @@
 
   // ---- The AI reader ---------------------------------------------------------
   const status = (msg) => { $("#readstatus").textContent = msg; };
+  const statusHTML = (html) => { $("#readstatus").innerHTML = html; };
   const loadPdfJs = () => new Promise((ok, no) => {
     if (window.pdfjsLib) return ok();
     const s = document.createElement("script");
@@ -118,7 +129,7 @@
   async function pdfPages(file) {
     await loadPdfJs();
     window.pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJS + "pdf.worker.min.js";
-    const doc = await window.pdfjsLib.getDocument({ data: await file.arrayBuffer() }).promise;
+    const doc = await window.pdfjsLib.getDocument({ data: await file.arrayBuffer(), isEvalSupported: false }).promise;
     const pages = [];
     for (let i = 1; i <= doc.numPages; i++) {
       const c = await (await doc.getPage(i)).getTextContent();
@@ -134,7 +145,9 @@
   }
 
   function applyAI(j, how) {
-    state.rows = state.rows.filter((r) => !r.ai).concat(E.rowsFromAI(j.claims).map(withId));
+    // Keep any AI row the person has since edited -- it is theirs now. Only
+    // untouched AI rows are replaced by this read's fresh suggestions.
+    state.rows = state.rows.filter((r) => !r.ai || r.edited).concat(E.rowsFromAI(j.claims).map(withId));
     const m = E.mergeHints(state, j.hints);
     state.usesML = m.usesML; state.safetyJob = m.safetyJob; state.filled = Object.assign({}, state.filled, m.filled);
     renderRows(); syncQuestions(); paintResult();
@@ -145,6 +158,7 @@
   }
 
   async function readWithAI() {
+    if (limited) return;
     if (!API) return status("The AI reader is not switched on yet. Fill in the check by hand.");
     let pages;
     try { pages = await inputPages(); } catch (e) { return status("That file could not be opened. Paste the text instead."); }
@@ -157,23 +171,50 @@
       const r = await fetch(API + "/api/extract", { method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify(pages.length > 1 ? { pages } : { text: pages[0] }), signal: ctl.signal });
       const j = await r.json().catch(() => ({}));
+      if (j && j.limited === true) {
+        // The server's daily cap is reached. The button stays off for the
+        // rest of this session; the manual path keeps working (SPEC §5).
+        limited = true;
+        return status(j.error || "The daily limit has been reached. Fill in the check by hand.");
+      }
       if (!r.ok || !Array.isArray(j.claims)) return status(j.error || "The AI reader is not available right now. Fill in the check by hand.");
       applyAI(j, "Found");
     } catch (e) {
       status("The AI reader is not available right now. Fill in the check by hand.");
-    } finally { clearTimeout(timer); btn.disabled = false; }
+    } finally { clearTimeout(timer); btn.disabled = limited; }
+  }
+
+  function setPicked(f) {
+    picked = f;
+    $("#filerow").hidden = !f;
+    $("#filename").textContent = f ? f.name : "";
   }
 
   $("#read").addEventListener("click", readWithAI);
   $("#pick").addEventListener("click", () => $("#file").click());
-  $("#file").addEventListener("change", (e) => { picked = e.target.files[0] || null; if (picked) status("Chosen: " + picked.name); });
+  $("#file").addEventListener("change", (e) => {
+    const f = e.target.files[0] || null;
+    setPicked(f);
+    if (f) status("Chosen: " + f.name);
+  });
+  $("#removefile").addEventListener("click", () => {
+    setPicked(null); $("#file").value = ""; status("");
+  });
+  // Typing or pasting takes over from a chosen file -- otherwise the file
+  // silently wins forever, and the pasted text is never sent.
+  $("#paste").addEventListener("input", () => {
+    if (!picked) return;
+    setPicked(null); $("#file").value = "";
+    status("Using the pasted text.");
+  });
   const drop = $("#drop");
   drop.addEventListener("dragover", (e) => { e.preventDefault(); drop.classList.add("is-over"); });
   drop.addEventListener("dragleave", () => drop.classList.remove("is-over"));
   drop.addEventListener("drop", (e) => {
     e.preventDefault(); drop.classList.remove("is-over");
-    picked = e.dataTransfer.files[0] || null;
-    if (picked) status("Chosen: " + picked.name);
+    const f = e.dataTransfer.files[0] || null;
+    setPicked(f);
+    if (f) status("Chosen: " + f.name);
   });
 
   // ---- The real example ------------------------------------------------------
@@ -184,8 +225,14 @@
       applyAI(j, "Loaded a real example:");
       if (j.hints.safety_job === null) state.safetyJob = "unsure";
       syncQuestions(); paintResult();
-      status(`Loaded a real example: ${j.source.title}, read by AI on ${j.read.date} and checked by code. ${j.claims.length} claims.`
-        + (j.note ? " " + j.note : ""));
+      // The source, linked, with its commit and each file's sha256 prefix (SPEC §4.6 / R24).
+      // Built with esc() throughout: nothing here is a raw document string.
+      const files = (j.source.files || []).map((f) =>
+        `<a href="${esc(f.url)}" target="_blank" rel="noopener">${esc(f.name)}</a> (${esc(String(f.sha256).slice(0, 12))})`).join(", ");
+      const commit = esc(String(j.source.commit || "").slice(0, 7));
+      statusHTML(`Loaded a real example: ${esc(j.source.title)}, read by AI on ${esc(j.read.date)} and checked by code. `
+        + `${j.claims.length} claims.` + (j.note ? " " + esc(j.note) : "")
+        + (files ? ` Source: commit <span class="mono">${commit}</span> — ${files}.` : ""));
     } catch (e) { status("The example could not be loaded."); }
   }
   $("#example").addEventListener("click", loadExample);
