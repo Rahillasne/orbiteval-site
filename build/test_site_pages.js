@@ -26,8 +26,8 @@ for (const f of html) {
 assert.deepStrictEqual(broken, [], "broken local links");
 
 // 2. One header, one menu, one footer on every page that has them.
-const NAV_PAGES = ["index", "record", "claims", "decision", "real", "demo",
-  "release-check", "registry", "calibration", "specimen-report", "method"];
+const NAV_PAGES = ["index", "eu-check", "record", "claims", "decision", "real", "demo",
+  "release-check", "calibration", "method"];
 const block = (s, re) => { const m = s.match(re); assert(m, re); return m[0]; };
 const chrome = (f) => {
   const s = read(f + ".html");
@@ -36,63 +36,31 @@ const chrome = (f) => {
 };
 const first = chrome("index");
 for (const f of NAV_PAGES) assert.deepStrictEqual(chrome(f), first, `${f}.html chrome differs`);
-for (const h of ["record.html", "claims.html", "decision.html", "release-check.html", "real.html"]) {
-  assert(first[0].includes(`href="${h}"`), `menu lacks ${h}`);
-}
+for (const h of ["eu-check.html"]) assert(first[0].includes(`href="${h}"`), `menu lacks ${h}`);
 
-// 3. The home page's figures are the data's figures.
+// 3. The home page: its figures are the data's figures, and it says only what was approved.
 const home = read("index.html");
 const has = (s, why) => assert(home.includes(s), `index.html should say ${JSON.stringify(s)} (${why})`);
 
-const S = json("claims-data.json").summary;
+const CC = json("claims-data.json"), S = CC.summary;
 has(`<td>Supported</td><td class="n mono">${S.survives}</td>`, "claims survives");
 has(`<td>Inconclusive</td><td class="n mono">${S.inconclusive}</td>`, "claims inconclusive");
 has(`<td>Not supported</td><td class="n mono">${S.erased + S.fails_on_episode_noise}</td>`, "claims not supported");
 has(`<td>Count not stated</td><td class="n mono">${S.count_not_stated}</td>`, "claims no count");
 has(`<td>Reported loss</td><td class="n mono">${S.negative_gain}</td>`, "claims loss");
+has(`We checked ${CC.n_claims} published claims`, "proof count");
 assert.strictEqual(S.survives, 0, "the home page says none is supported");
-assert.strictEqual(S.fails_on_episode_noise, 7, "the home page says seven fail on episode count alone");
-
-const Dd = json("decision-data.json");
-const pct = (k) => (100 * k / Dd.counts.n_cells).toFixed(1) + "%";
-has(`${Dd.headline.rate_a.toFixed(1)}%`, "decision arm A");
-has(`${Dd.headline.rate_b.toFixed(1)}%`, "decision arm B");
-has(`${Dd.counts.n_cells.toLocaleString("en-US")} pairs`, "decision cells");
-has(`false alarms</td><td class="n mono">${pct(Dd.counts.episode_level_rejects)}`, "episode-level rate");
-has(`false alarms</td><td class="n mono">${pct(Dd.counts.retrain_level_rejects)}`, "retrain-level rate");
-assert.strictEqual(Dd.headline.gap_pp, 41, "the home page says forty-one points");
-
-const R = json("release-record-data.json");
-const c = R.corpus2[2], d = c.display;
-has(`record.html?embed=1#${c.id}`, "hero embeds the featured claim");
-has(`${c.baseline_label} → ${c.candidate_label}`, "hero bar names the arms");
-for (const s of [d.difference + " " + d.interval, "Detection limit " + d.detection_limit,
-  `${(100 * c.k_baseline / c.n_baseline).toFixed(2)}% → ${(100 * c.k_candidate / c.n_candidate).toFixed(2)}%`,
-  `${c.k_baseline.toLocaleString("en-US")} and ${c.k_candidate.toLocaleString("en-US")} of ${c.n_baseline.toLocaleString("en-US")} episodes`,
-  `+${c.effect_pp} points`]) has(s, "featured record");
-assert.strictEqual(c.claim, "insufficient evidence");
-has(`${R.counts.corpus2_no_count} of ${R.counts.corpus2_records} claims`, "no-count claims");
-
-const N = R.nhtsa;
-has(`${N.n_baseline} incident reports`, "NHTSA arm A");
-has(`${N.n_candidate} incident reports`, "NHTSA arm B");
-has(`${N.events_in.toLocaleString("en-US")} reports read`, "NHTSA events in");
-has(`${N.revisions_superseded} superseded revisions`, "NHTSA revisions");
-has(`${N.flagged_for_adjudication.length} near-miss labels`, "NHTSA flags");
-has(`${N.merged_variants[0].split("', '").length} spellings merged`, "NHTSA merges");
-
-// The operator table on the home page repeats the NHTSA audit's own figures.
-const audit = read("release-check.html");
-for (const s of ["1,436", "1,211", "Avride", "Zoox", "Tesla", "May Mobility", "Too coarse", "Too fine", "Too few", "Scheme changed", "Withheld"]) {
-  assert(home.includes(s) && audit.includes(s), `home and audit should both carry ${s}`);
+assert.deepStrictEqual([S.fails_on_episode_noise, S.count_not_stated], [7, 8], "the home page says seven fail and eight do not state one");
+has("Seven fail on episode count alone, and eight do not state one.", "proof detail");
+has(`eu-check.html?embed=1&example=1`, "the hero embeds the check with the real example");
+has("€20,000", "pilot price");
+has('id="independence"', "the conflict policy anchor the footer links to");
+for (const bad of [/\bcompliant\b/i, /guarantee/i, /passport/i, /EU ID/, /\bcertified\b/i]) {
+  for (const f of ["index.html", "eu-check.html"]) assert(!bad.test(read(f)), `${f} uses a banned word: ${bad}`);
 }
-// The operator rows add up to the heading: 17 operators, 1,436 reports.
-const opTable = block(home, /NHTSA incident record[\s\S]*?<\/table>/);
-const rowsN = [...opTable.matchAll(/<tr><td>([^<]+)<\/td><td class="n mono">([\d,]+)<\/td>/g)];
-const words = { Seven: 7, Five: 5 };
-const ops = rowsN.reduce((a, r) => a + (words[r[1].split(" ")[0]] || 1), 0);
-const reps = rowsN.reduce((a, r) => a + Number(r[2].replace(/,/g, "")), 0);
-assert.deepStrictEqual([ops, reps], [17, 1436], "operator rows add up to 17 operators and 1,436 reports");
+const R = json("release-record-data.json");
+const c = R.corpus2[2];
+const N = R.nhtsa;
 
 // 4. A record link opens the record it names, and embed shows it alone.
 function openRecord(search, hash) {
@@ -122,4 +90,4 @@ assert(o.root.hidden, "an unknown record opens nothing");
 o = openRecord("", "#claim-2");
 assert(o.root.hidden, "an unknown record opens nothing");
 
-console.log(`site pages: OK (${html.length} pages, links resolve, ${NAV_PAGES.length} share one header and footer, home figures match the data)`);
+console.log(`site pages: OK (${html.length} pages, links resolve, ${NAV_PAGES.length} share one header and footer, home says only what was approved)`);
