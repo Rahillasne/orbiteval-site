@@ -72,6 +72,22 @@ assert.strictEqual(E.daysUntilDeadline("2026-09-26"), 116);
 assert.strictEqual(E.daysUntilDeadline("2027-01-20"), 0);
 assert(E.daysUntilDeadline("2027-02-01") < 0);
 
+// Today's date is built from the local calendar fields, never from a locale:
+// a locale that prints "27/09/2026" must not turn the day count into NaN.
+assert.strictEqual(E.localISO(new Date(2026, 0, 5)), "2026-01-05");
+assert.strictEqual(E.localISO(new Date(2027, 11, 31, 23, 59, 59)), "2027-12-31");
+assert.strictEqual(E.localISO(new Date(987, 2, 9)), "0987-03-09");
+assert(Number.isNaN(E.daysUntilDeadline("27/09/2026")), "a locale-shaped date is why");
+{
+  const real = Date.prototype.toLocaleDateString;
+  Date.prototype.toLocaleDateString = () => "27/09/2026";
+  try {
+    const d = E.localISO(new Date(2026, 8, 27));
+    assert.strictEqual(d, "2026-09-27");
+    assert.strictEqual(E.daysUntilDeadline(d), 115);
+  } finally { Date.prototype.toLocaleDateString = real; }
+}
+
 // Step 1: every answer combination, and the lawyer line on every real route.
 const route = (usesML, safetyJob, sellWhen) => E.step1({ usesML, safetyJob, sellWhen }, TODAY);
 assert.strictEqual(route(null, null).route, "incomplete");
@@ -207,6 +223,20 @@ assert.deepStrictEqual(c2.items.map((i) => [i.state, i.text]), [["ok", "Claims l
   ["ok", "Test results back every claim"], ["ok", "Testing method written down"], ["ok", "Route question answered"]]);
 assert.strictEqual(c2.missing, 0);
 assert.deepStrictEqual(clOf({ rows: [OTHER] }).items[1], { id: "tests", state: "bad", text: "No claim has test numbers yet" });
+// Counts typed but no claimed %: the row has test numbers, so the item says what it lacks.
+const COUNTS_ONLY = { kind: "rate", claimedPct: "", attempts: "200", successes: "188" };
+assert.strictEqual(E.claimRow(COUNTS_ONLY).status, "invalid");
+assert.deepStrictEqual(clOf({ rows: [COUNTS_ONLY] }).items[1], { id: "tests", state: "warn", text: "1 claim needs a claimed %" });
+assert.deepStrictEqual(clOf({ rows: [COUNTS_ONLY, COUNTS_ONLY] }).items[1], { id: "tests", state: "warn", text: "2 claims need a claimed %" });
+assert.deepStrictEqual(clOf({ rows: [COUNTS_ONLY, BACKED] }).items[1], { id: "tests", state: "warn", text: "1 claim needs a claimed %" });
+// Beside other open claims, both counts are given, and every open claim is counted once.
+assert.deepStrictEqual(clOf({ rows: [COUNTS_ONLY, BACKED, OTHER] }).items[1],
+  { id: "tests", state: "warn", text: "1 claim needs a claimed %; 1 claim without enough test proof" });
+assert.deepStrictEqual(clOf({ rows: [COUNTS_ONLY, OTHER, OTHER] }).items[1],
+  { id: "tests", state: "warn", text: "1 claim needs a claimed %; 2 claims without enough test proof" });
+// Only attempts, or only successes, is not a test count yet.
+assert.strictEqual(clOf({ rows: [{ kind: "rate", claimedPct: "", attempts: "200", successes: "" }] }).items[1].text,
+  "No claim has test numbers yet");
 const empty = clOf({ safetyJob: "unsure" });
 assert.deepStrictEqual(empty.items.map((i) => [i.state, i.text]), [["bad", "No claims listed yet"],
   ["bad", "No claim has test numbers yet"],
@@ -291,13 +321,19 @@ for (const s of [
   ">Try an example: a public research model card (π0.5)</button>",
   'Each claim is read as "at least X%". A claim is backed when the lower end of its 95% interval reaches it, assuming independent attempts under the conditions the claim describes.',
   '<p class="small ec-note" id="more" hidden>The AI reader lists at most 25 claims per read.</p>',
-  "Not legal advice, not a conformity assessment and not a certificate. The route questions come from the regulation text; have your lawyer confirm your route. We store nothing you enter. If you use the AI reader, your text passes through OpenAI, as the note above the reader explains.",
+  'Not legal advice, not a conformity assessment and not a certificate. The route questions come from the regulation text; have your lawyer confirm your route. We store nothing you enter.<span class="ec-reader-only"> If you use the AI reader, your text passes through OpenAI, as the note above the reader explains.</span>',
 ]) assert(page.includes(s), `eu-check.html should say ${s}`);
 assert(!/nothing stored/i.test(page), "the page no longer says nothing is stored");
 const css = fs.readFileSync(path.join(SITE, "site.css"), "utf8");
 const hide = css.split("\n").find((l) => l.startsWith(".ec-embed .topbar"));
 assert(hide && !hide.includes(".ec-foot"), "the embed keeps the disclaimer: " + hide);
 assert(css.includes(".ec-li--na > span { color: var(--ink-mute); }"), "the na icon is muted");
+// With the reader off, its controls and every sentence about it are hidden (browser_check --reader off runs it).
+assert(css.includes(".ec-noreader #drop, .ec-noreader #more, .ec-noreader .ec-reader-only { display: none; }"), "reader-off rule");
+const js = fs.readFileSync(path.join(SITE, "eu-check.js"), "utf8");
+assert(js.includes('if (!API) document.documentElement.classList.add("ec-noreader");'), "eu-check.js marks the page when the reader is off");
+assert(!js.includes("toLocaleDateString") && js.includes("E.localISO(new Date())"), "today comes from localISO");
+assert(!/§|\bR[0-9]{1,3}\b/.test(js), "no internal section or ruling numbers in a public file");
 const cfg = fs.readFileSync(path.join(SITE, "eu-check-config.js"), "utf8");
 assert(/window\.EUCHECK_API = "(https:\/\/[^"]+)?";/.test(cfg), "config sets EUCHECK_API to empty or an https URL");
 const EX = JSON.parse(fs.readFileSync(path.join(SITE, "eu-check-example.json"), "utf8"));

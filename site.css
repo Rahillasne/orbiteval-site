@@ -600,6 +600,8 @@ select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px
 /* Embedded under the home page hero: the check alone, filled with the real example. */
 .ec-embed .topbar, .ec-embed .footer, .ec-embed .ec-head, .ec-embed #drop, .ec-embed .ec-actions { display: none; }
 .ec-embed .ec { padding-top: 16px; }
+/* The AI reader is off (EUCHECK_API empty): its controls, and every sentence about it, are hidden. */
+.ec-noreader #drop, .ec-noreader #more, .ec-noreader .ec-reader-only { display: none; }
 
 /* EU Readiness Check, fix round 1 */
 #readstatus:empty { display: none; }

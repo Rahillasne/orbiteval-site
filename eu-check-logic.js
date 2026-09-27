@@ -31,6 +31,13 @@
     unsure: { label: "First question for your lawyer", tone: "wait", say: ["unsure"] },
   };
 
+  // YYYY-MM-DD from the local calendar fields. A locale's date format (what
+  // toLocaleDateString gives) must never reach daysUntilDeadline.
+  function localISO(d) {
+    const pad = (n, w) => String(n).padStart(w, "0");
+    return pad(d.getFullYear(), 4) + "-" + pad(d.getMonth() + 1, 2) + "-" + pad(d.getDate(), 2);
+  }
+
   function daysUntilDeadline(todayISO) {
     const [y, m, d] = todayISO.split("-").map(Number);
     return Math.round((Date.UTC(2027, 0, 20) - Date.UTC(y, m - 1, d)) / 86400000);
@@ -87,20 +94,26 @@
   }
 
   const item = (id, state, text) => ({ id, state, text });
+  const nClaims = (n) => n + (n === 1 ? " claim" : " claims");
 
   // "na" is an item the check did not assess (the method, in the example): it
   // is shown, but it is not an open item.
   function checklist(state, results) {
     const rows = state.rows || [];
     const backed = results.filter((r) => r.status === "backed").length;
-    const withCounts = results.filter((r) => r.status === "backed" || r.status === "short").length;
+    // A row with both attempts and successes has test numbers, whatever else it lacks.
+    const counted = rows.filter((r) => parseCount(r.attempts) !== null && parseCount(r.successes) !== null);
+    const withCounts = counted.length;
+    const needPct = counted.filter((r) => r.kind !== "other" && parsePct(r.claimedPct) === null).length;
     const open = results.filter((r) => ["short", "nocount", "invalid", "other"].includes(r.status)).length;
     const answered = state.usesML === "no" || state.safetyJob === "yes" || state.safetyJob === "no";
     const items = [
       rows.length ? item("claims", "ok", "Claims listed") : item("claims", "bad", "No claims listed yet"),
       withCounts === 0 ? item("tests", "bad", "No claim has test numbers yet")
-        : open > 0 ? item("tests", "warn", `${open} ${open === 1 ? "claim" : "claims"} without enough test proof`)
-          : item("tests", "ok", "Test results back every claim"),
+        : needPct > 0 ? item("tests", "warn", `${nClaims(needPct)} ${needPct === 1 ? "needs" : "need"} a claimed %`
+            + (open > needPct ? `; ${nClaims(open - needPct)} without enough test proof` : ""))
+          : open > 0 ? item("tests", "warn", `${nClaims(open)} without enough test proof`)
+            : item("tests", "ok", "Test results back every claim"),
       state.example === true ? item("method", "na", "Testing method: not assessed in this example")
         : state.method ? item("method", "ok", "Testing method written down")
           : item("method", "bad", "Testing method not written down (needed where Annex IV (n) applies)"),
@@ -173,6 +186,6 @@
       "", "Name:", "Company:", "Machine:", "A time that works for me:", ""].join("\n");
   }
 
-  return { DEADLINE, MAX_CHARS, SENTENCES, daysUntilDeadline, step1, parseCount, parsePct, claimRow,
+  return { DEADLINE, MAX_CHARS, SENTENCES, localISO, daysUntilDeadline, step1, parseCount, parsePct, claimRow,
     checklist, mergeHints, rowsFromAI, hasText, tooLong, report, mailBody };
 });

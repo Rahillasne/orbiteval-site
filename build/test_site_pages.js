@@ -37,6 +37,7 @@ const chrome = (f) => {
 const first = chrome("index");
 for (const f of NAV_PAGES) assert.deepStrictEqual(chrome(f), first, `${f}.html chrome differs`);
 for (const h of ["eu-check.html"]) assert(first[0].includes(`href="${h}"`), `menu lacks ${h}`);
+for (const f of NAV_PAGES) assert(/<title>[^<]*OrbitEval[^<]*<\/title>/.test(read(f + ".html")), `${f}.html title names OrbitEval`);
 
 // 3. The home page: its figures are the data's figures, and it says only what was approved.
 const home = read("index.html");

@@ -9,8 +9,10 @@
   const params = new URLSearchParams(location.search);
   const embed = params.get("embed") === "1";
   if (embed) document.documentElement.classList.add("ec-embed");
+  // No reader address: hide its controls rather than offer a button that cannot work.
+  if (!API) document.documentElement.classList.add("ec-noreader");
 
-  const today = () => new Date().toLocaleDateString("en-CA");   // YYYY-MM-DD, local
+  const today = () => E.localISO(new Date());   // YYYY-MM-DD, local, whatever the locale
   const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
   const fresh = () => ({ usesML: null, safetyJob: null, sellWhen: null, method: false, rows: [], filled: {}, example: false });
   let state = fresh(), nextId = 1, picked = null, limited = false;
@@ -177,7 +179,7 @@
       const j = await r.json().catch(() => ({}));
       if (j && j.limited === true) {
         // The server's daily cap is reached. The button stays off for the
-        // rest of this session; the manual path keeps working (SPEC §5).
+        // rest of this session; the manual path keeps working.
         limited = true;
         return status(j.error || "The daily limit has been reached. Fill in the check by hand.");
       }
@@ -230,7 +232,8 @@
       state.example = true;   // the checklist does not assess a testing method for the example
       if (j.hints.safety_job === null) state.safetyJob = "unsure";
       syncQuestions(); paintResult();
-      // The source, linked, with its commit and each file's sha256 prefix (SPEC §4.6 / R24).
+      // The source, linked, with its commit and each file's sha256 prefix, so
+      // anyone can check the example against the exact files it was read from.
       // Built with esc() throughout: nothing here is a raw document string.
       const files = (j.source.files || []).map((f) =>
         `<a href="${esc(f.url)}" target="_blank" rel="noopener">${esc(f.name)}</a> (${esc(String(f.sha256).slice(0, 12))})`).join(", ");
