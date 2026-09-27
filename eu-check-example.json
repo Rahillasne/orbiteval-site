@@ -1,0 +1,125 @@
+{
+ "source": {
+  "title": "openpi π0.5 model card (README and LIBERO README)",
+  "commit": "215abfb217dbac7d5f1273282331b9b1866c0479",
+  "files": [
+   {
+    "name": "README.md",
+    "url": "https://raw.githubusercontent.com/Physical-Intelligence/openpi/215abfb217dbac7d5f1273282331b9b1866c0479/README.md",
+    "sha256": "567fc57766bd736664f50126cab8145af4071ca16cc5e238f2b11e369169c3b5"
+   },
+   {
+    "name": "examples/libero/README.md",
+    "url": "https://raw.githubusercontent.com/Physical-Intelligence/openpi/215abfb217dbac7d5f1273282331b9b1866c0479/examples/libero/README.md",
+    "sha256": "a2caaf5459c4b01837b73aa93a6f69e8cdf10385b39c34eba36afa85f83fafe9"
+   }
+  ]
+ },
+ "read": {
+  "model": "gpt-5.5",
+  "date": "2026-09-26",
+  "tokens_in": 6276,
+  "tokens_out": 751
+ },
+ "hints": {
+  "uses_ml": {
+   "answer": "yes",
+   "quote": "Currently, this repo contains three types of models:"
+  },
+  "safety_job": null
+ },
+ "claims": [
+  {
+   "quote": "| Inference | > 8 GB | RTX 4090 |",
+   "page": 1,
+   "kind": "other",
+   "claimed_pct": null,
+   "attempts": null,
+   "successes": null,
+   "file": "README.md"
+  },
+  {
+   "quote": "| Fine-Tuning (LoRA) | > 22.5 GB | RTX 4090 |",
+   "page": 1,
+   "kind": "other",
+   "claimed_pct": null,
+   "attempts": null,
+   "successes": null,
+   "file": "README.md"
+  },
+  {
+   "quote": "| Fine-Tuning (Full) | > 70 GB | A100 (80GB) / H100 |",
+   "page": 1,
+   "kind": "other",
+   "claimed_pct": null,
+   "attempts": null,
+   "successes": null,
+   "file": "README.md"
+  },
+  {
+   "quote": "| $\\pi_0$-DROID | Fine-Tuning | $\\pi_0$ model fine-tuned on the [DROID dataset](https://droid-dataset.github.io/): faster inference than $\\pi_0$-FAST-DROID, but may not follow language commands as well | `gs://openpi-assets/checkpoints/pi0_droid` |",
+   "page": 1,
+   "kind": "other",
+   "claimed_pct": null,
+   "attempts": null,
+   "successes": null,
+   "file": "README.md"
+  },
+  {
+   "quote": "| $\\pi_{0.5}$-LIBERO | Inference | $\\pi_{0.5}$ model fine-tuned for the [LIBERO](https://libero-project.github.io/datasets) benchmark: gets state-of-the-art performance (see [LIBERO README](examples/libero/README.md)) | `gs://openpi-assets/checkpoints/pi05_libero` |",
+   "page": 1,
+   "kind": "other",
+   "claimed_pct": null,
+   "attempts": null,
+   "successes": null,
+   "file": "README.md"
+  },
+  {
+   "quote": "| $\\pi_{0.5}$-DROID | Inference / Fine-Tuning | $\\pi_{0.5}$ model fine-tuned on the [DROID dataset](https://droid-dataset.github.io/) with [knowledge insulation](https://www.physicalintelligence.company/research/knowledge_insulation): fast inference and good language-following | `gs://openpi-assets/checkpoints/pi05_droid` |",
+   "page": 1,
+   "kind": "other",
+   "claimed_pct": null,
+   "attempts": null,
+   "successes": null,
+   "file": "README.md"
+  },
+  {
+   "quote": "For maximally using the GPU memory, set `XLA_PYTHON_CLIENT_MEM_FRACTION=0.9` before running training -- this enables JAX to use up to 90% of the GPU memory (vs. the default of 75%).",
+   "page": 1,
+   "kind": "other",
+   "claimed_pct": null,
+   "attempts": null,
+   "successes": null,
+   "file": "README.md"
+  },
+  {
+   "quote": "The PyTorch implementation has been validated on the LIBERO benchmark (both inference and finetuning).",
+   "page": 1,
+   "kind": "other",
+   "claimed_pct": null,
+   "attempts": null,
+   "successes": null,
+   "file": "README.md"
+  },
+  {
+   "quote": "With torch.compile, inference speed is comparable between JAX and PyTorch.",
+   "page": 1,
+   "kind": "other",
+   "claimed_pct": null,
+   "attempts": null,
+   "successes": null,
+   "file": "README.md"
+  },
+  {
+   "quote": "| π0.5 @ 30k (finetuned) | 98.8 | 98.2 | 98.0 | 92.4 | 96.85",
+   "page": 2,
+   "kind": "rate",
+   "claimed_pct": 98.8,
+   "attempts": null,
+   "successes": null,
+   "file": "examples/libero/README.md"
+  }
+ ],
+ "dropped": 0,
+ "note": "The card does not say whether the AI does a safety job, so the example answers Not sure."
+}

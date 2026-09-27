@@ -138,4 +138,20 @@ assert(rep.includes("Not legal advice"));
 const mail = E.mailBody(s2, TODAY);
 assert(mail.includes("Outside body likely") && mail.includes("1 of 1 claims backed") && !mail.includes("SECRET-QUOTE"));
 
+// 4. The page wires the modules in the right order and carries the approved text.
+const fs = require("fs");
+const page = fs.readFileSync(path.join(SITE, "eu-check.html"), "utf8");
+const order = ["stats.js", "eu-check-logic.js", "eu-check-config.js", "eu-check.js"].map((s) => page.indexOf(`src="${s}"`));
+assert(order.every((i) => i > 0) && order.join() === [...order].sort((a, b) => a - b).join(), "scripts load in order");
+for (const id of ["drop", "file", "paste", "read", "example", "sell", "method", "rows", "add", "result", "download", "book", "readstatus"]) {
+  assert(page.includes(`id="${id}"`), `eu-check.html has #${id}`);
+}
+assert(page.includes(E.SENTENCES.privacy), "the privacy sentence sits next to the drop zone");
+assert(page.includes("Not legal advice"), "the page says it is not legal advice");
+const cfg = fs.readFileSync(path.join(SITE, "eu-check-config.js"), "utf8");
+assert(/window\.EUCHECK_API = "(https:\/\/[^"]+)?";/.test(cfg), "config sets EUCHECK_API to empty or an https URL");
+const EX = JSON.parse(fs.readFileSync(path.join(SITE, "eu-check-example.json"), "utf8"));
+assert.strictEqual(EX.source.commit, "215abfb217dbac7d5f1273282331b9b1866c0479");
+assert(EX.claims.length > 0 && EX.claims.every((c) => typeof c.quote === "string"), "the example has real quotes");
+
 console.log("eu-check: stats and logic OK");
