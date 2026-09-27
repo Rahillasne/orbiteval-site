@@ -18,8 +18,8 @@
  "read": {
   "model": "gpt-5.5",
   "date": "2026-09-27",
-  "tokens_in": 6351,
-  "tokens_out": 1341
+  "tokens_in": 6437,
+  "tokens_out": 1181
  },
  "hints": {
   "uses_ml": {
@@ -57,24 +57,6 @@
    "file": "README.md"
   },
   {
-   "quote": "This is an experiment: $\\pi_0$ was developed for our own robots, which differ from the widely used platforms such as [ALOHA](https://tonyzhaozh.github.io/aloha/) and [DROID](https://droid-dataset.github.io/), and though we are optimistic that researchers and practitioners will be able to run creative new experiments adapting $\\pi_0$ to their own platforms, we do not expect every such attempt to be successful.",
-   "page": 1,
-   "kind": "other",
-   "claimed_pct": null,
-   "attempts": null,
-   "successes": null,
-   "file": "README.md"
-  },
-  {
-   "quote": "All this is to say: $\\pi_0$ may or may not work for you, but you are welcome to try it and see!",
-   "page": 1,
-   "kind": "other",
-   "claimed_pct": null,
-   "attempts": null,
-   "successes": null,
-   "file": "README.md"
-  },
-  {
    "quote": "- [Sept 2025] We released pi05, an upgraded version of pi0 with better open-world generalization.",
    "page": 1,
    "kind": "other",
@@ -84,7 +66,7 @@
    "file": "README.md"
   },
   {
-   "quote": "$\\pi_0$-FAST-DROID | Inference | $\\pi_0$-FAST model fine-tuned on the [DROID dataset](https://droid-dataset.github.io/): can perform a wide range of simple table-top manipulation tasks 0-shot in new scenes on the DROID robot platform | `gs://openpi-assets/checkpoints/pi0_fast_droid`",
+   "quote": "| $\\pi_0$-FAST-DROID | Inference | $\\pi_0$-FAST model fine-tuned on the [DROID dataset](https://droid-dataset.github.io/): can perform a wide range of simple table-top manipulation tasks 0-shot in new scenes on the DROID robot platform | `gs://openpi-assets/checkpoints/pi0_fast_droid` |",
    "page": 1,
    "kind": "other",
    "claimed_pct": null,
@@ -93,7 +75,7 @@
    "file": "README.md"
   },
   {
-   "quote": "$\\pi_0$-DROID | Fine-Tuning | $\\pi_0$ model fine-tuned on the [DROID dataset](https://droid-dataset.github.io/): faster inference than $\\pi_0$-FAST-DROID, but may not follow language commands as well | `gs://openpi-assets/checkpoints/pi0_droid`",
+   "quote": "| $\\pi_0$-DROID | Fine-Tuning | $\\pi_0$ model fine-tuned on the [DROID dataset](https://droid-dataset.github.io/): faster inference than $\\pi_0$-FAST-DROID, but may not follow language commands as well | `gs://openpi-assets/checkpoints/pi0_droid` |",
    "page": 1,
    "kind": "other",
    "claimed_pct": null,
@@ -102,7 +84,7 @@
    "file": "README.md"
   },
   {
-   "quote": "$\\pi_0$-ALOHA-towel | Inference | $\\pi_0$ model fine-tuned on internal [ALOHA](https://tonyzhaozh.github.io/aloha/) data: can fold diverse towels 0-shot on ALOHA robot platforms | `gs://openpi-assets/checkpoints/pi0_aloha_towel`",
+   "quote": "| $\\pi_0$-ALOHA-towel | Inference | $\\pi_0$ model fine-tuned on internal [ALOHA](https://tonyzhaozh.github.io/aloha/) data: can fold diverse towels 0-shot on ALOHA robot platforms | `gs://openpi-assets/checkpoints/pi0_aloha_towel` |",
    "page": 1,
    "kind": "other",
    "claimed_pct": null,
@@ -111,7 +93,7 @@
    "file": "README.md"
   },
   {
-   "quote": "$\\pi_0$-ALOHA-tupperware | Inference | $\\pi_0$ model fine-tuned on internal [ALOHA](https://tonyzhaozh.github.io/aloha/) data: can unpack food from a tupperware container | `gs://openpi-assets/checkpoints/pi0_aloha_tupperware`",
+   "quote": "| $\\pi_0$-ALOHA-tupperware | Inference | $\\pi_0$ model fine-tuned on internal [ALOHA](https://tonyzhaozh.github.io/aloha/) data: can unpack food from a tupperware container | `gs://openpi-assets/checkpoints/pi0_aloha_tupperware` |",
    "page": 1,
    "kind": "other",
    "claimed_pct": null,
@@ -120,7 +102,7 @@
    "file": "README.md"
   },
   {
-   "quote": "$\\pi_0$-ALOHA-pen-uncap | Inference | $\\pi_0$ model fine-tuned on public [ALOHA](https://dit-policy.github.io/) data: can uncap a pen | `gs://openpi-assets/checkpoints/pi0_aloha_pen_uncap`",
+   "quote": "| $\\pi_0$-ALOHA-pen-uncap | Inference | $\\pi_0$ model fine-tuned on public [ALOHA](https://dit-policy.github.io/) data: can uncap a pen | `gs://openpi-assets/checkpoints/pi0_aloha_pen_uncap` |",
    "page": 1,
    "kind": "other",
    "claimed_pct": null,
@@ -129,7 +111,7 @@
    "file": "README.md"
   },
   {
-   "quote": "$\\pi_{0.5}$-LIBERO | Inference | $\\pi_{0.5}$ model fine-tuned for the [LIBERO](https://libero-project.github.io/datasets) benchmark: gets state-of-the-art performance (see [LIBERO README](examples/libero/README.md)) | `gs://openpi-assets/checkpoints/pi05_libero`",
+   "quote": "| $\\pi_{0.5}$-LIBERO | Inference | $\\pi_{0.5}$ model fine-tuned for the [LIBERO](https://libero-project.github.io/datasets) benchmark: gets state-of-the-art performance (see [LIBERO README](examples/libero/README.md)) | `gs://openpi-assets/checkpoints/pi05_libero` |",
    "page": 1,
    "kind": "other",
    "claimed_pct": null,
@@ -138,7 +120,7 @@
    "file": "README.md"
   },
   {
-   "quote": "$\\pi_{0.5}$-DROID | Inference / Fine-Tuning | $\\pi_{0.5}$ model fine-tuned on the [DROID dataset](https://droid-dataset.github.io/) with [knowledge insulation](https://www.physicalintelligence.company/research/knowledge_insulation): fast inference and good language-following | `gs://openpi-assets/checkpoints/pi05_droid`",
+   "quote": "| $\\pi_{0.5}$-DROID | Inference / Fine-Tuning | $\\pi_{0.5}$ model fine-tuned on the [DROID dataset](https://droid-dataset.github.io/) with [knowledge insulation](https://www.physicalintelligence.company/research/knowledge_insulation): fast inference and good language-following | `gs://openpi-assets/checkpoints/pi05_droid` |",
    "page": 1,
    "kind": "other",
    "claimed_pct": null,
