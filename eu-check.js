@@ -4,7 +4,8 @@
 (() => {
   const E = window.EUCheck, $ = (s) => document.querySelector(s);
   const API = (window.EUCHECK_API || "").replace(/\/$/, "");
-  const PDFJS = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/";
+  // pdf.js 3.11.174, served from this site so no third party sees a visitor's document.
+  const PDFJS = "vendor/pdfjs-3.11.174/";
   const PDFJS_SRI = "sha384-/1qUCSGwTur9vjf/z9lmu/eCUYbpOTgSjmpbMQZ1/CtX2v/WcAIKqRv+U1DUCG6e";
   const params = new URLSearchParams(location.search);
   const embed = params.get("embed") === "1";
