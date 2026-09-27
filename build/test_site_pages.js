@@ -125,7 +125,27 @@ assert(!home.includes("From your test numbers, not from the AI."), "the old step
 assert(!/<span>from the numbers<\/span>/.test(home), "the old step-3 header span is gone");
 assert(!home.includes("AI finds the claims"), "the old step-2 title/header text is gone");
 assert(!/<span data-hd="total"><\/span> found/.test(home), "the old 'N found' header is gone");
-assert(!home.includes("<iframe"), "the home page no longer embeds the check");
+// The preview window of the live check, under the headline and its buttons, outside the
+// hero copy, and before the animated demo.
+{
+  const at = (s) => { const i = home.indexOf(s); assert(i > 0, `index.html should say ${JSON.stringify(s)} (the preview)`); return i; };
+  const plate = at('<div class="plate">'), win = at('<div class="plate__win">');
+  const bar = at('<div class="plate__bar"><span>orbiteval.com/eu-check</span><span>Example only</span></div>');
+  const frame = at('<iframe src="eu-check.html?embed=1&example=1" title="The free check, filled in with the example" loading="lazy" tabindex="-1" aria-hidden="true"></iframe>');
+  const open = at('<a class="btn btn--primary btn--sm plate__open" href="eu-check.html">Start the free check');
+  const note = at('<p class="plate__note small">Example only. Not legal advice, not a conformity assessment and not a certificate.</p>');
+  const link = at('<a class="plate__link" href="eu-check.html" aria-label="Start the free check"></a>');
+  const winEnd = home.indexOf("</div>", open);
+  const ctas = at('<div class="hero__ctas">'), heroEnd = home.indexOf("</section>", home.indexOf('<section class="hero">'));
+  const demoAt = at('<section class="section section--tight" id="demo">');
+  assert.strictEqual((home.match(/<iframe/g) || []).length, 1, "one iframe on the home page: the preview");
+  assert(ctas < plate && plate < heroEnd, "the preview sits in the hero, after the buttons");
+  assert(/^<\/div>\s*<\/div>\s*<div class="plate">/.test(home.slice(home.indexOf("</div>", ctas))),
+    "the buttons close, the hero copy closes, then the preview opens: it is outside the hero copy");
+  assert(plate < win && win < bar && bar < frame && frame < open && open < winEnd, "bar, check and button sit inside the window");
+  assert(winEnd < note && note < link, "the caption sits after the window and before the link over the plate");
+  assert(link < heroEnd && heroEnd < demoAt, "the animated demo still follows the preview");
+}
 assert(!home.includes('id="how"'), "the demo replaces the How it works cards");
 assert(home.includes('data-steps') && home.includes('src="home-demo.js"'), "the demo uses the step component and its script");
 const HD = require(path.join(SITE, "home-demo.js"));

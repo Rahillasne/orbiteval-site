@@ -107,6 +107,17 @@ strong { color: var(--ink); font-weight: 600; }
 .hero .lede { margin: 16px 0 28px; }
 .hero__ctas { display: flex; flex-wrap: wrap; gap: 12px; }
 
+/* The plate: the real workspace, framed */
+.plate { position: relative; margin-top: clamp(36px, 5vw, 56px); border-radius: var(--r); border: 1px solid var(--line); background: radial-gradient(60% 55% at 50% 0%, rgba(212,116,79,.18), transparent 65%), var(--paper-2); padding: clamp(10px, 2vw, 18px); box-shadow: 0 30px 80px rgba(20,20,19,.12); }
+.plate__win { position: relative; border-radius: 12px; overflow: hidden; border: 1px solid var(--line); background: var(--paper); }
+.plate__bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 12px; border-bottom: 1px solid var(--line-soft); font-family: var(--font-mono); font-size: 11.5px; color: var(--ink-mute); }
+.plate__bar span:first-child::before { content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--brand); margin-right: 8px; vertical-align: 1px; }
+.plate iframe { width: 100%; height: 560px; border: 0; pointer-events: none; }
+.plate__link { position: absolute; inset: 0; border-radius: var(--r); }
+.plate__open { position: absolute; right: clamp(12px, 1.25vw, 16px); bottom: clamp(12px, 1.25vw, 16px); z-index: 2; }   /* inside the window, clear of the note below it */
+.plate__note { position: relative; z-index: 1; margin: 10px 2px 0; color: var(--ink-mute); }   /* above .plate__link, which covers the plate */
+@media (max-width: 760px) { .plate iframe { height: 620px; } }
+
 /* What is public, as a single line of pills */
 .strip { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; padding-top: clamp(28px, 4vw, 44px); }
 .strip a { display: inline-flex; align-items: center; gap: 7px; padding: 8px 14px; border-radius: 999px; background: var(--paper-2); border: 1px solid var(--line-soft); font-size: 13.5px; font-weight: 500; color: var(--ink-2); transition: background-color .2s, border-color .2s; }
@@ -624,6 +635,18 @@ select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px
 /* The reader's daily limit is reached: for the rest of the visit, the drop zone, the paste controls
    and every sentence about the reader go, the privacy line too, as when the reader is off. */
 .ec-limited .ec-reader-only, .ec-limited #pastebox, .ec-limited #reading { display: none !important; }
+/* ?embed=1: the check alone, read-only, in the home page's preview window. The page's own
+   disclaimer goes with the chrome: the preview's caption on the home page carries it. */
+.ec-embed .topbar, .ec-embed .footer, .ec-embed .ec-head, .ec-embed .ec-foot { display: none; }
+.ec-embed { overflow: hidden; }   /* nobody can scroll the preview, so it shows no scrollbar */
+.ec-embed .ec { padding-top: 16px; }
+.ec-embed .ec-steps button:disabled { opacity: 1; }   /* locked, not out of reach: the bar reads as on the live page */
+.ec-embed #s2 .ec-row { display: none; }   /* the window's own "Start the free check" stands where this row sticks */
+@media (max-width: 400px) {   /* the preview on a phone is narrower than the page itself */
+  .ec-embed .ec { padding-left: 10px; padding-right: 10px; }
+  .ec-embed .ec-steps { gap: 4px; }
+  .ec-embed .ec-steps button { padding: 8px 6px; gap: 5px; }
+}
 
 /* Step 2: one card per claim */
 .ec-cards { display: grid; gap: 10px; }

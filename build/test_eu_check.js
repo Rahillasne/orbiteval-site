@@ -356,10 +356,24 @@ for (const s of [
 assert(!/nothing stored/i.test(page), "the page no longer says nothing is stored");
 assert(!page.includes("<table"), "claims are cards, not a table");
 const css = fs.readFileSync(path.join(SITE, "site.css"), "utf8");
-assert(!css.includes("ec-embed"), "the embed is gone, and so are its rules");
+// ?embed=1, the home page's preview: the check alone, with the site's chrome, the page heading
+// and the page's own footnote hidden (the preview's caption on the home page carries the disclaimer).
+{
+  const hide = css.split("\n").find((l) => l.startsWith(".ec-embed .topbar"));
+  assert(hide && / \{ display: none; \}$/.test(hide), "the embed has a rule that hides the chrome: " + hide);
+  const sel = hide.slice(0, hide.indexOf(" {")).split(",").map((s) => s.trim());
+  for (const s of [".ec-embed .topbar", ".ec-embed .footer", ".ec-embed .ec-head", ".ec-embed .ec-foot"]) {
+    assert(sel.includes(s), `the embed hides ${s.slice(10)}: ${hide}`);
+  }
+}
 assert(!/\.ec-rows\b/.test(css), "the claims table's rules are gone");
 assert(css.includes(".ec-li--na > span { color: var(--ink-mute); }"), "the na icon is muted");
-assert(!/\.plate[\s_{]/.test(css), "the plate (the old embedded workspace) is gone, and so are its rules");
+// The plate: the preview window on the home page, with its caption above the link that covers it.
+for (const s of [".plate {", ".plate__win {", ".plate__bar {", ".plate iframe {", ".plate__link {", ".plate__open {", ".plate__note {"]) {
+  assert(css.includes("\n" + s), `the plate's rule ${s}`);
+}
+assert(/\n\.plate iframe \{[^}]*pointer-events: none;/.test(css), "the preview cannot be clicked into; the link over it opens the check");
+assert(/\n\.plate__note \{[^}]*z-index: 1;/.test(css), "the caption sits above the link that covers the plate");
 assert(!/\.ec-sum[\s>{]/.test(css), "the old summary list's rules are gone");
 // Once the reader's daily limit is reached, every control and sentence about the reader goes, the privacy line too.
 assert(css.includes(".ec-limited .ec-reader-only, .ec-limited #pastebox, .ec-limited #reading { display: none !important; }"), "limited rule");
@@ -397,7 +411,20 @@ assert(js.includes('if (!API) document.documentElement.classList.add("ec-noreade
 assert(!js.includes("toLocaleDateString") && js.includes("E.localISO(new Date())"), "today comes from localISO");
 assert(!/§|\bR[0-9]{1,3}\b/.test(js), "no internal section or ruling numbers in a public file");
 assert(js.includes('fetch("eu-check-demo.json")') && !js.includes("eu-check-example.json"), "the example is the home demo's data");
-assert(!/embed/i.test(js), "no embed mode");
+// The embed mode behind the home page's preview.
+assert(js.includes('const embed = params.get("embed") === "1";')
+  && js.includes('if (embed) document.documentElement.classList.add("ec-embed");'), "?embed=1 marks the page");
+assert(js.includes('const API = embed ? "" : '), "the embed never calls the reader: its address is empty there");
+assert(js.includes('document.querySelectorAll("main input, main select, main textarea, main button").forEach((el) => { el.disabled = true; });'),
+  "the embed is read-only");
+{
+  const body = (name) => { const i = js.indexOf(`function ${name}(`); assert(i > 0, name); return js.slice(i, js.indexOf("\n  }\n", i)); };
+  assert(body("renderCards").includes("lockIfEmbed();") && body("paintAll").includes("lockIfEmbed();"),
+    "the lock is applied again after every re-render");
+  assert(/paintAll\(\);\n\s*if \(embed\) return;/.test(body("go")), "the embed never takes focus or scrolls the home page");
+  assert(!/go\(3\)/.test(body("loadExample")), "the example opens its claims, never its result");
+}
+assert(js.includes('if (embed && params.get("example") === "1") loadExample();'), "?example=1 loads the example through the normal path");
 assert(js.includes('class="demo-ring"'), "the result ring is the home demo's ring");
 assert(!js.includes('"--p"'), "the ring sets no variable nothing reads");
 assert(js.includes("E.readStatus(") && !/Found|No claims found|marked AI/.test(js), "the read status comes from the rules module's wording");
