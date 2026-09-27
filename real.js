@@ -4,20 +4,13 @@
 (() => {
   const $ = (s) => document.querySelector(s);
   const D = window.DECISION_CARD, C = window.CLAIM_CHECK;
-  const Z = 1.959964;
+  const { Z, wilson } = window.OrbitStats;
 
   // ---- Interval ----------------------------------------------------------
   // Wilson score interval for one proportion, then Newcombe's hybrid-score
   // interval for the difference. Not the Wald interval: its coverage falls
   // below nominal exactly in the 90-99% band where picking robots operate,
   // which is the one place this tool must not quietly overstate certainty.
-  function wilson(x, n) {
-    if (n <= 0) return [0, 1];
-    const d = n + Z * Z;
-    const c = (x + (Z * Z) / 2) / d;
-    const h = (Z / d) * Math.sqrt((x * (n - x)) / n + (Z * Z) / 4);
-    return [Math.max(0, c - h), Math.min(1, c + h)];
-  }
   function newcombe(x1, n1, x2, n2) {
     const p1 = x1 / n1, p2 = x2 / n2;
     const [l1, u1] = wilson(x1, n1), [l2, u2] = wilson(x2, n2);
