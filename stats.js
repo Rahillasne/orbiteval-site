@@ -15,18 +15,20 @@
     return [Math.max(0, c - h), Math.min(1, c + h)];
   }
 
-  // The smallest attempt count at which, if the observed success rate p holds,
-  // the lower end of the Wilson interval reaches the claimed rate. A straight
-  // scan, because rounding makes the lower end wobble with n, so a bisection
-  // could miss the smallest count. null when p is at or below the claim, or
-  // when no count up to the cap is enough.
-  function neededOne(p, claim, cap) {
-    const max = cap || 2000000;
+  // The smallest attempt count N from which, if the observed success rate p
+  // holds, the lower end of the Wilson interval reaches the claimed rate at
+  // every count from N up to the cap. The success count at n is floor(p * n):
+  // never rounded up. Flooring makes the lower end wobble with n, so a count
+  // can pass and a larger one fail again; one scan over the whole range keeps
+  // the last count that fails. null when p is at or below the claim, or when
+  // the cap itself is not enough.
+  function neededOne(p, claim, cap = 2000000) {
     if (!(p > claim)) return null;
-    for (let n = 1; n <= max; n++) {
-      if (wilson(Math.round(p * n), n)[0] >= claim - 1e-12) return n;
-    }
-    return null;
+    const ok = (n) => wilson(Math.floor(p * n + 1e-9), n)[0] >= claim - 1e-12;
+    if (!ok(cap)) return null;
+    let lastFail = 0;
+    for (let n = 1; n < cap; n++) if (!ok(n)) lastFail = n;
+    return lastFail + 1;
   }
 
   const api = { Z, wilson, neededOne };

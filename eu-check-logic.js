@@ -26,8 +26,8 @@
   const ROUTES = {
     incomplete: { label: "Answer the questions", tone: "grey", say: [] },
     outside: { label: "Outside this check", tone: "grey", say: ["out"] },
-    notified: { label: "Outside body likely", tone: "wait", say: ["partA"] },
-    self: { label: "Self-declaration may be possible", tone: "grey", say: ["notA"] },
+    notified: { label: "Notified body if Part A applies", tone: "wait", say: ["partA"] },
+    self: { label: "Self-assessment (module A) may be open to you", tone: "grey", say: ["notA"] },
     unsure: { label: "First question for your lawyer", tone: "wait", say: ["unsure"] },
   };
 
@@ -64,43 +64,50 @@
   const invalid = (text) => ({ status: "invalid", label: "Check the numbers", text });
 
   function claimRow(row) {
-    if (row.kind === "other") return { status: "other", label: "Needs a test report", text: "This is covered by the full check." };
+    if (row.kind === "other") return { status: "other", label: "Needs a test report", text: "The full check can cover it (up to ten claims)." };
     const pct = parsePct(row.claimedPct), n = parseCount(row.attempts), x = parseCount(row.successes);
     if (n === null && x === null) return { status: "nocount", label: "No test count stated", text: "Add the attempts and successes behind this claim." };
     if (pct === null || Number.isNaN(pct) || !(pct > 0 && pct <= 100)) return invalid("Enter the claimed success rate, between 0 and 100.");
     if (n === null || x === null || Number.isNaN(n) || Number.isNaN(x) || n < 1) return invalid("Enter whole numbers for attempts and successes.");
     if (x > n) return invalid("Successes cannot be more than attempts.");
     const claim = pct / 100, lower = Stats.wilson(x, n)[0], observed = x / n;
-    const backs = "Your test backs at least " + floorPct(lower) + ".";
+    const backs = "At 95% confidence, your test shows at least " + floorPct(lower) + ".";
     if (lower >= claim - 1e-12) return { status: "backed", label: "Backed", text: backs, lower };
     if (observed <= claim) {
       return { status: "short", label: "Not enough proof", lower, needed: null,
         text: backs + " At your current success rate, more attempts cannot back this claim." };
     }
-    const needed = Stats.neededOne(observed, claim);
+    let needed = Stats.neededOne(observed, claim);
+    if (needed !== null && !(needed > n)) needed = n + 1;   // never a total at or below the attempts already run
     return { status: "short", label: "Not enough proof", lower, needed,
       text: backs + (needed === null
         ? " More than 2,000,000 attempts would be needed at your current success rate."
-        : " About " + needed.toLocaleString("en-US") + " attempts would back it, if your success rate holds.") };
+        : " About " + needed.toLocaleString("en-US") + " attempts in total would back it, if your success rate stays at " + floorPct(observed) + ".") };
   }
 
   const item = (id, state, text) => ({ id, state, text });
 
+  // "na" is an item the check did not assess (the method, in the example): it
+  // is shown, but it is not an open item.
   function checklist(state, results) {
     const rows = state.rows || [];
     const backed = results.filter((r) => r.status === "backed").length;
     const withCounts = results.filter((r) => r.status === "backed" || r.status === "short").length;
-    const notBacked = results.filter((r) => r.status === "short" || r.status === "nocount" || r.status === "invalid").length;
+    const open = results.filter((r) => ["short", "nocount", "invalid", "other"].includes(r.status)).length;
     const answered = state.usesML === "no" || state.safetyJob === "yes" || state.safetyJob === "no";
     const items = [
       rows.length ? item("claims", "ok", "Claims listed") : item("claims", "bad", "No claims listed yet"),
       withCounts === 0 ? item("tests", "bad", "No claim has test numbers yet")
-        : notBacked ? item("tests", "warn", notBacked + (notBacked === 1 ? " claim" : " claims") + ": not enough proof")
-          : item("tests", "ok", "Test results back every rate claim"),
-      state.method ? item("method", "ok", "Testing method written down") : item("method", "bad", "Testing method not written down"),
-      answered ? item("route", "ok", "Route question answered") : item("route", "warn", "Route question not answered"),
+        : open > 0 ? item("tests", "warn", `${open} ${open === 1 ? "claim" : "claims"} without enough test proof`)
+          : item("tests", "ok", "Test results back every claim"),
+      state.example === true ? item("method", "na", "Testing method: not assessed in this example")
+        : state.method ? item("method", "ok", "Testing method written down")
+          : item("method", "bad", "Testing method not written down (needed where Annex IV (n) applies)"),
+      answered ? item("route", "ok", "Route question answered")
+        : state.safetyJob === "unsure" ? item("route", "warn", "Route question open: not sure")
+          : item("route", "warn", "Route question not answered"),
     ];
-    return { items, missing: items.filter((i) => i.state !== "ok").length, backed, total: rows.length };
+    return { items, missing: items.filter((i) => i.state !== "ok" && i.state !== "na").length, backed, total: rows.length };
   }
 
   function mergeHints(answers, hints) {
@@ -128,18 +135,28 @@
     return days > 0 ? days + " days to 20 January 2027." : "The Machinery Regulation has applied since 20 January 2027.";
   }
 
+  const AI_MARK = " (read by AI, not checked)";
+  const SAFETY = { yes: "yes", no: "no", unsure: "not sure" };
+  const SELL = { now: "Already selling", before: "Before 20 January 2027", after: "From 20 January 2027", undecided: "Not decided" };
+
   function report(state, todayISO) {
     const s1 = step1(state, todayISO), res = (state.rows || []).map(claimRow), cl = checklist(state, res);
     const cell = (v) => str(v).replace(/\|/g, "\\|").replace(/\s+/g, " ");
+    const filled = state.filled || {};
+    const answer = (v, byAI) => (v == null ? "-" : v) + (byAI && v != null ? AI_MARK : "");
     const lines = [
-      "# EU Readiness Check · OrbitEval", "", "Date: " + todayISO, "",
+      "# EU test-evidence check · OrbitEval", "", "Date: " + todayISO, "",
+      "## Answers", "",
+      "- Uses AI or machine learning: " + answer({ yes: "yes", no: "no" }[state.usesML], filled.usesML != null),
+      "- AI does a safety job: " + answer(SAFETY[state.safetyJob], filled.safetyJob != null),
+      "- Selling in the EU: " + answer(SELL[state.sellWhen], false), "",
       "## Route", "", "**" + s1.label + "**", "", ...s1.sentences, "",
     ];
     if (s1.directive) lines.push(s1.directive, "");
     lines.push("## Deadline", "", deadlineLine(s1.days), "", s1.file, "",
       "## Claims and tests", "", "Each claim is read as \"at least X%\". Intervals are 95% Wilson score intervals.", "",
       "| Claim | Claimed % | Attempts | Succeeded | Result |", "|---|---|---|---|---|");
-    (state.rows || []).forEach((r, i) => lines.push("| " + [cell(r.text), cell(r.claimedPct), cell(r.attempts), cell(r.successes),
+    (state.rows || []).forEach((r, i) => lines.push("| " + [cell(r.text) + (r.ai && !r.edited ? AI_MARK : ""), cell(r.claimedPct), cell(r.attempts), cell(r.successes),
       cell(res[i].label + ". " + res[i].text)].join(" | ") + " |"));
     lines.push("", "## Checklist", "", ...cl.items.map((i) => "- [" + (i.state === "ok" ? "x" : " ") + "] " + i.text), "",
       "---", "Free check from orbiteval.com/eu-check. Not legal advice, not a conformity assessment and not a certificate.");
@@ -151,7 +168,7 @@
     return ["I ran the free EU check and would like the full check.", "",
       "Route: " + s1.label,
       "Test proof: " + cl.backed + " of " + cl.total + " claims backed",
-      "Missing: " + cl.missing + (cl.missing === 1 ? " thing" : " things") + " for the file",
+      `Open items in this check: ${cl.missing}`,
       "", "Name:", "Company:", "Machine:", "A time that works for me:", ""].join("\n");
   }
 

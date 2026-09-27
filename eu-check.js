@@ -12,7 +12,7 @@
 
   const today = () => new Date().toLocaleDateString("en-CA");   // YYYY-MM-DD, local
   const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
-  const fresh = () => ({ usesML: null, safetyJob: null, sellWhen: null, method: false, rows: [], filled: {} });
+  const fresh = () => ({ usesML: null, safetyJob: null, sellWhen: null, method: false, rows: [], filled: {}, example: false });
   let state = fresh(), nextId = 1, picked = null, limited = false;
   const withId = (r) => Object.assign({ id: nextId++, text: "", kind: "rate", claimedPct: "", attempts: "", successes: "", ai: null, edited: false }, r);
 
@@ -26,7 +26,7 @@
 
   // ---- Result panel --------------------------------------------------------
   const PLACARD = { backed: "current", short: "caution", invalid: "revoked", nocount: "unknown", other: "unknown" };
-  const ICON = { ok: "✓", warn: "!", bad: "✗" };
+  const ICON = { ok: "✓", warn: "!", bad: "✗", na: "–" };
 
   function paintResult() {
     const s1 = E.step1(state, today()), res = state.rows.map(E.claimRow), cl = E.checklist(state, res);
@@ -39,7 +39,7 @@
       <dl class="ec-sum">
         <div><dt>Route</dt><dd><span class="placard placard--${s1.tone === "wait" ? "caution" : "unknown"}">${esc(s1.label)}</span></dd></div>
         <div><dt>Test proof</dt><dd>${cl.backed} of ${cl.total} ${cl.total === 1 ? "claim" : "claims"} backed</dd></div>
-        <div><dt>Missing</dt><dd>${cl.missing} ${cl.missing === 1 ? "thing" : "things"} for your file</dd></div>
+        <div><dt>Open items</dt><dd>${cl.missing} in this check</dd></div>
       </dl>
       <ul class="ec-list">${cl.items.map((i) => `<li class="ec-li ec-li--${i.state}"><span aria-hidden="true">${ICON[i.state]}</span>${esc(i.text)}</li>`).join("")}</ul>
       <div class="ec-why">${s1.sentences.map((p) => `<p>${esc(p)}</p>`).join("")}${s1.directive ? `<p>${esc(s1.directive)}</p>` : ""}<p class="small">${esc(s1.file)}</p></div>`;
@@ -88,25 +88,28 @@
     if (!r || !f) return;
     r[f] = e.target.value;
     if (r.ai) r.edited = true;   // the person's edit now owns this row; a later AI read must not erase it
+    state.example = false;       // an edited example is the person's own check now
     paintResult();
   });
   $("#rows tbody").addEventListener("click", (e) => {
     if (!e.target.closest("[data-del]")) return;
     const id = Number(e.target.closest("tr").dataset.id);
     state.rows = state.rows.filter((r) => r.id !== id);
+    state.example = false;
     renderRows(); paintResult();
   });
   $("#add").addEventListener("click", () => {
     state.rows.push(withId({}));
+    state.example = false;
     renderRows(); paintResult();
     $("#rows tbody tr:last-child [data-f=text]").focus();
   });
 
   // ---- Questions -------------------------------------------------------------
   document.querySelectorAll('input[name="usesML"], input[name="safetyJob"]').forEach((el) =>
-    el.addEventListener("change", () => { state[el.name] = el.value; delete state.filled[el.name]; paintResult(); }));
-  $("#sell").addEventListener("change", (e) => { state.sellWhen = e.target.value || null; paintResult(); });
-  $("#method").addEventListener("change", (e) => { state.method = e.target.checked; paintResult(); });
+    el.addEventListener("change", () => { state[el.name] = el.value; delete state.filled[el.name]; state.example = false; paintResult(); }));
+  $("#sell").addEventListener("change", (e) => { state.sellWhen = e.target.value || null; state.example = false; paintResult(); });
+  $("#method").addEventListener("change", (e) => { state.method = e.target.checked; state.example = false; paintResult(); });
 
   function syncQuestions() {
     for (const k of ["usesML", "safetyJob"]) {
@@ -148,6 +151,7 @@
     // Keep any AI row the person has since edited -- it is theirs now. Only
     // untouched AI rows are replaced by this read's fresh suggestions.
     state.rows = state.rows.filter((r) => !r.ai || r.edited).concat(E.rowsFromAI(j.claims).map(withId));
+    state.example = false;
     const m = E.mergeHints(state, j.hints);
     state.usesML = m.usesML; state.safetyJob = m.safetyJob; state.filled = Object.assign({}, state.filled, m.filled);
     renderRows(); syncQuestions(); paintResult();
@@ -223,6 +227,7 @@
       const j = await (await fetch("eu-check-example.json")).json();
       state = fresh();
       applyAI(j, "Loaded a real example:");
+      state.example = true;   // the checklist does not assess a testing method for the example
       if (j.hints.safety_job === null) state.safetyJob = "unsure";
       syncQuestions(); paintResult();
       // The source, linked, with its commit and each file's sha256 prefix (SPEC §4.6 / R24).

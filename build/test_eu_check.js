@@ -23,13 +23,18 @@ for (const [x, n, lo, hi] of W) {
 assert.deepStrictEqual(Stats.wilson(0, 0), [0, 1]);
 assert.strictEqual(Stats.Z, 1.959964);
 
-// 2. neededOne returns the smallest attempt count whose lower end reaches the claim.
-const reaches = (p, c, n) => Stats.wilson(Math.round(p * n), n)[0] >= c - 1e-12;
-for (const [p, c, want] of [[0.96, 0.94, 509], [0.98, 0.94, 118]]) {
+// 2. neededOne returns the smallest N from which every attempt count backs the
+// claim at the observed rate, with the success count never rounded up.
+const reaches = (p, c, n) => Stats.wilson(Math.floor(p * n + 1e-9), n)[0] >= c - 1e-12;
+for (const [p, c] of [[0.96, 0.94], [0.98, 0.94], [92 / 96, 0.90], [18 / 20, 0.70], [0.95, 0.90], [0.99, 0.95]]) {
   const n = Stats.neededOne(p, c);
-  assert.strictEqual(n, want, `neededOne(${p},${c})`);
-  assert(reaches(p, c, n) && !reaches(p, c, n - 1), `neededOne(${p},${c}) is the smallest`);
+  assert(Number.isInteger(n), `neededOne(${p},${c}) = ${n}`);
+  assert(reaches(p, c, n) && !reaches(p, c, n - 1), `neededOne(${p},${c}) = ${n}: holds at N, fails at N-1`);
+  for (let m = n; m <= n + 5000; m++) assert(reaches(p, c, m), `neededOne(${p},${c}) = ${n}, but ${m} attempts do not back it`);
 }
+assert(Stats.neededOne(92 / 96, 0.90) > 96, "92 of 96 at a 90% claim: more than the 96 attempts already run");
+assert(Stats.neededOne(18 / 20, 0.70) > 20, "18 of 20 at a 70% claim: more than the 20 attempts already run");
+assert.strictEqual(Stats.neededOne(192 / 200, 0.94), 628, "192 of 200 at a 94% claim (the browser check uses this)");
 assert(Stats.neededOne(0.98, 0.94) < Stats.neededOne(0.96, 0.94), "a bigger margin needs fewer attempts");
 assert.strictEqual(Stats.neededOne(0.94, 0.94), null, "at the claim, no count backs it");
 assert.strictEqual(Stats.neededOne(0.9, 0.94), null, "below the claim, no count backs it");
@@ -48,8 +53,8 @@ const route = (usesML, safetyJob, sellWhen) => E.step1({ usesML, safetyJob, sell
 assert.strictEqual(route(null, null).route, "incomplete");
 assert.strictEqual(route("yes", null).route, "incomplete");
 assert.strictEqual(route("no", "yes").route, "outside");
-assert.strictEqual(route("yes", "yes").label, "Outside body likely");
-assert.strictEqual(route("yes", "no").label, "Self-declaration may be possible");
+assert.strictEqual(route("yes", "yes").label, "Notified body if Part A applies");
+assert.strictEqual(route("yes", "no").label, "Self-assessment (module A) may be open to you");
 assert.strictEqual(route("yes", "unsure").label, "First question for your lawyer");
 for (const r of [route("no"), route("yes", "yes"), route("yes", "no"), route("yes", "unsure")]) {
   assert.strictEqual(r.sentences[r.sentences.length - 1], E.SENTENCES.lawyer, `${r.route} ends with the lawyer line`);
@@ -75,6 +80,7 @@ assert(Number.isNaN(E.parsePct("abc")));
 // Step 2: the five rules, in order.
 const row = (kind, claimedPct, attempts, successes) => E.claimRow({ kind, claimedPct, attempts, successes });
 assert.strictEqual(row("other", "", "", "").status, "other");
+assert.strictEqual(row("other", "", "", "").text, "The full check can cover it (up to ten claims).");
 assert.strictEqual(row("rate", "94", "", "").status, "nocount");
 assert.strictEqual(row("rate", "", "", "").status, "nocount");
 assert.strictEqual(row("rate", "", "200", "188").status, "invalid");
@@ -83,11 +89,64 @@ assert.strictEqual(row("rate", "94", "200", "210").status, "invalid");
 assert.strictEqual(row("rate", "94", "0", "0").status, "invalid");
 const backed = row("rate", "90", "1000", "940");
 assert.strictEqual(backed.status, "backed");
-assert.strictEqual(backed.text, "Your test backs at least 92.3%.");
+assert.strictEqual(backed.text, "At 95% confidence, your test shows at least 92.3%.");
 const short = row("rate", "94", "200", "192");            // observed 96%
 assert.strictEqual(short.status, "short");
-assert(short.text.startsWith("Your test backs at least 92.3%."), short.text);
-assert(short.text.includes("About 509 attempts would back it, if your success rate holds."), short.text);
+assert.strictEqual(short.needed, Stats.neededOne(192 / 200, 0.94));
+assert.strictEqual(short.text, "At 95% confidence, your test shows at least 92.3%."
+  + " About 628 attempts in total would back it, if your success rate stays at 96.0%.");
+// The rows the old rounding got wrong now ask for more than was already run.
+assert(row("rate", "90", "96", "92").needed > 96, "92 of 96 at a 90% claim");
+assert(row("rate", "70", "20", "18").needed > 20, "18 of 20 at a 70% claim");
+// No claim from 90% to 99%, at any attempt count up to 300, is told a total at
+// or below the attempts it already ran. neededOne scans to its 2,000,000 cap on
+// every call (~20 ms), so the sweep runs one worker per claimed percentage and
+// computes each distinct (rate, claim) once; the result is awaited at the end.
+const SWEEP = `
+const { parentPort, workerData: { site, pct } } = require("worker_threads");
+const path = require("path");
+const Stats = require(path.join(site, "stats.js")), E = require(path.join(site, "eu-check-logic.js"));
+const real = Stats.neededOne, memo = new Map();
+Stats.neededOne = (p, c, cap) => {
+  const k = p + "|" + c + "|" + cap;
+  if (!memo.has(k)) memo.set(k, real(p, c, cap));
+  return memo.get(k);
+};
+let asked = 0;
+const bad = [];
+for (let n = 1; n <= 300; n++) {
+  for (const x of new Set([n, n - 1, n - 2])) {
+    if (x < 0) continue;
+    const r = E.claimRow({ kind: "rate", claimedPct: String(pct), attempts: String(n), successes: String(x) });
+    if (r.needed == null) continue;
+    asked++;
+    if (!(r.needed > n) || !r.text.includes(" About " + r.needed.toLocaleString("en-US") + " attempts in total"))
+      bad.push(x + " of " + n + " at " + pct + "%: " + r.text);
+  }
+}
+parentPort.postMessage({ asked, bad });
+`;
+const { Worker } = require("worker_threads");
+const sweep = Promise.all(Array.from({ length: 10 }, (_, i) => new Promise((done, fail) => {
+  const w = new Worker(SWEEP, { eval: true, workerData: { site: SITE, pct: 90 + i } });
+  w.once("message", done);
+  w.once("error", fail);
+}))).then((parts) => {
+  const asked = parts.reduce((a, r) => a + r.asked, 0);
+  assert.deepStrictEqual(parts.flatMap((r) => r.bad), [], "rows told a total at or below their attempts");
+  assert(asked > 1000, `the sweep reached ${asked} rows with a total`);
+  return asked;
+});
+// The guard in claimRow: a total at or below the attempts run becomes attempts + 1.
+{
+  const real = Stats.neededOne;
+  Stats.neededOne = () => 150;
+  try {
+    const r = row("rate", "94", "200", "192");
+    assert.strictEqual(r.needed, 201);
+    assert(r.text.includes(" About 201 attempts in total would back it"), r.text);
+  } finally { Stats.neededOne = real; }
+}
 const equal = row("rate", "94", "100", "94");
 assert.strictEqual(equal.status, "short");
 assert(equal.text.endsWith("At your current success rate, more attempts cannot back this claim."), equal.text);
@@ -102,12 +161,40 @@ const rowsA = [{ kind: "rate", claimedPct: "90", attempts: "1000", successes: "9
   { kind: "rate", claimedPct: "94", attempts: "", successes: "" },
   { kind: "other", claimedPct: "", attempts: "", successes: "" }];
 const cl = E.checklist(st({ rows: rowsA }), rowsA.map(E.claimRow));
-assert.deepStrictEqual(cl.items.map((i) => [i.id, i.state]),
-  [["claims", "ok"], ["tests", "warn"], ["method", "bad"], ["route", "ok"]]);
-assert.strictEqual(cl.items[1].text, "1 claim: not enough proof");
+assert.deepStrictEqual(cl.items.map((i) => [i.id, i.state, i.text]), [
+  ["claims", "ok", "Claims listed"],
+  ["tests", "warn", "2 claims without enough test proof"],          // the no-count row and the "other" row
+  ["method", "bad", "Testing method not written down (needed where Annex IV (n) applies)"],
+  ["route", "ok", "Route question answered"]]);
 assert.deepStrictEqual([cl.backed, cl.total, cl.missing], [1, 3, 2]);
-const empty = E.checklist(st({ safetyJob: "unsure" }), []);
-assert.deepStrictEqual(empty.items.map((i) => i.state), ["bad", "bad", "bad", "warn"]);
+const clOf = (o) => E.checklist(st(o), (o.rows || []).map(E.claimRow));
+const BACKED = { kind: "rate", claimedPct: "90", attempts: "1000", successes: "940" };
+const OTHER = { kind: "other", claimedPct: "", attempts: "", successes: "" };
+// An "other" claim is open: a backed row beside it is not "every claim".
+let c2 = clOf({ method: true, rows: [BACKED, OTHER] });
+assert.deepStrictEqual(c2.items[1], { id: "tests", state: "warn", text: "1 claim without enough test proof" });
+assert.strictEqual(c2.missing, 1);
+c2 = clOf({ method: true, rows: [BACKED] });
+assert.deepStrictEqual(c2.items.map((i) => [i.state, i.text]), [["ok", "Claims listed"],
+  ["ok", "Test results back every claim"], ["ok", "Testing method written down"], ["ok", "Route question answered"]]);
+assert.strictEqual(c2.missing, 0);
+assert.deepStrictEqual(clOf({ rows: [OTHER] }).items[1], { id: "tests", state: "bad", text: "No claim has test numbers yet" });
+const empty = clOf({ safetyJob: "unsure" });
+assert.deepStrictEqual(empty.items.map((i) => [i.state, i.text]), [["bad", "No claims listed yet"],
+  ["bad", "No claim has test numbers yet"],
+  ["bad", "Testing method not written down (needed where Annex IV (n) applies)"],
+  ["warn", "Route question open: not sure"]]);
+assert.strictEqual(empty.missing, 4);
+assert.deepStrictEqual(clOf({ usesML: null, safetyJob: null }).items[3], { id: "route", state: "warn", text: "Route question not answered" });
+assert.deepStrictEqual(clOf({ usesML: "yes", safetyJob: null }).items[3], { id: "route", state: "warn", text: "Route question not answered" });
+assert.strictEqual(clOf({ usesML: "no", safetyJob: null }).items[3].state, "ok");
+// The example has no testing method to assess: "na", and "na" is not an open item.
+for (const method of [false, true]) {
+  const ex = clOf({ example: true, method, safetyJob: "unsure", rows: [OTHER] });
+  assert.deepStrictEqual(ex.items[2], { id: "method", state: "na", text: "Testing method: not assessed in this example" });
+  assert.strictEqual(ex.missing, 2, "tests and route are open; the method is not counted");
+}
+assert.strictEqual(clOf({ example: false, rows: [OTHER] }).items[2].state, "bad");
 
 // AI hints never overwrite a person's answer.
 const hints = { uses_ml: { answer: "yes", quote: "Uses a neural network." },
@@ -133,10 +220,31 @@ assert.strictEqual(E.tooLong(["x".repeat(15000), "y".repeat(15000)]), false);
 // Report and mail carry the result; the mail carries no document text.
 const s2 = st({ rows: [{ kind: "rate", text: "SECRET-QUOTE", claimedPct: "90", attempts: "1000", successes: "940" }] });
 const rep = E.report(s2, TODAY);
-assert(rep.includes("Outside body likely") && rep.includes("116 days to 20 January 2027") && rep.includes("SECRET-QUOTE"));
+assert(rep.startsWith("# EU test-evidence check · OrbitEval\n"), rep.split("\n")[0]);
+assert(rep.includes("Notified body if Part A applies") && rep.includes("116 days to 20 January 2027") && rep.includes("SECRET-QUOTE"));
 assert(rep.includes("Not legal advice"));
+assert(rep.includes("\n## Answers\n\n- Uses AI or machine learning: yes\n- AI does a safety job: yes\n- Selling in the EU: -\n"), rep);
+assert(!rep.includes("read by AI"), "nothing here was read by AI");
 const mail = E.mailBody(s2, TODAY);
-assert(mail.includes("Outside body likely") && mail.includes("1 of 1 claims backed") && !mail.includes("SECRET-QUOTE"));
+assert(mail.includes("Notified body if Part A applies") && mail.includes("1 of 1 claims backed") && !mail.includes("SECRET-QUOTE"));
+assert(mail.includes("\nOpen items in this check: 1\n") && !mail.includes("Missing"), mail);
+
+// The report marks what the AI read and nobody has checked since.
+const AIMARK = " (read by AI, not checked)";
+const aiRow = (text, edited) => ({ kind: "rate", text, claimedPct: "90", attempts: "1000", successes: "940",
+  ai: { quote: text, page: 1, file: null }, edited });
+const s3 = st({ safetyJob: null, sellWhen: "before", filled: { usesML: "Uses a neural network." },
+  rows: [aiRow("AI-ROW", false), aiRow("EDITED-ROW", true), Object.assign({}, BACKED, { text: "HAND-ROW" })] });
+const rep3 = E.report(s3, TODAY);
+assert(rep3.includes("| AI-ROW" + AIMARK + " | 90 |"), rep3);
+assert(rep3.includes("| EDITED-ROW | 90 |") && rep3.includes("| HAND-ROW | 90 |"), rep3);
+assert(rep3.includes("\n## Answers\n\n- Uses AI or machine learning: yes" + AIMARK
+  + "\n- AI does a safety job: -\n- Selling in the EU: Before 20 January 2027\n"), rep3);
+assert.strictEqual(rep3.split(AIMARK).length - 1, 2, "one AI row and one AI answer");
+const rep4 = E.report(st({ safetyJob: "no", sellWhen: "undecided", filled: { safetyJob: "A safety PLC stops it." } }), TODAY);
+assert(rep4.includes("- Uses AI or machine learning: yes\n- AI does a safety job: no" + AIMARK + "\n- Selling in the EU: Not decided\n"), rep4);
+const rep5 = E.report(st({ usesML: null, safetyJob: "unsure", sellWhen: "now" }), TODAY);
+assert(rep5.includes("- Uses AI or machine learning: -\n- AI does a safety job: not sure\n- Selling in the EU: Already selling\n"), rep5);
 
 // 4. The page wires the modules in the right order and carries the approved text.
 const fs = require("fs");
@@ -148,10 +256,25 @@ for (const id of ["drop", "file", "paste", "read", "example", "sell", "method", 
 }
 assert(page.includes(E.SENTENCES.privacy), "the privacy sentence sits next to the drop zone");
 assert(page.includes("Not legal advice"), "the page says it is not legal advice");
+for (const s of [
+  '<p class="eyebrow"><span class="dot"></span>Free · no login · no account</p>',
+  "<h1>Selling a machine with AI into Europe? See where your test evidence stands.</h1>",
+  '<meta name="description" content="Free, no login: the questions that decide your route under the Machinery Regulation, your deadline, and whether your test numbers back your claims.">',
+  ">Try an example: a public research model card (π0.5)</button>",
+  'Each claim is read as "at least X%". A claim is backed when the lower end of its 95% interval reaches it, assuming independent attempts under the conditions the claim describes.',
+  '<p class="small ec-note" id="more" hidden>The AI reader lists at most 25 claims per read.</p>',
+  "Not legal advice, not a conformity assessment and not a certificate. The route questions come from the regulation text; have your lawyer confirm your route. We store nothing you enter. If you use the AI reader, your text passes through OpenAI, as the note above the reader explains.",
+]) assert(page.includes(s), `eu-check.html should say ${s}`);
+assert(!/nothing stored/i.test(page), "the page no longer says nothing is stored");
+const css = fs.readFileSync(path.join(SITE, "site.css"), "utf8");
+const hide = css.split("\n").find((l) => l.startsWith(".ec-embed .topbar"));
+assert(hide && !hide.includes(".ec-foot"), "the embed keeps the disclaimer: " + hide);
+assert(css.includes(".ec-li--na > span { color: var(--ink-mute); }"), "the na icon is muted");
 const cfg = fs.readFileSync(path.join(SITE, "eu-check-config.js"), "utf8");
 assert(/window\.EUCHECK_API = "(https:\/\/[^"]+)?";/.test(cfg), "config sets EUCHECK_API to empty or an https URL");
 const EX = JSON.parse(fs.readFileSync(path.join(SITE, "eu-check-example.json"), "utf8"));
 assert.strictEqual(EX.source.commit, "215abfb217dbac7d5f1273282331b9b1866c0479");
 assert(EX.claims.length > 0 && EX.claims.every((c) => typeof c.quote === "string"), "the example has real quotes");
 
-console.log("eu-check: stats and logic OK");
+sweep.then((asked) => console.log(`eu-check: stats and logic OK (attempts sweep: ${asked} rows, every total above the attempts run)`),
+  (e) => { console.error(e); process.exitCode = 1; });

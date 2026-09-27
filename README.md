@@ -3,7 +3,7 @@
 Public site for OrbitEval: evidence for machines with AI entering Europe.
 
 Static HTML, no build step for the pages. The home page (`index.html`) links to the free
-EU Readiness Check (`eu-check.html`): no login, nothing stored. Its rules and every sentence
+EU check (`eu-check.html`): no login, no account. Its rules and every sentence
 about the regulation live in `eu-check-logic.js`; interval maths in `stats.js`, shared with
 `real.html`. `eu-check-config.js` holds the AI reader's address; empty means the reader is off
 and the check works by hand. `eu-check-example.json` is a real public model card, read once by

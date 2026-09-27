@@ -576,6 +576,7 @@ select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px
 .ec-li--ok > span { color: var(--good); }
 .ec-li--warn > span { color: var(--wait); }
 .ec-li--bad > span { color: var(--bad); }
+.ec-li--na > span { color: var(--ink-mute); }
 .ec-why p { font-size: 14px; color: var(--ink-2); margin: 0 0 8px; }
 .ec-why .small { color: var(--ink-mute); }
 .ec-rows td { vertical-align: top; }
@@ -594,8 +595,9 @@ select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px
 .ec-check input { width: auto; accent-color: var(--btn); }
 .ec-actions { display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; margin-top: 18px; }
 .ec-foot { color: var(--ink-mute); margin-top: 18px; max-width: 60em; }
+#example { max-width: 100%; white-space: normal; line-height: 1.3; text-align: left; }   /* its label is longer than a phone is wide */
 /* Embedded under the home page hero: the check alone, filled with the real example. */
-.ec-embed .topbar, .ec-embed .footer, .ec-embed .ec-head, .ec-embed #drop, .ec-embed .ec-actions, .ec-embed .ec-foot { display: none; }
+.ec-embed .topbar, .ec-embed .footer, .ec-embed .ec-head, .ec-embed #drop, .ec-embed .ec-actions { display: none; }
 .ec-embed .ec { padding-top: 16px; }
 
 /* EU Readiness Check, fix round 1 */
