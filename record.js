@@ -223,17 +223,20 @@
       if (!root.hidden) generate();
     });
 
-    /* A link can open one record: #nhtsa, or #claim-N counting from 0. With
-     * ?embed=1 the page shows that record alone, which is how the home page
-     * frames it. Nothing is chosen here that a visitor could not choose. */
+    /* A link can open one record by its own id: #nhtsa, or a claim's id such
+     * as #claim-03. With ?embed=1 the page shows that record alone, which is
+     * how the home page frames it. Nothing is chosen here that a visitor could
+     * not choose. */
     var embed = /[?&]embed=1(&|$)/.test(location.search);
     if (embed) document.documentElement.classList.add('rr-embed');
-    var m = /^#(?:(nhtsa)|claim-(\d+))$/.exec(location.hash);
-    var linked = !!m && (!!m[1] || !!D.corpus2[Number(m[2])]);
-    if (linked && m[2] !== undefined) {
+    var want = location.hash.slice(1);
+    var at = -1;
+    D.corpus2.forEach(function (c, i) { if (want && c.id === want) at = i; });
+    var linked = want === D.nhtsa.id || at >= 0;
+    if (at >= 0) {
       state.src = 'corpus2';
-      state.claim = Number(m[2]);
-      sel.value = String(state.claim);
+      state.claim = at;
+      sel.value = String(at);
     }
 
     /* A radiogroup promises arrow-key navigation, so it has to work. Tab

@@ -64,14 +64,14 @@ assert.strictEqual(Dd.headline.gap_pp, 41, "the home page says forty-one points"
 
 const R = json("release-record-data.json");
 const c = R.corpus2[2], d = c.display;
-has(`record.html?embed=1#claim-2`, "hero embeds claim 2");
+has(`record.html?embed=1#${c.id}`, "hero embeds the featured claim");
 has(`${c.baseline_label} → ${c.candidate_label}`, "hero bar names the arms");
 for (const s of [d.difference + " " + d.interval, "Detection limit " + d.detection_limit,
   `${(100 * c.k_baseline / c.n_baseline).toFixed(2)}% → ${(100 * c.k_candidate / c.n_candidate).toFixed(2)}%`,
   `${c.k_baseline.toLocaleString("en-US")} and ${c.k_candidate.toLocaleString("en-US")} of ${c.n_baseline.toLocaleString("en-US")} episodes`,
   `+${c.effect_pp} points`]) has(s, "featured record");
 assert.strictEqual(c.claim, "insufficient evidence");
-has(`${R.counts.corpus2_no_count} of ${R.counts.corpus2_records} papers`, "no-count papers");
+has(`${R.counts.corpus2_no_count} of ${R.counts.corpus2_records} claims`, "no-count claims");
 
 const N = R.nhtsa;
 has(`${N.n_baseline} incident reports`, "NHTSA arm A");
@@ -83,9 +83,16 @@ has(`${N.merged_variants[0].split("', '").length} spellings merged`, "NHTSA merg
 
 // The operator table on the home page repeats the NHTSA audit's own figures.
 const audit = read("release-check.html");
-for (const s of ["1,436", "1,211", "Avride", "Zoox", "Tesla", "Too coarse", "Too fine", "Scheme changed", "Withheld"]) {
+for (const s of ["1,436", "1,211", "Avride", "Zoox", "Tesla", "May Mobility", "Too coarse", "Too fine", "Too few", "Scheme changed", "Withheld"]) {
   assert(home.includes(s) && audit.includes(s), `home and audit should both carry ${s}`);
 }
+// The operator rows add up to the heading: 17 operators, 1,436 reports.
+const opTable = block(home, /NHTSA incident record[\s\S]*?<\/table>/);
+const rowsN = [...opTable.matchAll(/<tr><td>([^<]+)<\/td><td class="n mono">([\d,]+)<\/td>/g)];
+const words = { Seven: 7, Five: 5 };
+const ops = rowsN.reduce((a, r) => a + (words[r[1].split(" ")[0]] || 1), 0);
+const reps = rowsN.reduce((a, r) => a + Number(r[2].replace(/,/g, "")), 0);
+assert.deepStrictEqual([ops, reps], [17, 1436], "operator rows add up to 17 operators and 1,436 reports");
 
 // 4. A record link opens the record it names, and embed shows it alone.
 function openRecord(search, hash) {
@@ -105,12 +112,14 @@ function openRecord(search, hash) {
   vm.runInContext(read("record.js"), ctx);
   return { root: get("[data-record]"), cls };
 }
-let o = openRecord("?embed=1", "#claim-2");
-assert(!o.root.hidden && o.root.innerHTML.includes(c.candidate_label), "embed opens claim 2");
+let o = openRecord("?embed=1", "#" + c.id);
+assert(!o.root.hidden && o.root.innerHTML.includes(c.candidate_label), "embed opens the featured claim");
 assert(o.cls.has("rr-embed") && !o.root.scrolled, "embed hides the page and does not scroll");
 o = openRecord("", "#nhtsa");
 assert(o.root.innerHTML.includes(N.candidate_label) && o.root.scrolled, "#nhtsa opens the NHTSA record");
 o = openRecord("", "#claim-99");
+assert(o.root.hidden, "an unknown record opens nothing");
+o = openRecord("", "#claim-2");
 assert(o.root.hidden, "an unknown record opens nothing");
 
 console.log(`site pages: OK (${html.length} pages, links resolve, ${NAV_PAGES.length} share one header and footer, home figures match the data)`);

@@ -105,10 +105,10 @@ occupies March through May 2026, with both live at once.
 That much works. Release history can be reconstructed by an outsider when
 somebody was required to write it down.
 
-## The one comparison that exists could not have concluded
+## The one comparison that exists does not conclude
 
-Setting the transition months aside leaves 875 incidents under Version 10 and
-186 under Version 11. Across four outcome measures, nothing separates them.
+Version 10's reports from June 2025 to April 2026 and Version 11's from June
+to July 2026 give 875 and 186 incidents. Across four outcome measures, nothing separates them.
 Alleged injuries fall from 10.17 to 6.99 percent, with a 95 percent interval
 on the difference running from minus 7.36 to plus 0.99 points. Airbag
 deployments and vehicle tows move by about a point and four points, both
@@ -119,12 +119,12 @@ The measure that looks alarming is moderate-or-worse injury, which rises from
 interval runs from minus 0.63 to plus 4.18 points and its Fisher exact p is
 0.061.
 
-The important number is the one that comes before the outcome. Given these
-two arm sizes and that baseline, the smallest difference detectable at 80
-percent power and a 5 percent level is 2.49 points. The observed difference
-is 1.77 points. The comparison was not merely inconclusive. It was incapable
-of concluding, and that was knowable before anyone looked at an injury
-column.
+Given these two arm sizes and the injury rate of the two arms pooled, the
+smallest difference detectable at 80 percent power and a 5 percent level is
+2.49 points. The observed difference is 1.77 points. The limit uses a rate
+read off the outcome, because nobody stated the rate the comparison was
+designed around, so by this tool's own rule the comparison is indeterminate,
+not incapable.
 
 For every other operator the position is worse by an order of magnitude. On a
 one-percent outcome, Avride's two largest arms could detect a 9.2-point
