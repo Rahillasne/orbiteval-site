@@ -32,41 +32,61 @@
 <section class="hero">
   <div class="wrap">
     <div class="hero__copy">
-      <p class="eyebrow"><span class="dot"></span>Machinery Regulation (EU) 2023/1230 · applies from 20 January 2027</p>
+      <p class="eyebrow"><span class="dot"></span>EU Machinery Regulation · applies 20 January 2027</p>
       <h1>Selling a machine with AI into Europe?</h1>
-      <p class="lede">Under the Machinery Regulation, which applies from 20 January 2027, its technical file must include reports or results of the tests carried out on it. We check your AI's claims against your own test logs and write up the results for that file. The free check shows the questions that decide your route, your deadline, and whether your test numbers back your claims. No login.</p>
+      <p class="lede">Free check: do your tests back your success rates? No login.</p>
       <div class="hero__ctas">
         <a class="btn btn--primary" href="eu-check.html">Start the free check <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
         <a class="btn btn--ghost" href="demo.html" data-demo>Book a call</a>
       </div>
     </div>
-    <div class="plate">
-      <div class="plate__win">
-        <div class="plate__bar"><span>orbiteval.com/eu-check · π0.5, a public research model card</span><span>Example only</span></div>
-        <iframe src="eu-check.html?embed=1&example=1" title="The free check, filled in with a public research model card, used only to show the check" loading="lazy" tabindex="-1" aria-hidden="true"></iframe>
-        <a class="btn btn--primary btn--sm plate__open" href="eu-check.html">Start the free check <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
-      </div>
-      <p class="plate__note small">Example only. Not legal advice, not a conformity assessment and not a certificate.</p>
-      <a class="plate__link" href="eu-check.html" aria-label="Start the free check"></a>
-    </div>
   </div>
 </section>
 
-<section class="section" id="how">
+<section class="section section--tight" id="demo">
   <div class="wrap">
-    <div class="sec-head" data-reveal><h2>How it works.</h2><p>One machine, one software release, up to ten claims.</p></div>
-    <div class="cards" data-reveal>
-      <div class="card"><span class="lbl">You give us</span><h3>Your test logs, release notes and product claims.</h3><p>What you already keep. Nothing is installed.</p></div>
-      <div class="card"><span class="lbl">We check</span><h3>Every claim against its test proof.</h3><p>Backed, not enough proof, or no test found. Never rounded up.</p></div>
-      <div class="card"><span class="lbl">You get</span><h3>A report on your claims for your technical file.</h3><p>With a list of what is missing, to share with your notified body or lawyer.</p></div>
+    <div class="how" data-steps data-dwell="6000">
+      <ol class="how__list">
+        <li class="how__item"><button class="how__btn" type="button" aria-expanded="false"><span class="how__n">1</span><span><span class="how__title">Drop a datasheet</span><span class="how__body">A PDF, or pasted text.</span></span></button></li>
+        <li class="how__item"><button class="how__btn" type="button" aria-expanded="false"><span class="how__n">2</span><span><span class="how__title">AI suggests claims</span><span class="how__body">Each one quoted word for word.</span></span></button></li>
+        <li class="how__item"><button class="how__btn" type="button" aria-expanded="false"><span class="how__n">3</span><span><span class="how__title">Each claim gets a verdict</span><span class="how__body">Fixed rules decide. You check the AI's work.</span></span></button></li>
+        <li class="how__item"><button class="how__btn" type="button" aria-expanded="false"><span class="how__n">4</span><span><span class="how__title">Your result</span><span class="how__body">Free, no login.</span></span></button></li>
+      </ol>
+      <div class="how__stage" data-hd="stage">
+        <div class="sheet demo-sheet">
+          <div class="sheet__head"><b>Drop a datasheet</b><span>datasheet.pdf</span></div>
+          <div class="demo-drop"><div class="demo-drop__file" aria-hidden="true">PDF</div></div>
+          <div class="demo-bar" aria-hidden="true"><i></i></div>
+          <p class="demo-cap">Reading… <span data-hd="pages"></span> pages</p>
+        </div>
+        <div class="sheet demo-sheet">
+          <div class="sheet__head"><b>AI suggests claims</b><span><span data-hd="total"></span> suggested</span></div>
+          <ul class="demo-quotes" data-hd="quotes"><li>Loading the example…</li></ul>
+        </div>
+        <div class="sheet demo-sheet">
+          <div class="sheet__head"><b>Each claim gets a verdict</b><span>by fixed rules</span></div>
+          <ul class="demo-verdicts" data-hd="verdicts"><li>Loading the example…</li></ul>
+          <p class="demo-cap"><b data-hd="with-numbers"></b> of <span data-hd="total"></span> come with test numbers</p>
+        </div>
+        <div class="sheet demo-sheet">
+          <div class="sheet__head"><b>Your result</b><span>free, no login</span></div>
+          <div class="demo-result">
+            <svg class="demo-ring" data-hd="ring" viewBox="0 0 120 120" aria-hidden="true"><circle class="bg" cx="60" cy="60" r="50"/></svg>
+            <p class="demo-ring__txt"><b data-hd="backed"></b>/<span data-hd="total"></span><small>claims backed</small></p>
+            <ul class="demo-facts"><li><b data-hd="with-numbers"></b> of <span data-hd="total"></span> with test numbers</li><li><span data-hd="days"></span></li></ul>
+          </div>
+          <a class="btn btn--primary btn--sm demo-go" href="eu-check.html">Try it on yours <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        </div>
+      </div>
     </div>
+    <p class="demo__note small">A real public datasheet. Names hidden, but the quotes are exact. Judges the document only; not legal advice.</p>
   </div>
 </section>
 
 <section class="section" style="padding-top:0">
   <div class="wrap grid2">
     <div class="pc pc--wide" data-reveal>
-      <div class="pc__copy"><h2>We checked 20 published comparisons from robot AI research. None passes our check.</h2><p>Eight fail it, three are inconclusive, eight do not state one clear episode count per arm, and one reports a loss.</p><a class="link-arrow" href="claims.html">Open the Claim Check <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
+      <div class="pc__copy"><h2>20 published robot-AI comparisons. None passes our check.</h2><a class="link-arrow" href="claims.html">Open the Claim Check <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
       <div class="pc__shot mock" aria-hidden="true">
         <div class="mock__head"><b>Claim Check<small>20 published comparisons</small></b><span>Corpus 2 v2</span></div>
         <table>
@@ -90,8 +110,8 @@
       <ol>
         <li>Six weeks, one machine, one software release.</li>
         <li>Up to ten claims checked against your own test data.</li>
-        <li>A report on each claim for your technical file, with a list of what is missing.</li>
-        <li>Lawyer, laboratory and notified-body fees are separate; you contract them directly.</li>
+        <li>A report on each claim for your technical file.</li>
+        <li>Lawyer, laboratory and notified-body fees are separate.</li>
       </ol>
       <div style="grid-column:1/-1"><a class="btn btn--primary" href="demo.html" data-demo>Book a call <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
     </div>
@@ -103,10 +123,10 @@
     <div class="policy" data-reveal>
       <div class="sec-head"><h2>What we don't do.</h2><p>Our conflict policy.</p></div>
       <ol>
-        <li>We don't issue certificates, declarations of conformity or CE marks. If you use module B, a notified body issues the EU type-examination certificate; you draw up your own EU declaration of conformity.</li>
-        <li>We don't give legal advice. You decide your route, with your lawyer.</li>
+        <li>No certificates, declarations of conformity or CE marks.</li>
+        <li>No legal advice. You decide your route, with your lawyer.</li>
         <li>We take no equity, options, or warrants from any company whose machines or claims we check.</li>
-        <li>Missing information degrades a verdict and never raises one.</li>
+        <li>Missing test numbers never raise a verdict.</li>
         <li>When our own tool is wrong, we say so in public, as on the <a href="claims.html">Claim Check</a>.</li>
       </ol>
     </div>
@@ -137,5 +157,6 @@
 </footer>
 <script src="build-stamp.js"></script>
 <script src="site.js"></script>
+<script src="stats.js"></script><script src="eu-check-logic.js"></script><script src="home-demo.js"></script>
 </body>
 </html>

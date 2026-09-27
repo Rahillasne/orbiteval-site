@@ -71,7 +71,7 @@
   const invalid = (text) => ({ status: "invalid", label: "Check the numbers", text });
 
   function claimRow(row) {
-    if (row.kind === "other") return { status: "other", label: "Needs a test report", text: "The full check can cover it (up to ten claims)." };
+    if (row.kind === "other") return { status: "other", label: "Not a % claim", text: "The full check can cover it (up to ten claims)." };
     const pct = parsePct(row.claimedPct), n = parseCount(row.attempts), x = parseCount(row.successes);
     if (n === null && x === null) return { status: "nocount", label: "No test count stated", text: "Add the attempts and successes behind this claim." };
     if (pct === null || Number.isNaN(pct) || !(pct > 0 && pct <= 100)) return invalid("Enter the claimed success rate, between 0 and 100.");
@@ -142,6 +142,14 @@
     }));
   }
 
+  // The status line after a read. The AI suggests claims; the guard drops any
+  // suggestion whose quote is not in the document.
+  function readStatus(n, dropped) {
+    const d = dropped ? ` ${dropped} ${dropped === 1 ? "suggestion was" : "suggestions were"} dropped because their quote is not in your document.` : "";
+    if (!n) return "The AI suggested no claims for this document." + d + " Add them by hand?";
+    return (n === 1 ? "The AI suggested 1 claim. Check it." : `The AI suggested ${n} claims. Check each one.`) + d;
+  }
+
   const hasText = (pages) => pages.join("").replace(/\s/g, "").length >= 20;
   const tooLong = (pages) => pages.reduce((a, p) => a + p.length, 0) > MAX_CHARS;
 
@@ -187,5 +195,5 @@
   }
 
   return { DEADLINE, MAX_CHARS, SENTENCES, localISO, daysUntilDeadline, step1, parseCount, parsePct, claimRow,
-    checklist, mergeHints, rowsFromAI, hasText, tooLong, report, mailBody };
+    checklist, mergeHints, rowsFromAI, readStatus, hasText, tooLong, report, mailBody };
 });

@@ -120,6 +120,7 @@ assert(Number.isNaN(E.parsePct("abc")));
 // Step 2: the five rules, in order.
 const row = (kind, claimedPct, attempts, successes) => E.claimRow({ kind, claimedPct, attempts, successes });
 assert.strictEqual(row("other", "", "", "").status, "other");
+assert.strictEqual(row("other", "", "", "").label, "Not a % claim");
 assert.strictEqual(row("other", "", "", "").text, "The full check can cover it (up to ten claims).");
 assert.strictEqual(row("rate", "94", "", "").status, "nocount");
 assert.strictEqual(row("rate", "", "", "").status, "nocount");
@@ -269,6 +270,15 @@ const rs = E.rowsFromAI([{ quote: "188 of 200 picks", page: 2, kind: "rate", cla
 assert.deepStrictEqual(rs[0], { text: "188 of 200 picks", kind: "rate", claimedPct: "", attempts: "200",
   successes: "188", ai: { quote: "188 of 200 picks", page: 2, file: null } });
 
+// The status line after a read: the AI suggests claims, it does not find them.
+assert.strictEqual(E.readStatus(2, 0), "The AI suggested 2 claims. Check each one.");
+assert.strictEqual(E.readStatus(1, 0), "The AI suggested 1 claim. Check it.");
+assert.strictEqual(E.readStatus(3, 1), "The AI suggested 3 claims. Check each one."
+  + " 1 suggestion was dropped because their quote is not in your document.");
+assert.strictEqual(E.readStatus(0, 0), "The AI suggested no claims for this document. Add them by hand?");
+assert.strictEqual(E.readStatus(0, 2), "The AI suggested no claims for this document."
+  + " 2 suggestions were dropped because their quote is not in your document. Add them by hand?");
+
 // Text checks done before anything is sent.
 assert.strictEqual(E.hasText(["", "   "]), false, "a scanned PDF has no text");
 assert.strictEqual(E.hasText(["Our picker reaches 98.8% success."]), true);
@@ -309,36 +319,99 @@ const fs = require("fs");
 const page = fs.readFileSync(path.join(SITE, "eu-check.html"), "utf8");
 const order = ["stats.js", "eu-check-logic.js", "eu-check-config.js", "eu-check.js"].map((s) => page.indexOf(`src="${s}"`));
 assert(order.every((i) => i > 0) && order.join() === [...order].sort((a, b) => a - b).join(), "scripts load in order");
-for (const id of ["drop", "file", "paste", "read", "example", "sell", "method", "rows", "add", "result", "download", "book", "readstatus"]) {
+// Three steps (Document, Claims, Result): the IDs the first-time-visitor run drives.
+for (const id of ["steps", "s1", "s2", "s3",
+  "drop", "file", "pastetoggle", "paste", "read", "example", "manual", "readstatus",
+  "cards", "add", "toresult", "more",
+  "result", "why", "sell", "method", "download", "book"]) {
   assert(page.includes(`id="${id}"`), `eu-check.html has #${id}`);
 }
-assert(page.includes(E.SENTENCES.privacy), "the privacy sentence sits next to the drop zone");
+for (const name of ["usesML", "safetyJob"]) assert(page.includes(`name="${name}"`), `eu-check.html has the ${name} radios`);
+// Long text is folded: each of these sits, word for word, after the nearest <details and before its </details>.
+const folded = (s, why) => {
+  const at = page.indexOf(s);
+  assert(at > 0, `${why} is on the page, word for word`);
+  const open = page.lastIndexOf("<details", at), close = open < 0 ? -1 : page.indexOf("</details>", open);
+  assert(open > 0 && close > at + s.length, `${why} sits inside a <details>`);
+};
+folded(E.SENTENCES.privacy, "the privacy sentence");
+folded('Each claim is read as "at least X%". A claim is backed when the lower end of its 95% interval reaches it, assuming independent attempts under the conditions the claim describes.', "how a claim is checked");
+folded("An example, not a definition: stopping the machine when a person comes close.", "the safety-job guidance");
+assert(/<legend>Does the AI do a safety job\?<\/legend>\s*<details class="ec-more"><summary>What counts\?<\/summary><p>An example, not a definition: stopping the machine when a person comes close\.<\/p><\/details>/.test(page),
+  "the safety-job guidance sits right under its question, folded");
+folded('The route questions come from the regulation text; have your lawyer confirm your route. We store nothing you enter.<span class="ec-reader-only"> If you use the AI reader, your text passes through OpenAI, as the note above the reader explains.</span>', "the footnote");
 assert(page.includes("Not legal advice"), "the page says it is not legal advice");
 for (const s of [
   '<p class="eyebrow"><span class="dot"></span>Free · no login · no account</p>',
-  "<h1>Selling a machine with AI into Europe? See where your test evidence stands.</h1>",
+  "<h1>Check your test evidence.</h1>",
   '<meta name="description" content="Free, no login: the questions that decide your route under the Machinery Regulation, your deadline, and whether your test numbers back your claims.">',
-  ">Try an example: a public research model card (π0.5)</button>",
-  'Each claim is read as "at least X%". A claim is backed when the lower end of its 95% interval reaches it, assuming independent attempts under the conditions the claim describes.',
+  '<div class="small ec-note ec-reader-only">Read by OpenAI, which keeps logs for up to 30 days, sometimes longer. Not stored by us.',
+  '<button type="button" class="ec-bigdrop ec-reader-only" id="drop">',
+  '<button type="button" class="ec-linklike ec-reader-only" id="pastetoggle">Paste text instead</button>',
+  '<button type="button" class="ec-linklike" id="example">Try the example</button>',
+  '<button type="button" class="ec-linklike" id="manual">No document? Add claims by hand</button>',
   '<p class="small ec-note" id="more" hidden>The AI reader lists at most 25 claims per read.</p>',
-  'Not legal advice, not a conformity assessment and not a certificate. The route questions come from the regulation text; have your lawyer confirm your route. We store nothing you enter.<span class="ec-reader-only"> If you use the AI reader, your text passes through OpenAI, as the note above the reader explains.</span>',
+  '<div class="small ec-foot">Not legal advice, not a conformity assessment and not a certificate.',
 ]) assert(page.includes(s), `eu-check.html should say ${s}`);
 assert(!/nothing stored/i.test(page), "the page no longer says nothing is stored");
+assert(!page.includes("<table"), "claims are cards, not a table");
 const css = fs.readFileSync(path.join(SITE, "site.css"), "utf8");
-const hide = css.split("\n").find((l) => l.startsWith(".ec-embed .topbar"));
-assert(hide && !hide.includes(".ec-foot"), "the embed keeps the disclaimer: " + hide);
+assert(!css.includes("ec-embed"), "the embed is gone, and so are its rules");
+assert(!/\.ec-rows\b/.test(css), "the claims table's rules are gone");
 assert(css.includes(".ec-li--na > span { color: var(--ink-mute); }"), "the na icon is muted");
+assert(!/\.plate[\s_{]/.test(css), "the plate (the old embedded workspace) is gone, and so are its rules");
+assert(!/\.ec-sum[\s>{]/.test(css), "the old summary list's rules are gone");
+// Once the reader's daily limit is reached, every control and sentence about the reader goes, the privacy line too.
+assert(css.includes(".ec-limited .ec-reader-only, .ec-limited #pastebox, .ec-limited #reading { display: none !important; }"), "limited rule");
+// Long unbroken strings (a file name, an AI quote) wrap inside the card on a phone.
+for (const sel of [".ec-status", ".ec-aihint"]) {
+  const rule = css.split("\n").find((l) => l.startsWith(sel + " {"));
+  assert(rule && rule.includes("overflow-wrap: anywhere"), `${sel} wraps long strings: ${rule}`);
+}
+// A ring labelled "claims backed" fills only with backed claims: no other verdict colours an arc.
+assert(css.includes(".demo-seg--current { stroke: var(--good); }") && !/\.demo-seg--(caution|revoked)\b/.test(css), "only backed arcs are coloured");
+// Reduced motion: the home demo's sheets swap without sliding.
+assert(/@media \(prefers-reduced-motion: reduce\) \{[^\n]*\.sheet \{ transform: none; transition: opacity \.45s; \}/.test(css), "sheets do not slide under reduced motion");
 // With the reader off, its controls and every sentence about it are hidden (browser_check --reader off runs it).
-assert(css.includes(".ec-noreader #drop, .ec-noreader #more, .ec-noreader .ec-reader-only { display: none; }"), "reader-off rule");
+assert(css.includes(".ec-noreader .ec-reader-only, .ec-noreader #pastebox { display: none !important; }"), "reader-off rule");
+// The busy bar moves only when motion is welcome.
+{
+  const anim = css.indexOf("animation: ec-busy");
+  const media = css.lastIndexOf("@media (prefers-reduced-motion: no-preference) {", anim);
+  assert(anim > 0 && media > 0 && !/\n\}/.test(css.slice(media, anim)), "the busy bar's motion sits in the no-preference block");
+}
+// The home demo: its final state is the plain state, so reduced motion shows everything.
+const cssAll = fs.readFileSync(path.join(SITE, "site.css"), "utf8");
+const demoBlock = cssAll.slice(cssAll.indexOf("/* Home demo"));
+assert(/@media \(prefers-reduced-motion: no-preference\)/.test(demoBlock), "demo motion only runs when motion is welcome");
+assert(!/\.demo-[^{]*\{[^}]*opacity:\s*0/.test(demoBlock.split("@media (prefers-reduced-motion: no-preference)")[0]),
+  "no demo element is invisible outside the motion block");
+{
+  const m = /\n\[data-hd="stage"\]:not\(\.is-ready\) :is\((.*)\) \{ visibility: hidden; \}/.exec(demoBlock);
+  assert(m, "the demo's count lines are hidden until its data is in");
+  const sel = m[1].split(",").map((x) => x.trim());
+  assert.deepStrictEqual(sel, [".demo-cap", ".sheet__head span:has([data-hd])", ".demo-ring__txt", ".demo-facts"], "the lines that hold counts");
+}
 const js = fs.readFileSync(path.join(SITE, "eu-check.js"), "utf8");
 assert(js.includes('if (!API) document.documentElement.classList.add("ec-noreader");'), "eu-check.js marks the page when the reader is off");
 assert(!js.includes("toLocaleDateString") && js.includes("E.localISO(new Date())"), "today comes from localISO");
 assert(!/§|\bR[0-9]{1,3}\b/.test(js), "no internal section or ruling numbers in a public file");
+assert(js.includes('fetch("eu-check-demo.json")') && !js.includes("eu-check-example.json"), "the example is the home demo's data");
+assert(!/embed/i.test(js), "no embed mode");
+assert(js.includes('class="demo-ring"'), "the result ring is the home demo's ring");
+assert(!js.includes('"--p"'), "the ring sets no variable nothing reads");
+assert(js.includes("E.readStatus(") && !/Found|No claims found|marked AI/.test(js), "the read status comes from the rules module's wording");
+assert(js.includes('confirm("Replace your claims with the example?")'), "the example asks before replacing the person's own claims");
+assert(js.includes(">Attempts<input") && js.includes(">Succeeded<input"), "claim card fields are labelled Attempts/Succeeded");
+assert(!js.includes(">Tests<input") && !js.includes(">Passed<input"), "the old Tests/Passed labels are gone");
+assert(js.includes('`Example: a real public robot datasheet (names hidden), read by AI on ${esc(j.read.date)}; quotes checked against the source by code.`'),
+  "the example status line names no product and points to the code check");
 const cfg = fs.readFileSync(path.join(SITE, "eu-check-config.js"), "utf8");
 assert(/window\.EUCHECK_API = "(https:\/\/[^"]+)?";/.test(cfg), "config sets EUCHECK_API to empty or an https URL");
-const EX = JSON.parse(fs.readFileSync(path.join(SITE, "eu-check-example.json"), "utf8"));
-assert.strictEqual(EX.source.commit, "215abfb217dbac7d5f1273282331b9b1866c0479");
-assert(EX.claims.length > 0 && EX.claims.every((c) => typeof c.quote === "string"), "the example has real quotes");
+const DEMO = JSON.parse(fs.readFileSync(path.join(SITE, "eu-check-demo.json"), "utf8"));
+assert(DEMO.claims.length >= 5 && DEMO.claims.every((c) => typeof c.quote === "string" && c.quote.trim()), "the example has at least 5 real quotes");
+assert(!/https?:\/\/|www\.|\S@\S/i.test(JSON.stringify(DEMO)), "the example has no links or addresses");
+assert(!fs.existsSync(path.join(SITE, "eu-check-example.json")), "eu-check-demo.json is the only example");
 
 // The process never exits 0 without printing OK.
 let reachedOK = false;

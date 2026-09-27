@@ -58,11 +58,9 @@ const fail = S.erased + S.fails_on_episode_noise;
 assert.strictEqual(fail + S.inconclusive + S.count_not_stated + S.negative_gain + S.survives, CC.n_claims,
   "every claim is counted once");
 assert.strictEqual(S.survives, 0, "the home page says none passes");
-has(`We checked ${CC.n_claims} published comparisons from robot AI research. None passes our check.`, "proof heading");
 const outcomes = `${Word(fail)} ${fail === 1 ? "fails" : "fail"} it, ${word(S.inconclusive)} ${S.inconclusive === 1 ? "is" : "are"} inconclusive, `
   + `${word(S.count_not_stated)} ${S.count_not_stated === 1 ? "does" : "do"} not state one clear episode count per arm, `
   + `and ${word(S.negative_gain)} ${S.negative_gain === 1 ? "reports" : "report"} a loss.`;
-has(outcomes, "proof detail");
 assert(!home.includes("claims that a robot AI got better"), "one of the twenty reports a loss");
 
 // The Claim Check's venue sentence, counted over the field its Venue column reads.
@@ -91,30 +89,60 @@ for (const s of [
 // The approved copy on the home page.
 for (const s of [
   '<meta name="description" content="Free check for machines with AI entering the EU: the questions that decide your route under the Machinery Regulation, your deadline, and whether your test numbers back your claims.">',
-  "Under the Machinery Regulation, which applies from 20 January 2027, its technical file must include reports or results of the tests carried out on it. We check your AI's claims against your own test logs and write up the results for that file. The free check shows the questions that decide your route, your deadline, and whether your test numbers back your claims. No login.",
-  "<h3>A report on your claims for your technical file.</h3><p>With a list of what is missing, to share with your notified body or lawyer.</p>",
-  "<li>A report on each claim for your technical file, with a list of what is missing.</li>",
   "<p>Our conflict policy.</p>",
-  "<li>We don't give legal advice. You decide your route, with your lawyer.</li>",
   "<li>We take no equity, options, or warrants from any company whose machines or claims we check.</li>",
   '<li>When our own tool is wrong, we say so in public, as on the <a href="claims.html">Claim Check</a>.</li>',
+  "<li>Missing test numbers never raise a verdict.</li>",
   "<h2>Get your test evidence in order before 20 January 2027.</h2>",
-  '<div class="plate__bar"><span>orbiteval.com/eu-check · π0.5, a public research model card</span><span>Example only</span></div>',
-  'title="The free check, filled in with a public research model card, used only to show the check"',
 ]) has(s, "approved copy");
+assert(!home.includes("Missing information never raises a verdict."), "the old 'missing information' line is gone");
 const demo = read("demo.html");
 for (const s of [
   '<meta name="description" content="Thirty minutes on your machine: your claims, the evidence you keep, and which of it can go into the test part of your EU technical file.">',
   '<p class="lede">Your claims, the evidence you keep, and which of it can go into the test part of your EU technical file.</p>',
   "<h3>Handoff</h3><p>A report on each claim for your technical file, with a list of what is missing.</p>",
 ]) assert(demo.includes(s), `demo.html should say ${s}`);
-has(`eu-check.html?embed=1&example=1`, "the hero embeds the check with the example");
-// The embed's own disclaimer is out of sight inside the iframe, so the plate
-// carries it directly under the window, before the link that covers the plate.
-const NOTE = '<p class="plate__note small">Example only. Not legal advice, not a conformity assessment and not a certificate.</p>';
-has(NOTE, "the example disclaimer under the preview");
-assert(home.indexOf('class="plate__win"') < home.indexOf(NOTE) && home.indexOf(NOTE) < home.indexOf('class="plate__link"'),
-  "the disclaimer sits after the window and before the plate link");
+// v2 home: a short hero, then the animated demo of one real read.
+const HERO = /<div class="hero__copy">([\s\S]*?)<div class="hero__ctas">/.exec(home)[1];
+const heroWords = HERO.replace(/<[^>]+>/g, " ").replace(/&[a-z]+;/g, " ")
+  .split(/\s+/).filter((w) => /\w/.test(w)).length;
+assert(heroWords <= 25, `hero text is short: ${heroWords} words (eyebrow, heading and one line)`);
+for (const s of [
+  '<p class="eyebrow"><span class="dot"></span>EU Machinery Regulation · applies 20 January 2027</p>',
+  "<h1>Selling a machine with AI into Europe?</h1>",
+  '<p class="lede">Free check: do your tests back your success rates? No login.</p>',
+  `<h2>${CC.n_claims} published robot-AI comparisons. None passes our check.</h2>`,
+  "<li>A report on each claim for your technical file.</li>",
+  "<li>No certificates, declarations of conformity or CE marks.</li>",
+  "<li>No legal advice. You decide your route, with your lawyer.</li>",
+  '<p class="demo__note small">A real public datasheet. Names hidden, but the quotes are exact. Judges the document only; not legal advice.</p>',
+  "<span class=\"how__title\">AI suggests claims</span>",
+  '<div class="sheet__head"><b>AI suggests claims</b><span><span data-hd="total"></span> suggested</span></div>',
+  "<span class=\"how__body\">Fixed rules decide. You check the AI's work.</span>",
+  '<div class="sheet__head"><b>Each claim gets a verdict</b><span>by fixed rules</span></div>',
+]) has(s, "v2 copy");
+assert(!home.includes("From your test numbers, not from the AI."), "the old step-3 body line is gone");
+assert(!/<span>from the numbers<\/span>/.test(home), "the old step-3 header span is gone");
+assert(!home.includes("AI finds the claims"), "the old step-2 title/header text is gone");
+assert(!/<span data-hd="total"><\/span> found/.test(home), "the old 'N found' header is gone");
+assert(!home.includes("<iframe"), "the home page no longer embeds the check");
+assert(!home.includes('id="how"'), "the demo replaces the How it works cards");
+assert(home.includes('data-steps') && home.includes('src="home-demo.js"'), "the demo uses the step component and its script");
+const HD = require(path.join(SITE, "home-demo.js"));
+const DM = HD.model(json("eu-check-demo.json"), "2026-09-27");
+assert(DM.total >= 5 && DM.backed <= DM.total && DM.withNumbers <= DM.total && DM.days === 115, JSON.stringify(DM));
+assert(!/https?:\/\/|www\.|\S@\S/i.test(read("eu-check-demo.json")), "the demo has no links or addresses");
+// The demo's hooks are data-hd: site.js treats every [data-demo] as a Book-a-call link.
+assert(!/data-demo="/.test(home) && !read("home-demo.js").includes("data-demo"), "no demo hook uses data-demo");
+for (const k of ["stage", "pages", "total", "quotes", "verdicts", "with-numbers", "ring", "backed", "days"]) has(`data-hd="${k}"`, "demo hook");
+assert(!home.includes('data-hd="open"') && !home.includes("open items"), "the demo's open-items fact is gone");
+has('<b data-hd="with-numbers"></b> of <span data-hd="total"></span> with test numbers', "the with-numbers fact replaces open items");
+assert(!home.includes('class="fg"'), "the ring's unused placeholder arc is gone");
+// After the deadline the days fact reads "Applies since", with no number.
+const DM_PAST = HD.model(json("eu-check-demo.json"), "2027-02-01");
+assert(DM_PAST.days <= 0, "2027-02-01 is on or after the deadline");
+assert.strictEqual(HD.daysFact(DM_PAST.days), "Applies since 20 January 2027", "the mount text after the deadline has no number");
+assert(HD.daysFact(1).includes("1") && HD.daysFact(1).includes("days to 20 January 2027"), "the mount text before the deadline has a number");
 has(`<b>Claim Check<small>${CC.n_claims} published comparisons</small></b>`, "the mock header counts comparisons");
 has("€20,000", "pilot price");
 has('id="independence"', "the conflict policy anchor the footer links to");

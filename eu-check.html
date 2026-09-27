@@ -30,51 +30,79 @@
 <main class="wrap ec">
   <section class="ec-head">
     <p class="eyebrow"><span class="dot"></span>Free · no login · no account</p>
-    <h1>Selling a machine with AI into Europe? See where your test evidence stands.</h1>
+    <h1>Check your test evidence.</h1>
   </section>
+  <ol class="ec-steps" id="steps" aria-label="Progress">
+    <li data-go="1" class="is-on"><button type="button"><span>1</span>Document</button></li>
+    <li data-go="2"><button type="button" disabled><span>2</span>Claims</button></li>
+    <li data-go="3"><button type="button" disabled><span>3</span>Result</button></li>
+  </ol>
 
-  <div class="ec-grid">
-    <section class="ec-panel" aria-labelledby="m-h">
-      <h2 class="ec-h" id="m-h"><span class="ec-n">1</span>Your machine</h2>
-      <div class="ec-drop" id="drop">
-        <input type="file" id="file" accept=".pdf,.txt,.md,text/plain,application/pdf" hidden>
-        <button type="button" class="btn btn--ghost btn--sm" id="pick">Drop your datasheet (PDF) or choose a file</button>
-        <div class="ec-filerow" id="filerow" hidden><span class="small mono" id="filename"></span><button type="button" class="ec-linklike" id="removefile">Remove file</button></div>
-        <textarea id="paste" rows="3" placeholder="…or paste your product claims here"></textarea>
+  <section class="ec-step is-open" id="s1">
+    <p class="ec-step__sum" hidden></p>
+    <div class="ec-step__body">
+      <h2 class="ec-sr" tabindex="-1">Step 1 of 3: your document</h2>
+      <button type="button" class="ec-bigdrop ec-reader-only" id="drop">
+        <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg>
+        <b>Drop your datasheet (PDF)</b><span class="small">or click to choose a file</span>
+      </button>
+      <input type="file" id="file" accept=".pdf,.txt,.md,text/plain,application/pdf" hidden>
+      <div class="ec-reading" id="reading" hidden><div class="demo-bar ec-busy" aria-hidden="true"><i></i></div></div>
+      <p class="small ec-status" id="readstatus" role="status" aria-live="polite"></p>
+      <div class="ec-pastebox" id="pastebox" hidden>
+        <textarea id="paste" rows="5" placeholder="Paste your product claims here"></textarea>
         <button type="button" class="btn btn--primary btn--sm" id="read">Read it with AI</button>
-        <p class="small ec-note">Your text is sent to our server and to OpenAI to be read. We do not store it. OpenAI does not use API data to train its models unless we opt in to share it. It keeps logs that can include your text for up to 30 days, or longer where the law requires it or to protect its services or others from harm (developers.openai.com/api/docs/guides/your-data, read 26 September 2026). Don't send anything you can't share with a third party. You can type everything by hand instead.</p>
       </div>
-      <p class="small" id="readstatus" role="status" aria-live="polite"></p>
-      <fieldset class="ec-q"><legend>Does the machine use AI or machine learning?</legend>
-        <div class="ec-opts"><label><input type="radio" name="usesML" value="yes"> Yes</label><label><input type="radio" name="usesML" value="no"> No</label></div>
-        <p class="ec-aihint" data-hint="usesML"></p></fieldset>
-      <fieldset class="ec-q"><legend>Does the AI do a safety job?</legend>
-        <div class="ec-opts"><label><input type="radio" name="safetyJob" value="yes"> Yes</label><label><input type="radio" name="safetyJob" value="no"> No</label><label><input type="radio" name="safetyJob" value="unsure"> Not sure</label></div>
-        <p class="small ec-note">An example, not a definition: stopping the machine when a person comes close.</p>
-        <p class="ec-aihint" data-hint="safetyJob"></p></fieldset>
-      <div class="field"><label for="sell">Selling in the EU</label>
-        <select id="sell"><option value="">Choose one</option><option value="now">Already selling</option><option value="before">Before 20 January 2027</option><option value="after">From 20 January 2027</option><option value="undecided">Not decided</option></select></div>
-      <button type="button" class="btn btn--ghost btn--sm" id="example">Try an example: a public research model card (π0.5)</button>
-    </section>
-    <section class="ec-panel ec-result" id="result" aria-live="polite"></section>
-  </div>
-
-  <section class="ec-panel ec-claims" aria-labelledby="c-h">
-    <h2 class="ec-h" id="c-h"><span class="ec-n">2</span>Your claims vs your tests</h2>
-    <p class="small ec-note">Each claim is read as "at least X%". A claim is backed when the lower end of its 95% interval reaches it, assuming independent attempts under the conditions the claim describes.</p>
-    <div class="table-wrap"><table class="ec-rows" id="rows">
-      <thead><tr><th>Claim</th><th class="n">Claimed %</th><th class="n">Attempts</th><th class="n">Succeeded</th><th>Result</th><th></th></tr></thead>
-      <tbody></tbody></table></div>
-    <p class="small ec-note" id="more" hidden>The AI reader lists at most 25 claims per read.</p>
-    <button type="button" class="btn btn--ghost btn--sm" id="add">+ Add a claim</button>
-    <label class="ec-check"><input type="checkbox" id="method"> We have a written description of how we test</label>
+      <p class="ec-links">
+        <button type="button" class="ec-linklike ec-reader-only" id="pastetoggle">Paste text instead</button>
+        <button type="button" class="ec-linklike" id="example">Try the example</button>
+        <button type="button" class="ec-linklike" id="manual">No document? Add claims by hand</button>
+      </p>
+      <div class="small ec-note ec-reader-only">Read by OpenAI, which keeps logs for up to 30 days, sometimes longer. Not stored by us.
+        <details class="ec-more"><summary>Details</summary><p>Your text is sent to our server and to OpenAI to be read. We do not store it. OpenAI does not use API data to train its models unless we opt in to share it. It keeps logs that can include your text for up to 30 days, or longer where the law requires it or to protect its services or others from harm (developers.openai.com/api/docs/guides/your-data, read 26 September 2026). Don't send anything you can't share with a third party. You can type everything by hand instead.</p></details></div>
+    </div>
   </section>
 
-  <div class="ec-actions">
-    <button type="button" class="btn btn--ghost" id="download">Download my report</button>
-    <a class="btn btn--primary" id="book" href="demo.html">Get the full check → Book a call</a>
-  </div>
-  <p class="small ec-foot">Not legal advice, not a conformity assessment and not a certificate. The route questions come from the regulation text; have your lawyer confirm your route. We store nothing you enter.<span class="ec-reader-only"> If you use the AI reader, your text passes through OpenAI, as the note above the reader explains.</span></p>
+  <section class="ec-step" id="s2">
+    <p class="ec-step__sum" hidden></p>
+    <div class="ec-step__body" hidden>
+      <h2 class="ec-sr" tabindex="-1">Step 2 of 3: your claims</h2>
+      <div class="ec-cards" id="cards"></div>
+      <p class="small ec-note" id="more" hidden>The AI reader lists at most 25 claims per read.</p>
+      <div class="ec-row">
+        <button type="button" class="btn btn--ghost btn--sm" id="add">+ Add a claim</button>
+        <button type="button" class="btn btn--primary" id="toresult">See my result →</button>
+      </div>
+      <details class="ec-more"><summary>How is a claim checked?</summary><p>Each claim is read as "at least X%". A claim is backed when the lower end of its 95% interval reaches it, assuming independent attempts under the conditions the claim describes.</p></details>
+    </div>
+  </section>
+
+  <section class="ec-step" id="s3">
+    <div class="ec-step__body" hidden>
+      <h2 class="ec-sr" tabindex="-1">Step 3 of 3: your result</h2>
+      <div class="ec-result" id="result" aria-live="polite"></div>
+      <div class="ec-qs">
+        <fieldset class="ec-q"><legend>Uses AI or machine learning?</legend>
+          <div class="ec-opts"><label><input type="radio" name="usesML" value="yes"> Yes</label><label><input type="radio" name="usesML" value="no"> No</label></div>
+          <p class="ec-aihint" data-hint="usesML"></p></fieldset>
+        <fieldset class="ec-q"><legend>Does the AI do a safety job?</legend>
+          <details class="ec-more"><summary>What counts?</summary><p>An example, not a definition: stopping the machine when a person comes close.</p></details>
+          <div class="ec-opts"><label><input type="radio" name="safetyJob" value="yes"> Yes</label><label><input type="radio" name="safetyJob" value="no"> No</label><label><input type="radio" name="safetyJob" value="unsure"> Not sure</label></div>
+          <p class="ec-aihint" data-hint="safetyJob"></p></fieldset>
+        <div class="field"><label for="sell">Selling in the EU</label>
+          <select id="sell"><option value="">Choose one</option><option value="now">Already selling</option><option value="before">Before 20 January 2027</option><option value="after">From 20 January 2027</option><option value="undecided">Not decided</option></select></div>
+        <label class="ec-check"><input type="checkbox" id="method"> We have a written description of how we test</label>
+      </div>
+      <div class="ec-actions">
+        <button type="button" class="btn btn--ghost" id="download">Download my report</button>
+        <a class="btn btn--primary" id="book" href="demo.html">Book a call →</a>
+      </div>
+      <details class="ec-more"><summary>Why?</summary><div id="why"></div></details>
+    </div>
+  </section>
+
+  <div class="small ec-foot">Not legal advice, not a conformity assessment and not a certificate.
+    <details class="ec-more"><summary>More</summary><p>The route questions come from the regulation text; have your lawyer confirm your route. We store nothing you enter.<span class="ec-reader-only"> If you use the AI reader, your text passes through OpenAI, as the note above the reader explains.</span></p></details></div>
 </main>
 <footer class="footer">
   <div class="wrap footer__row">
