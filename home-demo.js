@@ -15,7 +15,8 @@
       withNumbers: rows.filter((r) => r.attempts !== "" && r.successes !== "").length,
       backed: res.filter((r) => r.status === "backed").length,
       days: E.daysUntilDeadline(todayISO),
-      rows: rows.map((r, i) => ({ quote: r.text, label: res[i].label, status: res[i].status })),
+      rows: rows.map((r, i) => ({ quote: r.text, label: res[i].label, status: res[i].status,
+        hasNumbers: r.attempts !== "" && r.successes !== "" })),
     };
   }
   const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
@@ -30,20 +31,19 @@
     const set = (k, v) => doc.querySelectorAll(`[data-hd="${k}"]`).forEach((el) => { el.textContent = v; });
     const setHTML = (k, v) => doc.querySelectorAll(`[data-hd="${k}"]`).forEach((el) => { el.innerHTML = v; });
     set("pages", m.pages); set("total", m.total); set("with-numbers", m.withNumbers);
-    set("backed", m.backed); setHTML("days", daysFact(m.days));
+    setHTML("days", daysFact(m.days));
     const shown = m.rows.slice(0, 5);
     const q = doc.querySelector('[data-hd="quotes"]');
     if (q) q.innerHTML = shown.map((r, i) => `<li style="--i:${i}"><mark>${esc(r.quote)}</mark></li>`).join("");
     const v = doc.querySelector('[data-hd="verdicts"]');
     if (v) v.innerHTML = shown.map((r, i) => `<li style="--i:${i}"><span>${esc(r.quote)}</span>`
       + `<span class="placard placard--${PLACARD[r.status]}">${esc(r.label)}</span></li>`).join("");
-    // The ring: one arc per claim, coloured as its verdict's placard, backed first.
+    // The ring: one arc per claim, coloured when it comes with test numbers, those first.
     const ring = doc.querySelector('[data-hd="ring"]');
     if (ring && m.total) {
       const C = 2 * Math.PI * 50, slot = C / m.total, gap = m.total > 1 ? Math.min(5, slot / 3) : 0;
-      const order = ["backed", "short", "invalid", "nocount", "other"];
-      const arcs = m.rows.map((r) => r.status).sort((a, b) => order.indexOf(a) - order.indexOf(b));
-      ring.innerHTML = arcs.map((s, i) => `<circle class="demo-seg demo-seg--${PLACARD[s]}" style="--i:${i}" cx="60" cy="60" r="50"`
+      const flags = m.rows.map((r) => r.hasNumbers).sort((a, b) => Number(b) - Number(a));
+      ring.innerHTML = flags.map((has, i) => `<circle class="demo-seg${has ? " demo-seg--current" : ""}" style="--i:${i}" cx="60" cy="60" r="50"`
         + ` stroke-dasharray="${(slot - gap).toFixed(2)} ${(C - slot + gap).toFixed(2)}" stroke-dashoffset="${(-i * slot).toFixed(2)}"/>`).join("");
     }
     doc.querySelectorAll('[data-hd="stage"]').forEach((el) => el.classList.add("is-ready"));

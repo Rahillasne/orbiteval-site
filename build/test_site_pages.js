@@ -134,9 +134,13 @@ assert(DM.total >= 5 && DM.backed <= DM.total && DM.withNumbers <= DM.total && D
 assert(!/https?:\/\/|www\.|\S@\S/i.test(read("eu-check-demo.json")), "the demo has no links or addresses");
 // The demo's hooks are data-hd: site.js treats every [data-demo] as a Book-a-call link.
 assert(!/data-demo="/.test(home) && !read("home-demo.js").includes("data-demo"), "no demo hook uses data-demo");
-for (const k of ["stage", "pages", "total", "quotes", "verdicts", "with-numbers", "ring", "backed", "days"]) has(`data-hd="${k}"`, "demo hook");
+for (const k of ["stage", "pages", "total", "quotes", "verdicts", "with-numbers", "ring", "days"]) has(`data-hd="${k}"`, "demo hook");
 assert(!home.includes('data-hd="open"') && !home.includes("open items"), "the demo's open-items fact is gone");
-has('<b data-hd="with-numbers"></b> of <span data-hd="total"></span> with test numbers', "the with-numbers fact replaces open items");
+assert(!home.includes('data-hd="backed"'), "the ring no longer reads a traceable pass/fail grade on the datasheet");
+has('<p class="demo-ring__txt"><b data-hd="with-numbers"></b>/<span data-hd="total"></span><small>with test numbers</small></p>', "the ring counts claims that come with test numbers");
+has('<ul class="demo-facts"><li><span data-hd="total"></span> claims suggested</li><li><span data-hd="days"></span></li></ul>', "the facts list states the plain claim count instead of the now-duplicate with-numbers fact");
+assert(!home.includes("claims backed"), "the home demo no longer names a pass/fail grade; eu-check.html's own flow still can");
+assert(read("eu-check.js").includes("claims backed"), "eu-check.html's own result flow (eu-check.js) still reads claims backed, for a visitor's own claims");
 assert(!home.includes('class="fg"'), "the ring's unused placeholder arc is gone");
 // After the deadline the days fact reads "Applies since", with no number.
 const DM_PAST = HD.model(json("eu-check-demo.json"), "2027-02-01");
