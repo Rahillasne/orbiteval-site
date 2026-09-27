@@ -9,30 +9,22 @@
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600&family=Figtree:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="site.css">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23D4744F'/%3E%3Ccircle cx='16' cy='16' r='9' stroke='%23FAF9F5' stroke-width='2.2' fill='none'/%3E%3Ccircle cx='23' cy='9' r='3' fill='%23141413'/%3E%3C/svg%3E">
-<title>Orbit — Independent verification of robot releases</title>
-<meta name="description" content="Orbit reads the evidence behind a claim that a robot release got better, and says whether it supports the claim and whether that evidence could ever have settled it.">
+<title>OrbitEval — Evidence for machines with AI entering Europe</title>
+<meta name="description" content="Free check for machines with AI entering the EU: the questions that decide your route under the Machinery Regulation, your deadline, and whether your test numbers back your claims.">
 </head>
 <body>
 <header class="topbar" id="top">
   <div class="pill">
-    <a class="brand" href="index.html" aria-label="Orbit home"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.6"/><circle cx="15.5" cy="4.5" r="2.3" fill="#D4744F"/></svg>Orbit</a>
+    <a class="brand" href="index.html" aria-label="OrbitEval home"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.6"/><circle cx="15.5" cy="4.5" r="2.3" fill="#D4744F"/></svg>OrbitEval</a>
     <nav class="pill__links" aria-label="Primary">
-      <a href="record.html">Release Record</a>
-      <a href="claims.html">Claim Check</a>
-      <a href="decision.html">Decision card</a>
-      <a href="release-check.html">NHTSA audit</a>
-      <a href="real.html">Is it real?</a>
+      <a href="eu-check.html">Free check</a>
     </nav>
-    <a class="btn btn--primary btn--sm pill__cta" href="demo.html" data-demo>Book a demo <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    <a class="btn btn--primary btn--sm pill__cta" href="demo.html" data-demo>Book a call <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
     <button class="pill__menu" type="button" aria-expanded="false" aria-controls="mnav" aria-label="Menu"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
   </div>
   <nav class="mnav" id="mnav" hidden aria-label="Menu">
-    <a href="record.html">Release Record</a>
-    <a href="claims.html">Claim Check</a>
-    <a href="decision.html">Decision card</a>
-    <a href="release-check.html">NHTSA audit</a>
-    <a href="real.html">Is it real?</a>
-    <a href="demo.html" data-demo>Book a demo</a>
+    <a href="eu-check.html">Free check</a>
+    <a href="demo.html" data-demo>Book a call</a>
   </nav>
 </header>
 
@@ -40,80 +32,43 @@
 <section class="hero">
   <div class="wrap">
     <div class="hero__copy">
-      <p class="eyebrow"><span class="dot"></span>Release Record · real evidence only</p>
-      <h1>Every release claims it got better. We check the evidence.</h1>
-      <p class="lede">We read the evidence behind a claim that a robot release got better, and say two things: whether it supports the claim, and whether it ever could have.</p>
+      <p class="eyebrow"><span class="dot"></span>Machinery Regulation (EU) 2023/1230 · applies from 20 January 2027</p>
+      <h1>Selling a machine with AI into Europe?</h1>
+      <p class="lede">Under the Machinery Regulation, which applies from 20 January 2027, its technical file must include reports or results of the tests carried out on it. We check your AI's claims against your own test logs and write up the results for that file. The free check shows the questions that decide your route, your deadline, and whether your test numbers back your claims. No login.</p>
       <div class="hero__ctas">
-        <a class="btn btn--primary" href="demo.html" data-demo>Book a demo <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a class="btn btn--primary" href="eu-check.html">Start the free check <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a class="btn btn--ghost" href="demo.html" data-demo>Book a call</a>
       </div>
     </div>
     <div class="plate">
       <div class="plate__win">
-        <div class="plate__bar"><span>orbiteval.com/record · FAST → ActionPiece</span><span>Real record</span></div>
-        <iframe src="record.html?embed=1#claim-03" title="A Release Record for a published claim, FAST to ActionPiece" loading="lazy" tabindex="-1" aria-hidden="true"></iframe>
+        <div class="plate__bar"><span>orbiteval.com/eu-check · π0.5, a public research model card</span><span>Example only</span></div>
+        <iframe src="eu-check.html?embed=1&example=1" title="The free check, filled in with a public research model card, used only to show the check" loading="lazy" tabindex="-1" aria-hidden="true"></iframe>
+        <a class="btn btn--primary btn--sm plate__open" href="eu-check.html">Start the free check <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
       </div>
-      <a class="plate__link" href="record.html#claim-03" aria-label="Open this Release Record"></a>
-      <a class="btn btn--primary btn--sm plate__open" href="record.html#claim-03">Open the Release Record <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
-    </div>
-    <div class="strip">
-      <a href="claims.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg>Claim Check</a>
-      <a href="decision.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Decision card</a>
-      <a href="release-check.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 3v6h6"/></svg>NHTSA audit</a>
-      <a href="real.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Is it real? Free</a>
+      <p class="plate__note small">Example only. Not legal advice, not a conformity assessment and not a certificate.</p>
+      <a class="plate__link" href="eu-check.html" aria-label="Start the free check"></a>
     </div>
   </div>
 </section>
 
 <section class="section" id="how">
   <div class="wrap">
-    <div class="sec-head" data-reveal><h2>Four verdicts. Same order, every time.</h2><p>One record per release pair and claim. Nothing is installed, and sufficiency is fixed before the outcome is read.</p></div>
-    <div class="how" data-steps data-dwell="6000">
-      <ol class="how__list" data-reveal>
-        <li class="how__item"><button class="how__btn" type="button" aria-expanded="false"><span class="how__n">1</span><span><span class="how__title">Release identity</span><span class="how__body">Which software ran on each side. Near-miss labels go to a named person, never merged.</span></span></button></li>
-        <li class="how__item"><button class="how__btn" type="button" aria-expanded="false"><span class="how__n">2</span><span><span class="how__title">Exposure</span><span class="how__body">How much was done: miles, hours, attempts. Without it, counts are not rates.</span></span></button></li>
-        <li class="how__item"><button class="how__btn" type="button" aria-expanded="false"><span class="how__n">3</span><span><span class="how__title">Claim</span><span class="how__body">Supported, not supported, or insufficient evidence. Never “false”.</span></span></button></li>
-        <li class="how__item"><button class="how__btn" type="button" aria-expanded="false"><span class="how__n">4</span><span><span class="how__title">Sufficiency</span><span class="how__body">Could this evidence ever have detected the claimed effect? Fixed before the outcome.</span></span></button></li>
-      </ol>
-      <div class="how__stage" data-reveal aria-hidden="true">
-        <div class="sheet">
-          <div class="sheet__head"><b>Release identity</b><span>NHTSA record · reconstructed</span></div>
-          <div class="sheet__row"><div><b>5th Generation ADS, Version 10</b><span>900 incident reports</span></div><span class="tag">Arm A</span></div>
-          <div class="sheet__row"><div><b>5th Generation ADS, Version 11</b><span>274 incident reports</span></div><span class="tag">Arm B</span></div>
-          <div class="sheet__row"><div><b>4 spellings merged</b><span>Case, commas and spaces only</span></div><span class="tag tag--grey">Merged</span></div>
-          <div class="sheet__row"><div><b>5 near-miss labels</b><span>Left for a named person, never merged</span></div><span class="tag tag--wait">Flagged</span></div>
-        </div>
-        <div class="sheet">
-          <div class="sheet__head"><b>Exposure</b><span>NHTSA record · missing</span></div>
-          <div class="sheet__row"><div><b>1,219 reports read</b><span>One event at a time, from the federal file</span></div><span class="tag">Read</span></div>
-          <div class="sheet__row"><div><b>8 superseded revisions</b><span>Only the latest version of a report counts</span></div><span class="tag tag--grey">Removed</span></div>
-          <div class="sheet__row"><div><b>No miles, hours or trips</b><span>The federal record carries none</span></div><span class="tag tag--wait">Missing</span></div>
-          <div class="sheet__row"><div><b>Counts, not rates</b><span>A version that drove more looks worse</span></div><span class="tag tag--grey">Reported</span></div>
-        </div>
-        <div class="sheet">
-          <div class="sheet__head"><b>Claim</b><span>Published claim · ActionPiece over FAST</span></div>
-          <div class="sheet__row"><div><b>+4.5 points on LIBERO-Plus</b><span>The claim as the paper makes it</span></div><span class="tag tag--grey">On file</span></div>
-          <div class="sheet__row"><div><b>64.30% → 68.80%</b><span>6,449 and 6,901 of 10,030 episodes</span></div><span class="tag">Printed</span></div>
-          <div class="sheet__row"><div><b>+4.51 pp [+3.20, +5.81]</b><span>Episode noise only; the arms are separate training runs</span></div><span class="tag tag--wait">Too narrow</span></div>
-          <div class="sheet__row"><div><b>Insufficient evidence</b><span>Not refuted: the evidence cannot reach it</span></div><span class="tag tag--wait">Verdict</span></div>
-        </div>
-        <div class="sheet">
-          <div class="sheet__head"><b>Sufficiency</b><span>Published claim · indeterminate</span></div>
-          <div class="sheet__row"><div><b>Detection limit 1.87 pp</b><span>80% power, 5% level, and only a lower bound</span></div><span class="tag tag--grey">Lower bound</span></div>
-          <div class="sheet__row"><div><b>No design rate</b><span>The study named no rate it was planned around</span></div><span class="tag tag--wait">Missing</span></div>
-          <div class="sheet__row"><div><b>Read off the result</b><span>So it cannot be a capability verdict</span></div><span class="tag tag--wait">Indeterminate</span></div>
-          <div class="sheet__row"><div><b>8 of 20 claims</b><span>No episode count per arm, so no limit at all</span></div><span class="tag tag--grey">Not computed</span></div>
-        </div>
-      </div>
+    <div class="sec-head" data-reveal><h2>How it works.</h2><p>One machine, one software release, up to ten claims.</p></div>
+    <div class="cards" data-reveal>
+      <div class="card"><span class="lbl">You give us</span><h3>Your test logs, release notes and product claims.</h3><p>What you already keep. Nothing is installed.</p></div>
+      <div class="card"><span class="lbl">We check</span><h3>Every claim against its test proof.</h3><p>Backed, not enough proof, or no test found. Never rounded up.</p></div>
+      <div class="card"><span class="lbl">You get</span><h3>A report on your claims for your technical file.</h3><p>With a list of what is missing, to share with your notified body or lawyer.</p></div>
     </div>
   </div>
 </section>
 
 <section class="section" style="padding-top:0">
   <div class="wrap grid2">
-    <div class="pc" data-reveal>
-      <div class="pc__copy"><h2>Twenty published claims. None supported.</h2><p>Improvement claims from published robot-policy papers, checked against the noise of training twice. Seven fail on episode count alone.</p><a class="link-arrow" href="claims.html">Open the Claim Check <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
+    <div class="pc pc--wide" data-reveal>
+      <div class="pc__copy"><h2>We checked 20 published comparisons from robot AI research. None passes our check.</h2><p>Eight fail it, three are inconclusive, eight do not state one clear episode count per arm, and one reports a loss.</p><a class="link-arrow" href="claims.html">Open the Claim Check <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
       <div class="pc__shot mock" aria-hidden="true">
-        <div class="mock__head"><b>Claim Check<small>20 published claims</small></b><span>Corpus 2 v2</span></div>
+        <div class="mock__head"><b>Claim Check<small>20 published comparisons</small></b><span>Corpus 2 v2</span></div>
         <table>
           <tbody>
             <tr><td>Supported</td><td class="n mono">0</td><td style="width:36%"><span class="bar" style="width:0%"></span></td></tr>
@@ -125,47 +80,20 @@
         </table>
       </div>
     </div>
-    <div class="pc" data-reveal>
-      <div class="pc__copy"><h2>Forty-one points between two copies of the same software.</h2><p>Same recipe, same data, only the seed changed. The standard test calls the gap overwhelming.</p><a class="link-arrow" href="decision.html">Open the Decision card <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
-      <div class="pc__shot mock" aria-hidden="true">
-        <div class="mock__head"><b>Same recipe, 2,100 pairs<small>the true gap is zero</small></b><span>Real panel</span></div>
-        <table>
-          <tbody>
-            <tr><td>Copy A, task 1</td><td class="n mono">16.0%</td><td style="width:36%"><span class="bar" style="width:16%"></span></td></tr>
-            <tr><td>Copy B, task 1</td><td class="n mono">57.0%</td><td><span class="bar" style="width:57%"></span></td></tr>
-            <tr><td>Episode-level test, false alarms</td><td class="n mono">41.4%</td><td><span class="bar bar--low" style="width:41.4%"></span></td></tr>
-            <tr><td>Retrain-level test, false alarms</td><td class="n mono">1.7%</td><td><span class="bar" style="width:1.7%"></span></td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-    <div class="pc pc--wide" data-reveal>
-      <div class="pc__copy"><h2>Sixteen of seventeen operators can't be compared.</h2><p>Automated-driving incident reports filed with the US regulator carry a software version field. For all but one operator, it can't support a before-and-after comparison.</p><a class="link-arrow" href="release-check.html">Read the NHTSA audit <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
-      <div class="pc__shot mock" aria-hidden="true">
-        <div class="mock__head"><b>NHTSA incident record<small>17 operators · 1,436 reports</small></b><span>Public data</span></div>
-        <table>
-          <tbody>
-            <tr><td>Waymo</td><td class="n mono">1,211</td><td><span class="placard placard--current">Usable</span></td></tr>
-            <tr><td>Avride</td><td class="n mono">79</td><td><span class="placard placard--caution">Scheme changed</span></td></tr>
-            <tr><td>Zoox</td><td class="n mono">64</td><td><span class="placard placard--caution">Too fine</span></td></tr>
-            <tr><td>Tesla</td><td class="n mono">26</td><td><span class="placard placard--caution">Too coarse</span></td></tr>
-            <tr><td>May Mobility</td><td class="n mono">18</td><td><span class="placard placard--caution">Too fine</span></td></tr>
-            <tr><td>Seven operators</td><td class="n mono">30</td><td><span class="placard placard--revoked">Withheld</span></td></tr>
-            <tr><td>Five operators</td><td class="n mono">8</td><td><span class="placard placard--caution">Too few</span></td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
   </div>
 </section>
 
-<section class="section" style="padding-top:0">
+<section class="section" style="padding-top:0" id="price">
   <div class="wrap">
-    <div class="sec-head" data-reveal><h2>Who has money on the number.</h2></div>
-    <div class="cards" data-reveal>
-      <div class="card"><span class="lbl">Robot makers</span><h3>A release claim a buyer can check.</h3><p>Every release note says better. Yours can say whether the test could tell.</p></div>
-      <div class="card"><span class="lbl">Operators</span><h3>A second reading before you accept the upgrade.</h3><p>From evidence you already keep, read by someone who doesn't sell robots.</p></div>
-      <div class="card"><span class="lbl">Insurers and investors</span><h3>Risk priced on evidence that could have failed.</h3><p>Supported, not supported, or insufficient. Never rounded up.</p></div>
+    <div class="policy" data-reveal>
+      <div class="sec-head"><h2>Founding pilot: €20,000, fixed.</h2><p>Half at the start, half at handoff.</p></div>
+      <ol>
+        <li>Six weeks, one machine, one software release.</li>
+        <li>Up to ten claims checked against your own test data.</li>
+        <li>A report on each claim for your technical file, with a list of what is missing.</li>
+        <li>Lawyer, laboratory and notified-body fees are separate; you contract them directly.</li>
+      </ol>
+      <div style="grid-column:1/-1"><a class="btn btn--primary" href="demo.html" data-demo>Book a call <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
     </div>
   </div>
 </section>
@@ -173,55 +101,38 @@
 <section class="section" style="padding-top:0" id="independence">
   <div class="wrap">
     <div class="policy" data-reveal>
-      <div class="sec-head"><h2>How we stay independent.</h2><p>The conflict policy. Versioned with the method.</p></div>
+      <div class="sec-head"><h2>What we don't do.</h2><p>Our conflict policy.</p></div>
       <ol>
-        <li>We take no equity, options, or warrants from any robot vendor.</li>
-        <li>One record per release pair and claim. Three claims get three records, never one blended verdict.</li>
+        <li>We don't issue certificates, declarations of conformity or CE marks. If you use module B, a notified body issues the EU type-examination certificate; you draw up your own EU declaration of conformity.</li>
+        <li>We don't give legal advice. You decide your route, with your lawyer.</li>
+        <li>We take no equity, options, or warrants from any company whose machines or claims we check.</li>
         <li>Missing information degrades a verdict and never raises one.</li>
-        <li>A study that could not have detected the claimed effect is insufficient evidence, never supported.</li>
-        <li>When our own tool is wrong, we say so in public. Its first version called five of twenty published claims supported. None survive.</li>
+        <li>When our own tool is wrong, we say so in public, as on the <a href="claims.html">Claim Check</a>.</li>
       </ol>
-    </div>
-  </div>
-</section>
-
-<section class="section" style="padding-top:0" id="faq">
-  <div class="wrap">
-    <div class="faq" data-reveal>
-      <h2>Questions</h2>
-      <details><summary>Do you install anything?</summary><p>No. We read the evidence you already keep: evaluation logs, per-episode results, incident records.</p></details>
-      <details><summary>Who pays?</summary><p>The vendor, first. Like a safety mark: the maker pays for the test, the buyer gets the result.</p></details>
-      <details><summary>Will you call a claim false?</summary><p>No. A claim the evidence cannot reach is insufficient evidence, not a refuted claim.</p></details>
-      <details><summary>Is it a leaderboard?</summary><p>No. One record per release pair and claim, never ranked against another.</p></details>
-      <details><summary>What if the evidence is thin?</summary><p>The record says insufficient evidence. We don't round it up to a verdict.</p></details>
-      <details><summary>Can I try it first?</summary><p>Yes. <a href="real.html">Is it real?</a> runs in your browser, and the <a href="record.html">Release Record</a> runs on two real sources.</p></details>
     </div>
   </div>
 </section>
 
 <section class="cta" data-reveal>
   <div class="wrap">
-    <h2>A claim they can check.</h2>
-    <p>Thirty minutes on your release, not a slide deck.</p>
-    <a class="btn btn--primary" href="demo.html" data-demo>Book a demo <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    <h2>Get your test evidence in order before 20 January 2027.</h2>
+    <p>Thirty minutes on your machine, not a slide deck.</p>
+    <a class="btn btn--primary" href="demo.html" data-demo>Book a call <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
   </div>
 </section>
 </main>
 
 <footer class="footer">
   <div class="wrap footer__row">
-    <a class="brand" href="index.html" aria-label="Orbit home"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.6"/><circle cx="15.5" cy="4.5" r="2.3" fill="#D4744F"/></svg>Orbit</a>
+    <a class="brand" href="index.html" aria-label="OrbitEval home"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.6"/><circle cx="15.5" cy="4.5" r="2.3" fill="#D4744F"/></svg>OrbitEval</a>
     <nav class="footer__links" aria-label="Footer">
-      <a href="record.html">Release Record</a>
+      <a href="eu-check.html">Free check</a>
       <a href="claims.html">Claim Check</a>
-      <a href="decision.html">Decision card</a>
-      <a href="release-check.html">NHTSA audit</a>
-      <a href="real.html">Is it real?</a>
       <a href="index.html#independence">Conflict policy</a>
       <a href="https://github.com/Rahillasne/orbit-eval">Open code</a>
-      <a href="demo.html" data-demo>Book a demo</a>
+      <a href="demo.html" data-demo>Book a call</a>
     </nav>
-    <div class="footer__meta"><span>© 2026 OrbitEval · Independent verification of robot releases</span><span><a href="mailto:rahil@orbiteval.com">rahil@orbiteval.com</a> · <a href="#top">Back to top ↑</a></span></div>
+    <div class="footer__meta"><span>© 2026 OrbitEval · Evidence for machines with AI entering Europe</span><span><a href="mailto:rahil@orbiteval.com">rahil@orbiteval.com</a> · <a href="#top">Back to top ↑</a></span></div>
   </div>
 </footer>
 <script src="build-stamp.js"></script>

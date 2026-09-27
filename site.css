@@ -109,12 +109,13 @@ strong { color: var(--ink); font-weight: 600; }
 
 /* The plate: the real workspace, framed */
 .plate { position: relative; margin-top: clamp(36px, 5vw, 56px); border-radius: var(--r); border: 1px solid var(--line); background: radial-gradient(60% 55% at 50% 0%, rgba(212,116,79,.18), transparent 65%), var(--paper-2); padding: clamp(10px, 2vw, 18px); box-shadow: 0 30px 80px rgba(20,20,19,.12); }
-.plate__win { border-radius: 12px; overflow: hidden; border: 1px solid var(--line); background: var(--paper); }
+.plate__win { position: relative; border-radius: 12px; overflow: hidden; border: 1px solid var(--line); background: var(--paper); }
 .plate__bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 12px; border-bottom: 1px solid var(--line-soft); font-family: var(--font-mono); font-size: 11.5px; color: var(--ink-mute); }
 .plate__bar span:first-child::before { content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--brand); margin-right: 8px; vertical-align: 1px; }
 .plate iframe { width: 100%; height: 560px; border: 0; pointer-events: none; }
 .plate__link { position: absolute; inset: 0; border-radius: var(--r); }
-.plate__open { position: absolute; right: clamp(22px, 3vw, 34px); bottom: clamp(22px, 3vw, 34px); z-index: 2; }
+.plate__open { position: absolute; right: clamp(12px, 1.25vw, 16px); bottom: clamp(12px, 1.25vw, 16px); z-index: 2; }   /* inside the window, clear of the note below it */
+.plate__note { position: relative; z-index: 1; margin: 10px 2px 0; color: var(--ink-mute); }   /* above .plate__link, which covers the plate */
 @media (max-width: 760px) { .plate iframe { height: 620px; } }
 
 /* What is public, as a single line of pills */
@@ -282,7 +283,7 @@ td.n, th.n { text-align: right; font-variant-numeric: tabular-nums; }
 .empty p { color: var(--ink-2); font-size: 15.5px; }
 .empty p:last-child { margin: 0; }
 
-/* The Reading (site pages; the workspace has its own copy in app.css) */
+/* The Reading (site pages) */
 .reading { margin: 0; border-radius: 14px; padding: 20px 22px; background: var(--paper-2); border: 1px solid var(--line-soft); }
 .reading__cap { display: flex; justify-content: space-between; gap: 12px; font-family: var(--font-mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-mute); margin-bottom: 12px; }
 .reading__row { display: grid; grid-template-columns: 96px 1fr; gap: 12px; align-items: baseline; padding: 4px 0; }
@@ -542,3 +543,94 @@ select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px
 
 @media (max-width: 960px) { .rr-srcs { grid-template-columns: 1fr; } .rr-vs { grid-template-columns: repeat(2, 1fr); } .rr-v:nth-child(2) { border-right: 0; } .rr-v:nth-child(-n+2) { border-bottom: 1px solid var(--line-soft); } }
 @media (max-width: 560px) { .rr-vs { grid-template-columns: 1fr; } .rr-v { border-right: 0; border-bottom: 1px solid var(--line-soft); } .rr-v:last-child { border-bottom: 0; } .rr-row { grid-template-columns: 1fr; gap: 3px; padding: 11px 0; } }
+
+/* EU Readiness Check (eu-check.html) */
+.ec { padding-bottom: clamp(40px, 6vw, 72px); }
+.ec-head { padding: clamp(36px, 5vw, 56px) 0 24px; max-width: 40em; }
+.ec-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
+@media (max-width: 860px) { .ec-grid { grid-template-columns: 1fr; } }
+.ec-panel { background: var(--paper-2); border: 1px solid var(--line-soft); border-radius: var(--r); padding: clamp(18px, 2.6vw, 28px); min-width: 0; }
+.ec-result { background: var(--paper); border-color: var(--line); box-shadow: 0 18px 40px -28px rgba(20,20,19,.35); }
+.ec-claims { margin-top: 16px; }
+.ec-h { display: flex; align-items: center; gap: 10px; font-size: 18px; margin: 0 0 16px; }
+.ec-n { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--ink); color: var(--paper); font-family: var(--font-mono); font-size: 12px; }
+.ec-drop { border: 1.5px dashed var(--line); border-radius: 14px; padding: 16px; display: grid; gap: 10px; margin-bottom: 18px; background: var(--paper); }
+.ec-drop.is-over { border-color: var(--accent); background: rgba(196,96,60,.05); }
+.ec-note { color: var(--ink-mute); margin: 0; }
+.ec-q { border: 0; padding: 0; margin: 0 0 16px; min-width: 0; }
+.ec-q legend { font-size: 13px; font-weight: 500; color: var(--ink-2); margin-bottom: 8px; padding: 0; }
+.ec-opts { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 6px; }
+.ec-opts label { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border: 1px solid var(--line); border-radius: 999px; font-size: 14px; cursor: pointer; background: var(--paper); }
+.ec-opts input { width: auto; margin: 0; padding: 0; accent-color: var(--btn); }
+.ec-opts label:has(input:checked) { border-color: var(--ink); background: var(--ink); color: var(--paper); }
+.ec select { width: 100%; font: inherit; font-size: 15px; padding: 11px 12px; border: 1px solid var(--line); border-radius: 12px; background-color: var(--paper-2); color: var(--ink); }
+.ec-aihint { margin: 4px 0 0; font-size: 12.5px; color: var(--accent); }
+.ec-aihint:empty { display: none; }
+.ec-days { display: flex; align-items: baseline; flex-wrap: wrap; gap: 10px; margin: 0 0 14px; color: var(--ink-soft); }
+.ec-sum { margin: 0 0 14px; border-top: 1px solid var(--line-soft); }
+.ec-sum > div { display: grid; grid-template-columns: 110px 1fr; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--line-soft); }
+.ec-sum dt { font-size: 12px; color: var(--ink-mute); }
+.ec-sum dd { margin: 0; font-size: 14px; color: var(--ink); }
+.ec-list { list-style: none; margin: 0 0 14px; padding: 0; }
+.ec-li { display: flex; gap: 10px; align-items: baseline; padding: 6px 0; font-size: 14px; color: var(--ink-2); }
+.ec-li > span { flex: none; width: 18px; font-weight: 600; text-align: center; }
+.ec-li--ok > span { color: var(--good); }
+.ec-li--warn > span { color: var(--wait); }
+.ec-li--bad > span { color: var(--bad); }
+.ec-li--na > span { color: var(--ink-mute); }
+.ec-why p { font-size: 14px; color: var(--ink-2); margin: 0 0 8px; }
+.ec-why .small { color: var(--ink-mute); }
+.ec-rows td { vertical-align: top; }
+.ec-rows input, .ec-rows select { font-size: 14px; padding: 8px 10px; border-radius: 10px; }
+.ec-rows select { margin-bottom: 6px; width: auto; }
+.ec-rows td.n input { width: 7em; text-align: right; }
+.ec-rows td:first-child { min-width: 18em; }
+.ec-res { min-width: 14em; }
+.ec-res .small { display: block; margin-top: 6px; color: var(--ink-soft); white-space: normal; }
+.ec-ai { margin-top: 6px; font-size: 12.5px; }
+.ec-ai summary { cursor: pointer; color: var(--accent); font-family: var(--font-mono); font-size: 11px; letter-spacing: .04em; text-transform: uppercase; }
+.ec-ai q { display: block; margin-top: 6px; color: var(--ink-2); font-style: italic; overflow-wrap: anywhere; }
+.ec-del { background: transparent; border: 0; font-size: 18px; color: var(--ink-mute); cursor: pointer; padding: 6px 8px; }
+.ec-del:hover { color: var(--bad); }
+.ec-check { display: flex; gap: 10px; align-items: center; margin-top: 14px; font-size: 14px; color: var(--ink-2); }
+.ec-check input { width: auto; accent-color: var(--btn); }
+.ec-actions { display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; margin-top: 18px; }
+.ec-foot { color: var(--ink-mute); margin-top: 18px; max-width: 60em; }
+#example { max-width: 100%; white-space: normal; line-height: 1.3; text-align: left; }   /* its label is longer than a phone is wide */
+/* Embedded under the home page hero: the check alone, filled with the real example. */
+.ec-embed .topbar, .ec-embed .footer, .ec-embed .ec-head, .ec-embed #drop, .ec-embed .ec-actions { display: none; }
+.ec-embed .ec { padding-top: 16px; }
+/* The AI reader is off (EUCHECK_API empty): its controls, and every sentence about it, are hidden. */
+.ec-noreader #drop, .ec-noreader #more, .ec-noreader .ec-reader-only { display: none; }
+
+/* EU Readiness Check, fix round 1 */
+#readstatus:empty { display: none; }
+.ec-filerow { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: -2px 0 2px; }
+.ec-filerow[hidden] { display: none; }
+.ec-filerow #filename { color: var(--ink-2); overflow-wrap: anywhere; }
+.ec-linklike { background: transparent; border: 0; padding: 0; color: var(--accent); font-size: 12.5px; font-family: inherit; cursor: pointer; text-decoration: underline; }
+.ec-linklike:hover { color: var(--btn-hover); }
+/* Under 640px the claims table becomes a stack of cards: the table's fixed
+   column widths (867px, per the fix-round audit) cannot fit a 375px screen,
+   and .table-wrap's horizontal scroll hid the verdict off screen. */
+@media (max-width: 640px) {
+  .ec-rows thead { display: none; }
+  .ec-rows, .ec-rows tbody { display: block; width: 100%; }
+  .ec-rows tr {
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px 10px;
+    grid-template-areas: "claim claim claim" "pct att succ" "result result result";
+    position: relative; width: 100%; margin: 0 0 14px; padding: 14px 40px 14px 14px;
+    border: 1px solid var(--line-soft); border-radius: 12px; background: var(--paper);
+  }
+  .ec-rows td { display: block; padding: 0; border: 0; min-width: 0; }
+  .ec-rows td::before { content: attr(data-label); display: block; font-size: 11px; color: var(--ink-mute); margin-bottom: 3px; }
+  .ec-rows td[data-label=""]::before, .ec-rows td[data-label="Claim"]::before { display: none; }
+  .ec-rows td[data-label="Claim"] { grid-area: claim; min-width: 0; }
+  .ec-rows td[data-label="Claimed %"] { grid-area: pct; }
+  .ec-rows td[data-label="Attempts"] { grid-area: att; }
+  .ec-rows td[data-label="Succeeded"] { grid-area: succ; }
+  .ec-rows td[data-label="Result"] { grid-area: result; min-width: 0; }
+  .ec-rows td[data-label=""] { position: absolute; top: 10px; right: 10px; }
+  .ec-rows td.n input, .ec-rows select, .ec-rows td[data-label="Claim"] input { width: 100%; }
+  .ec-rows td.n input { text-align: left; }
+}
