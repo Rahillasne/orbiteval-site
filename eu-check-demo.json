@@ -1,0 +1,104 @@
+{
+ "source": {
+  "title": "A real public robot datasheet",
+  "pages": 2,
+  "note": "Company and product names hidden."
+ },
+ "read": {
+  "model": "gpt-5.5",
+  "date": "2026-09-27",
+  "tokens_in": 1419,
+  "tokens_out": 847
+ },
+ "hints": {
+  "uses_ml": {
+   "answer": "yes",
+   "quote": "[Vision system] AI-powered vision system"
+  },
+  "safety_job": null
+ },
+ "claims": [
+  {
+   "quote": "Surpassing the constraints of traditional single-arm parcel induction solutions, [Product]’s innovative design delivers choreographed dual-arm motion which enables industry-leading sustained rates of 2,200-2,300 picks/hour (peak rate: 3,300 picks/hour).",
+   "page": 1,
+   "kind": "other",
+   "claimed_pct": null,
+   "attempts": null,
+   "successes": null
+  },
+  {
+   "quote": "Parcel variability is a major challenge that [Product] overcomes with its innovative [Gripper], which is capable of precisely handling a wide range of sizes and shapes.",
+   "page": 1,
+   "kind": "other",
+   "claimed_pct": null,
+   "attempts": null,
+   "successes": null
+  },
+  {
+   "quote": "By avoiding mispicks and drops, the [Gripper] helps minimize cost per pick, further optimizing system efficiency.",
+   "page": 1,
+   "kind": "other",
+   "claimed_pct": null,
+   "attempts": null,
+   "successes": null
+  },
+  {
+   "quote": "The system avoids picking non-conveyable items, automatically conveying them to a designated path and preventing the robots from wasting cycles handling items that should not be inducted.",
+   "page": 1,
+   "kind": "other",
+   "claimed_pct": null,
+   "attempts": null,
+   "successes": null
+  },
+  {
+   "quote": "Non-conveyable item filtering and ejection",
+   "page": 1,
+   "kind": "other",
+   "claimed_pct": null,
+   "attempts": null,
+   "successes": null
+  },
+  {
+   "quote": "Fastest robotic parcel induction on the market",
+   "page": 1,
+   "kind": "other",
+   "claimed_pct": null,
+   "attempts": null,
+   "successes": null
+  },
+  {
+   "quote": "Remote intervention for higher uptime when exceptions arise",
+   "page": 1,
+   "kind": "other",
+   "claimed_pct": null,
+   "attempts": null,
+   "successes": null
+  },
+  {
+   "quote": "[Company] provides the fastest and most reliable parcel handling robotics platform in the world.",
+   "page": 2,
+   "kind": "other",
+   "claimed_pct": null,
+   "attempts": null,
+   "successes": null
+  },
+  {
+   "quote": "Standardizing these systems enables quick deployment and rapid performance gains for high-volume parcel sortation centers and e- commerce fulfillment and distribution centers.",
+   "page": 2,
+   "kind": "other",
+   "claimed_pct": null,
+   "attempts": null,
+   "successes": null
+  },
+  {
+   "quote": "With [Remote software] remote intervention software, [Product] learns from edge cases, all while maximizing your uptime.",
+   "page": 2,
+   "kind": "other",
+   "claimed_pct": null,
+   "attempts": null,
+   "successes": null
+  }
+ ],
+ "dropped": 0,
+ "note": "The datasheet does not say whether the AI does a safety job, so the example answers Not sure."
+}

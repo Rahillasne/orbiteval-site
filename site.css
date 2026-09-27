@@ -107,17 +107,6 @@ strong { color: var(--ink); font-weight: 600; }
 .hero .lede { margin: 16px 0 28px; }
 .hero__ctas { display: flex; flex-wrap: wrap; gap: 12px; }
 
-/* The plate: the real workspace, framed */
-.plate { position: relative; margin-top: clamp(36px, 5vw, 56px); border-radius: var(--r); border: 1px solid var(--line); background: radial-gradient(60% 55% at 50% 0%, rgba(212,116,79,.18), transparent 65%), var(--paper-2); padding: clamp(10px, 2vw, 18px); box-shadow: 0 30px 80px rgba(20,20,19,.12); }
-.plate__win { position: relative; border-radius: 12px; overflow: hidden; border: 1px solid var(--line); background: var(--paper); }
-.plate__bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 12px; border-bottom: 1px solid var(--line-soft); font-family: var(--font-mono); font-size: 11.5px; color: var(--ink-mute); }
-.plate__bar span:first-child::before { content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--brand); margin-right: 8px; vertical-align: 1px; }
-.plate iframe { width: 100%; height: 560px; border: 0; pointer-events: none; }
-.plate__link { position: absolute; inset: 0; border-radius: var(--r); }
-.plate__open { position: absolute; right: clamp(12px, 1.25vw, 16px); bottom: clamp(12px, 1.25vw, 16px); z-index: 2; }   /* inside the window, clear of the note below it */
-.plate__note { position: relative; z-index: 1; margin: 10px 2px 0; color: var(--ink-mute); }   /* above .plate__link, which covers the plate */
-@media (max-width: 760px) { .plate iframe { height: 620px; } }
-
 /* What is public, as a single line of pills */
 .strip { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; padding-top: clamp(28px, 4vw, 44px); }
 .strip a { display: inline-flex; align-items: center; gap: 7px; padding: 8px 14px; border-radius: 999px; background: var(--paper-2); border: 1px solid var(--line-soft); font-size: 13.5px; font-weight: 500; color: var(--ink-2); transition: background-color .2s, border-color .2s; }
@@ -163,6 +152,7 @@ strong { color: var(--ink); font-weight: 600; }
 .pc--wide { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 1.3fr; align-items: center; gap: clamp(24px, 4vw, 48px); }
 .pc__copy h2 { font-size: clamp(22px, 2.2vw, 28px); }
 .pc__copy p { color: var(--ink-soft); font-size: 15px; margin: 12px 0 16px; max-width: 32em; }
+.pc__copy h2 + .link-arrow { margin-top: 16px; }   /* a heading with no sentence under it */
 .pc__shot { min-width: 0; border-radius: 14px; overflow: hidden; border: 1px solid var(--line-soft); background: var(--paper); }
 @media (max-width: 900px) { .grid2, .pc--wide { grid-template-columns: 1fr; } }
 
@@ -544,93 +534,244 @@ select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px
 @media (max-width: 960px) { .rr-srcs { grid-template-columns: 1fr; } .rr-vs { grid-template-columns: repeat(2, 1fr); } .rr-v:nth-child(2) { border-right: 0; } .rr-v:nth-child(-n+2) { border-bottom: 1px solid var(--line-soft); } }
 @media (max-width: 560px) { .rr-vs { grid-template-columns: 1fr; } .rr-v { border-right: 0; border-bottom: 1px solid var(--line-soft); } .rr-v:last-child { border-bottom: 0; } .rr-row { grid-template-columns: 1fr; gap: 3px; padding: 11px 0; } }
 
-/* EU Readiness Check (eu-check.html) */
-.ec { padding-bottom: clamp(40px, 6vw, 72px); }
-.ec-head { padding: clamp(36px, 5vw, 56px) 0 24px; max-width: 40em; }
-.ec-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
-@media (max-width: 860px) { .ec-grid { grid-template-columns: 1fr; } }
-.ec-panel { background: var(--paper-2); border: 1px solid var(--line-soft); border-radius: var(--r); padding: clamp(18px, 2.6vw, 28px); min-width: 0; }
-.ec-result { background: var(--paper); border-color: var(--line); box-shadow: 0 18px 40px -28px rgba(20,20,19,.35); }
-.ec-claims { margin-top: 16px; }
-.ec-h { display: flex; align-items: center; gap: 10px; font-size: 18px; margin: 0 0 16px; }
-.ec-n { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--ink); color: var(--paper); font-family: var(--font-mono); font-size: 12px; }
-.ec-drop { border: 1.5px dashed var(--line); border-radius: 14px; padding: 16px; display: grid; gap: 10px; margin-bottom: 18px; background: var(--paper); }
-.ec-drop.is-over { border-color: var(--accent); background: rgba(196,96,60,.05); }
+/* EU Readiness Check (eu-check.html): three steps, Document → Claims → Result.
+   Only the open step shows its body; a finished step folds to one line with Edit. */
+.ec { max-width: 860px; padding-bottom: clamp(40px, 6vw, 72px); }
+.ec [hidden] { display: none !important; }
+.ec-head { padding: clamp(32px, 5vw, 52px) 0 22px; max-width: 40em; }
+.ec-sr { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 .ec-note { color: var(--ink-mute); margin: 0; }
 .ec-q { border: 0; padding: 0; margin: 0 0 16px; min-width: 0; }
 .ec-q legend { font-size: 13px; font-weight: 500; color: var(--ink-2); margin-bottom: 8px; padding: 0; }
+.ec-q .ec-more { margin: -2px 0 10px; }   /* a question's own guidance, small, between it and its answers */
+.ec-q .ec-more p { margin-top: 4px; font-size: 13.5px; color: var(--ink-mute); }
 .ec-opts { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 6px; }
 .ec-opts label { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border: 1px solid var(--line); border-radius: 999px; font-size: 14px; cursor: pointer; background: var(--paper); }
 .ec-opts input { width: auto; margin: 0; padding: 0; accent-color: var(--btn); }
 .ec-opts label:has(input:checked) { border-color: var(--ink); background: var(--ink); color: var(--paper); }
 .ec select { width: 100%; font: inherit; font-size: 15px; padding: 11px 12px; border: 1px solid var(--line); border-radius: 12px; background-color: var(--paper-2); color: var(--ink); }
-.ec-aihint { margin: 4px 0 0; font-size: 12.5px; color: var(--accent); }
+.ec-aihint { margin: 4px 0 0; font-size: 12.5px; color: var(--accent); overflow-wrap: anywhere; }
 .ec-aihint:empty { display: none; }
 .ec-days { display: flex; align-items: baseline; flex-wrap: wrap; gap: 10px; margin: 0 0 14px; color: var(--ink-soft); }
-.ec-sum { margin: 0 0 14px; border-top: 1px solid var(--line-soft); }
-.ec-sum > div { display: grid; grid-template-columns: 110px 1fr; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--line-soft); }
-.ec-sum dt { font-size: 12px; color: var(--ink-mute); }
-.ec-sum dd { margin: 0; font-size: 14px; color: var(--ink); }
-.ec-list { list-style: none; margin: 0 0 14px; padding: 0; }
-.ec-li { display: flex; gap: 10px; align-items: baseline; padding: 6px 0; font-size: 14px; color: var(--ink-2); }
+.ec-list { list-style: none; margin: 0; padding: 0; }
+.ec-li { display: flex; gap: 10px; align-items: baseline; padding: 5px 0; font-size: 14px; color: var(--ink-2); }
 .ec-li > span { flex: none; width: 18px; font-weight: 600; text-align: center; }
 .ec-li--ok > span { color: var(--good); }
 .ec-li--warn > span { color: var(--wait); }
 .ec-li--bad > span { color: var(--bad); }
 .ec-li--na > span { color: var(--ink-mute); }
-.ec-why p { font-size: 14px; color: var(--ink-2); margin: 0 0 8px; }
-.ec-why .small { color: var(--ink-mute); }
-.ec-rows td { vertical-align: top; }
-.ec-rows input, .ec-rows select { font-size: 14px; padding: 8px 10px; border-radius: 10px; }
-.ec-rows select { margin-bottom: 6px; width: auto; }
-.ec-rows td.n input { width: 7em; text-align: right; }
-.ec-rows td:first-child { min-width: 18em; }
-.ec-res { min-width: 14em; }
-.ec-res .small { display: block; margin-top: 6px; color: var(--ink-soft); white-space: normal; }
-.ec-ai { margin-top: 6px; font-size: 12.5px; }
+.ec-ai { font-size: 12.5px; }
 .ec-ai summary { cursor: pointer; color: var(--accent); font-family: var(--font-mono); font-size: 11px; letter-spacing: .04em; text-transform: uppercase; }
 .ec-ai q { display: block; margin-top: 6px; color: var(--ink-2); font-style: italic; overflow-wrap: anywhere; }
-.ec-del { background: transparent; border: 0; font-size: 18px; color: var(--ink-mute); cursor: pointer; padding: 6px 8px; }
-.ec-del:hover { color: var(--bad); }
-.ec-check { display: flex; gap: 10px; align-items: center; margin-top: 14px; font-size: 14px; color: var(--ink-2); }
+.ec-del { flex: none; background: transparent; border: 0; font-size: 20px; line-height: 1; color: var(--ink-mute); cursor: pointer; padding: 4px 8px; margin: -4px -8px 0 0; border-radius: 8px; }
+.ec-del:hover { color: var(--bad); background: rgba(178,58,48,.08); }
+.ec-check { display: flex; gap: 10px; align-items: center; margin-top: 4px; font-size: 14px; color: var(--ink-2); }
 .ec-check input { width: auto; accent-color: var(--btn); }
-.ec-actions { display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; margin-top: 18px; }
+.ec-actions { display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; margin-top: 20px; }
 .ec-foot { color: var(--ink-mute); margin-top: 18px; max-width: 60em; }
-#example { max-width: 100%; white-space: normal; line-height: 1.3; text-align: left; }   /* its label is longer than a phone is wide */
-/* Embedded under the home page hero: the check alone, filled with the real example. */
-.ec-embed .topbar, .ec-embed .footer, .ec-embed .ec-head, .ec-embed #drop, .ec-embed .ec-actions { display: none; }
-.ec-embed .ec { padding-top: 16px; }
-/* The AI reader is off (EUCHECK_API empty): its controls, and every sentence about it, are hidden. */
-.ec-noreader #drop, .ec-noreader #more, .ec-noreader .ec-reader-only { display: none; }
-
-/* EU Readiness Check, fix round 1 */
 #readstatus:empty { display: none; }
-.ec-filerow { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: -2px 0 2px; }
-.ec-filerow[hidden] { display: none; }
-.ec-filerow #filename { color: var(--ink-2); overflow-wrap: anywhere; }
-.ec-linklike { background: transparent; border: 0; padding: 0; color: var(--accent); font-size: 12.5px; font-family: inherit; cursor: pointer; text-decoration: underline; }
+.ec-linklike { background: transparent; border: 0; padding: 0; color: var(--accent); font-size: 12.5px; font-family: inherit; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
 .ec-linklike:hover { color: var(--btn-hover); }
-/* Under 640px the claims table becomes a stack of cards: the table's fixed
-   column widths (867px, per the fix-round audit) cannot fit a 375px screen,
-   and .table-wrap's horizontal scroll hid the verdict off screen. */
-@media (max-width: 640px) {
-  .ec-rows thead { display: none; }
-  .ec-rows, .ec-rows tbody { display: block; width: 100%; }
-  .ec-rows tr {
-    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px 10px;
-    grid-template-areas: "claim claim claim" "pct att succ" "result result result";
-    position: relative; width: 100%; margin: 0 0 14px; padding: 14px 40px 14px 14px;
-    border: 1px solid var(--line-soft); border-radius: 12px; background: var(--paper);
-  }
-  .ec-rows td { display: block; padding: 0; border: 0; min-width: 0; }
-  .ec-rows td::before { content: attr(data-label); display: block; font-size: 11px; color: var(--ink-mute); margin-bottom: 3px; }
-  .ec-rows td[data-label=""]::before, .ec-rows td[data-label="Claim"]::before { display: none; }
-  .ec-rows td[data-label="Claim"] { grid-area: claim; min-width: 0; }
-  .ec-rows td[data-label="Claimed %"] { grid-area: pct; }
-  .ec-rows td[data-label="Attempts"] { grid-area: att; }
-  .ec-rows td[data-label="Succeeded"] { grid-area: succ; }
-  .ec-rows td[data-label="Result"] { grid-area: result; min-width: 0; }
-  .ec-rows td[data-label=""] { position: absolute; top: 10px; right: 10px; }
-  .ec-rows td.n input, .ec-rows select, .ec-rows td[data-label="Claim"] input { width: 100%; }
-  .ec-rows td.n input { text-align: left; }
+
+/* The progress bar */
+.ec-steps { list-style: none; display: flex; gap: 8px; margin: 0 0 18px; padding: 0; }
+.ec-steps li { flex: 1; min-width: 0; }
+.ec-steps button { all: unset; box-sizing: border-box; width: 100%; display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--line-soft); background: var(--paper-2); font-size: 13.5px; font-weight: 600; color: var(--ink-mute); cursor: pointer; }
+.ec-steps button:disabled { cursor: default; opacity: .6; }
+.ec-steps button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.ec-steps span { flex: none; display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--paper-3); font-family: var(--font-mono); font-size: 11px; }
+.ec-steps .is-on button { color: var(--ink); border-color: var(--ink); background: var(--paper); }
+.ec-steps .is-on span { background: var(--ink); color: var(--paper); }
+.ec-steps .is-done button { color: var(--ink-2); }
+.ec-steps .is-done span { background: var(--good); color: #fff; }
+.ec-steps li:not(.is-on) button:not(:disabled):hover { border-color: var(--line); color: var(--ink-2); }
+
+/* A step: open, or folded to its summary */
+.ec-step { background: var(--paper-2); border: 1px solid var(--line-soft); border-radius: var(--r); padding: clamp(16px, 2.6vw, 26px); margin-bottom: 12px; }
+.ec-step.is-open { background: var(--paper); border-color: var(--line); box-shadow: 0 18px 40px -28px rgba(20,20,19,.35); }
+.ec-step:not(.is-open) { padding-top: 13px; padding-bottom: 13px; }
+.ec-step__sum { margin: 0; display: flex; justify-content: space-between; align-items: baseline; gap: 12px; font-size: 14px; color: var(--ink-2); }
+.ec-sum__txt { min-width: 0; overflow-wrap: anywhere; }
+.ec-tick { color: var(--good); font-weight: 700; }
+.ec-sum__note { display: block; margin-top: 4px; }
+.ec-edit { flex: none; font-size: 13px; }
+
+/* Step 1: the document */
+.ec-bigdrop { all: unset; box-sizing: border-box; width: 100%; min-height: 190px; display: grid; place-items: center; align-content: center; gap: 6px; padding: 20px; text-align: center; border: 2px dashed var(--line); border-radius: 16px; background: var(--paper-2); cursor: pointer; transition: border-color .2s, background-color .2s; }
+.ec-bigdrop:hover, .ec-bigdrop.is-over { border-color: var(--accent); background: rgba(196,96,60,.05); }
+.ec-bigdrop:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.ec-bigdrop[aria-busy="true"] { cursor: progress; border-color: var(--accent); }
+.ec-bigdrop:disabled { cursor: default; opacity: .55; border-color: var(--line); background: var(--paper-2); }
+.ec-bigdrop b { font-size: 17px; color: var(--ink); }
+.ec-bigdrop svg { color: var(--accent); margin-bottom: 4px; }
+.ec-reading .demo-bar { margin-top: 14px; }
+.ec-reading .ec-busy > i { width: 40%; }   /* beats the home demo's full-width .demo-bar > i */
+@keyframes ec-busy { from { transform: translateX(-100%); } to { transform: translateX(250%); } }
+.ec-status { margin: 12px 0 0; color: var(--ink-2); overflow-wrap: anywhere; }
+.ec-pastebox { display: grid; justify-items: start; gap: 10px; margin-top: 14px; }
+.ec-links { display: flex; flex-wrap: wrap; gap: 8px 18px; margin: 14px 0 6px; }
+.ec-links .ec-linklike { font-size: 14px; }
+.ec-more summary { cursor: pointer; color: var(--accent); font-size: 13px; display: inline; }
+.ec-more p { margin: 8px 0 0; }
+.ec-note .ec-more, .ec-foot .ec-more { display: inline; margin-left: 2px; }
+.ec-step__body > .ec-more { margin-top: 16px; }
+/* The reader is off (EUCHECK_API empty): its controls, and every sentence about it, are hidden,
+   and the two ways left in become the buttons of step 1. */
+.ec-noreader .ec-reader-only, .ec-noreader #pastebox { display: none !important; }
+.ec-noreader .ec-links { margin: 0; gap: 10px; }
+.ec-noreader .ec-links .ec-linklike, .ec-limited .ec-links .ec-linklike { padding: 12px 18px; border-radius: 999px; font-size: 15px; font-weight: 600; text-decoration: none; background: rgba(20,20,19,.06); color: var(--ink); }
+.ec-noreader .ec-links #example, .ec-limited .ec-links #example { background: var(--btn); color: #fff; }
+/* The reader's daily limit is reached: for the rest of the visit, the drop zone, the paste controls
+   and every sentence about the reader go, the privacy line too, as when the reader is off. */
+.ec-limited .ec-reader-only, .ec-limited #pastebox, .ec-limited #reading { display: none !important; }
+
+/* Step 2: one card per claim */
+.ec-cards { display: grid; gap: 10px; }
+.ec-card { border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; background: var(--paper); display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; min-width: 0; }
+.ec-card > * { grid-column: 1 / -1; }
+.ec-card__top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+.ec-card__res .small { display: block; margin-top: 6px; color: var(--ink-soft); }
+/* Read as: verdict badge, the claim, its numbers, then why. The badge and the
+   delete button share the first row; the one-line reason closes the card,
+   right under the numbers it follows from. */
+.ec-card__top, .ec-card__res { display: contents; }
+.ec-card__res .placard { grid-column: 1; grid-row: 1; justify-self: start; }
+.ec-card .ec-del { grid-column: 2; grid-row: 1; align-self: start; }
+.ec-card__res .small { grid-column: 1 / -1; order: 1; margin-top: 0; padding-top: 10px; border-top: 1px solid var(--line-soft); }
+.ec-card__quote { margin: 0; font-size: 15px; line-height: 1.45; color: var(--ink); overflow-wrap: anywhere; }
+.ec-card__quote mark { background: rgba(212,116,79,.22); color: inherit; border-radius: 3px; padding: 0 2px; }
+.ec-card__kind { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 13px; color: var(--ink-soft); }
+.ec-card__kind label { display: inline-flex; align-items: center; cursor: pointer; }
+.ec-card__kind input { width: auto; margin: 0 4px 0 0; accent-color: var(--btn); }
+.ec-card__nums { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; max-width: 480px; }
+.ec-card__nums label { display: grid; gap: 4px; font-size: 12px; color: var(--ink-mute); min-width: 0; }
+.ec-card__nums input, .ec-card__text { font-size: 15px; padding: 9px 10px; border-radius: 10px; min-width: 0; }
+.ec-row { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+/* A long list of cards keeps its next step in reach: the buttons ride the bottom edge of the screen. */
+#s2 .ec-row { position: sticky; bottom: 0; z-index: 2; margin-top: 0; padding: 22px 0 14px; background: linear-gradient(rgba(250,249,245,0), var(--paper) 20px); }
+.ec-row .btn:disabled { opacity: .45; cursor: not-allowed; }
+
+/* Step 3: the result, with the home demo's ring */
+.ec-result { display: grid; grid-template-columns: 140px 1fr; gap: 24px; align-items: center; }
+.ec-ring { display: grid; place-items: center; }
+.ec-result .demo-ring { width: 140px; height: 140px; }
+.ec-result .demo-ring__txt { font-size: 30px; }
+.ec-facts { min-width: 0; }
+.ec-facts .ec-days { margin-bottom: 10px; }
+.ec-route { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 0 0 12px; }
+.ec-route .placard { white-space: normal; }
+#why p { font-size: 14px; color: var(--ink-2); margin: 10px 0 0; }
+#why .small { color: var(--ink-mute); }
+.ec-qs { display: grid; gap: 4px; margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line-soft); }
+@media (max-width: 560px) {
+  .ec-result { grid-template-columns: 1fr; justify-items: center; text-align: center; }
+  .ec-facts { justify-self: stretch; text-align: left; }
+  .ec-steps { gap: 6px; }
+  .ec-steps button { font-size: 12.5px; padding: 8px; gap: 6px; }
+  .ec-actions .btn, .ec-row .btn { flex: 1 1 auto; justify-content: center; }
 }
+/* Motion only when it is welcome: the busy bar slides, a step fades in, the ring's arcs draw. */
+@media (prefers-reduced-motion: no-preference) {
+  .ec-reading .ec-busy > i { animation: ec-busy 1.2s ease-in-out infinite; }
+  .ec-step.is-open .ec-step__body { animation: ec-in .35s var(--ease) both; }
+  .ec-result .demo-seg { animation: demo-arc .5s var(--ease) both; animation-delay: calc(var(--i, 0) * .06s + .1s); }
+}
+/* Reduced motion: the busy bar stands still, full width, instead of sliding. */
+@media (prefers-reduced-motion: reduce) { .ec-reading .ec-busy > i { width: 100%; opacity: .5; } }
+@keyframes ec-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+/* Home demo (index.html #demo): one real read, in four steps.
+   Every sheet stretches to the tallest one, so the window holds still and
+   only its contents change. The plain state below is the final state; the
+   motion block at the end only plays it in. */
+#demo .how__stage { align-items: stretch; }
+.demo-sheet { display: flex; flex-direction: column; padding-bottom: 18px; }
+.demo-sheet > :not(.sheet__head) { margin-left: 18px; margin-right: 18px; }
+.demo-drop { position: relative; flex: 1; margin-top: 18px; min-height: 150px; border: 2px dashed var(--line); border-radius: 14px; display: grid; place-items: center; background: var(--paper-2); }
+.demo-drop__file { position: relative; overflow: hidden; width: 88px; height: 112px; border-radius: 8px 18px 8px 8px; background: var(--paper); border: 1px solid var(--line); box-shadow: 0 12px 30px rgba(20,20,19,.12); display: flex; align-items: flex-end; padding: 0 0 10px 11px; font-family: var(--font-mono); font-size: 11px; font-weight: 500; letter-spacing: .06em; color: var(--bad); }
+/* The page's text, as five grey rules, and a folded corner. */
+.demo-drop__file::before { content: ""; position: absolute; left: 12px; right: 16px; top: 18px; height: 52px; background: repeating-linear-gradient(var(--paper-3) 0 4px, transparent 4px 10px); border-radius: 2px; }
+.demo-bar { height: 6px; border-radius: 99px; background: var(--paper-3); overflow: hidden; margin-top: 16px; }
+.demo-bar > i { display: block; height: 100%; width: 100%; background: var(--brand); border-radius: inherit; }
+.demo-cap { margin: 12px 0 0; font-size: 13px; color: var(--ink-soft); }
+.demo-cap b { color: var(--ink); }
+/* Until the data is in, the lines that hold counts stay blank, never "of  with test numbers";
+   the "Loading the example…" lines stay. */
+[data-hd="stage"]:not(.is-ready) :is(.demo-cap, .sheet__head span:has([data-hd]), .demo-ring__txt, .demo-facts) { visibility: hidden; }
+.demo-quotes, .demo-verdicts, .demo-facts { list-style: none; margin: 14px 0 0; padding: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; }
+.demo-quotes li { font-size: 13.5px; line-height: 1.5; color: var(--ink-2); display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; }
+.demo-quotes mark { color: inherit; background: linear-gradient(transparent 58%, rgba(212,116,79,.35) 58%) no-repeat 0 0 / 100% 100%; }
+.demo-verdicts { gap: 0; }
+.demo-verdicts li { display: flex; justify-content: space-between; align-items: center; gap: 12px; min-width: 0; padding: 10px 0; border-top: 1px solid var(--line-soft); font-size: 13px; color: var(--ink-2); }
+.demo-verdicts li:first-child { border-top: 0; padding-top: 2px; }
+.demo-verdicts li > span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.demo-verdicts .placard { flex: none; }
+.demo-verdicts + .demo-cap { margin-top: auto; padding-top: 12px; border-top: 1px solid var(--line-soft); }
+.demo-result { flex: 1; display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 20px; align-items: center; margin-top: 18px; }
+.demo-ring { grid-area: 1 / 1; width: 120px; height: 120px; transform: rotate(-90deg); }
+.demo-ring circle { fill: none; stroke-width: 12; }
+.demo-ring .bg { stroke: var(--paper-3); }   /* the track, until the script draws one arc per claim */
+/* One arc per claim. Only a backed claim fills its arc; every other claim
+   stays the track colour, so the ring never looks partly filled by claims that are not backed. */
+.demo-seg { stroke: var(--paper-3); }
+.demo-seg--current { stroke: var(--good); }
+.demo-ring__txt { grid-area: 1 / 1; place-self: center; margin: 0; text-align: center; font-family: var(--font-display); font-size: 26px; font-weight: 600; line-height: 1.1; letter-spacing: -.02em; color: var(--ink); }
+.demo-ring__txt small { display: block; margin-top: 3px; font-family: var(--font-ui); font-size: 11px; font-weight: 500; letter-spacing: 0; color: var(--ink-mute); }
+.demo-facts { grid-area: 1 / 2; margin: 0; gap: 8px; }
+.demo-facts li { padding: 10px 14px; border-radius: 12px; background: var(--paper-2); border: 1px solid var(--line-soft); font-size: 13px; line-height: 1.35; color: var(--ink-soft); }
+.demo-facts b { display: block; font-family: var(--font-display); font-size: 22px; font-weight: 600; line-height: 1.15; letter-spacing: -.02em; color: var(--ink); }
+.demo-go { align-self: flex-start; margin-top: 18px; }
+.demo__note { color: var(--ink-mute); margin: 14px 0 0; text-align: center; }
+/* Phones and narrow tablets: the window first, then the steps, with only the
+   chosen step's line shown so the list never changes height. */
+@media (max-width: 900px) {
+  #demo .how { gap: 20px; }
+  #demo .how__stage { order: -1; min-height: 0; padding: 14px; }
+  #demo .how__btn { padding: 13px 0; }
+  #demo .how__title { font-size: 16px; }
+  #demo .how__body { margin-top: 3px; font-size: 14px; }
+  #demo .how__item:not(.is-on) .how__body { display: none; }
+  #demo .sheet { max-width: none; }
+}
+@media (max-width: 560px) {
+  .demo-sheet > :not(.sheet__head) { margin-left: 14px; margin-right: 14px; }
+  /* Three of the quotes and verdicts on a phone keep the window short enough to sit under the hero. */
+  .demo-quotes li:nth-child(n+4), .demo-verdicts li:nth-child(n+4) { display: none; }
+  .demo-verdicts li { flex-direction: column; align-items: flex-start; gap: 6px; }
+  .demo-verdicts li > span:first-child { max-width: 100%; }
+  .demo-result { grid-template-columns: 100px minmax(0, 1fr); gap: 14px; }
+  .demo-ring { width: 100px; height: 100px; }
+  .demo-ring__txt { font-size: 22px; }
+  .demo-ring__txt small { font-size: 10.5px; }
+  .demo-facts li { padding: 8px 12px; }
+  .demo-facts b { font-size: 19px; }
+  .demo-go { align-self: stretch; justify-content: center; }
+}
+/* Motion: each sheet plays when it becomes the chosen step. Timed to finish
+   by about 4 s of the 6 s each step is shown. */
+@media (prefers-reduced-motion: no-preference) {
+  .sheet.is-on .demo-drop { animation: demo-zone 1.1s .1s ease-out both; }
+  .sheet.is-on .demo-drop__file { animation: demo-drop .9s var(--ease) both; }
+  .sheet.is-on .demo-drop__file::after { content: ""; position: absolute; left: 6px; right: 6px; top: 0; height: 2px; border-radius: 2px; background: var(--brand); box-shadow: 0 0 10px 2px rgba(212,116,79,.45); animation: demo-scan 1s 1s ease-in-out 3 both; }
+  .sheet.is-on .demo-bar > i { animation: demo-fill 3s 1s cubic-bezier(.45, 0, .3, 1) both; }
+  .sheet.is-on .demo-cap { animation: demo-in .5s .9s var(--ease) both; }
+  .sheet.is-on .demo-quotes li { animation: demo-in .5s var(--ease) both; animation-delay: calc(var(--i, 0) * .7s); }
+  .sheet.is-on .demo-quotes mark { animation: demo-mark .6s var(--ease) both; animation-delay: calc(var(--i, 0) * .7s + .3s); }
+  .sheet.is-on .demo-verdicts .placard { animation: demo-pop .4s var(--ease) both; animation-delay: calc(var(--i, 0) * .45s + .2s); }
+  .sheet.is-on .demo-verdicts + .demo-cap { animation-delay: 2.5s; }
+  .sheet.is-on .demo-seg { animation: demo-arc .45s var(--ease) both; animation-delay: calc(var(--i, 0) * .09s + .15s); }
+  .sheet.is-on .demo-ring__txt { animation: demo-in .5s .5s var(--ease) both; }
+  .sheet.is-on .demo-facts li { animation: demo-in .5s var(--ease) both; animation-delay: calc(1.1s + var(--i, 0) * .25s); }
+  .sheet.is-on .demo-facts li + li { --i: 1; }
+  .sheet.is-on .demo-go { animation: demo-in .5s 1.8s var(--ease) both; }
+}
+/* Reduced motion: the steps do not advance, so the chosen step's line is simply full. */
+@media (prefers-reduced-motion: reduce) { #demo .how__item.is-on::after { animation: none; transform: scaleX(1); } .sheet { transform: none; transition: opacity .45s; } }
+@keyframes demo-drop { from { transform: translateY(-130px) rotate(-8deg); opacity: 0; } 70% { transform: translateY(6px) rotate(0); opacity: 1; } to { transform: none; opacity: 1; } }
+@keyframes demo-zone { 0%, 100% { border-color: var(--line); background-color: var(--paper-2); } 45%, 70% { border-color: var(--brand); background-color: rgba(212,116,79,.09); } }
+@keyframes demo-scan { from { transform: translateY(12px); opacity: 0; } 15%, 85% { opacity: 1; } to { transform: translateY(98px); opacity: 0; } }
+@keyframes demo-fill { from { width: 0; } to { width: 100%; } }
+@keyframes demo-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@keyframes demo-mark { from { background-size: 0% 100%; } to { background-size: 100% 100%; } }
+@keyframes demo-pop { from { opacity: 0; transform: scale(.6); } to { opacity: 1; transform: none; } }
+@keyframes demo-arc { from { stroke-dasharray: 0 314.16; } }

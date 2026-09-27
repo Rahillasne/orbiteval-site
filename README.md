@@ -6,8 +6,9 @@ Static HTML, no build step for the pages. The home page (`index.html`) links to 
 EU check (`eu-check.html`): no login, no account. Its rules and every sentence
 about the regulation live in `eu-check-logic.js`; interval maths in `stats.js`, shared with
 `real.html`. `eu-check-config.js` holds the AI reader's address; empty means the reader is off
-and the check works by hand. `eu-check-example.json` is a real public model card, read once by
-the AI reader and checked by code.
+and the check works by hand. `eu-check-demo.json` is a real public datasheet, company and product
+names hidden, read once by the AI reader and checked by code; the home demo and the check's
+example both use it.
 
     node build/test_eu_check.js      # the check's rules, maths and page wiring
     node build/test_site_pages.js    # links, shared chrome, home figures
