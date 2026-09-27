@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#FAF9F5">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600&family=Figtree:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23D4744F'/%3E%3Ccircle cx='16' cy='16' r='9' stroke='%23FAF9F5' stroke-width='2.2' fill='none'/%3E%3Ccircle cx='23' cy='9' r='3' fill='%23141413'/%3E%3C/svg%3E">
+<title>A release field is not a release ledger — Orbit</title>
+<meta name="description" content="An independent audit of the US federal automated-driving incident record. The software version is recorded on every report and usable on almost none: of 17 operators, one files a record on which a before-and-after comparison is possible, and that one cannot resolve the effect it appears to show.">
+</head>
+<body>
+<header class="topbar" id="top">
+  <div class="pill">
+    <a class="brand" href="index.html" aria-label="Orbit home"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.6"/><circle cx="15.5" cy="4.5" r="2.3" fill="#D4744F"/></svg>Orbit</a>
+    <nav class="pill__links" aria-label="Primary">
+      <a href="record.html">Release Record</a>
+      <a href="claims.html">Claim Check</a>
+      <a href="decision.html">Decision card</a>
+      <a href="release-check.html">NHTSA audit</a>
+      <a href="real.html">Is it real?</a>
+    </nav>
+    <a class="btn btn--primary btn--sm pill__cta" href="demo.html" data-demo>Book a demo <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    <button class="pill__menu" type="button" aria-expanded="false" aria-controls="mnav" aria-label="Menu"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+  </div>
+  <nav class="mnav" id="mnav" hidden aria-label="Menu">
+    <a href="record.html">Release Record</a>
+    <a href="claims.html">Claim Check</a>
+    <a href="decision.html">Decision card</a>
+    <a href="release-check.html">NHTSA audit</a>
+    <a href="real.html">Is it real?</a>
+    <a href="demo.html" data-demo>Book a demo</a>
+  </nav>
+</header>
+
+<main class="wrap">
+
+  <section class="page-head">
+    <p class="eyebrow"><span class="dot"></span>Independent audit · public federal record · 21 September 2026</p>
+    <h1>A release field is not a release ledger</h1>
+    <p class="lede">Every automated-driving incident filed with the US federal regulator has a field for the
+      software version that was running. The field is filled in almost everywhere and usable almost nowhere.</p>
+  </section>
+
+  <section class="section section--tight">
+    <p class="lbl">Snapshot</p>
+    <ul class="evidence">
+      <li><span>source</span><span>SGO-2021-01_Incident_Reports_ADS.csv · static.nhtsa.gov/odi/ffdd/sgo-2021-01/</span></li>
+      <li><span>pulled</span><span>2026-09-21</span></li>
+      <li><span>sha256</span><span>f856d0b9cedc5f4447515c200eeacdff5d4cabf63003dcac207385eb466ff7f5</span></li>
+      <li><span>records</span><span>1,478 raw → 1,436 deduplicated · 17 reporting operators</span></li>
+      <li><span>span</span><span>incidents APR-2025 to AUG-2026</span></li>
+    </ul>
+    <p class="small mt">NHTSA republishes this file monthly and overwrites it in place, so every figure below
+      is pinned to that hash. The snapshot and the analysis are published with this page.</p>
+  </section>
+
+  <section class="section">
+    <div class="prose">
+      <p>When an automated-driving company ships new software, its vehicles behave differently the next day.
+        Anyone outside that company who wants to know whether the change helped has one public place to look.
+        Under a federal Standing General Order, named manufacturers and operators must file a report on
+        certain crashes involving their automated-driving systems, and each report carries a field naming the
+        software version that was running. The field is called Automation Feature Version. It is the only
+        routinely published, legally compelled record anywhere of which robot software was deployed when
+        something went wrong.</p>
+      <p>We took one snapshot of that record and asked whether an outside analyst can use it to identify the
+        deployed release, and then judge whether a before-and-after comparison is supported.</p>
+      <p>Two terms are worth fixing before the numbers. A <strong>release</strong> is one immutable version of
+        the deployed software. An <strong>arm</strong> is the set of incidents recorded while a single release
+        was live, which is what a before-and-after comparison needs two of.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="sec-head">
+      <h2>The field is filled in, which is not the same as analysable</h2>
+      <p>Reports get revised, so we kept the highest report version for each report identifier, removing 41
+        superseded revisions. Incidents can be filed more than once, so we then collapsed records sharing an
+        incident identifier, removing one more. Nothing below depends on those two steps: the central
+        comparison moves from a Fisher exact p of 0.059 before deduplication to 0.061 after.</p>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th scope="col">State of the field</th><th scope="col" class="n">Reports</th><th scope="col" class="n">Share</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Publicly observable value</td><td class="n">1,369</td><td class="n">95.3%</td></tr>
+          <tr><td>Redacted as confidential business information</td><td class="n">35</td><td class="n">2.4%</td></tr>
+          <tr><td>Present, but carries no version token</td><td class="n">28</td><td class="n">1.9%</td></tr>
+          <tr><td>Placeholder</td><td class="n">4</td><td class="n">0.3%</td></tr>
+          <tr><td><strong>Field present</strong></td><td class="n"><strong>1,436</strong></td><td class="n"><strong>100.0%</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="small mt">Complete field coverage with 95.3 percent publicly observable values. Where a
+      regulator compelled the release to be named, the release got named. That is not the same as a claim
+      that the field is usable.</p>
+  </section>
+
+  <section class="section">
+    <div class="sec-head">
+      <h2>One operator of seventeen has release arms at all</h2>
+      <p>The field fails in three unrelated ways, and the failures are more damaging than the redactions.</p>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Reporting operator</th>
+            <th scope="col" class="n">Reports</th>
+            <th scope="col" class="n">Releases</th>
+            <th scope="col">State of the record</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Waymo</td><td class="n">1,211</td><td class="n">5</td>
+            <td><span class="tag">Usable</span></td>
+          </tr>
+          <tr>
+            <td>Avride</td><td class="n">79</td><td class="n">8</td>
+            <td><span class="tag tag--wait">Scheme changed</span><br><span class="small">switched from <span class="mono">v1.0</span> to release-candidate dates partway through</span></td>
+          </tr>
+          <tr>
+            <td>Zoox</td><td class="n">64</td><td class="n">64</td>
+            <td><span class="tag tag--wait">Too fine</span><br><span class="small">one unique build string for every incident, so arms have size one</span></td>
+          </tr>
+          <tr>
+            <td>Tesla</td><td class="n">26</td><td class="n">0</td>
+            <td><span class="tag tag--no">Too coarse</span><br><span class="small">every report reads <span class="mono">ADS</span>, with no version</span></td>
+          </tr>
+          <tr>
+            <td>May Mobility</td><td class="n">18</td><td class="n">15</td>
+            <td><span class="tag tag--wait">Too fine</span></td>
+          </tr>
+          <tr>
+            <td>Motional, Aurora, Nuro, Stack AV, PlusAI, Oxbotica, Hyundai</td>
+            <td class="n">30</td><td class="n">0</td>
+            <td><span class="tag tag--grey">Withheld</span><br><span class="small">redacted in full as confidential business information</span></td>
+          </tr>
+          <tr>
+            <td>Beep, MOIA, Gatik, WeRide, Ohmio</td>
+            <td class="n">8</td><td class="n">1 each</td>
+            <td><span class="tag tag--grey">Too few</span><br><span class="small">a label, but one to four reports, so no comparison</span></td>
+          </tr>
+          <tr>
+            <td><strong>17 operators</strong></td><td class="n"><strong>1,436</strong></td><td class="n"></td>
+            <td><strong>1 usable</strong></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="small mt">Zoox illustrates the failure that waiting cannot fix. If every incident receives its
+      own build string, the release arms have size one by construction, and no quantity of further reports
+      will produce a comparison between two Zoox releases.</p>
+  </section>
+
+  <section class="section">
+    <div class="sec-head">
+      <h2>Normalisation needs a human, and the reason is arithmetic</h2>
+    </div>
+    <div class="prose">
+      <p>Waymo's 1,211 reports carry 13 distinct raw strings. Merging on formatting alone, meaning case and
+        punctuation, collapses them to nine. Getting from nine to five requires someone to make judgment
+        calls. The formatting merges are safe and automatic: one release absorbs a variant with the comma
+        missing, a variant with two spaces instead of one, and a variant with no space after the comma.</p>
+      <p>The remaining cases cannot be automated, and the reason is worth stating plainly. We flagged 44
+        near-duplicate pairs across all operators and merged none of them, because a one-character difference
+        is exactly how <span class="mono">Version 10</span> differs from <span class="mono">Version 11</span>.
+        Merging on edit distance would destroy the releases the analysis exists to recover. Exactly one of
+        those 44 pairs is a pure text variant, a misspelling of <span class="mono">Generation</span>. The
+        decisive case is a report filed under <span class="mono">35th Generation ADS, Version 10</span>. Its
+        digits differ from its neighbour's, so any automated rule must keep it as a separate release. Only a
+        person who knows that Waymo has no 35th-generation vehicle can resolve it.</p>
+    </div>
+    <div class="verdict mt">A ledger is therefore a field, plus a normalisation step, plus a named person who
+      signed the judgment calls, plus the original strings kept alongside the canonical ones.</div>
+  </section>
+
+  <section class="section">
+    <div class="sec-head">
+      <h2>The rollout is visible without the vendor's help</h2>
+      <p>Reconstructed from public records alone, dated to the month. The changeover from Version 10 to
+        Version 11 occupies March through May 2026, with both live at once.</p>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th scope="col">Waymo release</th><th scope="col">Live</th><th scope="col" class="n">Reports</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>5th Generation, Version 9</td><td class="mono">Apr – Jun 2025</td><td class="n">5</td></tr>
+          <tr><td>5th Generation, Version 10</td><td class="mono">Jun 2025 – May 2026</td><td class="n">904</td></tr>
+          <tr><td>6th Generation, Version 10</td><td class="mono">Oct 2025 – Mar 2026</td><td class="n">5</td></tr>
+          <tr><td>5th Generation, Version 11</td><td class="mono">Mar – Aug 2026</td><td class="n">274</td></tr>
+          <tr><td>6th Generation, Version 11</td><td class="mono">Apr – Jul 2026</td><td class="n">20</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="sec-head">
+      <h2>The one comparison that exists does not conclude</h2>
+      <p>Version 10's reports from June 2025 to April 2026 and Version 11's from June to July 2026 give
+        875 and 186 incidents. Across four outcome measures, nothing separates them.</p>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Measure</th>
+            <th scope="col" class="n">v10</th>
+            <th scope="col" class="n">v11</th>
+            <th scope="col" class="n">Difference</th>
+            <th scope="col" class="n">95% interval</th>
+            <th scope="col" class="n">Fisher p</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Any injury alleged</td><td class="n">10.17%</td><td class="n">6.99%</td><td class="n">−3.18</td><td class="n">−7.36, +0.99</td><td class="n">0.218</td></tr>
+          <tr><td>Moderate-or-worse injury</td><td class="n">0.91%</td><td class="n">2.69%</td><td class="n">+1.77</td><td class="n">−0.63, +4.18</td><td class="n">0.061</td></tr>
+          <tr><td>Air bags deployed</td><td class="n">4.46%</td><td class="n">5.38%</td><td class="n">+0.92</td><td class="n">−2.60, +4.44</td><td class="n">0.566</td></tr>
+          <tr><td>A vehicle was towed</td><td class="n">54.51%</td><td class="n">58.60%</td><td class="n">+4.09</td><td class="n">−3.72, +11.90</td><td class="n">0.330</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="small mt">Differences in percentage points. The <a href="record.html#nhtsa">Release Record</a> for the same two versions counts all of their months and leaves the Version 10 reports filed under near-miss labels for a person to merge, so its arms hold 900 and 274 reports and its figures differ from these.</p>
+
+    <div class="prose mt">
+      <p>The measure that looks alarming is moderate-or-worse injury, which rises from 0.91 to 2.69 percent.
+        That is a tripling, and it rests on five events.</p>
+    </div>
+
+    <div class="verdict verdict--wait mt">
+      <p class="lbl">Moderate-or-worse injury, at these two arm sizes</p>
+      <p><span class="num">2.49<small>pp</small></span> smallest detectable difference, against
+        <span class="num">1.77<small>pp</small></span> observed.</p>
+      <p>Given these arm sizes and the injury rate of the two arms pooled, the smallest difference
+        detectable at 80 percent power and a 5 percent level is 2.49 points. The observed difference is
+        smaller than that. The limit uses a rate read off the outcome, because nobody stated the rate the
+        comparison was designed around, so by this tool's own rule the comparison is indeterminate, not
+        incapable.</p>
+    </div>
+
+    <p class="small mt">For every other operator the position is worse by an order of magnitude. On an outcome
+      occurring in one percent of incidents, Avride's two largest arms could detect a 9.2-point difference,
+      May Mobility's a 27.9-point difference, and Zoox's a 39.4-point difference. Their releases would have to
+      make a rare outcome ten to forty times more common before this record could show it.</p>
+  </section>
+
+  <section class="section">
+    <div class="sec-head">
+      <h2>What this does not establish</h2>
+      <p>The record carries no miles, no operating hours, no trips and no fleet size. Without exposure there
+        is no rate.</p>
+    </div>
+    <div class="kvs">
+      <div class="kv">
+        <span class="lbl">No rates</span>
+        <div><p>Nothing here is a per-mile number and none can be derived. The record has no exposure
+          denominator.</p></div>
+      </div>
+      <div class="kv">
+        <span class="lbl">No ranking</span>
+        <div><p>Operators differ in fleet size, geography, operating domain and internal review practice, so
+          these counts are not comparable across them.</p></div>
+      </div>
+      <div class="kv">
+        <span class="lbl">No causal claim</span>
+        <div><p>Nothing here shows that a release changed an outcome. Fleet size and operating area both grew
+          across the window, the two arms are eleven months and two months long, and they sit a year
+          apart.</p></div>
+      </div>
+      <div class="kv">
+        <span class="lbl">No safety verdict</span>
+        <div><p>The subject is the evidentiary record, not the machines. This is not a safety certification
+          and it does not stand in for a regulator, a notified body, or a machinery-safety assessment.</p></div>
+      </div>
+      <div class="kv">
+        <span class="lbl">No claim about demand</span>
+        <div><p>The version field exists here because a federal order required it. That says nothing about
+          whether an operator outside a regulated industry would keep such a record, or pay to have it
+          checked.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="sec-head">
+      <h2>What it establishes</h2>
+    </div>
+    <div class="prose">
+      <p>Compelled version reporting produces complete field coverage and 95.3 percent publicly observable
+        values. That raw field still needs normalisation and named human adjudication before it can be
+        joined, thirteen strings reducing to five releases for a single operator. Release transitions are
+        reconstructable from public records alone. Sixteen of seventeen operators file a version field that
+        cannot support a before-and-after comparison, because it is too coarse, too fine, or withheld. And the
+        one record that can support arms produces a comparison whose detection limit is larger than the effect
+        under discussion.</p>
+    </div>
+    <div class="verdict mt">The last of those is the general result. A record can exist, be complete, be
+      legally compelled, and still be unable to answer the question it appears to answer.</div>
+  </section>
+
+  <section class="section">
+    <div class="sec-head">
+      <h2>The first version of this tool was wrong, in the flattering direction</h2>
+      <p>The checks on this page were then turned on a second real corpus: twenty published
+        robot-policy claims with citations, from other groups. The tool reported five of them as
+        supported. A calibrated audit of the same twenty says none survive.</p>
+    </div>
+    <div class="prose">
+      <p>The tool was wrong, and the way it was wrong is worth stating. It computed its interval from
+        episode-level sampling noise alone. When the two arms being compared are two separate training
+        runs, the unit of replication is the run, and run-to-run variation is invisible to episode-level
+        noise, so the interval was far too narrow. Once the unit of replication was enforced, all twenty
+        claims read insufficient evidence, which agrees with the calibrated result.</p>
+      <p>Two smaller faults surfaced the same way. A significant result from a study too small to
+        reliably detect the claimed effect was being reported as support, which is precisely the case
+        where effect sizes inflate and replication fails. And the detection limit was computed from the
+        observed pooled rate, so looking at the outcome could move a verdict that is supposed to
+        precede it.</p>
+    </div>
+    <div class="verdict verdict--wait mt">All three are one failure in different clothes: an instrument
+      that flatters the claim in front of it. Finding them in our own tool is the only reason to believe
+      the rest of this page.</div>
+  </section>
+
+  <section class="section section--tight">
+    <p class="lbl">Reproducing this</p>
+    <div class="prose">
+      <p>The snapshot, the deduplication logic, the canonicalisation, the near-duplicate flagging, the
+        timeline reconstruction and the power calculations are published with this page. Running
+        <span class="mono">verify.py</span> asserts every number above against the snapshot and exits
+        non-zero on any mismatch.</p>
+      <p><a href="https://github.com/Rahillasne/orbiteval-site/tree/main/release-check">Analysis and snapshot
+        on GitHub</a> · <a href="https://www.nhtsa.gov/laws-regulations/standing-general-order-crash-reporting">NHTSA
+        Standing General Order on crash reporting</a></p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="wrap footer__row">
+    <a class="brand" href="index.html" aria-label="Orbit home"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.6"/><circle cx="15.5" cy="4.5" r="2.3" fill="#D4744F"/></svg>Orbit</a>
+    <nav class="footer__links" aria-label="Footer">
+      <a href="record.html">Release Record</a>
+      <a href="claims.html">Claim Check</a>
+      <a href="decision.html">Decision card</a>
+      <a href="release-check.html">NHTSA audit</a>
+      <a href="real.html">Is it real?</a>
+      <a href="index.html#independence">Conflict policy</a>
+      <a href="https://github.com/Rahillasne/orbit-eval">Open code</a>
+      <a href="demo.html" data-demo>Book a demo</a>
+    </nav>
+    <div class="footer__meta"><span>© 2026 OrbitEval · Independent verification of robot releases</span><span><a href="mailto:rahil@orbiteval.com">rahil@orbiteval.com</a> · <a href="#top">Back to top ↑</a></span></div>
+  </div>
+</footer>
+
+<div class="toast" id="toast" hidden></div>
+<script src="build-stamp.js"></script>
+<script src="site.js"></script>
+</body>
+</html>

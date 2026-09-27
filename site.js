@@ -67,7 +67,7 @@ document.querySelectorAll("[data-copy]").forEach((el) => {
 });
 
 // Build provenance in every footer. build/build.py writes build-stamp.js;
-// if it is missing or stale the line says so rather than showing nothing,
+// if it is missing the line says so rather than showing nothing,
 // because a page that quietly serves old numbers is the failure this whole
 // site argues against.
 (() => {
@@ -81,16 +81,16 @@ document.querySelectorAll("[data-copy]").forEach((el) => {
   if (!s) {
     el.innerHTML = `<span class="footer__warn">Build provenance unavailable</span>`;
   } else {
-    // Staleness is measured from the SOURCE commit's own date, not from when
-    // a build happened to run. Same source, same bytes -- the stamp carries no
-    // wall clock, because two people building one commit must get one artifact.
+    // The date is the SOURCE commit's own date, not when a build happened to
+    // run. Same source, same bytes -- the stamp carries no wall clock, because
+    // two people building one commit must get one artifact. No age warning:
+    // the study source is frozen on purpose, so its age says nothing about
+    // whether the page is stale.
     const day = s.source_date ? s.source_date.slice(0, 10) : "";
-    const age = day ? Math.floor((Date.now() - Date.parse(day)) / 864e5) : 0;
-    const stale = age > 30 ? ` · <span class="footer__warn">${age} days old</span>` : "";
     el.innerHTML = `Source <span class="mono">${s.source_commit}</span>${s.dirty ? " (built from an uncommitted tree)" : ""} ·
       corpus <span class="mono">${s.corpus_sha256.slice(0, 12)}…</span> ·
       artifact <span class="mono">${s.artifact_sha256.slice(0, 12)}…</span> ·
-      <span class="mono">${day}</span>${stale}`;
+      <span class="mono">${day}</span>`;
   }
   meta.appendChild(el);
 })();
