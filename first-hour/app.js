@@ -54,8 +54,8 @@ function toast(msg) {
 }
 
 const source = (sid) => S.data?.case.sources.find((s) => s.sid === sid);
-const stillUrl = (sid, t) => (STATIC ? STATIC.still(sid, t) : `/api/cases/${S.cid}/sources/${sid}/still?t=${Number(t)}`);
-const cropUrl = (sid, t, b, longest = 320) => STATIC ? STATIC.crop(sid, t, b, longest) : `/api/cases/${S.cid}/sources/${sid}/crop?t=${t}&x1=${b[0]}&y1=${b[1]}&x2=${b[2]}&y2=${b[3]}&longest=${longest}`;
+const stillUrl = (sid, t) => (STATIC ? STATIC.still(S.cid, sid, t) : `/api/cases/${S.cid}/sources/${sid}/still?t=${Number(t)}`);
+const cropUrl = (sid, t, b, longest = 320) => STATIC ? STATIC.crop(S.cid, sid, t, b, longest) : `/api/cases/${S.cid}/sources/${sid}/crop?t=${t}&x1=${b[0]}&y1=${b[1]}&x2=${b[2]}&y2=${b[3]}&longest=${longest}`;
 const plural = (n, word) => `${n} ${word}${n === 1 ? "" : "s"}`;
 const titleCase = (s) => String(s || "").toLowerCase().replace(/\b([a-z])/g, (m) => m.toUpperCase()).replace(/\b(\d+)(St|Nd|Rd|Th)\b/g, (m, d, x) => d + x.toLowerCase());
 const fmtWhen = (w) => { const d = new Date(w); return isNaN(d) ? w : d.toLocaleString("en-US", { weekday: "short", day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", hourCycle: "h23" }); };
@@ -306,7 +306,7 @@ function suggestions() {
   if (!c) return [];
   if (!c.scene) return [["Try case 26-041483", "case:26-041483"]];
   if (!c.sources.some((s) => s.status === "done")) return [["Draft preservation requests", "drafts"], ["Plan the pickup route", "pickup"], ["Add footage", "addfile"]];
-  if (STATIC) return [...STATIC.questions().map((q) => [q.label, `ask:${q.question}`]), ["Make the lookout sheet", "lookout"]];
+  if (STATIC) return [...STATIC.questions(S.cid).map((q) => [q.label, `ask:${q.question}`]), ["Make the lookout sheet", "lookout"]];
   const who = c.key_moment?.person || c.people?.[0]?.label || "the person";
   return [["When was the weapon first visible?", "ask:When was an object first visible, and when was it pointed at someone?"],
     [`Where did ${who} go?`, `ask:Where did ${who} go after the key moment, and which way did they leave?`],
@@ -416,7 +416,7 @@ function selectSource(sid, t) {
   const changed = S.sid !== sid;
   S.sid = sid;
   const v = $("#player");
-  if (changed) v.src = STATIC ? STATIC.video(sid) : `/api/cases/${S.cid}/sources/${sid}/video`;
+  if (changed) v.src = STATIC ? STATIC.video(S.cid, sid) : `/api/cases/${S.cid}/sources/${sid}/video`;
   if (t !== undefined) {
     const go = () => { v.currentTime = Number(t); drawOverlay(); };
     if (!changed && v.readyState >= 1) go(); else v.addEventListener("loadedmetadata", go, { once: true });
@@ -656,6 +656,7 @@ $("#askForm").onsubmit = (e) => {
   if (!q || !S.cid) return;
   $("#askInput").value = "";
   const caseLike = q.match(CASE_LIKE);
+  if (caseLike && STATIC && STATIC.hasCase(caseLike[2])) return openCase(caseLike[2]);
   if (caseLike) return setScene(caseLike[2]);
   if (!S.data.case.sources.some((s) => s.status === "done")) {
     S.chat.push({ kind: "q", text: q }, { kind: "note", text: "Add footage and let me watch it first; then I can answer questions about it." });
