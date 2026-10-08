@@ -2,121 +2,52 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<meta name="sandtable-api" content="https://sandtable-dallas-559411266307.us-central1.run.app/">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Orbit Evidence · First Hour</title>
-<meta name="description" content="First Hour: within the first hour of a robbery, see which cameras to request before the footage is gone, and let the AI watch what comes in. Public copy of real Oakland cases.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23D4744F'/%3E%3Ccircle cx='16' cy='16' r='9' stroke='%23FAF9F5' stroke-width='2.2' fill='none'/%3E%3Ccircle cx='23' cy='9' r='3' fill='%23141413'/%3E%3C/svg%3E">
+<title>Sandtable · Dallas</title>
+<meta name="description" content="The chief's live board for Dallas Police: every unit on a scene as a piece on the city, live.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231C1C1E'/%3E%3Cpath d='M16 6a4 4 0 0 1 2.4 7.2c1.6 1 2.6 2.7 2.6 4.8h-1.6l1.6 6H11l1.6-6H11c0-2.1 1-3.8 2.6-4.8A4 4 0 0 1 16 6Z' fill='%230A84FF'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Manrope:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="first-hour/vendor/maplibre-gl.css">
-<link rel="stylesheet" href="first-hour/style.css?v=2">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="vendor/maplibre-gl.css">
+<link rel="stylesheet" href="app.css?v=3db7828">
 </head>
 <body>
+<div id="map" class="map" aria-label="3D map of Dallas with every unit on a scene"></div>
 <header class="top">
-  <div class="brand"><i></i>Orbit Evidence <span>First Hour</span></div>
-  <button id="caseBtn" class="case-pill" type="button">Open a case</button>
-  <div class="spacer"></div>
-  <a class="btn ghost small" href="sandtable/" title="Sandtable: every Dallas police unit on a scene, live on a 3D map">Live Dallas board</a>
-  <button id="fileBtn" class="btn ghost small" type="button">Case file <span id="fileCount" class="count">0</span></button>
-  <a id="lookoutBtn" class="btn ghost small" target="_blank" aria-disabled="true">Lookout sheet</a>
-  <a id="packetBtn" class="btn primary small" target="_blank" aria-disabled="true">DA packet</a>
+  <div class="glass brand" title="Live: City of Dallas Open Data, Dallas Police Active Calls (9fxf-t2tr). A unit is listed only while it is on a scene; calls waiting for a unit and confidential calls are not published. History: Dallas Police Incidents (qv6i-rri7), last 52 weeks."><span class="dot" id="dot"></span><div><b>Sandtable</b><small id="age">Dallas Police · connecting…</small></div></div>
+  <div class="glass seg" role="tablist" aria-label="View">
+    <button role="tab" data-view="map" aria-selected="true">Map</button>
+    <button role="tab" data-view="board" aria-selected="false">Board</button>
+  </div>
+  <div class="glass stats" id="stats"></div>
+  <div class="glass clock" id="clock"></div>
 </header>
-<main class="grid">
-  <section class="stage">
-    <div class="stage-bar">
-      <div class="seg" id="seg"><button data-view="map" class="on" type="button">Where to look</button><button data-view="video" type="button">Footage</button></div>
-      <div id="footageChips" class="chips"></div>
-    </div>
-    <div id="mapView" class="view on">
-      <div id="map"></div>
-      <div class="legend">
-        <span><i class="dot k-video_camera"></i>Video camera</span>
-        <span><i class="dot k-plate_reader"></i>Plate reader</span>
-        <span><i class="dot k-likely_camera_place"></i>Likely camera</span>
-        <span><i class="dot k-scene"></i>Scene</span>
-      </div>
-      <div id="mapEmpty" class="map-empty">Give the assistant a case number, or click the map where it happened.</div>
-      <p class="map-note">Map data © OpenStreetMap contributors. Building heights are approximate.</p>
-    </div>
-    <div id="videoView" class="view">
-      <div class="player-wrap">
-        <video id="player" class="hidden" controls playsinline preload="metadata"></video>
-        <canvas id="overlay"></canvas>
-        <div id="exampleTag" class="example hidden">Example footage (public research video), not from this case</div>
-        <div id="playerEmpty" class="empty">No footage yet. Add it from the assistant or the case file.</div>
-      </div>
-      <div id="timeline" class="timeline"></div>
-    </div>
-  </section>
-  <aside class="assistant">
-    <div id="feed" class="feed"></div>
-    <div class="composer">
-      <div id="suggest" class="suggest"></div>
-      <form id="askForm" class="ask"><input id="askInput" autocomplete="off" placeholder="Ask about this case, or type a case number…"><button class="btn small" type="submit">Send</button></form>
-    </div>
-  </aside>
-</main>
-
-<aside id="drawer" class="drawer" aria-hidden="true">
-  <div class="drawer-head"><h2>Case file</h2><button id="drawerClose" class="btn ghost small" type="button">Close</button></div>
-  <div id="drawerBody"></div>
-</aside>
-
-<dialog id="caseDlg">
-  <h2>Cases</h2>
-  <div id="caseList" class="lib"></div>
-  <form id="caseForm">
-    <label>Title</label><input id="cTitle" type="text" required placeholder="Firearm robbery, 15th St">
-    <div class="row"><div style="flex:1"><label>Case number</label><input id="cNumber" type="text" placeholder="26-041483"></div><div style="flex:1"><label>Crime type</label><input id="cType" type="text" placeholder="Robbery"></div></div>
-    <label>Incident date and time</label><input id="cWhen" type="datetime-local">
-    <div class="row" style="margin-top:14px"><button class="btn primary" type="submit">Open new case</button><button class="btn ghost" type="button" data-close>Close</button></div>
+<aside class="glass stations" id="stations" aria-label="Stations"></aside>
+<aside class="glass side" id="side" aria-label="Units and events"></aside>
+<section class="boardview" id="boardview" hidden aria-label="Board: units by station"></section>
+<section class="orbit" aria-label="Orbit, the assistant">
+  <div class="glass answer" id="answer" hidden></div>
+  <div class="chips" id="chips"></div>
+  <form class="glass ask" id="ask" autocomplete="off">
+    <button type="button" class="mic" id="mic" aria-label="Talk to Orbit" title="Talk to Orbit"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M12 15a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V22h2v-3.08A7 7 0 0 0 19 12h-2Z"/></svg></button>
+    <input id="q" placeholder="Ask Orbit about your units…" aria-label="Ask Orbit">
+    <button type="submit" class="send" aria-label="Ask"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M3 20.5 21 12 3 3.5 3 10l12 2-12 2z"/></svg></button>
   </form>
-</dialog>
-
-<dialog id="fileDlg">
-  <h2>Add footage</h2>
-  <form id="fileForm">
-    <label>Video file</label><input id="fFile" type="file" accept="video/*,.mp4,.mov,.avi,.mkv" required>
-    <label>Where it came from</label><select id="fType"></select>
-    <label>Camera name</label><input id="fCamera" type="text" placeholder="Store camera, register">
-    <label>Camera clock is off by (seconds, + if ahead)</label><input id="fOffset" type="number" step="1" value="0">
-    <div class="row" style="margin-top:14px"><button class="btn primary" type="submit">Seal and add</button><button class="btn ghost" type="button" data-close>Cancel</button></div>
-  </form>
-</dialog>
-
-<dialog id="libDlg">
-  <h2>Public research library</h2>
-  <p class="meta">UCF-Crime: 1,950 real security-camera videos gathered for research. Not Oakland footage.</p>
-  <select id="libCat"></select>
-  <div id="libList" class="lib"><p class="empty">Loading…</p></div>
-  <div class="row" style="margin-top:12px"><button class="btn ghost" type="button" data-close>Close</button></div>
-</dialog>
-
-<dialog id="decideDlg">
-  <h2 id="dTitle">Mark as wrong</h2>
-  <form id="decideForm">
-    <label id="dLabel">Why?</label><textarea id="dText" required></textarea>
-    <div class="row" style="margin-top:12px"><button class="btn primary" type="submit">Save</button><button class="btn ghost" type="button" data-close>Cancel</button></div>
-  </form>
-</dialog>
-
-<dialog id="reportDlg">
-  <h2>Compare with a statement</h2>
-  <form id="reportForm">
-    <label>Paste the report or a witness description</label><textarea id="reportText" required placeholder="Witness: …"></textarea>
-    <div class="row" style="margin-top:12px"><button class="btn primary" type="submit">Compare with the video</button><button class="btn ghost" type="button" data-close>Cancel</button></div>
-  </form>
-</dialog>
-
-<dialog id="whoDlg">
-  <h2>Your name</h2>
-  <p class="meta">Every decision is logged with a name.</p>
-  <form id="whoForm"><input id="whoName" type="text" required placeholder="Name"><div class="row" style="margin-top:12px"><button class="btn primary" type="submit">Continue</button></div></form>
-</dialog>
-
-<script src="first-hour/static-mode.js?v=2"></script>
-<script src="first-hour/vendor/maplibre-gl.js"></script>
-<script type="module" src="first-hour/app.js?v=2"></script>
+</section>
+<div class="tools">
+  <button class="glass tool" id="panel">Units</button>
+  <button class="glass tool" id="view3d" aria-pressed="true">3D</button>
+  <button class="glass tool" id="hist" aria-pressed="false">Heat map</button>
+  <button class="glass tool" id="home" title="Show all of Dallas">All of Dallas</button>
+</div>
+<div class="glass heatbar" id="heatbar" hidden></div>
+<div class="glass planbar" id="plan" hidden></div>
+<div class="hud" id="hud" aria-live="polite"></div>
+<div class="dd-menu glass" id="ddmenu" hidden role="listbox"></div>
+<noscript>Sandtable needs JavaScript.</noscript>
+<script src="vendor/maplibre-gl.js"></script>
+<script type="module" src="app.js?v=3db7828"></script>
 </body>
 </html>
