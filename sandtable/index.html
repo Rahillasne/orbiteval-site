@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="sandtable-api" content="https://sandtable-dallas-559411266307.us-central1.run.app/">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sandtable · Dallas</title>
+<meta name="description" content="The chief's live board for Dallas Police: every unit on a scene as a piece on the city, live.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231C1C1E'/%3E%3Cpath d='M16 6a4 4 0 0 1 2.4 7.2c1.6 1 2.6 2.7 2.6 4.8h-1.6l1.6 6H11l1.6-6H11c0-2.1 1-3.8 2.6-4.8A4 4 0 0 1 16 6Z' fill='%230A84FF'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="vendor/maplibre-gl.css">
+<link rel="stylesheet" href="app.css?v=3db7828">
+</head>
+<body>
+<div id="map" class="map" aria-label="3D map of Dallas with every unit on a scene"></div>
+<header class="top">
+  <div class="glass brand" title="Live: City of Dallas Open Data, Dallas Police Active Calls (9fxf-t2tr). A unit is listed only while it is on a scene; calls waiting for a unit and confidential calls are not published. History: Dallas Police Incidents (qv6i-rri7), last 52 weeks."><span class="dot" id="dot"></span><div><b>Sandtable</b><small id="age">Dallas Police · connecting…</small></div></div>
+  <div class="glass seg" role="tablist" aria-label="View">
+    <button role="tab" data-view="map" aria-selected="true">Map</button>
+    <button role="tab" data-view="board" aria-selected="false">Board</button>
+  </div>
+  <div class="glass stats" id="stats"></div>
+  <div class="glass clock" id="clock"></div>
+</header>
+<aside class="glass stations" id="stations" aria-label="Stations"></aside>
+<aside class="glass side" id="side" aria-label="Units and events"></aside>
+<section class="boardview" id="boardview" hidden aria-label="Board: units by station"></section>
+<section class="orbit" aria-label="Orbit, the assistant">
+  <div class="glass answer" id="answer" hidden></div>
+  <div class="chips" id="chips"></div>
+  <form class="glass ask" id="ask" autocomplete="off">
+    <button type="button" class="mic" id="mic" aria-label="Talk to Orbit" title="Talk to Orbit"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M12 15a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V22h2v-3.08A7 7 0 0 0 19 12h-2Z"/></svg></button>
+    <input id="q" placeholder="Ask Orbit about your units…" aria-label="Ask Orbit">
+    <button type="submit" class="send" aria-label="Ask"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M3 20.5 21 12 3 3.5 3 10l12 2-12 2z"/></svg></button>
+  </form>
+</section>
+<div class="tools">
+  <button class="glass tool" id="panel">Units</button>
+  <button class="glass tool" id="view3d" aria-pressed="true">3D</button>
+  <button class="glass tool" id="hist" aria-pressed="false">Heat map</button>
+  <button class="glass tool" id="home" title="Show all of Dallas">All of Dallas</button>
+</div>
+<div class="glass heatbar" id="heatbar" hidden></div>
+<div class="glass planbar" id="plan" hidden></div>
+<div class="hud" id="hud" aria-live="polite"></div>
+<div class="dd-menu glass" id="ddmenu" hidden role="listbox"></div>
+<noscript>Sandtable needs JavaScript.</noscript>
+<script src="vendor/maplibre-gl.js"></script>
+<script type="module" src="app.js?v=3db7828"></script>
+</body>
+</html>
