@@ -1,0 +1,58 @@
+[
+ {
+  "name": "Headquarters",
+  "division": null,
+  "address": "1400 Botham Jean Blvd",
+  "lon": -96.794999,
+  "lat": 32.767742
+ },
+ {
+  "name": "Central",
+  "division": "Central",
+  "address": "334 S Hall St",
+  "lon": -96.778376,
+  "lat": 32.782788
+ },
+ {
+  "name": "Northeast",
+  "division": "Northeast",
+  "address": "9915 E Northwest Hwy",
+  "lon": -96.715836,
+  "lat": 32.863505
+ },
+ {
+  "name": "Southeast",
+  "division": "Southeast",
+  "address": "725 N Jim Miller Rd",
+  "lon": -96.700203,
+  "lat": 32.723115
+ },
+ {
+  "name": "Southwest",
+  "division": "Southwest",
+  "address": "4230 W Illinois Ave",
+  "lon": -96.888877,
+  "lat": 32.720422
+ },
+ {
+  "name": "North Central",
+  "division": "North Central",
+  "address": "6969 McCallum Blvd",
+  "lon": -96.783048,
+  "lat": 32.98863
+ },
+ {
+  "name": "Northwest",
+  "division": "Northwest",
+  "address": "9801 Harry Hines Blvd",
+  "lon": -96.879553,
+  "lat": 32.855221
+ },
+ {
+  "name": "South Central",
+  "division": "South Central",
+  "address": "1999 E Camp Wisdom Rd",
+  "lon": -96.78824,
+  "lat": 32.663766
+ }
+]
