@@ -64,6 +64,9 @@ and replying answers the person who filled it in.
 - **Activation:** the first submission from a new site makes FormSubmit send the inbox an "Activate Form" email.
   Reservations arrive once it's clicked. To use a different inbox, point `RESERVE_ENDPOINT` at
   `https://formsubmit.co/ajax/<address>`, submit once, click "Activate Form", then swap in the alias that email gives.
+- **FormSubmit can be slow** (83 s for one send on Nov 1). The form posts plain form data, not JSON, so the browser
+  skips the CORS preflight and the service is asked once. It shows "Sending…", then "Still sending…" after 8 s, keeps
+  the send alive if the visitor leaves, and gives up after 2.5 minutes.
 - **If sending fails** (not activated, or FormSubmit is down) the form says so and offers `CONTACT_EMAIL`. It never
   shows a false "Reserved".
 - `tools/qa.mjs` never sends a real reservation: it answers for FormSubmit itself.

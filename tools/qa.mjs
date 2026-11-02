@@ -113,8 +113,9 @@ expect('3D viewer live', await page.evaluate(() => document.querySelector('[data
 // forms. Nothing real is sent from here: this script answers for the email service (FormSubmit) itself.
 let sent = null;
 let answer = { success: 'true', message: 'The form was submitted successfully.' };
-await page.route('https://formsubmit.co/**', (route) => {
-  sent = { url: route.request().url(), body: route.request().postDataJSON() };
+await page.route('https://formsubmit.co/**', async (route) => {
+  sent = { url: route.request().url(), body: route.request().postDataJSON(), type: route.request().headers()['content-type'] };
+  await new Promise((r) => setTimeout(r, 900)); // the real service can be slow
   return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(answer) });
 });
 await page.evaluate(() => document.getElementById('reserve').scrollIntoView({ behavior: 'instant' }));
@@ -126,10 +127,13 @@ await page.fill('#form-building [name="email"]', 'test@example.com');
 await page.selectOption('#form-building [name="role"]', { index: 1 });
 await page.fill('#form-building [name="building"]', 'Test Tower, San Jose');
 await page.click('#form-building button[type="submit"]');
-await page.waitForTimeout(500);
+await page.waitForTimeout(250);
+const busy = await page.evaluate(() => ({ text: document.querySelector('#form-building .form__status').textContent, disabled: document.querySelector('#form-building button[type="submit"]').disabled }));
+expect('says sending while it waits', busy.text === 'Sending…' && busy.disabled, busy);
+await page.waitForTimeout(1200);
 const e2 = await page.textContent('#form-building .form__status');
 const mail = sent?.body || {};
-expect('reservation emailed', /^https:\/\/formsubmit\.co\/ajax\/[\w.@-]+$/.test(sent?.url || '') && mail.email === 'test@example.com' && /Founding building: Test Tower/.test(mail._subject || '') && mail.carry === 'packages, food', { to: sent?.url, subject: mail._subject, carry: mail.carry });
+expect('reservation emailed', /^https:\/\/formsubmit\.co\/ajax\/[\w.@-]+$/.test(sent?.url || '') && mail.email === 'test@example.com' && /Founding building: Test Tower/.test(mail._subject || '') && mail.carry === 'packages, food' && /x-www-form-urlencoded/.test(sent?.type || ''), { to: sent?.url, as: sent?.type, subject: mail._subject, carry: mail.carry });
 expect('says reserved', /^Reserved\./.test(e2), e2);
 await page.click('#tab-resident');
 expect('resident tab', (await page.isVisible('#form-resident')) && (await page.isHidden('#form-building')), 'switched');
@@ -139,7 +143,7 @@ await page.fill('#form-resident [name="name"]', 'Test Resident');
 await page.fill('#form-resident [name="email"]', 'resident@example.com');
 await page.fill('#form-resident [name="building"]', 'Test Tower, San Jose');
 await page.click('#form-resident button[type="submit"]');
-await page.waitForTimeout(500);
+await page.waitForTimeout(1500);
 const e3 = await page.textContent('#form-resident .form__status');
 expect('refused send says so', /didn’t go through/.test(e3) && sent?.body?.contact_manager === 'yes', e3);
 await page.unroute('https://formsubmit.co/**');
