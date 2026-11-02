@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>R2 · concept film (real-time CAD animation)</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=block" rel="stylesheet">
+<script type="importmap">{"imports":{"three":"./assets/vendor/three/three.module.min.js","three/addons/":"./assets/vendor/three/addons/"}}</script>
+<style>
+  :root { --u: calc(100vw / 1920); --cyan: #2EE6F0; }
+  html, body { margin: 0; height: 100%; background: #000; overflow: hidden; }
+  #wrap { position: relative; width: 100vw; height: 100vh; overflow: hidden; font-family: Inter, system-ui, sans-serif; color: #fff; -webkit-font-smoothing: antialiased; }
+  canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .ov { position: absolute; pointer-events: none; opacity: 0; will-change: opacity, transform; }
+  #fade { inset: 0; background: #000; opacity: 1; }
+  #dim { inset: 0; background: radial-gradient(ellipse at 50% 45%, rgba(0,0,0,0.55), rgba(0,0,0,0.92)); }
+  #chip { top: calc(var(--u) * 44); right: calc(var(--u) * 56); font: 500 calc(var(--u) * 14) / 1 "JetBrains Mono", monospace; letter-spacing: 0.16em; padding: calc(var(--u) * 9) calc(var(--u) * 14); border: 1px solid rgba(46, 230, 240, 0.4); border-radius: 999px; background: rgba(0, 0, 0, 0.28); color: rgba(255, 255, 255, 0.92); }
+  #chapter { top: calc(var(--u) * 46); left: calc(var(--u) * 120); font: 500 calc(var(--u) * 15) / 1 "JetBrains Mono", monospace; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255, 255, 255, 0.72); }
+  #chapter b { color: var(--cyan); font-weight: 600; margin-right: calc(var(--u) * 14); }
+  #caption { left: calc(var(--u) * 120); bottom: calc(var(--u) * 112); max-width: calc(var(--u) * 1180); isolation: isolate; }
+  /* soft dark pool behind the caption: part of #caption, so it fades with it; fades to 0 at its own edges (no box) */
+  #caption::before { content: ""; position: absolute; z-index: -1; pointer-events: none; left: calc(var(--u) * -260); right: calc(var(--u) * -300); top: calc(var(--u) * -170); bottom: calc(var(--u) * -150);
+    background: radial-gradient(closest-side, rgba(3, 6, 8, 0.62), rgba(3, 6, 8, 0.44) 45%, rgba(3, 6, 8, 0.16) 75%, rgba(3, 6, 8, 0) 100%); }
+  #caption .label { display: flex; align-items: center; gap: calc(var(--u) * 14); font: 500 calc(var(--u) * 16) / 1 "JetBrains Mono", monospace; letter-spacing: 0.2em; text-transform: uppercase; color: var(--cyan); margin-bottom: calc(var(--u) * 22); }
+  #caption .label::before { content: ""; width: calc(var(--u) * 40); height: 1px; background: var(--cyan); box-shadow: 0 0 calc(var(--u) * 8) var(--cyan); }
+  #caption .title { font-weight: 600; font-size: calc(var(--u) * 64); line-height: 1.06; letter-spacing: -0.02em; text-shadow: 0 calc(var(--u) * 1) calc(var(--u) * 3) rgba(0, 0, 0, 0.45), 0 calc(var(--u) * 2) calc(var(--u) * 18) rgba(0, 0, 0, 0.6), 0 0 calc(var(--u) * 44) rgba(0, 0, 0, 0.45); }
+  #caption .sub { margin-top: calc(var(--u) * 18); font-size: calc(var(--u) * 27); line-height: 1.35; color: rgba(255, 255, 255, 0.78); max-width: calc(var(--u) * 980); text-shadow: 0 calc(var(--u) * 1) calc(var(--u) * 10) rgba(0, 0, 0, 0.7); }
+  #caption .tag { display: inline-block; margin-top: calc(var(--u) * 22); font: 500 calc(var(--u) * 15) / 1 "JetBrains Mono", monospace; letter-spacing: 0.14em; text-transform: uppercase; padding: calc(var(--u) * 9) calc(var(--u) * 14); border-radius: 999px; border: 1px solid rgba(46, 230, 240, 0.45); color: rgba(255, 255, 255, 0.86); }
+  #caption .tag:empty { display: none; }
+  #floor { left: calc(var(--u) * 120); top: calc(var(--u) * 250); }
+  #floor .k { font: 500 calc(var(--u) * 16) / 1 "JetBrains Mono", monospace; letter-spacing: 0.22em; color: var(--cyan); }
+  #floor .n { font-weight: 700; font-size: calc(var(--u) * 210); line-height: 0.95; letter-spacing: -0.04em; font-variant-numeric: tabular-nums; margin-top: calc(var(--u) * 10); }
+  #floor .s { font: 400 calc(var(--u) * 15) / 1.4 "JetBrains Mono", monospace; color: rgba(255, 255, 255, 0.6); margin-top: calc(var(--u) * 6); letter-spacing: 0.06em; }
+  #floor svg { display: block; margin-top: calc(var(--u) * 18); width: calc(var(--u) * 420); height: calc(var(--u) * 130); overflow: visible; }
+  #notify { right: calc(var(--u) * 110); top: calc(var(--u) * 150); width: calc(var(--u) * 560); padding: calc(var(--u) * 22) calc(var(--u) * 24); border-radius: calc(var(--u) * 30); background: rgba(14, 18, 22, 0.8); border: 1px solid rgba(255, 255, 255, 0.12); box-shadow: 0 calc(var(--u) * 30) calc(var(--u) * 80) rgba(0, 0, 0, 0.55); backdrop-filter: blur(18px); display: grid; grid-template-columns: calc(var(--u) * 62) 1fr calc(var(--u) * 104); gap: calc(var(--u) * 18); align-items: center; }
+  #notify .ic { width: calc(var(--u) * 62); height: calc(var(--u) * 62); border-radius: calc(var(--u) * 16); background: linear-gradient(145deg, #0d3c41, #08191c); border: 1px solid rgba(46, 230, 240, 0.5); display: grid; place-items: center; }
+  #notify .ic i { width: calc(var(--u) * 26); height: calc(var(--u) * 8); border-radius: 99px; background: var(--cyan); box-shadow: 0 0 calc(var(--u) * 12) var(--cyan); }
+  #notify .app { font: 500 calc(var(--u) * 15) / 1 "JetBrains Mono", monospace; letter-spacing: 0.1em; color: rgba(255, 255, 255, 0.55); text-transform: uppercase; }
+  #notify .h { font-weight: 600; font-size: calc(var(--u) * 27); margin-top: calc(var(--u) * 8); }
+  #notify .b { font-size: calc(var(--u) * 20); color: rgba(255, 255, 255, 0.72); margin-top: calc(var(--u) * 6); }
+  #notify .ph { width: calc(var(--u) * 104); height: calc(var(--u) * 104); border-radius: calc(var(--u) * 14); overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.14); }
+  #notify .ph svg { width: 100%; height: 100%; display: block; }
+  #end { inset: 0; display: grid; place-items: center; text-align: center; }
+  #end .mark { display: flex; align-items: center; justify-content: center; gap: calc(var(--u) * 26); font-weight: 700; font-size: calc(var(--u) * 132); letter-spacing: -0.035em; }
+  #end .mark i { width: calc(var(--u) * 64); height: calc(var(--u) * 18); border-radius: 99px; background: var(--cyan); box-shadow: 0 0 calc(var(--u) * 26) var(--cyan); }
+  #end .cta { display: inline-block; margin-top: calc(var(--u) * 34); font-weight: 500; font-size: calc(var(--u) * 32); padding: calc(var(--u) * 18) calc(var(--u) * 36); border-radius: 999px; border: 1px solid rgba(46, 230, 240, 0.7); box-shadow: 0 0 calc(var(--u) * 30) rgba(46, 230, 240, 0.18) inset; }
+  #end .url { margin-top: calc(var(--u) * 26); font: 500 calc(var(--u) * 22) / 1 "JetBrains Mono", monospace; letter-spacing: 0.12em; color: rgba(255, 255, 255, 0.72); }
+  #end .fine { position: absolute; left: 50%; bottom: calc(var(--u) * 54); transform: translateX(-50%); width: calc(var(--u) * 1240); font-size: calc(var(--u) * 17); line-height: 1.5; color: rgba(255, 255, 255, 0.55); }
+  #callouts { inset: 0; width: 100%; height: 100%; overflow: visible; }
+  .clean .ov:not(#fade) { display: none !important; }
+</style>
+</head>
+<body>
+<div id="wrap">
+  <canvas id="c"></canvas>
+  <div class="ov" id="dim"></div>
+  <div class="ov" id="chapter"><b></b><span></span></div>
+  <div class="ov" id="caption"><div class="label"></div><div class="title"></div><div class="sub"></div><div class="tag"></div></div>
+  <div class="ov" id="floor">
+    <div class="k">FLOOR</div>
+    <div class="n">L</div>
+    <div class="s">Barometer floor count · works with no signal</div>
+    <svg viewBox="0 0 420 130" aria-hidden="true">
+      <line x1="0" y1="128" x2="420" y2="128" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>
+      <polyline id="trace" fill="none" stroke="#2EE6F0" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" points=""/>
+      <circle id="traceDot" r="6" fill="#2EE6F0"/>
+    </svg>
+  </div>
+  <div class="ov" id="notify">
+    <div class="ic"><i></i></div>
+    <div><div class="app" data-brand></div><div class="h">Delivered · Apt 1104</div><div class="b">Handed over at your door · 7:42 PM</div></div>
+    <div class="ph"><svg viewBox="0 0 104 104"><defs><linearGradient id="g1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffcf98"/><stop offset="1" stop-color="#8a5a30"/></linearGradient></defs><rect width="104" height="104" fill="#1b1612"/><rect x="18" y="8" width="56" height="96" fill="url(#g1)" opacity="0.85"/><rect x="0" y="62" width="104" height="5" fill="#cfd5db"/><rect x="34" y="40" width="38" height="24" rx="2" fill="#b98a5a"/><rect x="48" y="40" width="7" height="24" fill="#d8c39a"/><rect x="0" y="67" width="104" height="37" fill="#0e1012"/></svg></div>
+  </div>
+  <div class="ov" id="end">
+    <div>
+      <div class="mark"><i></i><span data-brand></span></div>
+      <div class="cta">Reserve your building</div>
+      <div class="url" data-url></div>
+    </div>
+    <div class="fine" data-fine></div>
+  </div>
+  <svg class="ov" id="callouts" aria-hidden="true"></svg>
+  <div class="ov" id="chip">CAD ANIMATION · PROTOTYPE IN PROGRESS</div>
+  <div class="ov" id="fade"></div>
+</div>
+<script type="module" src="./assets/js/film.js"></script>
+</body>
+</html>

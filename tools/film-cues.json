@@ -1,0 +1,358 @@
+{
+ "duration": 68,
+ "chapters": [
+  {
+   "t": 0,
+   "title": "Wake"
+  },
+  {
+   "t": 6,
+   "title": "Drop-off"
+  },
+  {
+   "t": 15,
+   "title": "Depart"
+  },
+  {
+   "t": 22,
+   "title": "Call"
+  },
+  {
+   "t": 32,
+   "title": "Ride"
+  },
+  {
+   "t": 40,
+   "title": "Deliver"
+  },
+  {
+   "t": 50,
+   "title": "Inside"
+  },
+  {
+   "t": 56,
+   "title": "Every floor"
+  },
+  {
+   "t": 63,
+   "title": "Reserve your building"
+  }
+ ],
+ "cues": [
+  {
+   "t": 0.7,
+   "name": "eyes_on",
+   "note": "R2 eyes fade on (close-up, dark stage)"
+  },
+  {
+   "t": 1,
+   "name": "strips_on",
+   "note": "light strips run up the body"
+  },
+  {
+   "t": 2.167,
+   "name": "blink",
+   "note": "eyes blink"
+  },
+  {
+   "t": 3.3,
+   "name": "caption_in",
+   "note": "The last hundred steps."
+  },
+  {
+   "t": 6,
+   "name": "parcel_in",
+   "note": "courier parcel lands in the station window"
+  },
+  {
+   "t": 6.767,
+   "name": "belt_in",
+   "note": "window belt draws the parcel in"
+  },
+  {
+   "t": 6.9,
+   "name": "caption_in",
+   "note": "Couriers drop it off in seconds."
+  },
+  {
+   "t": 7.567,
+   "name": "scan",
+   "note": "label scan beam sweeps"
+  },
+  {
+   "t": 8.5,
+   "name": "station_ok",
+   "note": "screen: 1104 · Apartment found"
+  },
+  {
+   "t": 9.367,
+   "name": "station_confirm",
+   "note": "Confirm button goes bright"
+  },
+  {
+   "t": 9.8,
+   "name": "window_close",
+   "note": "window door slides shut"
+  },
+  {
+   "t": 10.9,
+   "name": "station_ok",
+   "note": "screen: Stored, R2 is taking it to 1104"
+  },
+  {
+   "t": 16,
+   "name": "caption_in",
+   "note": "R2 takes it from there."
+  },
+  {
+   "t": 16.2,
+   "name": "robot_move",
+   "note": "R2 pulls out of its bay; light trail starts"
+  },
+  {
+   "t": 22,
+   "name": "robot_move",
+   "note": "cut: R2 rolling up to the elevator"
+  },
+  {
+   "t": 22.8,
+   "name": "caption_in",
+   "note": "It presses the button like a person."
+  },
+  {
+   "t": 24.4,
+   "name": "pod_rise",
+   "note": "finger pod rises to button height"
+  },
+  {
+   "t": 24.9,
+   "name": "robot_stop",
+   "note": "R2 stops at the call button"
+  },
+  {
+   "t": 26.1,
+   "name": "finger_press",
+   "note": "pod presses the call button"
+  },
+  {
+   "t": 26.333,
+   "name": "button_lit",
+   "note": "call button ring lights"
+  },
+  {
+   "t": 27.9,
+   "name": "elevator_ding",
+   "note": "hall lantern lights (car arriving)"
+  },
+  {
+   "t": 28,
+   "name": "doors_open",
+   "note": "elevator doors open, light spills out"
+  },
+  {
+   "t": 29.6,
+   "name": "robot_move",
+   "note": "R2 rolls into the car"
+  },
+  {
+   "t": 31.3,
+   "name": "doors_close",
+   "note": "elevator doors close"
+  },
+  {
+   "t": 31.967,
+   "name": "robot_stop",
+   "note": "R2 stops inside the car"
+  },
+  {
+   "t": 32.7,
+   "name": "caption_in",
+   "note": "Taps the building’s own fob."
+  },
+  {
+   "t": 32.8,
+   "name": "pod_lower",
+   "note": "pod lowers to the car reader"
+  },
+  {
+   "t": 33.767,
+   "name": "fob_tap",
+   "note": "fob taps the reader"
+  },
+  {
+   "t": 34,
+   "name": "fob_ok",
+   "note": "reader ring turns green"
+  },
+  {
+   "t": 34.9,
+   "name": "pod_rise",
+   "note": "pod rises to the 11 button"
+  },
+  {
+   "t": 35.867,
+   "name": "finger_press",
+   "note": "pod presses 11"
+  },
+  {
+   "t": 36.1,
+   "name": "button_lit",
+   "note": "11 lights up"
+  },
+  {
+   "t": 36.8,
+   "name": "ride_start",
+   "note": "car starts up; floor counter runs"
+  },
+  {
+   "t": 37.6,
+   "name": "floor_tick",
+   "note": "floor 2"
+  },
+  {
+   "t": 37.8,
+   "name": "floor_tick",
+   "note": "floor 3"
+  },
+  {
+   "t": 37.967,
+   "name": "floor_tick",
+   "note": "floor 4"
+  },
+  {
+   "t": 38.067,
+   "name": "floor_tick",
+   "note": "floor 5"
+  },
+  {
+   "t": 38.167,
+   "name": "floor_tick",
+   "note": "floor 6"
+  },
+  {
+   "t": 38.267,
+   "name": "floor_tick",
+   "note": "floor 7"
+  },
+  {
+   "t": 38.367,
+   "name": "floor_tick",
+   "note": "floor 8"
+  },
+  {
+   "t": 38.533,
+   "name": "floor_tick",
+   "note": "floor 9"
+  },
+  {
+   "t": 38.733,
+   "name": "floor_tick",
+   "note": "floor 10"
+  },
+  {
+   "t": 39.5,
+   "name": "ride_end",
+   "note": "car arrives at 11"
+  },
+  {
+   "t": 39.5,
+   "name": "elevator_ding",
+   "note": "arrival ding"
+  },
+  {
+   "t": 39.5,
+   "name": "floor_tick",
+   "note": "floor 11"
+  },
+  {
+   "t": 40,
+   "name": "robot_move",
+   "note": "R2 glides down the 11th-floor hallway"
+  },
+  {
+   "t": 40.9,
+   "name": "caption_in",
+   "note": "Handed over at counter height."
+  },
+  {
+   "t": 43.3,
+   "name": "robot_stop",
+   "note": "R2 stops at 1104"
+  },
+  {
+   "t": 43.4,
+   "name": "door_open",
+   "note": "apartment door opens, warm light"
+  },
+  {
+   "t": 44.7,
+   "name": "tray_out",
+   "note": "tray extends at counter height"
+  },
+  {
+   "t": 46.7,
+   "name": "phone_ping",
+   "note": "Delivered · Apt 1104 notification"
+  },
+  {
+   "t": 47.4,
+   "name": "parcel_slide",
+   "note": "parcel slides off the tray into the apartment"
+  },
+  {
+   "t": 48.6,
+   "name": "tray_in",
+   "note": "tray retracts"
+  },
+  {
+   "t": 50.7,
+   "name": "caption_in",
+   "note": "Designed down to the parts list."
+  },
+  {
+   "t": 51,
+   "name": "xray_on",
+   "note": "scan line sweeps down; shell turns to wireframe"
+  },
+  {
+   "t": 52.2,
+   "name": "callout",
+   "note": "BELT TRAYS"
+  },
+  {
+   "t": 52.7,
+   "name": "callout",
+   "note": "FINGER MAST · FOB"
+  },
+  {
+   "t": 53.2,
+   "name": "callout",
+   "note": "LIDAR · DRIVE BASE"
+  },
+  {
+   "t": 54.9,
+   "name": "xray_off",
+   "note": "scan line sweeps up; shell turns solid again"
+  },
+  {
+   "t": 56,
+   "name": "tower_reveal",
+   "note": "holographic tower fades in"
+  },
+  {
+   "t": 56.7,
+   "name": "caption_in",
+   "note": "Every package. Every floor."
+  },
+  {
+   "t": 59.867,
+   "name": "caption_in",
+   "note": "Apartments first. Then any building with an elevator."
+  },
+  {
+   "t": 63.4,
+   "name": "endcard",
+   "note": "Rari end card"
+  }
+ ]
+}

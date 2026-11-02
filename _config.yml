@@ -1,0 +1,6 @@
+# GitHub Pages runs Jekyll on this repo: publish the site, not the tools that make it.
+exclude:
+  - README.md
+  - tools
+  - film.html
+  - lab

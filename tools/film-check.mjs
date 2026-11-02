@@ -1,0 +1,17 @@
+import { chromium } from 'playwright-core';
+const browser = await chromium.launch({ channel: 'chrome', headless: true, args: ['--autoplay-policy=no-user-gesture-required'] });
+const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+const errs = []; page.on('pageerror', (e) => errs.push(e.message)); page.on('response', (r) => { if (r.status() >= 400) errs.push(r.status() + ' ' + r.url()); });
+await page.goto('http://127.0.0.1:8811/', { waitUntil: 'networkidle' });
+await page.waitForTimeout(800);
+console.log('label:', await page.textContent('[data-film-length]'));
+await page.click('.hero [data-film]');
+await page.waitForTimeout(6000);
+const st = await page.evaluate(() => { const v = document.querySelector('[data-film-video]'); return { t: v.currentTime.toFixed(1), paused: v.paused, dur: v.duration, w: v.videoWidth, muted: v.muted, audioBytes: v.webkitAudioDecodedByteCount }; });
+console.log('film:', JSON.stringify(st));
+await page.screenshot({ path: process.argv[2] });
+await page.click('[data-film-close]');
+await page.waitForTimeout(300);
+console.log('after close paused:', await page.evaluate(() => document.querySelector('[data-film-video]').paused), 'open:', await page.evaluate(() => document.querySelector('[data-film-dialog]').open));
+console.log(errs.join('\n') || 'no errors');
+await browser.close();
