@@ -387,16 +387,25 @@ $$('form[data-kind]').forEach((form) => {
     const data = collect(form);
     const btn = $('button[type="submit"]', form);
     btn.disabled = true;
-    const done = (msg) => { status.textContent = msg; status.classList.add('is-ok'); form.classList.add('is-done'); };
+    status.textContent = 'Sending…';
+    const slow = setTimeout(() => { status.textContent = 'Still sending. The email service is slow right now, so please keep this page open for a minute.'; }, 8000);
+    const done = (msg) => { clearTimeout(slow); status.textContent = msg; status.classList.add('is-ok'); form.classList.add('is-done'); };
     const reservedMsg = data.kind === 'building'
       ? `Reserved. ${data.building} is on the founding list. We’ll email ${data.email} to set up a walk-through.`
       : `Requested. We’ve counted your vote for ${data.building}. We’ll email ${data.email} when your building signs on.`;
     try {
       if (RESERVE_ENDPOINT) {
-        const r = await fetch(RESERVE_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(asEmail(data)) });
-        const res = await r.json().catch(() => ({}));
-        // FormSubmit answers 200 even when it didn't deliver (before activation, say), so read what it says
-        if (!r.ok || String(res.success) !== 'true') throw new Error(res.message || `HTTP ${r.status}`);
+        // FormSubmit can take over a minute to answer, so wait up to 2.5 minutes before saying it failed. A plain form
+        // post (not JSON) needs no CORS preflight, so the slow service is asked once instead of twice, and keepalive
+        // lets the send finish even if the visitor leaves the page.
+        const ctl = new AbortController();
+        const timer = setTimeout(() => ctl.abort(), 150000);
+        try {
+          const r = await fetch(RESERVE_ENDPOINT, { method: 'POST', keepalive: true, signal: ctl.signal, headers: { Accept: 'application/json' }, body: new URLSearchParams(asEmail(data)) });
+          const res = await r.json().catch(() => ({}));
+          // FormSubmit answers 200 even when it didn't deliver (before activation, say), so read what it says
+          if (!r.ok || String(res.success) !== 'true') throw new Error(res.message || `HTTP ${r.status}`);
+        } finally { clearTimeout(timer); }
         done(reservedMsg);
       } else if (CONTACT_EMAIL) {
         const subject = data.kind === 'building' ? `Founding building: ${data.building}` : `Resident request: ${data.building}`;
@@ -407,6 +416,7 @@ $$('form[data-kind]').forEach((form) => {
         throw new Error('no endpoint configured');
       }
     } catch (err) {
+      clearTimeout(slow);
       console.warn('reservation not sent', err);
       btn.disabled = false;
       status.textContent = `That didn’t go through, so nothing was sent. Please try again in a minute${CONTACT_EMAIL ? `, or email ${CONTACT_EMAIL}` : ''}.`;
