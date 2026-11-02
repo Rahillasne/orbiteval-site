@@ -57,11 +57,13 @@ node tools/qa.mjs   # with the local server running; 30 checks: structure, label
 ## Reservations
 
 Each reservation is emailed to `CONTACT_EMAIL` (rahil@orbiteval.com) by [FormSubmit](https://formsubmit.co): free,
-no account. `RESERVE_ENDPOINT` in `assets/js/config.js` is `https://formsubmit.co/ajax/<CONTACT_EMAIL>`. The subject
-names the building, a table holds every field, and replying answers the person who filled it in.
+no account. `RESERVE_ENDPOINT` in `assets/js/config.js` posts to FormSubmit's alias for that inbox (from its
+activation email), so the form doesn't name the address. The subject names the building, a table holds every field,
+and replying answers the person who filled it in.
 
-- **Activation:** the first submission from a new site makes FormSubmit send `CONTACT_EMAIL` an "Activate Form"
-  email. Reservations arrive once it's clicked. A new `CONTACT_EMAIL` needs activating again.
+- **Activation:** the first submission from a new site makes FormSubmit send the inbox an "Activate Form" email.
+  Reservations arrive once it's clicked. To use a different inbox, point `RESERVE_ENDPOINT` at
+  `https://formsubmit.co/ajax/<address>`, submit once, click "Activate Form", then swap in the alias that email gives.
 - **If sending fails** (not activated, or FormSubmit is down) the form says so and offers `CONTACT_EMAIL`. It never
   shows a false "Reserved".
 - `tools/qa.mjs` never sends a real reservation: it answers for FormSubmit itself.
