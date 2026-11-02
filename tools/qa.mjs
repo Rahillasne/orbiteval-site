@@ -129,7 +129,7 @@ await page.click('#form-building button[type="submit"]');
 await page.waitForTimeout(500);
 const e2 = await page.textContent('#form-building .form__status');
 const mail = sent?.body || {};
-expect('reservation emailed', /^https:\/\/formsubmit\.co\/ajax\/[^/]+@/.test(sent?.url || '') && mail.email === 'test@example.com' && /Founding building: Test Tower/.test(mail._subject || '') && mail.carry === 'packages, food', { to: sent?.url, subject: mail._subject, carry: mail.carry });
+expect('reservation emailed', /^https:\/\/formsubmit\.co\/ajax\/[\w.@-]+$/.test(sent?.url || '') && mail.email === 'test@example.com' && /Founding building: Test Tower/.test(mail._subject || '') && mail.carry === 'packages, food', { to: sent?.url, subject: mail._subject, carry: mail.carry });
 expect('says reserved', /^Reserved\./.test(e2), e2);
 await page.click('#tab-resident');
 expect('resident tab', (await page.isVisible('#form-resident')) && (await page.isHidden('#form-building')), 'switched');
