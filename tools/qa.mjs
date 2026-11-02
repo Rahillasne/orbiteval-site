@@ -101,7 +101,8 @@ const f2 = await page.evaluate(() => ({ open: document.querySelector('[data-film
 expect('Esc closes and pauses', !f2.open && f2.paused, f2);
 await page.evaluate(() => document.getElementById('robot').scrollIntoView({ behavior: 'instant' }));
 await page.click('[data-drawings]');
-await page.waitForTimeout(800);
+// the drawings start loading when the dialog opens; give a slow network up to 10 s instead of a fixed pause
+await page.waitForFunction(() => [...document.querySelectorAll('.drawings__grid img')].filter((i) => i.complete && i.naturalWidth > 0).length === 6, null, { timeout: 10000 }).catch(() => {});
 const d = await page.evaluate(() => ({ open: document.querySelector('[data-drawings-dialog]').open, imgs: [...document.querySelectorAll('.drawings__grid img')].filter((i) => i.complete && i.naturalWidth > 0).length }));
 expect('drawings open, 6 images', d.open && d.imgs === 6, d);
 await page.click('[data-drawings-dialog] [data-close]');
