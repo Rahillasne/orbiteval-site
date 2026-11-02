@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Mona+Sans:wdth,wght@75..125,200..900&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; width: 1200px; height: 630px; overflow: hidden; background: #030507; }
+  .card { position: relative; width: 1200px; height: 630px; color: #F2F6FA; font-family: "Mona Sans", sans-serif; -webkit-font-smoothing: antialiased; }
+  .bg { position: absolute; top: 0; bottom: 0; right: -40px; left: 500px; background: url(../assets/img/stills/r2-hero.jpg) 50% 42% / cover no-repeat; }
+  .shade { position: absolute; inset: 0; background: linear-gradient(90deg, #030507 0, #030507 500px, rgba(3,5,7,0) 720px), linear-gradient(0deg, rgba(3,5,7,.7), rgba(3,5,7,0) 32%); }
+  .copy { position: absolute; left: 72px; top: 78px; width: 660px; }
+  .mark { display: flex; align-items: center; gap: 14px; font-size: 32px; font-weight: 600; font-stretch: 118%; letter-spacing: -.01em; }
+  .visor { display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 56px; height: 30px; border-radius: 15px; background: #121820; box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.14); }
+  .visor i { width: 11px; height: 5px; border-radius: 3px; background: #C2E1FC; box-shadow: 0 0 9px rgba(194,225,252,.9); }
+  h1 { margin: 66px 0 0; font-size: 84px; font-weight: 300; font-stretch: 125%; letter-spacing: -.04em; line-height: .98; }
+  p { margin: 28px 0 0; width: 500px; font-size: 25px; line-height: 1.42; color: rgba(232,240,248,.72); }
+  .chip { position: absolute; left: 72px; bottom: 52px; display: flex; align-items: center; gap: 10px; height: 40px; padding: 0 18px 0 15px; border-radius: 999px; font-size: 16px; font-weight: 550; color: rgba(232,240,248,.78); background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); }
+  .chip i { width: 8px; height: 8px; border-radius: 50%; background: #C2E1FC; box-shadow: 0 0 10px rgba(194,225,252,.9); }
+</style></head>
+<body><div class="card">
+  <div class="bg"></div><div class="shade"></div>
+  <div class="copy">
+    <div class="mark"><span class="visor"><i></i><i></i></span>Rari</div>
+    <h1>Every package,<br>all the way up.</h1>
+    <p>A robot that rides the elevator and brings packages and meals to the apartment door.</p>
+  </div>
+  <div class="chip"><i></i>R2 · in development · CAD render · orbiteval.com</div>
+</div>
+<script>document.fonts.ready.then(() => { window.__ready = true; window.renderAt = () => {}; });</script>
+</body></html>

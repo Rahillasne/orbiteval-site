@@ -1,2 +1,5 @@
 __pycache__/
 *.pyc
+tools/node_modules
+lab/
+.DS_Store

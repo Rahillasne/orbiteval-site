@@ -2,52 +2,436 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="sandtable-api" content="https://sandtable-dallas-559411266307.us-central1.run.app/">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Sandtable · Dallas</title>
-<meta name="description" content="The chief's live board for Dallas Police: every unit on a scene as a piece on the city, live.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231C1C1E'/%3E%3Cpath d='M16 6a4 4 0 0 1 2.4 7.2c1.6 1 2.6 2.7 2.6 4.8h-1.6l1.6 6H11l1.6-6H11c0-2.1 1-3.8 2.6-4.8A4 4 0 0 1 16 6Z' fill='%230A84FF'/%3E%3C/svg%3E">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Rari R2 · Every package, all the way up</title>
+<meta name="description" content="R2 is a robot that carries packages and food from an apartment building's lobby to every door. It rides the elevator, taps the building's fob and hands things over at the door. In development in San Jose.">
+<meta name="theme-color" content="#030507">
+<meta name="color-scheme" content="dark">
+<meta property="og:title" content="Rari R2 · Every package, all the way up">
+<meta property="og:description" content="A robot that rides the elevator and brings every package and meal to the apartment door. Reserve it for your building.">
+<meta property="og:image" content="https://orbiteval.com/assets/img/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Rari R2, a white delivery robot with a black visor, on a dark stage. Every package, all the way up.">
+<meta property="og:url" content="https://orbiteval.com/">
+<link rel="canonical" href="https://orbiteval.com/">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23030507'/%3E%3Crect x='5' y='10' width='22' height='10' rx='5' fill='%23151C24'/%3E%3Crect x='9' y='13.5' width='5' height='3' rx='1.5' fill='%23C2E1FC'/%3E%3Crect x='18' y='13.5' width='5' height='3' rx='1.5' fill='%23C2E1FC'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="vendor/maplibre-gl.css">
-<link rel="stylesheet" href="app.css?v=3db7828">
+<link href="https://fonts.googleapis.com/css2?family=Mona+Sans:wdth,wght@75..125,200..900&family=Doto:wght@700..900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/site.css">
+<script>
+  document.documentElement.classList.add('js');
+  // the doors open even if fonts or scripts are slow
+  setTimeout(function () { document.documentElement.classList.add('is-loaded'); }, 2400);
+</script>
+<script type="importmap">{"imports":{"three":"./assets/vendor/three/three.module.min.js","three/addons/":"./assets/vendor/three/addons/"}}</script>
 </head>
 <body>
-<div id="map" class="map" aria-label="3D map of Dallas with every unit on a scene"></div>
-<header class="top">
-  <div class="glass brand" title="Live: City of Dallas Open Data, Dallas Police Active Calls (9fxf-t2tr). A unit is listed only while it is on a scene; calls waiting for a unit and confidential calls are not published. History: Dallas Police Incidents (qv6i-rri7), last 52 weeks."><span class="dot" id="dot"></span><div><b>Sandtable</b><small id="age">Dallas Police · connecting…</small></div></div>
-  <div class="glass seg" role="tablist" aria-label="View">
-    <button role="tab" data-view="map" aria-selected="true">Map</button>
-    <button role="tab" data-view="board" aria-selected="false">Board</button>
-  </div>
-  <div class="glass stats" id="stats"></div>
-  <div class="glass clock" id="clock"></div>
-</header>
-<aside class="glass stations" id="stations" aria-label="Stations"></aside>
-<aside class="glass side" id="side" aria-label="Units and events"></aside>
-<section class="boardview" id="boardview" hidden aria-label="Board: units by station"></section>
-<section class="orbit" aria-label="Orbit, the assistant">
-  <div class="glass answer" id="answer" hidden></div>
-  <div class="chips" id="chips"></div>
-  <form class="glass ask" id="ask" autocomplete="off">
-    <button type="button" class="mic" id="mic" aria-label="Talk to Orbit" title="Talk to Orbit"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M12 15a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V22h2v-3.08A7 7 0 0 0 19 12h-2Z"/></svg></button>
-    <input id="q" placeholder="Ask Orbit about your units…" aria-label="Ask Orbit">
-    <button type="submit" class="send" aria-label="Ask"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M3 20.5 21 12 3 3.5 3 10l12 2-12 2z"/></svg></button>
-  </form>
-</section>
-<div class="tools">
-  <button class="glass tool" id="panel">Units</button>
-  <button class="glass tool" id="view3d" aria-pressed="true">3D</button>
-  <button class="glass tool" id="hist" aria-pressed="false">Heat map</button>
-  <button class="glass tool" id="home" title="Show all of Dallas">All of Dallas</button>
+<a class="skip" href="#main">Skip to content</a>
+
+<!-- arrival: frosted glass elevator doors over the first screen; they open once the page is ready -->
+<div class="doors" aria-hidden="true">
+  <span class="door door--l"></span><span class="door door--r"></span>
+  <span class="doors__lantern"><span class="dot-num">L</span></span>
 </div>
-<div class="glass heatbar" id="heatbar" hidden></div>
-<div class="glass planbar" id="plan" hidden></div>
-<div class="hud" id="hud" aria-live="polite"></div>
-<div class="dd-menu glass" id="ddmenu" hidden role="listbox"></div>
-<noscript>Sandtable needs JavaScript.</noscript>
-<script src="vendor/maplibre-gl.js"></script>
-<script type="module" src="app.js?v=3db7828"></script>
+
+<!-- ============================================================ nav -->
+<header class="nav" id="top">
+  <div class="nav__bar">
+    <a class="brand" href="#lobby" aria-label="Rari, back to top">
+      <span class="brand__visor" aria-hidden="true"><i></i><i></i></span>
+      <span data-brand>Rari</span>
+    </a>
+    <nav class="nav__links" aria-label="Sections">
+      <a href="#how">How it works</a>
+      <a href="#robot">The robot</a>
+      <a href="#buildings">For buildings</a>
+    </nav>
+    <a class="btn btn--light btn--sm" href="#reserve">Reserve</a>
+    <span class="nav__progress" aria-hidden="true"></span>
+  </div>
+</header>
+
+<main id="main">
+
+<!-- ============================================================ hero -->
+<section class="hero" id="lobby">
+  <div class="hero__media">
+    <video class="hero__video" data-hero-video muted playsinline loop preload="auto" poster="assets/video/hero-poster.jpg" aria-label="R2 turning slowly on a dark stage, its eyes and light strips glowing.">
+      <source src="assets/video/hero.webm" type="video/webm">
+      <source src="assets/video/hero.mp4" type="video/mp4">
+    </video>
+  </div>
+  <div class="wrap hero__inner">
+    <div class="hero__copy">
+      <p class="tag glass"><span class="tag__dot" aria-hidden="true"></span><span><span data-robot>R2</span> · indoor delivery robot · in development</span></p>
+      <h1 class="display display--1"><span class="line">Every package,</span> <span class="line">all the way up.</span></h1>
+      <p class="lede">Couriers drop off in the lobby. <span data-robot>R2</span> rides the elevator, taps the building’s fob and brings each package and meal to the apartment door. No staff, no app, nothing wired into the elevator.</p>
+      <div class="cta">
+        <a class="btn btn--light" href="#reserve">Reserve for your building</a>
+        <button class="btn btn--glass" type="button" data-film>
+          <svg class="btn__play" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 1.8v8.4L10 6z"/></svg>
+          Watch the film <span class="btn__meta" data-film-length>1:08</span>
+        </button>
+      </div>
+    </div>
+  </div>
+  <p class="hud hero__label">CAD animation</p>
+</section>
+
+<!-- ============================================================ how it works: the film, in six chapters -->
+<section class="section how" id="how">
+  <div class="player" data-player>
+    <header class="head how__head rise">
+      <p class="eyebrow">How it works</p>
+      <h2 class="display display--2">From the lobby to apartment 1104, with no one walking it.</h2>
+    </header>
+
+    <div class="player__stage rise">
+      <div class="player__media">
+        <img class="player__poster" data-player-poster src="assets/video/steps/station.jpg" data-fallback="assets/img/stills/station.jpg" alt="The courier slides a parcel into the station's window.">
+        <video class="player__video" data-player-video muted playsinline preload="none" aria-hidden="true"></video>
+      </div>
+      <span class="hud hud--quiet player__label">CAD render</span>
+    </div>
+
+    <div class="chapters glass rise" role="tablist" aria-label="Steps of a delivery">
+      <button class="chapter" id="step-1" role="tab" type="button" aria-selected="true" aria-controls="player-screen" data-clip="station" data-where="Lobby" data-floor="L"
+        data-alt="The courier slides a parcel into the station's window."
+        data-title="The courier slides it in."
+        data-text="A camera reads the label and the screen shows the apartment. About 20 seconds, with no app and no key.">
+        <span class="chapter__n">01</span><span class="chapter__t">Drop-off</span><span class="chapter__bar" aria-hidden="true"><i></i></span>
+      </button>
+      <button class="chapter" id="step-2" role="tab" type="button" aria-selected="false" tabindex="-1" aria-controls="player-screen" data-clip="r2-rack" data-where="Station" data-floor="L"
+        data-alt="R2, loaded with parcels on its trays, rolls out of the station."
+        data-title="Every parcel gets its own tray."
+        data-text="The station loads R2 from the back of its garage. Nobody touches the parcel again until the door.">
+        <span class="chapter__n">02</span><span class="chapter__t">Loading</span><span class="chapter__bar" aria-hidden="true"><i></i></span>
+      </button>
+      <button class="chapter" id="step-3" role="tab" type="button" aria-selected="false" tabindex="-1" aria-controls="player-screen" data-clip="finger-press" data-where="Elevator lobby" data-floor="L"
+        data-alt="R2's finger presses the elevator call button."
+        data-title="It presses the button like a person."
+        data-text="A camera-guided finger presses call and checks that it lit. If the car is full, it waits for the next one.">
+        <span class="chapter__n">03</span><span class="chapter__t">Call</span><span class="chapter__bar" aria-hidden="true"><i></i></span>
+      </button>
+      <button class="chapter" id="step-4" role="tab" type="button" aria-selected="false" tabindex="-1" aria-controls="player-screen" data-clip="fob-tap" data-where="In the car" data-floor="11"
+        data-alt="Inside the elevator, R2 taps the building's fob on the reader."
+        data-title="It taps the building’s own fob."
+        data-text="It taps the reader, presses 11 and counts floors with a barometer, so it needs no signal in the shaft.">
+        <span class="chapter__n">04</span><span class="chapter__t">Ride</span><span class="chapter__bar" aria-hidden="true"><i></i></span>
+      </button>
+      <button class="chapter" id="step-5" role="tab" type="button" aria-selected="false" tabindex="-1" aria-controls="player-screen" data-clip="handoff" data-where="Floor 11 · 1104" data-floor="11"
+        data-alt="At apartment 1104, R2 slides a tray out with the parcel at counter height."
+        data-title="Handed over at counter height."
+        data-text="The resident takes it off the tray. Nobody home? It goes on the mat, with a photo. Meals are only ever handed over.">
+        <span class="chapter__n">05</span><span class="chapter__t">Hand-off</span><span class="chapter__bar" aria-hidden="true"><i></i></span>
+      </button>
+      <button class="chapter" id="step-6" role="tab" type="button" aria-selected="false" tabindex="-1" aria-controls="player-screen" data-clip="tower" data-where="Every floor" data-floor="L"
+        data-alt="A wireframe tower with delivery trails running up to every floor."
+        data-title="Then it heads back for the next one."
+        data-text="It charges at the station between runs. Every floor, evenings and weekends, with nobody at the desk.">
+        <span class="chapter__n">06</span><span class="chapter__t">Next run</span><span class="chapter__bar" aria-hidden="true"><i></i></span>
+      </button>
+    </div>
+
+    <div class="caption glass rise" id="player-screen" role="tabpanel" aria-labelledby="step-1">
+      <div class="caption__top">
+        <p class="caption__n"><span data-caption-n>01</span> / 06 · <span data-player-where>Lobby</span></p>
+        <span class="lantern" aria-hidden="true"><span class="dot-num" data-player-floor>L</span></span>
+      </div>
+      <p class="caption__t" data-caption-t>The courier slides it in.</p>
+      <p class="caption__d" data-caption-d>A camera reads the label and the screen shows the apartment. About 20 seconds, with no app and no key.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ the robot -->
+<section class="section robot" id="robot">
+  <div class="wrap robot__layout">
+    <header class="head robot__head rise">
+      <p class="eyebrow">The robot</p>
+      <h2 class="display display--2">Small enough to share the elevator. Smart enough to call&nbsp;it.</h2>
+      <p class="sub"><span data-robot>R2</span> as designed in CAD: a tower of trays, cameras in its visor and a finger that presses the same buttons you do.</p>
+      <div class="robot__more">
+        <button class="btn btn--glass btn--sm" type="button" data-drawings>See the engineering drawings</button>
+        <p class="fine">Design targets from our v2 CAD, November 2026. Not yet built or tested.</p>
+      </div>
+    </header>
+
+    <div class="robot__stage">
+      <div class="viewer" data-viewer>
+        <canvas class="viewer__canvas" aria-label="3D model of R2. Drag to rotate."></canvas>
+        <img class="viewer__poster" src="assets/img/stills/r2-front.jpg" data-fallback="assets/renders/robot.png" alt="R2, front view: a white robot with a black visor, two eyes and a rack of trays behind smoked glass.">
+        <div class="viewer__hotspots" data-hotspots></div>
+        <div class="viewer__card glass" data-hotspot-card hidden>
+          <p class="viewer__card-title" data-hotspot-title></p>
+          <p data-hotspot-text></p>
+        </div>
+        <div class="viewer__controls glass">
+          <button class="pill" type="button" data-act="finger" aria-pressed="false">Raise the finger</button>
+          <button class="pill" type="button" data-act="tray" aria-pressed="false">Hand over a parcel</button>
+          <button class="pill" type="button" data-act="spin" aria-pressed="true">Auto-rotate</button>
+        </div>
+        <p class="viewer__hint" data-viewer-hint>Loading the 3D model…</p>
+      </div>
+    </div>
+
+    <dl class="spec glass rise">
+      <div><dt>Size</dt><dd>56 × 58 cm, 1.2 m tall. About 15% of a typical elevator floor.</dd></div>
+      <div><dt>Carries</dt><dd>One parcel per tray: up to 8 mailers, 5 boxes, a dinner run or one big box.</dd></div>
+      <div><dt>Reach</dt><dd>Presses buttons and taps fobs from 38 cm to 1.45 m, every legal button height.</dd></div>
+      <div><dt>Senses</dt><dd>Two corner lidars, depth cameras in the visor, a camera on the finger.</dd></div>
+      <div><dt>Safety</dt><dd>Walking pace near people, soft bumper, emergency stop. Designed toward UL 3300.</dd></div>
+    </dl>
+  </div>
+</section>
+
+<!-- ============================================================ for buildings -->
+<section class="section buildings" id="buildings">
+  <div class="buildings__backdrop" aria-hidden="true">
+    <video class="buildings__video" data-ambient muted playsinline preload="none" poster="assets/video/steps/tower.jpg" data-end="assets/video/steps/tower-end.jpg">
+      <source src="assets/video/steps/tower.mp4" type="video/mp4">
+    </video>
+  </div>
+  <div class="wrap">
+    <header class="head head--split rise">
+      <div>
+        <p class="eyebrow">For buildings</p>
+        <h2 class="display display--2">One robot, one station, one monthly price.</h2>
+      </div>
+      <p class="sub">Most deliveries arrive after the desk closes. Packages pile up by the mailboxes, meals wait in the lobby, and lockers fill up.</p>
+    </header>
+
+    <ul class="stats glass rise">
+      <li class="stat">
+        <p class="stat__num">58%</p>
+        <p class="stat__txt">of courier visits to apartment buildings come between 6 pm and 6 am.</p>
+        <a class="source" href="https://go.carson.live/multifamily-delivery-data-report-may-2026" target="_blank" rel="noopener">Carson, over a million multifamily deliveries, May 2026 (vendor data)</a>
+      </li>
+      <li class="stat">
+        <p class="stat__num">60%</p>
+        <p class="stat__txt">of buildings with package lockers run out of space, at least at peak times.</p>
+        <a class="source" href="https://www.nmhc.org/globalassets/meetings/2018-meetings/2018-nmhc-optech-conference--exposition/presentation-materials/wed-200-pm_kingsley-package-delivery-survey-results_panzacola-h3.pdf" target="_blank" rel="noopener">NMHC/Kingsley, 2018</a>
+      </li>
+      <li class="stat">
+        <p class="stat__num">3×</p>
+        <p class="stat__txt">as likely to have a package stolen in an apartment as in a house.</p>
+        <a class="source" href="https://www.security.org/package-theft/annual-report/" target="_blank" rel="noopener">Security.org, 3,494 adults, 2026</a>
+      </li>
+    </ul>
+
+    <div class="deal">
+      <article class="price-card glass rise">
+        <p class="price"><span class="price__amt">$1,500</span><span class="price__per">per building per month<br>planned price</span></p>
+        <p class="price__note">The station, the robot, installation, upkeep and software. For a 200-unit building that’s $7.50 per apartment a month.</p>
+        <ul class="checks">
+          <li>Works with the elevators and doors you already have</li>
+          <li>Couriers are in and out of the lobby in seconds</li>
+          <li>A photo and timestamp for every delivery</li>
+          <li>No access to apartments, ever</li>
+        </ul>
+      </article>
+
+      <figure class="compare glass rise" aria-labelledby="cmp-title">
+        <figcaption id="cmp-title">What a building pays per year</figcaption>
+        <div class="compare__row" tabindex="0">
+          <span class="compare__name">Front desk staffed around the clock, wages only</span>
+          <span class="compare__track"><span class="compare__bar compare__bar--muted" style="--v:179"></span></span>
+          <span class="compare__val">$179,000</span>
+          <span class="tip">8,736 hours × $20.44, the US mean concierge wage (BLS, May 2025). Before benefits and taxes.</span>
+        </div>
+        <div class="compare__row" tabindex="0">
+          <span class="compare__name"><span data-brand>Rari</span> station and <span data-robot>R2</span>, planned</span>
+          <span class="compare__track"><span class="compare__bar" style="--v:18"></span></span>
+          <span class="compare__val">$18,000</span>
+          <span class="tip">$1,500 a month × 12. Our planned price, including the station, the robot, installation and upkeep.</span>
+        </div>
+        <p class="source">Front desk: 8,736 hours a year at the <a href="https://www.bls.gov/oes/current/oes396012.htm" target="_blank" rel="noopener">US mean concierge wage (BLS, May 2025)</a>; our math. <span data-brand>Rari</span>: planned price, not yet charged.</p>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ where it's going -->
+<section class="section next" id="next">
+  <div class="wrap">
+    <header class="head head--split rise">
+      <div>
+        <p class="eyebrow">Where it’s going</p>
+        <h2 class="display display--2">Apartments first. Then any building with an elevator.</h2>
+      </div>
+      <p class="sub">One job per trip: a run either delivers or collects, never both. Here’s what it carries, and where we are.</p>
+    </header>
+
+    <ol class="road__list">
+      <li class="road__item road__item--now glass rise">
+        <p class="road__when"><i aria-hidden="true"></i>First · designing now</p>
+        <h3>Apartment towers</h3>
+        <p>Packages, takeout and groceries, up to the door. Pilot talks under way with a San Jose high-rise.</p>
+      </li>
+      <li class="road__item road__item--next glass rise">
+        <p class="road__when"><i aria-hidden="true"></i>Next · in design</p>
+        <h3>Doorstep pickup</h3>
+        <p>Trash bags collected from doorsteps on a separate run, in a sealed bin. Never on the same trip as food or parcels. Residents already pay <a href="https://www.hellodata.ai/help-articles/what-is-valet-trash-in-multifamily" target="_blank" rel="noopener">$25–40 a month</a> for this.</p>
+      </li>
+      <li class="road__item road__item--later glass rise">
+        <p class="road__when"><i aria-hidden="true"></i>Later</p>
+        <h3>Any building with an elevator</h3>
+        <p>Towels and room service in hotels. Meals and linens in senior living and hospitals.</p>
+      </li>
+    </ol>
+
+    <div class="where glass rise">
+      <p class="eyebrow">Where we are</p>
+      <ol class="where__list">
+        <li class="is-done"><span class="where__state">Done</span><span>Research on apartment deliveries, lockers, elevators and building access.</span></li>
+        <li class="is-done"><span class="where__state">Done</span><span><span data-robot>R2</span> and the <span data-station>S2</span> station designed in CAD, with a first parts list: about $9,500 for the prototype robot.</span></li>
+        <li class="is-now"><span class="where__state">Now</span><span>Pilot talks with a San Jose high-rise. Nothing signed yet.</span></li>
+        <li class="is-next"><span class="where__state">Next</span><span>The first robot rides a real elevator, on camera, shown as it is.</span></li>
+      </ol>
+      <p class="where__who"><b>Rahil Lasne</b>, founder. Software and robot-learning engineer in San Jose; built ORBIT, open tools for testing robot policies.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ reserve -->
+<section class="section reserve" id="reserve">
+  <div class="wrap reserve__grid">
+    <div class="reserve__copy rise">
+      <p class="eyebrow">Reserve</p>
+      <h2 class="display display--2">Put your building on the list.</h2>
+      <p class="sub">We’re choosing our founding buildings now. Reserving is free and doesn’t commit you to anything. We’ll call to walk through your lobby, elevators and doors.</p>
+      <ul class="perks">
+        <li><b>Founding price</b> for the first ten buildings</li>
+        <li><b>First install slots</b>, starting in the Bay Area</li>
+        <li><b>No payment</b> to reserve</li>
+      </ul>
+    </div>
+
+    <div class="form-card glass rise">
+      <div class="seg" role="tablist" aria-label="Who are you?">
+        <button role="tab" type="button" id="tab-building" aria-controls="form-building" aria-selected="true" data-tab="building">I run a building</button>
+        <button role="tab" type="button" id="tab-resident" aria-controls="form-resident" aria-selected="false" data-tab="resident" tabindex="-1">I live in one</button>
+      </div>
+
+      <form class="form" id="form-building" role="tabpanel" aria-labelledby="tab-building" data-kind="building" novalidate>
+        <div class="grid2">
+          <label>Your name<input name="name" autocomplete="name" required></label>
+          <label>Work email<input name="email" type="email" autocomplete="email" required></label>
+        </div>
+        <div class="grid2">
+          <label>Your role
+            <select name="role" required>
+              <option value="">Choose one</option>
+              <option>Property manager</option>
+              <option>Owner or asset manager</option>
+              <option>Concierge or front desk</option>
+              <option>Other</option>
+            </select>
+          </label>
+          <label>Building and city<input name="building" placeholder="Building name, city" required></label>
+        </div>
+        <div class="grid3">
+          <label>Apartments<input name="units" inputmode="numeric" pattern="[0-9]*" placeholder="200"></label>
+          <label>Floors<input name="floors" inputmode="numeric" pattern="[0-9]*" placeholder="20"></label>
+          <label>Elevators<input name="elevators" inputmode="numeric" pattern="[0-9]*" placeholder="3"></label>
+        </div>
+        <fieldset class="checks-inline">
+          <legend>What should it carry?</legend>
+          <label><input type="checkbox" name="carry" value="packages" checked> Packages</label>
+          <label><input type="checkbox" name="carry" value="food" checked> Food</label>
+          <label><input type="checkbox" name="carry" value="returns"> Returns</label>
+          <label><input type="checkbox" name="carry" value="trash"> Trash pickup</label>
+        </fieldset>
+        <label>Anything we should know?<textarea name="notes" rows="2" placeholder="Front desk hours, fob system, package room…"></textarea></label>
+        <button class="btn btn--light btn--block" type="submit">Reserve a founding spot</button>
+        <p class="form__deposit" data-deposit hidden>Want to hold your place? <a data-deposit-link href="#" target="_blank" rel="noopener">Add a refundable deposit</a>.</p>
+        <p class="form__status" role="status" aria-live="polite"></p>
+      </form>
+
+      <form class="form" id="form-resident" role="tabpanel" aria-labelledby="tab-resident" data-kind="resident" hidden novalidate>
+        <div class="grid2">
+          <label>Your name<input name="name" autocomplete="name" required></label>
+          <label>Email<input name="email" type="email" autocomplete="email" required></label>
+        </div>
+        <label>Your building and city<input name="building" placeholder="Building name, city" required></label>
+        <label class="check"><input type="checkbox" name="contact_manager" checked> You can tell my building’s management that residents asked for this.</label>
+        <button class="btn btn--light btn--block" type="submit"><span>Request <span data-robot>R2</span> in my building</span></button>
+        <p class="form__hint">We group requests by building and bring them to the property manager. We won’t share your email.</p>
+        <p class="form__status" role="status" aria-live="polite"></p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ questions -->
+<section class="section section--tight faq" id="faq">
+  <div class="wrap faq__grid">
+    <div class="rise">
+      <p class="eyebrow">Questions</p>
+      <h2 class="display display--2">Straight answers.</h2>
+    </div>
+    <div class="qa glass rise">
+      <details name="faq"><summary>Is this a real robot yet?</summary><p>Not yet. The design and the parts list are real, and building the first prototype is our next step. Everything in our film and images is rendered from our CAD models, not filmed. When we have footage of the robot working, we’ll show it as it is.</p></details>
+      <details name="faq"><summary>What does the building have to change?</summary><p>Very little: a spot against a wall for the station, one outlet, Wi-Fi or a cell signal, and a fob for the robot. Nothing is wired into the elevator.</p></details>
+      <details name="faq"><summary>What if the elevator is full?</summary><p><span data-robot>R2</span> waits for the next car. It never asks riders to press buttons for it, and it doesn’t board during a fire alarm.</p></details>
+      <details name="faq"><summary>Can it get into apartments?</summary><p>No. <span data-robot>R2</span> never opens apartment doors and never gets apartment access. It hands parcels over at the door or leaves them on the mat.</p></details>
+      <details name="faq"><summary>What about doors without an automatic opener?</summary><p>Where there’s a wheelchair push plate, it uses that. Where there isn’t, it asks someone nearby to hold the door and tells the front desk if no one comes. Buildings don’t have to add openers.</p></details>
+      <details name="faq"><summary>Is it safe around kids and pets?</summary><p>It slows to walking pace near people, has a soft bumper all the way round and an emergency stop on top, and we’re designing it toward UL 3300, the safety standard for robots in public spaces.</p></details>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot">
+  <div class="wrap foot__row">
+    <a class="brand brand--small" href="#lobby"><span class="brand__visor" aria-hidden="true"><i></i><i></i></span><span data-brand>Rari</span></a>
+    <p class="foot__honest"><span data-robot>R2</span> is designed but not yet built. Robot visuals are renderings of our current CAD design. Prices are planned and specs are design targets. <span data-city>San Jose, California</span>.</p>
+    <nav class="foot__links" aria-label="More">
+      <button class="link" type="button" data-film>Watch the film</button>
+      <a class="link" href="#reserve">Reserve</a>
+      <a class="link" data-contact hidden href="#">Email us</a>
+    </nav>
+  </div>
+</footer>
+
+<!-- ============================================================ film -->
+<dialog class="modal film" data-film-dialog aria-label="Film">
+  <div class="modal__panel glass">
+    <video class="film__video" controls playsinline preload="none" poster="assets/video/film-poster.jpg" data-film-video>
+      <source src="assets/video/film-720.mp4" type="video/mp4">
+    </video>
+    <div class="modal__bar">
+      <p>Concept film, rendered from our CAD models. Not footage of a working robot.</p>
+      <a class="link" href="assets/video/film.mp4" download>Download 1080p</a>
+      <button class="btn btn--glass btn--sm" type="button" data-close>Close</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- ============================================================ engineering drawings -->
+<dialog class="modal drawings" data-drawings-dialog aria-labelledby="drawings-title">
+  <div class="modal__panel glass">
+    <div class="modal__head">
+      <h2 id="drawings-title">Buildings weren’t made for robots. We designed for that.</h2>
+      <button class="btn btn--glass btn--sm" type="button" data-close>Close</button>
+    </div>
+    <div class="drawings__grid">
+      <figure><img src="assets/renders/button.png" alt="Side view of R2 next to an elevator call plate, with the finger's reach marked from 380 mm to 1450 mm." loading="lazy"><figcaption><b>Presses real buttons.</b> The finger covers 38 cm to 1.45 m, every button height US code allows, and checks the button lit. Alarm buttons are blocked in software.</figcaption></figure>
+      <figure><img src="assets/renders/access.png" alt="R2's tap head holding a building fob against the reader under a 24-button elevator panel." loading="lazy"><figcaption><b>Uses the building’s fob.</b> The building gives <span data-robot>R2</span> its own fob, limited to the lobby and residential floors. It never gets apartment access.</figcaption></figure>
+      <figure><img src="assets/renders/elevator.png" alt="Top view of an elevator car: R2 in a corner next to two riders, filling 15% of the floor." loading="lazy"><figcaption><b>Rides with people.</b> It waits in a corner facing the door. A crowded car goes without it, and it never boards during a fire alarm.</figcaption></figure>
+      <figure><img src="assets/renders/tray.png" alt="Three belt trays: a box, a food tray with side fences, and a soft mailer." loading="lazy"><figcaption><b>One parcel, one tray.</b> Trays have a belt but no motor or battery, so they’re cheap and washable. At the door the belt walks the parcel off.</figcaption></figure>
+      <figure><img src="assets/renders/capacity.png" alt="Four rack layouts: eight mailers, an everyday mix of five, a dinner run of four, and one big box." loading="lazy"><figcaption><b>Holds what fits.</b> Trays stack at the lowest height that clears each parcel: eight mailers, a dinner run or one big box.</figcaption></figure>
+      <figure><img src="assets/renders/plan.png" alt="Plan view of the station against a wall: 1720 mm wide, 640 mm deep, with a courier area and the robot's garage." loading="lazy"><figcaption><b>Fits in 1.7 m of wall.</b> The station needs a wall, one outlet and Wi-Fi or a cell signal. Where a door has a wheelchair button, <span data-robot>R2</span> uses it.</figcaption></figure>
+    </div>
+    <p class="fine">CAD renders from our v2 design, November 2026.</p>
+  </div>
+</dialog>
+
+<script type="module" src="assets/js/main.js"></script>
 </body>
 </html>

@@ -1,0 +1,41 @@
+{
+  "duration": 68,
+  "chapters": [
+    {
+      "t": 0,
+      "title": "Wake"
+    },
+    {
+      "t": 6,
+      "title": "Drop-off"
+    },
+    {
+      "t": 15,
+      "title": "Depart"
+    },
+    {
+      "t": 22,
+      "title": "Call"
+    },
+    {
+      "t": 32,
+      "title": "Ride"
+    },
+    {
+      "t": 40,
+      "title": "Deliver"
+    },
+    {
+      "t": 50,
+      "title": "Inside"
+    },
+    {
+      "t": 56,
+      "title": "Every floor"
+    },
+    {
+      "t": 63,
+      "title": "Reserve your building"
+    }
+  ]
+}
